@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>항해도서관</title>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>도서관 서비스</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <style>
+        /* 전체 레이아웃 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            font-family: sans-serif;
+        }
+
+        /* 메인 섹션 */
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 180px);
+        }
+
+        .content {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+        }
+
+
+        /* 헤더 */
+        header {
+            background-color: white;
+            color: black;
+            padding: 20px;
+        }
+
+        /* 버튼 스타일 */
+        button {
+            background-color: #191970; /* 미드나이트 블루 */
+            color: #ffffff; /* 흰색 */
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        /* 버튼 호버 스타일 */
+        button:hover {
+            background-color: #000080; /* 네이비 */
+        }
+
+        .banner-info1 {
+            width: 400px;
+            margin: 10px auto 10px auto;
+            font-size: 18px;
+            flex-direction: column;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .banner-info2 {
+            width: 400px;
+            margin: 10px auto 10px auto;
+            font-size: 13px;
+            flex-direction: column;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .rentBook {
+            width: 400px;
+            height: 150px;
+            margin: 10px auto 10px auto;
+            font-size: 13px;
+            flex-direction: column;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .bookImage {
+            width: 100px;
+            height: 130px;
+            background: darkred;
+            margin: 10px 10px 10px 20px;
+            flex-direction: column;
+            justify-content: left;
+            float: left;
+
+
+
+        }
+
+        .bookInfo {
+            width: 200px;
+            height: 130px;
+            background: white;
+            margin: 10px 10px 10px 10px;
+            line-height: 0.5;
+            overflow: hidden;
+            float: left;
+
+        }
+
+
+        .tab {
+            margin: 100px auto 0px auto;
+            font-size: 20px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 푸터 */
+        footer {
+            background-color: white;
+            color: black;
+            padding: 20px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+<body>
+<header>
+    <div class="logo">로고넣을거면 넣어도되는자리</div>
+
+</header>
+<main>
+    <div class="tab">
+        <button class="tablinks active" onclick="openTab(event, '대출현황')">대출현황</button>
+        <button class="tablinks" onclick="openTab(event, '예약현황')">예약현황</button>
+        <button class="tablinks" onclick="openTab(event, '대출이력')">대출이력</button>
+        <button class="tablinks" onclick="openTab(event, '도서추천')">도서추천</button>
+
+
+        <div class = "banner-info1">
+            <p style="border-bottom: 1px dashed lightgray;"  >대출현황</p>
+        </div>
+        <div class = "banner-info2">
+            <p style="border-bottom: 1px dashed lightgray" ><a>🏠 마이페이지</a> > <a>대출현황</a></p>
+        </div>
+
+        <div>
+            <div class ="rentBook">
+                <div class="bookImage">
+                </div>
+
+                <div class="bookInfo">
+                    <p>제목: 책 제목</p>
+                    <p>저자: 저자 이름</p>
+                    <p>출판사: 출판사 이름</p>
+                    <p>출판연도: 출판연도</p>
+                    <p>대출현황: 대출중</p>
+                    <p>반납예정일: 2023-04-30</p>
+                </div>
+
+            </div>
+            <div class ="rentBook">
+                <div class="bookImage">
+                </div>
+
+                <div class="bookInfo">
+                    <p>제목: 책 제목</p>
+                    <p>저자: 저자 이름</p>
+                    <p>출판사: 출판사 이름</p>
+                    <p>출판연도: 출판연도</p>
+                    <p>대출현황: 대출중</p>
+                    <p>반납예정일: 2023-04-30</p>
+                </div>
+
+            </div>
+            <div class ="rentBook">
+                <div class="bookImage">
+                </div>
+
+                <div class="bookInfo">
+                    <p>제목: 책 제목</p>
+                    <p>저자: 저자 이름</p>
+                    <p>출판사: 출판사 이름</p>
+                    <p>출판연도: 출판연도</p>
+                    <p>대출현황: 대출중</p>
+                    <p>반납예정일: 2023-04-30</p>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+</main>
+<footer>
+    <p>&copy; 2023 HanghaeLibrary reserved.</p>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
