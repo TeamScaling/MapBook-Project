@@ -1,0 +1,96 @@
+.banner-info {
+    width: 538px;
+    margin: 50px auto 10px auto;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+}
+.login-tags {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.login-tag {
+    margin: auto;
+    cursor: pointer;
+}
+
+#login-form {
+    width: 538px;
+    height: 640px;
+    margin: 20px auto 20px auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    /*padding: 20px 0 0;*/
+    border-radius: 10px;
+    background-color: #ffffff;
+    /*border: 2px rosybrown; !* 모든 가장자리 두께를 2px로 설정합니다. *!*/
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.15);
+}
+
+.none {
+    display: none;
+}
+
+.login-input-box {
+    width: 370px;
+    height: 52px;
+    margin: 14px 0 0;
+    border-radius: 5px;
+}
+
+.login-id-label {
+    width: 382px;
+    padding-left: 11px;
+    margin-top: 20px;
+    /*margin: 0 337.9px 14px 11px;*/
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: -0.8px;
+    text-align: left;
+    color: #212529;
+}
+
+#login-id-submit {
+    border-width: 0;
+    width: 393px;
+    height: 62px;
+    flex-grow: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 40px 0 0;
+    padding: 11px 12px;
+    border-radius: 5px;
+    background-color: rosybrown;
+
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+}
+
+input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+}
+input[type=text] {
+    background-color: #f1f1f1;
+    /*width: 100%;*/
+}
+input[type=password] {
+    background-color: #f1f1f1;
+}
