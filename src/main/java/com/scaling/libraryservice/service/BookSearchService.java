@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 //consider : searchBook 이후 얻은 결과를 일단은 콘솔로 확인하고 싶어서 일단은 하드 코딩으로 넣어 놨지만, 중복 & 배포시 제거
 // 해야 하는 문제를 가지고 있다. -> 이것을 해결할 방법은?
 
-//cons
 @Service
 @RequiredArgsConstructor
 public class BookSearchService {
