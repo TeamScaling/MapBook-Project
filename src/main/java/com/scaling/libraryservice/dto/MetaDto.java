@@ -3,13 +3,17 @@ package com.scaling.libraryservice.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter @Getter
+@Setter
+@Getter
 public class MetaDto {
 
-    private boolean is_End = false;
+  private int page;
 
-    private int pageable_count = 3;
+  private int size;
 
-    private int total_count = 10;
+  public MetaDto(int page, int size) {
+    this.page = page;
+    this.size = size;
+  }
 
 }
