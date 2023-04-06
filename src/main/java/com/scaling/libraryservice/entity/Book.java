@@ -23,4 +23,7 @@ public class Book {
 
     @Column(name = "BOOK_INTRCN_CN")
     private String content;
+
+    @Column(name = "AUTHR_NM")
+    private String author;
 }

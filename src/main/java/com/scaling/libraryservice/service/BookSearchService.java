@@ -5,6 +5,7 @@ import com.scaling.libraryservice.dto.MetaDto;
 import com.scaling.libraryservice.dto.RespBooksDto;
 import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookQueryRepository;
+import com.scaling.libraryservice.repository.BookRepository;
 import com.scaling.libraryservice.util.Tokenizer;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +29,8 @@ public class BookSearchService {
 
     private final BookQueryRepository bookQueryRepo;
     private final Tokenizer tokenizer;
+
+    private final BookRepository bookRepository;
 
     // 기존 검색
     public RespBooksDto searchBookOrigin(String title) {
@@ -59,6 +62,15 @@ public class BookSearchService {
     }
 
 
+    public RespBooksDto searchAuthor(String author) {
+//        List<String> token = tokenizer.tokenize(author);
+        System.out.println("작가 전처리과정 "+author);
+        List<BookDto> books = bookRepository.findByAuthor(author)
+            .stream().map(BookDto::new).toList();
+
+        return new RespBooksDto(new MetaDto(), books);
+
+    }
 }
 
 
