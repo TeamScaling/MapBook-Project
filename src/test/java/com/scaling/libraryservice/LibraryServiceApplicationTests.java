@@ -1,9 +1,6 @@
 package com.scaling.libraryservice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookQueryRepository;
@@ -24,8 +21,7 @@ class LibraryServiceApplicationTests {
 
     @Autowired
     private BookRepository bookRepo;
-    @Autowired
-    private BookSearchService bookService;
+
 
     @Test @DisplayName("스프링 부트 기본 시작을 테스트")
     void contextLoads() {
@@ -50,22 +46,6 @@ class LibraryServiceApplicationTests {
         *//* then *//*
         assertTrue(success);
     }*/
-
-
-    @Test @DisplayName("query를 책 제목과 책 소개 검색을 통해 정확도 상승")
-    public void findBook_by_TitleAndContent(){
-        /* given */
-
-        String target = "스프링";
-        String fakeBook = "예배를 위한 찬송가 반주 & 연주곡집 (스프링)";
-
-        /* when */
-        List<Book> books = bookRepo.findBooksByTitleAndContent(target);
-        /* then */
-        System.out.println(books);
-        books.forEach(System.out::println);
-
-    }
 
 
     @Test @DisplayName("해당 책을 융통성 있게 찾을 수 있어야 하는데 못 찾음")
@@ -135,6 +115,16 @@ class LibraryServiceApplicationTests {
 
             /* then */
             Assertions.assertTrue(isEqualBook);
+        }
+
+        @Test
+        public void queryDsl_find_book(){
+            /* given */
+
+
+            /* when */
+
+            /* then */
         }
 
 
