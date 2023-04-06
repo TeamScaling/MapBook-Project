@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <metaDto charset="utf-8">
     <title>항해도서관</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         /* 전체 레이아웃 */
         body {
@@ -19,61 +20,20 @@
             padding: 20px;
         }
 
-        /* 로고 */
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        /* 네비게이션 메뉴 */
-        nav {
-            height: 30px;
-            width: 450px;
-            margin: 50px auto 0;
-            background-color: green;
-            text-align: center;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,.1);
-
-        }
-
-        nav a {
-            height: 20px;
-            width: 350px;
-            background: white;
-            color: black;
-            text-decoration: none;
-            margin-top: 5px;
-            padding: 0px 10px 0px 0px;
-            font-weight: bold;
-        }
-
-
         /* 메인 섹션 */
         main {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 30px;
-
-
+            margin-top: 200px;
         }
 
-        .content {
+        .search-box {
             text-align: center;
             padding: 20px;
             background-color: #fff;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,.1);
-        }
-
-        /* 검색창 */
-        .search-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 10px;
         }
 
         input[type="text"] {
@@ -96,29 +56,15 @@
             cursor: pointer;
         }
 
-        .button-container {
-            display: flex;
-            justify-content: right;
-            align-items: center;
-            margin: 20px;
+        button[type="submit"]:hover{
+            background-color: steelblue;
         }
-
-        .login-button, .signup-button {
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background-color: midnightblue;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 8px;
-            margin: 0 3px;
-            cursor: pointer;
+        /* select 요소 안의 option 태그에 스타일 적용 */
+        select {
+            border: #ffffff;
+            font-size: 13px;
+            border-radius: 4px;
         }
-
-        .signup-button {
-            background-color: midnightblue;
-        }
-
 
         /* 푸터 */
         footer {
@@ -131,70 +77,23 @@
 </head>
 <body>
 <header>
-    <div class="logo">로고넣을거면 넣어도되는자리</div>
 </header>
-
-<nav>
-    <a href="#">Home</a>
-    <a href="#">검색</a>
-    <a href="#">마이페이지</a>
-
-</nav>
-
 <main>
-    <div class ="webBody">
-        <div class="content">
-            <div class="button-container">
-                <button class="login-button">로그인</button>
-                <button class="signup-button">회원가입</button>
-
-            </div>
-            <h1>항해도서관</h1>
-            <p>지식의 바다, 항해도서관에 오신 것을 환영합니다.</p>
-            <form action="/search">
-                <select id="sorting" onchange="showProduct()">
-                    <option value="id">발매일순</option>
-                    <option value="title">소장자료</option>
+    <div class="search-box">
+        <h1>항해도서관</h1>
+        <p>지식의 바다, 항해도서관에 오신 것을 환영합니다.</p>
+        <form action="/books/search">
+                <select aria-label="선택">
+                    <option>전체</option>
+                    <option>도서명</option>
+                    <option>저자</option>
+                    <option>출판사</option>
                 </select>
-                <input type="text" placeholder="찾고싶은 책 제목을 입력하세요" name="search">
-                <button type="submit"><i class="fa fa-search"></i>검색</button>
-            </form>
-
-
-        </div>
-
-
+            <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
+            <button type="submit">검색</button>
+        </form>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        // 폼 제출 시 AJAX 요청을 보내는 함수
-        function showProduct() {
-            // 검색어와 정렬 방법 가져오기
-            var searchData = $('#search-form').serialize();
-            // AJAX 요청 보내기
-            $.ajax({
-                type: 'GET',
-                url: '/search',
-                data: searchData,
-                success: function(response) {
-                    console.log(response); // 검색 결과 출력
-                    // 검색 결과를 표시할 DOM 요소를 수정하는 코드 작성
-                },
-                error: function() {
-                    console.log('요청에 실패하였습니다.');
-                }
-            });
-        }
-
-        // 폼 제출 시 AJAX 요청 보내기
-        $('#search-form').submit(function(event) {
-            event.preventDefault();
-            showProduct();
-        });
-    </script>
 </main>
-
 <footer class>
     <p>&copy; 2023 HanghaeLibrary reserved.</p>
 </footer>

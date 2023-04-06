@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>검색 결과 - 항해도서관</title>
+    <style>
+        /* 헤더 */
+        header {
+            margin: auto;
+            width: 538px;
+            background-color: white;
+            color: black;
+            padding: 20px;
+        }
+
+        main {
+            padding-top: 100px;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        div[id="book-info-box"] {
+            padding: 10px;
+        }
+
+        button[type="submit"] {
+            height: 40px;
+            width: 40px;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            background-color: midnightblue;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* 검색 버튼에 호버 효과 추가 */
+        button[type="submit"]:hover {
+            background-color: steelblue;
+        }
+
+        input[type="text"] {
+            width: 350px;
+            height: 30px;
+            padding: 5px;
+            border: none;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+            background-color: #f2f2f2;
+        }
+
+        /* select 요소 안의 option 태그에 스타일 적용 */
+        select {
+            border: #ffffff;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+
+        a {
+            margin: 5px;
+        }
+
+        .search-box {
+            width: 538px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,.1);
+            column-gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="search-box">
+        <form action="/books/search">
+            <select aria-label="선택">
+                <option>전체</option>
+                <option>도서명</option>
+                <option>저자</option>
+                <option>출판사</option>
+            </select>
+            <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
+            <button type="submit">검색</button>
+            <p><span id="search-query"></span>에 대한 자료검색 결과이며 총 도서 수: <span th:text="${bookCnt}"></span>건이 검색되었습니다.</p>
+        </form>
+    </div>
+</header>
+<main>
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>도서 제목</th>
+                <th>저자</th>
+                <th>출판사</th>
+                <th>도서 소개</th>
+            </tr>
+            </thead>
+            <tbody id="book-info-column">
+            <tr th:each="book : ${bookList}">
+                <td th:text="${book.title_nm}"></td>
+                <td th:text="${book.authr_nm}"></td>
+                <td th:text="${book.publisher_nm}"></td>
+                <td th:text="${book.book_intrcn_cn}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+
+        $(function() {
+            function searchBook(page) {
+                const query = document.getElementById('query').value;
+                const url = `/search?query=${query}&page=${page}`;
+
+                fetch(url)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('bookList').innerHTML = extractBookList(html);
+                        document.getElementById('pagination').innerHTML = extractPagination(html);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+
+            function extractBookList(html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const bookListHtml = doc.getElementById('bookList').innerHTML;
+                return bookListHtml;
+            }
+
+            function extractPagination(html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const paginationHtml = doc.getElementById('pagination').innerHTML;
+                return paginationHtml;
+            }
+
+            // URLSearchParams를 사용하여 query 파라미터의 값을 추출합니다.
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get('query');
+
+            // query 값을 출력합니다.
+            $('#search-query').text(query);
+
+            $('form').submit(function(event) {
+            event.preventDefault();  // 기본 동작 중단
+            const form = $(this);
+            const query = form.find('input[name="query"]').val();
+
+        $.ajax({
+            type: "GET",
+            url: "/books/search",
+            data: {query: query},
+            dataType: "json",
+                success: function(response) {
+                    const bookInfo = $('#book-info-column');
+                    bookInfo.empty();  // 이전 검색 결과 삭제
+
+                    let bookCnt = response.bookCnt;
+                    let bookCntResult = $('#bookCnt-result')
+                    console.log(bookCnt)
+                    bookCntResult.text(bookCnt);
+                    let documents = response.document;
+                    console.log(documents);
+                    if (!documents || documents.length === 0) {
+                        console.log("No documents found.");
+                        return;
+                    }
+
+                    for (let i = 0; i < documents.length; i++) {
+                    const book = documents[i];
+                    const bookTitle = $('<a>').text(book.title_nm);
+                    const bookAuthor = $('<a>').text(book.authr_nm);
+                    const bookPublisher = $('<a>').text(book.publisher_nm);
+                    const bookDescription = $('<a>').text(book.book_intrcn_cn);
+
+                    const bookInfoContainer = $('<div>');
+                        bookInfoContainer.append($('<a>').text('도서'), bookTitle, $('<br>'));
+                        bookInfoContainer.append(bookAuthor, $('<br>'));
+                        bookInfoContainer.append($('<a>').text('출판사: '), bookPublisher, $('<br>'));
+                        bookInfoContainer.append(bookDescription, $('<br>'));
+
+                        bookInfo.append(bookInfoContainer);
+                    }
+                    window.location.reload();
+            }
+        });
+            });
+        });
+
+
+    </script>
+</body>
+</html>

@@ -1,8 +1,9 @@
 package com.scaling.libraryservice.search.dto;
 
-import com.scaling.libraryservice.search.dto.Meta;
 import com.scaling.libraryservice.search.entity.Book;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,15 @@ public class SearchResponseDto {
 
 //    private Meta meta;
 
+    private int bookCnt;
+
     private List<Book> documents = new ArrayList<>();
 
-    public SearchResponseDto(List<Book> bookList) {
+    public SearchResponseDto(List<Book> bookList, int bookCnt) {
 //        documents.addAll(bookList);
-        this.documents = new ArrayList<>(bookList);
-    }
+        this.bookCnt = bookCnt;
 
+        this.documents = new ArrayList<>(bookList);
+
+    }
 }

@@ -1,11 +1,10 @@
 package com.scaling.libraryservice.search.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @NoArgsConstructor
 @Getter
@@ -34,5 +33,6 @@ public class Book {
         this.authr_nm = authr_nm;
         this.seq_no = seq_no;
     }
+
 
 }
