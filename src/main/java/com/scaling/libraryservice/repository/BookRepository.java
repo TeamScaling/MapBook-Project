@@ -8,10 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book,Integer> {
+public interface BookRepository extends JpaRepository<Book, Integer> {
 
     //가장 기본으로 단순히 책 제목이 포함된 도서 데이터 찾기.
-    @Query("select b from Book b where b.title like %:title% " )
+    @Query("select b from Book b where b.title like %:title% ")
     List<Book> findBooksByTitle(@Param("title") String title);
 
     @Query("select b from Book b where b.title like %:title% and b.content like %:title%")
