@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -36,6 +37,9 @@ class BookQueryRepositoryTest {
     @Autowired
     private BookQueryRepository bookQueryRepo;
 
+    @Autowired
+    private BookRepository bookRepo;
+
     private Tokenizer tokenizer;
 
     @BeforeEach
@@ -43,6 +47,28 @@ class BookQueryRepositoryTest {
 
         tokenizer = new Tokenizer(new Komoran(DEFAULT_MODEL.FULL));
     }
+
+    @Nested
+    class SearchLogic{
+
+        @Test @DisplayName("명사 단위 토큰 검색 방식이 검색 품질이 더 좋을 것이다.")
+        public void verify_bookQueryRepo(){
+            /* given */
+            String title = "자바 정석";
+            List<String> tokens = tokenizer.tokenize(title);
+            /* when */
+            List<Book> books1 = bookRepo.findBooksByTitle(title);
+            List<Book> books2 = bookQueryRepo.findBooksByToken(tokens);
+
+            boolean success = books1.size() < books2.size();
+            /* then */
+
+            assertTrue(success);
+
+        }
+
+    }
+
 
     @Nested
     @DisplayName("다양한 경우에 따른 같은 도서 검색")
