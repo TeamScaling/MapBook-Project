@@ -1,11 +1,8 @@
 package com.scaling.libraryservice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookQueryRepository;
 import com.scaling.libraryservice.repository.BookRepository;
-import com.scaling.libraryservice.service.BookSearchService;
 import com.scaling.libraryservice.util.Tokenizer;
 import java.util.List;
 import java.util.Objects;
@@ -26,42 +23,6 @@ class LibraryServiceApplicationTests {
     @Test @DisplayName("스프링 부트 기본 시작을 테스트")
     void contextLoads() {
 
-    }
-
-    /*@Test @DisplayName("가장 단순한 검색 방법")
-    public void findBook_byTitle_basic(){
-        *//* given *//*
-
-        String title = "스프링";
-
-        *//* when *//*
-
-        List<Book> books = bookService.searchBook(title);
-
-        //consider : 스프링이란 책을 찾았을 때, DB에 아무 것도 없다면?
-        Book target = books.get(0);
-
-        boolean success = target.getTitle().contains(title);
-
-        *//* then *//*
-        assertTrue(success);
-    }*/
-
-
-    @Test @DisplayName("해당 책을 융통성 있게 찾을 수 있어야 하는데 못 찾음")
-    public void findBook_with_Title_fail(){
-        /* given */
-
-        String title = "토비의 스프링";
-
-        /* when */
-        List<Book> books = bookRepo.findBooksByTitleAndContent(title);
-
-        /* then */
-
-        assertEquals(0,books.size());
-
-        books.forEach(System.out::println);
     }
 
     @Nested @DisplayName("다양한 경우에 따른 같은 도서 검색")
@@ -117,32 +78,17 @@ class LibraryServiceApplicationTests {
             Assertions.assertTrue(isEqualBook);
         }
 
-        @Test
-        public void queryDsl_find_book(){
-            /* given */
-
-
-            /* when */
-
-            /* then */
-        }
-
-
+        // 테스트에 필요한 공통 메서드
         boolean isEqualBook(String query1,String query2){
 
             List<String> tokens1 = tokenizer.tokenize(query1);
             List<String> tokens2 = tokenizer.tokenize(query2);
 
-            /* when */
             List<Book> result1 = bookQueryRepo.findBooksByToken(tokens1);
             List<Book> result2 = bookQueryRepo.findBooksByToken(tokens2);
 
             Book book1 = result1.get(0);
             Book book2 = result2.get(0);
-
-            System.out.println(result1);
-            System.out.println(result2);
-
 
             return Objects.equals(book1.getSeqId(), book2.getSeqId());
         }
