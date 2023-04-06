@@ -6,6 +6,7 @@ import com.scaling.libraryservice.dto.RespBooksDto;
 import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookQueryRepository;
 import com.scaling.libraryservice.util.Tokenizer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +52,10 @@ public class BookSearchService {
 
         RespBooksDto respBooksDto = new RespBooksDto(pageable, books, documents);
 
-        return new PageImpl<>(Collections.singletonList(respBooksDto), pageable,
+        return new PageImpl<>(Arrays.asList(respBooksDto), pageable,
             books.getTotalElements());
+
+//        return new PageImpl<>(respBooksDto, pageable, books.getTotalPages());
     }
 
 
