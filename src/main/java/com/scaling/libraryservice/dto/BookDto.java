@@ -13,6 +13,7 @@ public class BookDto {
 
     private final String content;
 
+
     public BookDto(Book book){
 
         this.seqId = book.getSeqId();

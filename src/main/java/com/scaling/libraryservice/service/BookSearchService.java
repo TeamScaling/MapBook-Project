@@ -3,10 +3,16 @@ package com.scaling.libraryservice.service;
 import com.scaling.libraryservice.dto.BookDto;
 import com.scaling.libraryservice.dto.MetaDto;
 import com.scaling.libraryservice.dto.RespBooksDto;
+import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookQueryRepository;
 import com.scaling.libraryservice.util.Tokenizer;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 //consider : DB에서 검색해서 가져 오는 속도를 측정하는 클래스가 있어야 하지 않을까?
@@ -20,18 +26,26 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final BookQueryRepository bookQueryRepo;
-
     private final Tokenizer tokenizer;
 
-    public RespBooksDto searchBook(String title){
-        List<String> token = tokenizer.tokenize(title);
+    public Page<RespBooksDto> searchBook(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
 
-        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
+        List<String> tokens = tokenizer.tokenize(title);
+
+        Page<Book> books = bookQueryRepo.findBooksByToken(tokens, pageable);
+
+        List<BookDto> bookDtos = books.getContent()
             .stream().map(BookDto::new).toList();
 
-        return new RespBooksDto(new MetaDto(),books);
+        List<RespBooksDto> respBooksDtos = Collections.singletonList(
+            new RespBooksDto(pageable, bookDtos)
+        );
+        return new PageImpl<>(respBooksDtos, pageable, books.getTotalElements());
     }
-
-
-
 }
+
+
+
+
+
