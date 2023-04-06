@@ -1,54 +1,40 @@
 package com.scaling.libraryservice.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.entity.Book;
-import java.util.ArrayList;
+import com.scaling.libraryservice.entity.QBook;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class BookQueryRepository {
 
-  @PersistenceContext
-  private final EntityManager manager;
+    @PersistenceContext
+    private final EntityManager entityManager;
 
-  public Page<Book> findBooksByToken(List<String> tokens, Pageable pageable) {
-    CriteriaBuilder cb = manager.getCriteriaBuilder();
+    // 검색하고자 하는 query를 구문 분석하여 나뉘어진 토큰의 갯수에 맞게 동적으로 query를 생성하고자 함.
+    public List<Book> findBooksByToken(List<String> tokens) {
+        // "select * from books where TITLE_NM like '%token1%' and TITLE_NM like '%token2%' ... "
 
-    CriteriaQuery<Book> cq = cb.createQuery(Book.class);
+        JPAQueryFactory qf = new JPAQueryFactory(entityManager);
+        JPAQuery<Book> query = qf.selectFrom(QBook.book);
 
-    Root<Book> book = cq.from(Book.class);
+        for (String s : tokens) {
 
-    List<Predicate> predicates = new ArrayList<>();
+            String str = "%" + s + "%";
 
-    for (String token : tokens) {
+            BooleanExpression expression = QBook.book.title.like(str);
 
-      predicates.add(cb.like(book.get("title"), "%" + token + "%"));
+            query.where(expression);
+        }
+
+        return query.fetch();
     }
-
-    cq.select(book).where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-
-    // 페이징으로 추가된 부분
-    TypedQuery<Book> query = manager.createQuery(cq);
-    int total = query.getResultList().size();
-
-    query.setFirstResult(pageable.getPageNumber() * pageable.getPageSize());
-    query.setMaxResults(pageable.getPageSize());
-
-    List<Book> books = query.getResultList();
-
-    return new PageImpl<>(books, pageable, total);
-  }
 
 }

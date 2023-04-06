@@ -8,11 +8,14 @@ import lombok.Getter;
 import lombok.ToString;
 
 //consider : 책은 무엇인가??
-@Entity @Table(name = "books")
-@ToString @Getter
+@Entity
+@Table(name = "books")
+@ToString
+@Getter
 public class Book {
 
-    @Id @Column(name = "SEQ_NO")
+    @Id
+    @Column(name = "SEQ_NO")
     private Integer seqId;
 
     @Column(name = "TITLE_NM")
