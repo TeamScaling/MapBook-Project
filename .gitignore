@@ -37,6 +37,7 @@ out/
 .vscode/
 
 /src/main/resources/application.properties
+/src/main/resources/application-test.properties
 
 # Compiled class file
 *.class
