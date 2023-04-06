@@ -21,6 +21,11 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 //    @Query("select b from Book b where b.author like %:query%")
 //    List<Book> findBooksByAuthor(@Param("query") String query);
 
+    //JPA 작가 검색
+//    List<Book> findByAuthor(@Param("query") String query);
+
+    //JPQL로 검색구현
+    @Query("select b from Book b where b.author like %:query%")
     List<Book> findByAuthor(@Param("query") String query);
 
 

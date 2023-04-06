@@ -32,11 +32,14 @@ public class SearchController {
     return searchService.searchBookPage(query, page, size);
   }
 
+  // 작가 검색 JPA
   @GetMapping(value = "/books/author")
   public ResponseEntity<RespBooksDto> searchAuthor(@RequestParam("query") String query){
     System.out.println("작가찾기 "+query);
     return ResponseEntity.ok(searchService.searchAuthor(query));
   }
+
+
 
 
 

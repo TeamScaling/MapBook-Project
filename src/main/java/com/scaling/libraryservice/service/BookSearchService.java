@@ -35,11 +35,14 @@ public class BookSearchService {
     // 기존 검색
     public RespBooksDto searchBookOrigin(String title) {
         List<String> token = tokenizer.tokenize(title);
+        System.out.println("title "+token);
 
         List<BookDto> books = bookQueryRepo.findBooksByToken(token)
             .stream().map(BookDto::new).toList();
 
+        System.out.println("제목으로검색하는 "+ books);
         return new RespBooksDto(new MetaDto(), books);
+
     }
 
     // 기존 검색 + 페이징
@@ -62,11 +65,22 @@ public class BookSearchService {
     }
 
 
+    // todo : JPA로 작가검색 단순구현
+//    public RespBooksDto searchAuthor(String author) {
+//        List<BookDto> books = bookRepository.findByAuthor(author)
+//            .stream().map(BookDto::new).toList();
+//
+//        return new RespBooksDto(new MetaDto(), books);
+//
+//    }
+
+    // todo : JPQL로 매핑하여 구현
     public RespBooksDto searchAuthor(String author) {
-//        List<String> token = tokenizer.tokenize(author);
+        String token = tokenizer.tokenizeAuthor(author);
         System.out.println("작가 전처리과정 "+author);
-        List<BookDto> books = bookRepository.findByAuthor(author)
+        List<BookDto> books = bookRepository.findByAuthor(token)
             .stream().map(BookDto::new).toList();
+        System.out.println("토큰에는 뭐가들었을까 "+ token);
 
         return new RespBooksDto(new MetaDto(), books);
 
