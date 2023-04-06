@@ -28,21 +28,34 @@ public class BookSearchService {
     private final BookQueryRepository bookQueryRepo;
     private final Tokenizer tokenizer;
 
-    public Page<RespBooksDto> searchBook(String title, int page, int size) {
+    // 기존 검색
+    public RespBooksDto searchBookOrigin(String title) {
+        List<String> token = tokenizer.tokenize(title);
+
+        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
+            .stream().map(BookDto::new).toList();
+
+        return new RespBooksDto(new MetaDto(), books);
+    }
+
+    // 기존 검색 + 페이징
+    public Page<RespBooksDto> searchBookPage(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
         List<String> tokens = tokenizer.tokenize(title);
 
         Page<Book> books = bookQueryRepo.findBooksByToken(tokens, pageable);
 
-        List<BookDto> bookDtos = books.getContent()
+        List<BookDto> documents = books.getContent()
             .stream().map(BookDto::new).toList();
 
-        List<RespBooksDto> respBooksDtos = Collections.singletonList(
-            new RespBooksDto(pageable, bookDtos)
-        );
-        return new PageImpl<>(respBooksDtos, pageable, books.getTotalElements());
+        RespBooksDto respBooksDto = new RespBooksDto(pageable, books, documents);
+
+        return new PageImpl<>(Collections.singletonList(respBooksDto), pageable,
+            books.getTotalElements());
     }
+
+
 }
 
 

@@ -17,11 +17,19 @@ public class SearchController {
 
   private final BookSearchService searchService;
 
+  // 기존 검색
+  @GetMapping(value = "/books/search-origin")
+  public ResponseEntity<RespBooksDto> searchOrigin(@RequestParam("query") String query) {
+
+    return ResponseEntity.ok(searchService.searchBookOrigin(query));
+  }
+
+  // 기존 검색 + 페이징
   @GetMapping(value = "/books/search")
   public Page<RespBooksDto> search(@RequestParam("query") String query,
       @RequestParam("page") int page, @RequestParam("size") int size) {
 
-    return searchService.searchBook(query, page, size);
+    return searchService.searchBookPage(query, page, size);
   }
 
 

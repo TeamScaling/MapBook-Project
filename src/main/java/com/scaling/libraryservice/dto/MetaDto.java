@@ -7,13 +7,12 @@ import lombok.Setter;
 @Getter
 public class MetaDto {
 
-  private int page;
+  private long totalPages;
 
-  private int size;
+  private long totalElements;
 
-  public MetaDto(int page, int size) {
-    this.page = page;
-    this.size = size;
-  }
+  private long currentPage;
+
+  private long pageSize;
 
 }
