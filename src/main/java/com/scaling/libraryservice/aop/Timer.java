@@ -9,4 +9,4 @@ import java.lang.annotation.Target;
 // @Target(ElementType.TYPE, METHOD)}: 클래스, 인터페이스, 열거 타입, 메소드 필드에 어노테이션 사용 가능
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Timer {}
+public @interface Timer { }
