@@ -65,7 +65,7 @@ public class BookSearchService {
     }
 
 
-    // todo : JPA로 작가검색 단순구현
+    // todo : JPA로 작가검색 단순구현(전처리과정 없음)
 //    public RespBooksDto searchAuthor(String author) {
 //        List<BookDto> books = bookRepository.findByAuthor(author)
 //            .stream().map(BookDto::new).toList();
@@ -77,10 +77,9 @@ public class BookSearchService {
     // todo : JPQL로 매핑하여 구현
     public RespBooksDto searchAuthor(String author) {
         String token = tokenizer.tokenizeAuthor(author);
-        System.out.println("작가 전처리과정 "+author);
+
         List<BookDto> books = bookRepository.findByAuthor(token)
             .stream().map(BookDto::new).toList();
-        System.out.println("토큰에는 뭐가들었을까 "+ token);
 
         return new RespBooksDto(new MetaDto(), books);
 
