@@ -7,7 +7,6 @@ import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookQueryRepository;
 import com.scaling.libraryservice.util.Tokenizer;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,16 +28,6 @@ public class BookSearchService {
     private final BookQueryRepository bookQueryRepo;
     private final Tokenizer tokenizer;
 
-    // 기존 검색
-    public RespBooksDto searchBookOrigin(String title) {
-        List<String> token = tokenizer.tokenize(title);
-
-        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
-            .stream().map(BookDto::new).toList();
-
-        return new RespBooksDto(new MetaDto(), books);
-    }
-
     // 기존 검색 + 페이징
     public Page<RespBooksDto> searchBookPage(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -54,8 +43,15 @@ public class BookSearchService {
 
         return new PageImpl<>(Arrays.asList(respBooksDto), pageable,
             books.getTotalElements());
+    }
 
-//        return new PageImpl<>(respBooksDto, pageable, books.getTotalPages());
+    public RespBooksDto searchBook(String title) {
+        List<String> token = tokenizer.tokenize(title);
+
+        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
+            .stream().map(BookDto::new).toList();
+
+        return new RespBooksDto(new MetaDto(), books);
     }
 
 
