@@ -69,6 +69,10 @@ public class BookSearchService {
 //    }
 
     // todo : JPQL로 매핑하여 구현
+    /*fixme : 작가 이름은 보통 한명만 적어서 검색하는 경우가 많아서 굳이 토큰화가 필요할진 모르겠습니다.
+                그리고 작가를 두명 쓰더라도 "남궁성 홍길동" 이라고 할 것 같아서, 토큰화 보단 split 메소드를 이용해서 띄어쓰기 기준으로
+                나누는거 생각 해보세요.*/
+    //fixme : 여기도 메소드 이름이 작가를 찾는 느낌이라. 작가를 통해서 도서를 찾는게 더 맞는거 같습니다. searchByAuthor
     public RespBooksDto searchAuthor(String author) {
         String token = tokenizer.tokenizeAuthor(author);
 
