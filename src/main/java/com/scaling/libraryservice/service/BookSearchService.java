@@ -32,19 +32,6 @@ public class BookSearchService {
 
     private final BookRepository bookRepository;
 
-    // 기존 검색
-    public RespBooksDto searchBookOrigin(String title) {
-        List<String> token = tokenizer.tokenize(title);
-        System.out.println("title "+token);
-
-        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
-            .stream().map(BookDto::new).toList();
-
-        System.out.println("제목으로검색하는 "+ books);
-        return new RespBooksDto(new MetaDto(), books);
-
-    }
-
     // 기존 검색 + 페이징
     public Page<RespBooksDto> searchBookPage(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -60,8 +47,15 @@ public class BookSearchService {
 
         return new PageImpl<>(Arrays.asList(respBooksDto), pageable,
             books.getTotalElements());
+    }
 
-//        return new PageImpl<>(respBooksDto, pageable, books.getTotalPages());
+    public RespBooksDto searchBook(String title) {
+        List<String> token = tokenizer.tokenize(title);
+
+        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
+            .stream().map(BookDto::new).toList();
+
+        return new RespBooksDto(new MetaDto(), books);
     }
 
 
