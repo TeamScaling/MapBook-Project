@@ -65,9 +65,7 @@ public class BookSearchService {
     @Timer
     public RespBooksDto searchByAuthor(String author) {
 
-        String query = Arrays.stream(author.split(" "))
-            .map(name -> "+" + name + "*")
-            .collect(Collectors.joining(" "));
+        String query = splitTarget(author);
 
         List<BookDto> books = bookRepository.findBooksByAuthor(query)
             .stream()
@@ -79,9 +77,9 @@ public class BookSearchService {
 
     //제목 검색 FULLTEXT
     @Timer
-    public RespBooksDto searchByBook(String author) {
+    public RespBooksDto searchByTitle(String title) {
 
-        String query = splitContent(author);
+        String query = splitTarget(title);
 
         List<BookDto> books = bookRepository.findBooksByTitle(query)
             .stream()
@@ -92,9 +90,9 @@ public class BookSearchService {
     }
 
     // 띄어쓰기 전처리
-    private String splitContent(String content) {
-        return Arrays.stream(content.split(" "))
-            .map(name -> "+" + name + "*")
+    private String splitTarget(String target) {
+        return Arrays.stream(target.split(" "))
+            .map(name -> "+" + name )
             .collect(Collectors.joining(" "));
     }
 
