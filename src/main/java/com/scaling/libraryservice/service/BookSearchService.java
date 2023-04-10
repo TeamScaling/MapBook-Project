@@ -61,42 +61,7 @@ public class BookSearchService {
     }
 
 
-    // todo : JPA로 작가검색 단순구현(전처리과정 없음)
-//    public RespBooksDto searchAuthor(String author) {
-//        List<BookDto> books = bookRepository.findByAuthor(author)
-//            .stream().map(BookDto::new).toList();
-//
-//        return new RespBooksDto(new MetaDto(), books);
-//
-//    }
-
-    // todo : JPQL로 매핑하여 구현
-//    public RespBooksDto searchByAuthor(String author) {
-//        String token = tokenizer.tokenizeAuthor(author);
-//
-//        List<BookDto> books = bookRepository.findBooksByAuthor(token)
-//            .stream().map(BookDto::new).toList();
-//
-//        return new RespBooksDto(new MetaDto(), books);
-//
-//    }
-
-//    split으로 검색하기
-//    @Timer
-//    public RespBooksDto searchByAuthor(String author) {
-//
-//        List<String> authorList = Arrays.asList(author.split(" "));
-//
-//        List<BookDto> books = authorList.stream()
-//            .flatMap(name -> bookRepository.findBooksByAuthor(name).stream())
-//            .distinct()
-//            .map(BookDto::new)
-//            .collect(Collectors.toList());
-//
-//        return new RespBooksDto(new MetaDto(), books);
-//    }
-
-    //작가검색 split전처리 + FULLTEXT
+    //작가 검색 FULLTEXT
     @Timer
     public RespBooksDto searchByAuthor(String author) {
 
@@ -112,28 +77,11 @@ public class BookSearchService {
         return new RespBooksDto(new MetaDto(), books);
     }
 
-//    //제목 검색 FULLTEXT 토큰적용
-//    @Timer
-//    public RespBooksDto searchByBook(String query) {
-//        List<String> token = tokenizer.tokenize(query);
-//        System.out.println("토큰으로 전처리 "+token);
-//
-//        List<BookDto> books = bookRepository.searchByTitle(token)
-//            .stream()
-//            .map(BookDto::new)
-//            .toList();
-//
-//        return new RespBooksDto(new MetaDto(), books);
-//    }
-
-    //제목 검색 FULLTEXT 토큰x 띄어쓰기 전처리
+    //제목 검색 FULLTEXT
     @Timer
     public RespBooksDto searchByBook(String author) {
 
-        String query = Arrays.stream(author.split(" "))
-            .map(name -> "+" + name + "*")
-            .collect(Collectors.joining(" "));
-        System.out.println("띄어쓰기 전처리 " + query);
+        String query = splitContent(author);
 
         List<BookDto> books = bookRepository.findBooksByTitle(query)
             .stream()
@@ -141,6 +89,13 @@ public class BookSearchService {
             .collect(Collectors.toList());
 
         return new RespBooksDto(new MetaDto(), books);
+    }
+
+    // 띄어쓰기 전처리
+    private String splitContent(String content) {
+        return Arrays.stream(content.split(" "))
+            .map(name -> "+" + name + "*")
+            .collect(Collectors.joining(" "));
     }
 
 
