@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.service;
 
+import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.dto.BookDto;
 import com.scaling.libraryservice.dto.MetaDto;
 import com.scaling.libraryservice.dto.RespBooksDto;
@@ -10,6 +11,7 @@ import com.scaling.libraryservice.util.Tokenizer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,19 +71,47 @@ public class BookSearchService {
 //    }
 
     // todo : JPQL로 매핑하여 구현
-    /*fixme : 작가 이름은 보통 한명만 적어서 검색하는 경우가 많아서 굳이 토큰화가 필요할진 모르겠습니다.
-                그리고 작가를 두명 쓰더라도 "남궁성 홍길동" 이라고 할 것 같아서, 토큰화 보단 split 메소드를 이용해서 띄어쓰기 기준으로
-                나누는거 생각 해보세요.*/
-    //fixme : 여기도 메소드 이름이 작가를 찾는 느낌이라. 작가를 통해서 도서를 찾는게 더 맞는거 같습니다. searchByAuthor
-    public RespBooksDto searchAuthor(String author) {
-        String token = tokenizer.tokenizeAuthor(author);
+//    public RespBooksDto searchByAuthor(String author) {
+//        String token = tokenizer.tokenizeAuthor(author);
+//
+//        List<BookDto> books = bookRepository.findBooksByAuthor(token)
+//            .stream().map(BookDto::new).toList();
+//
+//        return new RespBooksDto(new MetaDto(), books);
+//
+//    }
 
-        List<BookDto> books = bookRepository.findByAuthor(token)
-            .stream().map(BookDto::new).toList();
+//    split으로 검색하기
+    @Timer
+    public RespBooksDto searchByAuthor(String author) {
+
+        List<String> authorList = Arrays.asList(author.split(" "));
+
+        List<BookDto> books = authorList.stream()
+            .flatMap(name -> bookRepository.findBooksByAuthor(name).stream())
+            .distinct()
+            .map(BookDto::new)
+            .collect(Collectors.toList());
 
         return new RespBooksDto(new MetaDto(), books);
-
     }
+
+    //FULLTEXT
+
+//    @Timer
+//    public RespBooksDto searchByAuthor(String author) {
+//
+//        String query = Arrays.stream(author.split(" "))
+//            .map(name -> "+" + name + "*")
+//            .collect(Collectors.joining(" "));
+//
+//        List<BookDto> books = bookRepository.findBooksByAuthor(query)
+//            .stream()
+//            .map(BookDto::new)
+//            .collect(Collectors.toList());
+//
+//        return new RespBooksDto(new MetaDto(), books);
+//    }
 }
 
 

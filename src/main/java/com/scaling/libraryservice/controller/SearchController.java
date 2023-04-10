@@ -35,9 +35,8 @@ public class SearchController {
   /*fixme : url "/books/author" -> "/books/search?target=author&query=남궁성"
         사라님 메소드의 url뿐만 아니라 기존의 search 메소드도 url 변경 필요 ("/books/search?target=title&query="자바의 정석")*/
   @GetMapping(value = "/books/author")
-  public ResponseEntity<RespBooksDto> searchAuthor(@RequestParam("query") String query){
-    System.out.println("작가찾기 "+query);
-    return ResponseEntity.ok(searchService.searchAuthor(query));
+  public ResponseEntity<RespBooksDto> searchByAuthor(@RequestParam("query") String query){
+    return ResponseEntity.ok(searchService.searchByAuthor(query));
   }
 
 
