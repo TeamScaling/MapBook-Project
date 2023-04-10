@@ -14,6 +14,7 @@ public class Tokenizer {
 
     private final Komoran komoran;
 
+    //리스트에 담아서 전처리
     public List<String> tokenize(String target){
 
         KomoranResult analyzeResultList = komoran.analyze(target);
@@ -23,8 +24,24 @@ public class Tokenizer {
         List<String> nounList =
             tokenList.stream().filter(i -> i.getPos().equals("NNP") || i.getPos().equals("NNG"))
                 .map(Token::getMorph).toList();
+        System.out.println(nounList);
 
         return nounList;
     }
+
+    //일반 String으로 전처리
+    public String tokenizeAuthor(String target){
+
+        KomoranResult analyzeResultList = komoran.analyze(target);
+
+        List<Token> tokenList = analyzeResultList.getTokenList();
+
+        List<String> nounList =
+            tokenList.stream().filter(i -> i.getPos().equals("NNP") || i.getPos().equals("NNG"))
+                .map(Token::getMorph).toList();
+
+        return String.join(" ", nounList);
+    }
+
 
 }
