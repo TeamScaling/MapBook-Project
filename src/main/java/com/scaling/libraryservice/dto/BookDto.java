@@ -13,6 +13,8 @@ public class BookDto {
 
     private final String content;
 
+    private final String author;
+
 
     public BookDto(Book book){
 
@@ -24,6 +26,7 @@ public class BookDto {
         }else{
             this.content = book.getContent();
         }
+        this.author = book.getAuthor();
     }
 
 }

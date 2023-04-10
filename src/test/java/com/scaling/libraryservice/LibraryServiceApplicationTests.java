@@ -165,6 +165,4 @@ class LibraryServiceApplicationTests {
         /*query1.fetch().forEach(System.out::println);*/
     }
 
-
-
 }
