@@ -82,36 +82,69 @@ public class BookSearchService {
 //    }
 
 //    split으로 검색하기
+//    @Timer
+//    public RespBooksDto searchByAuthor(String author) {
+//
+//        List<String> authorList = Arrays.asList(author.split(" "));
+//
+//        List<BookDto> books = authorList.stream()
+//            .flatMap(name -> bookRepository.findBooksByAuthor(name).stream())
+//            .distinct()
+//            .map(BookDto::new)
+//            .collect(Collectors.toList());
+//
+//        return new RespBooksDto(new MetaDto(), books);
+//    }
+
+    //작가검색 split전처리 + FULLTEXT
     @Timer
     public RespBooksDto searchByAuthor(String author) {
 
-        List<String> authorList = Arrays.asList(author.split(" "));
+        String query = Arrays.stream(author.split(" "))
+            .map(name -> "+" + name + "*")
+            .collect(Collectors.joining(" "));
 
-        List<BookDto> books = authorList.stream()
-            .flatMap(name -> bookRepository.findBooksByAuthor(name).stream())
-            .distinct()
+        List<BookDto> books = bookRepository.findBooksByAuthor(query)
+            .stream()
             .map(BookDto::new)
             .collect(Collectors.toList());
 
         return new RespBooksDto(new MetaDto(), books);
     }
 
-    //FULLTEXT
-
+//    //제목 검색 FULLTEXT 토큰적용
 //    @Timer
-//    public RespBooksDto searchByAuthor(String author) {
+//    public RespBooksDto searchByBook(String query) {
+//        List<String> token = tokenizer.tokenize(query);
+//        System.out.println("토큰으로 전처리 "+token);
 //
-//        String query = Arrays.stream(author.split(" "))
-//            .map(name -> "+" + name + "*")
-//            .collect(Collectors.joining(" "));
-//
-//        List<BookDto> books = bookRepository.findBooksByAuthor(query)
+//        List<BookDto> books = bookRepository.searchByTitle(token)
 //            .stream()
 //            .map(BookDto::new)
-//            .collect(Collectors.toList());
+//            .toList();
 //
 //        return new RespBooksDto(new MetaDto(), books);
 //    }
+
+    //제목 검색 FULLTEXT 토큰x 띄어쓰기 전처리
+    @Timer
+    public RespBooksDto searchByBook(String author) {
+
+        String query = Arrays.stream(author.split(" "))
+            .map(name -> "+" + name + "*")
+            .collect(Collectors.joining(" "));
+        System.out.println("띄어쓰기 전처리 " + query);
+
+        List<BookDto> books = bookRepository.findBooksByTitle(query)
+            .stream()
+            .map(BookDto::new)
+            .collect(Collectors.toList());
+
+        return new RespBooksDto(new MetaDto(), books);
+    }
+
+
+
 }
 
 

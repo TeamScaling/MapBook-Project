@@ -24,6 +24,7 @@ public class Tokenizer {
         List<String> nounList =
             tokenList.stream().filter(i -> i.getPos().equals("NNP") || i.getPos().equals("NNG"))
                 .map(Token::getMorph).toList();
+        System.out.println(nounList);
 
         return nounList;
     }

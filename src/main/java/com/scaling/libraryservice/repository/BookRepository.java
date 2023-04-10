@@ -21,12 +21,42 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 //    @Query("select b from Book b where b.author like %:query%")
 //    List<Book> findBooksByAuthor(@Param("query") String query);
 
-    @Query("select b from Book b where b.title like %:title%")
-    List<Book> findBooksByTitle(@Param("title") String title);
+//    @Query("select b from Book b where b.title like %:title%")
+//    List<Book> findBooksByTitle(@Param("title") String title);
 
     //FULLTEXT 서치 이용
     @Query(value = "SELECT * FROM test.books WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     List<Book> findBooksByAuthor(@Param("query") String query);
+
+//    @Query(value = "SELECT * FROM test.books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+//    List<Book> findBooksByTitle(@Param("query") String query);
+//    default List<Book> searchByNouns(List<String> nouns) {
+//        String query = "+" + String.join(" +", nouns);
+//        System.out.println("레포지토리 쿼리 : " + query);
+//        return findBooksByTitle(query);
+//    }
+
+    // 테스트2 토큰 적용 //자연어 검색
+    @Query(value = "SELECT * FROM test.books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+    List<Book> findBooksByTitle(@Param("query") String query);
+    default List<Book> searchByTitle(List<String> nouns) {
+        String query = "+" + String.join(" +", nouns);
+        query = "+" + query.replace(",", " AND");
+        System.out.println("레포지토리 쿼리 : " + query);
+        return findBooksByTitle(query);
+    }
+
+    // 테스트2 불용어  검색
+//    @Query(value = "SELECT * FROM test.books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+//    List<Book> findBooksByTitle(@Param("query") String query);
+    //토큰 기능 추가시 필요
+//    default List<Book> searchByTitle(List<String> nouns) {
+//        String query = String.join(" +", nouns);
+//        query = "+" + query;
+//        System.out.println("레포지토리 쿼리 : " + query);
+//        return findBooksByTitle(query);
+//    }
+
 
 
 }

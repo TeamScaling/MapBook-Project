@@ -39,6 +39,11 @@ public class SearchController {
     return ResponseEntity.ok(searchService.searchByAuthor(query));
   }
 
+  @GetMapping(value = "/books/searchs")
+  public ResponseEntity<RespBooksDto> searchByBook(@RequestParam("query") String query){
+    return ResponseEntity.ok(searchService.searchByBook(query));
+  }
+
 
 
 

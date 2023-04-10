@@ -3,6 +3,7 @@ package com.scaling.libraryservice.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.entity.QBook;
 import java.util.List;
@@ -19,6 +20,7 @@ public class BookQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     // 검색 + 페이징
+    @Timer
     public Page<Book> findBooksByToken(List<String> tokens, Pageable pageable) {
         JPAQuery<Book> query = createBookQueryByToken(tokens);
 
@@ -32,6 +34,7 @@ public class BookQueryRepository {
     }
 
     // 검색용 쿼리 생성
+    @Timer
     private JPAQuery<Book> createBookQueryByToken(List<String> tokens) {
 
         JPAQuery<Book> query = jpaQueryFactory.selectFrom(QBook.book);
