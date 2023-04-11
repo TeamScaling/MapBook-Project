@@ -93,21 +93,6 @@ public class BookSearchService {
         return new RespBooksDto(meta, document);
     }
 
-//    public Page<RespBooksDto> searchBookPage(String title, int page, int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//
-//        List<String> tokens = tokenizer.tokenize(title);
-//
-//        Page<Book> books = bookQueryRepo.findBooksByToken(tokens, pageable);
-//
-//        List<BookDto> documents = books.getContent()
-//            .stream().map(BookDto::new).toList();
-//
-//        RespBooksDto respBooksDto = new RespBooksDto(pageable, books, documents);
-//
-//        return new PageImpl<>(Arrays.asList(respBooksDto), pageable,
-//            books.getTotalElements());
-//    }
 
     //제목 검색 FULLTEXT
     @Timer
@@ -122,6 +107,24 @@ public class BookSearchService {
 
         return new RespBooksDto(new MetaDto(), books);
     }
+
+    //제목 검색 FULLTEXT + 페이징
+    @Timer
+    public RespBooksDto searchByTitle(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String query = splitTarget(title);
+        Page<Book> books = bookRepository.findBooksByTitlePage(query, pageable);
+
+
+        List<BookDto> document = books.getContent()
+            .stream()
+            .map(BookDto::new)
+            .collect(Collectors.toList());
+
+        return new RespBooksDto(new MetaDto(), document);
+    }
+
 
     // 띄어쓰기 전처리
     private String splitTarget(String target) {

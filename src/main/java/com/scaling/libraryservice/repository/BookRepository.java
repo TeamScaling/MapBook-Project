@@ -29,7 +29,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     // 제목검색 FULLTEXT 서치 이용 + 페이징
     @Query(value = "SELECT * FROM test.books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
-    List<Book> findBooksByTitlePage(@Param("query") String query);
+    Page<Book> findBooksByTitlePage(@Param("query") String query, Pageable pageable);
 
     }
 

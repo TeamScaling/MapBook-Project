@@ -51,8 +51,9 @@ public class SearchController {
   }
 
   @GetMapping(value = "/books/searchs/page")
-  public ResponseEntity<RespBooksDto> searchByBookPage(@RequestParam("query") String query){
-    return ResponseEntity.ok(searchService.searchByTitle(query));
+  public ResponseEntity<RespBooksDto> searchByBookPage(@RequestParam("query") String query,
+      @RequestParam("page") int page, @RequestParam("size") int size){
+    return ResponseEntity.ok(searchService.searchByTitle(query, page, size));
   }
 
 
