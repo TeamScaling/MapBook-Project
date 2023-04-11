@@ -122,7 +122,8 @@ public class BookSearchService {
             .map(BookDto::new)
             .collect(Collectors.toList());
 
-        return new RespBooksDto(new MetaDto(), document);
+        MetaDto meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+        return new RespBooksDto(meta, document);
     }
 
 
