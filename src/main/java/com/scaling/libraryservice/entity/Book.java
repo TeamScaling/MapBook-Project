@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.ToString;
 
-//consider : 책은 무엇인가??
+
 @Entity
 @Table(name = "books")
 @ToString
