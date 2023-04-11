@@ -75,6 +75,40 @@ public class BookSearchService {
         return new RespBooksDto(new MetaDto(), books);
     }
 
+    //작가 검색 FULLTEXT + 페이징
+    @Timer
+    public RespBooksDto searchByAuthor(String author, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        String query = splitTarget(author);
+
+        Page<Book> books = bookRepository.findBooksByAuthorPage(query, pageable);
+
+        List<BookDto> document = books.getContent()
+            .stream()
+            .map(BookDto::new)
+            .collect(Collectors.toList());
+
+        MetaDto meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+        return new RespBooksDto(meta, document);
+    }
+
+//    public Page<RespBooksDto> searchBookPage(String title, int page, int size) {
+//        Pageable pageable = PageRequest.of(page, size);
+//
+//        List<String> tokens = tokenizer.tokenize(title);
+//
+//        Page<Book> books = bookQueryRepo.findBooksByToken(tokens, pageable);
+//
+//        List<BookDto> documents = books.getContent()
+//            .stream().map(BookDto::new).toList();
+//
+//        RespBooksDto respBooksDto = new RespBooksDto(pageable, books, documents);
+//
+//        return new PageImpl<>(Arrays.asList(respBooksDto), pageable,
+//            books.getTotalElements());
+//    }
+
     //제목 검색 FULLTEXT
     @Timer
     public RespBooksDto searchByTitle(String title) {
