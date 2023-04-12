@@ -80,7 +80,7 @@ public class BookMapService {
         } catch (InterruptedException | ExecutionException e) {
             log.info(e.toString());
 
-        }finally {
+        } finally {
             service.shutdown();
         }
 
@@ -149,7 +149,6 @@ public class BookMapService {
             respJsonObj.getJSONObject("request")
             , respJsonObj.getJSONObject("result"));
     }
-
 
     // 단일 쓰레드로 Open API에 요청 처리하는 메소드.
 
