@@ -6,6 +6,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
+
 
   <style>
     /* 헤더 */
@@ -337,44 +339,72 @@
 
   $(document).ready(function() {
     $('.loan-check-btn').on('click', function() {
-      var isbn = $(event.currentTarget).data('isbn');
-      loan_able_check(isbn);
-      console.log(isbn)
+      var isbn = $(this).attr('data-isbn');
+      var bigNumberIsbn = new BigNumber(isbn);
+      isbn = bigNumberIsbn.toFixed();
+      console.log(isbn);
     });
   });
 
-  function loan_able_check(isbn) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get('query');
 
-    var size = [[${size}]] // "size" 값을 추출하여 변수에 저장
 
-    $.ajax({
-      url: "http://openapi.seoul.go.kr:8088/6750517a4f72796a34365976434359/xml/SeoulLibraryBookSearchInfo/" + 1 + "/" + size + "/" + query,
-      type: "GET",
-      data: {},
-      dataType: "xml",
-      success: function (xml) {
-        var searchResult = [[${searchResult.getMeta()}]];
-        console.log(searchResult);
-        $(xml).find('row').each(function(){
-          var book_isbn = $(this).find('ISBN').text();
-          console.log(book_isbn);
-          if(isbn === book_isbn){
-            var loan_status = $(this).find('LOAN_STATUS')[0];
-            var loan_status_number = loan_status.textContent.substring(3);
-            // var loan_status_name = $(this).find('LOAN_STATUS_NAME')[0];
-            // var loan_status_message = loan_status_name.textContent;
-            if(loan_status_number === "1"){
-              alert("대출 가능합니다.")
-            } else {
-              alert("대출 불가능합니다. 현재 예약중입니다.")
-            }
-          }
-        })
-      }
-    })
+
+
+
+
+  // function loan_able_check(isbn) {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const query = urlParams.get('query');
+  //
+  //   var size = [[${size}]] // "size" 값을 추출하여 변수에 저장
+  //
+  //   $.ajax({
+  //     url: "/mapSearch/markers",
+  //     type: "post",
+  //     data: {},
+  //     dataType: "xml",
+  //     success: function (xml) {
+  //       var searchResult = [[${searchResult.getMeta()}]];
+  //       console.log(searchResult);
+  //       $(xml).find('row').each(function(){
+  //         var book_isbn = $(this).find('ISBN').text();
+  //         console.log(book_isbn);
+  //         if(isbn === book_isbn){
+  //           var loan_status = $(this).find('LOAN_STATUS')[0];
+  //           var loan_status_number = loan_status.textContent.substring(3);
+  //           // var loan_status_name = $(this).find('LOAN_STATUS_NAME')[0];
+  //           // var loan_status_message = loan_status_name.textContent;
+  //           if(loan_status_number === "1"){
+  //             alert("대출 가능합니다.")
+  //           } else {
+  //             alert("대출 불가능합니다. 현재 예약중입니다.")
+  //           }
+  //         }
+  //       })
+  //     }
+  //   })
+  // }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const loanCheckButtons = document.querySelectorAll('.loan-check-btn');
+
+    loanCheckButtons.forEach(button => {
+      button.addEventListener('click', function (event) {
+        const isbn2 = event.currentTarget.getAttribute('data-isbn');
+        const isbn = BigInt(Number(isbn2));
+        openLibraryPage(isbn);
+        console.log(isbn);
+      });
+    });
+  });
+
+
+
+
+  function openLibraryPage(isbn) {
+    window.location.href = `/mapSearch/markers?isbn=${isbn}`;
   }
+
 </script>
 </body>
 </html>

@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -26,19 +25,22 @@ public class BookMapController {
         return "mapSearch";
     }
 
-    @PostMapping("/mapSearch/markers")
-    public String mapMarkerView(ModelMap model, String isbn) {
+    @GetMapping("/mapSearch/markers")
+    public String mapMarkerView(ModelMap model, @RequestParam("isbn") String isbn) {
 
         String area = "성남";
 
+        log.info("isbn : " + isbn);
+
         List<RespBookMapDto> result
             = bookMapService.loanAbleLibrary(isbn, area);
+
+        System.out.println(result);
 
         model.put("loanAble", result);
 
         return "mapMarker";
     }
-
 
 
     @GetMapping("/mapSearch/markers/json")

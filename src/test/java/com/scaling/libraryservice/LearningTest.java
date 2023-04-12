@@ -21,7 +21,6 @@ public class LearningTest {
         }
 
         service.shutdown();
-
     }
 
 }
