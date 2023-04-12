@@ -39,7 +39,7 @@ public class BookMapController {
         return "mapMarker";
     }
 
-    
+
 
     @GetMapping("/mapSearch/markers/json")
     @ResponseBody
