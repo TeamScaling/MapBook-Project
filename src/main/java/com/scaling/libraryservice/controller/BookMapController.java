@@ -39,6 +39,8 @@ public class BookMapController {
         return "mapMarker";
     }
 
+    
+
     @GetMapping("/mapSearch/markers/json")
     @ResponseBody
     public ResponseEntity<List<RespBookMapDto>> mapMarkerJson(@RequestParam("isbn") String isbn,
