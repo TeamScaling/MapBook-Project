@@ -4,11 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.Getter;
 import lombok.ToString;
 
 @Entity
 @Table(name = "lib_info")
-@ToString
+@ToString @Getter
 public class Library {
 
     @Id @Column(name = "LBRRY_CD")
@@ -25,5 +26,8 @@ public class Library {
 
     @Column(name = "LBRRY_LA")
     private Double libLa;
+
+    @Column(name = "WETHR_AREA_CD")
+    private String libArea;
 
 }

@@ -23,12 +23,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 //    List<Book> findBooksByTitle(@Param("title") String title);
 
     // 작가검색 FULLTEXT 서치 이용
-    @Query(value = "SELECT * FROM test.books WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+    @Query(value = "SELECT * FROM books WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     List<Book> findBooksByAuthor(@Param("query") String query);
 
 
     // 제목검색 FULLTEXT 서치 이용
-    @Query(value = "SELECT * FROM test.books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     List<Book> findBooksByTitle(@Param("query") String query);
 
     }
