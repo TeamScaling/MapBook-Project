@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.service;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.scaling.libraryservice.dto.BookApiDto;
 import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.exception.OpenApiException;
 import java.util.List;
@@ -19,23 +19,8 @@ class BookMapServiceTest {
     private BookMapService bookMapService;
 
 
-    @Test @DisplayName("해당 지역 도서관에서 해당 도서의 대출 가능여부 데이터 생성")
+    @Test @DisplayName("지역 도서관 대출 가능 여부 데이터 생성")
     public void exist_book_with_location(){
-        /* given */
-
-        String isbn = "9788994492032";
-        String area = "성남";
-
-        /* when */
-        List<RespBookMapDto> result = bookMapService.queryExistLocation(isbn,area);
-
-        /* then */
-
-        result.forEach(System.out::println);
-    }
-
-    @Test @DisplayName("최종적으로 프론트 영역에 전달할 데이터 확인")
-    public void respBookDto(){
         /* given */
 
         String isbn = "9788994492032";
@@ -46,10 +31,11 @@ class BookMapServiceTest {
 
         /* then */
 
+        assertNotEquals(0,result.size());
         result.forEach(System.out::println);
     }
 
-    @Test @DisplayName("open API 응답 중 error가 있을 때, 에러 처리")
+    @Test @DisplayName("open API에 잘못된 요청을 보냈을 때 에러 처리")
     public void sendQuery_error_case(){
         /* given */
         String isbn = "9788994492032";
@@ -75,6 +61,15 @@ class BookMapServiceTest {
 
         /* then */
 
+    }
+
+    @Test
+    public void mockServerLearningTest(){
+        /* given */
+
+        /* when */
+
+        /* then */
     }
 
 
