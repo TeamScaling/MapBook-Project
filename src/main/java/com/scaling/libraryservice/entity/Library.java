@@ -30,4 +30,7 @@ public class Library {
     @Column(name = "WETHR_AREA_CD")
     private String libArea;
 
+    @Column(name = "HMPG_VALUE")
+    private String libUrl;
+
 }
