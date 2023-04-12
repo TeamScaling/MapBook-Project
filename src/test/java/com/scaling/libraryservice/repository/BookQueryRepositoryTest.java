@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Import;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import(BookQueryRepository.class)
+@Import({BookQueryRepository.class, JPAQueryFactory.class})
 class BookQueryRepositoryTest {
 
     @PersistenceContext
@@ -80,7 +80,7 @@ class BookQueryRepositoryTest {
             /* given */
 
             String query1 = "토비 스프링";
-            String query2 = "스프링 토비";
+            String query2 = "토비스프링";
 
             /* when */
             boolean isEqualBook = isEqualBook(query1, query2);
