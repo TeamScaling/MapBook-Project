@@ -43,6 +43,28 @@ public class BookSearchService {
         );
         return new PageImpl<>(respBooksDtos, pageable, books.getTotalElements());
     }
+
+    public RespBooksDto searchBookPage(String title, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        List<String> tokens = tokenizer.tokenize(title);
+
+        Page<Book> books = bookQueryRepo.findBooksByToken(tokens, pageable);
+
+        List<BookDto> documents = books.getContent()
+            .stream().map(BookDto::new).toList();
+
+        return new RespBooksDto(pageable, books, documents);
+    }
+
+    public RespBooksDto searchBook(String title) {
+        List<String> token = tokenizer.tokenize(title);
+
+        List<BookDto> books = bookQueryRepo.findBooksByToken(token)
+            .stream().map(BookDto::new).toList();
+
+        return new RespBooksDto(new MetaDto(), books);
+    }
 }
 
 
