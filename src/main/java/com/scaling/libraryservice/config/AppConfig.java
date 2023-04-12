@@ -12,12 +12,6 @@ import org.springframework.web.client.RestTemplate;
 public class AppConfig {
 
     @Bean
-    public Komoran komoran() {
-
-        return new Komoran(DEFAULT_MODEL.FULL);
-    }
-
-    @Bean
     public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
 
         return new JPAQueryFactory(entityManager);

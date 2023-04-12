@@ -10,21 +10,13 @@ import lombok.ToString;
 public class RespBookMapDto {
 
     private final String isbn13;
-
     private final String libCode;
-
     private final String libNm;
-
     private final String hasBook;
-
     private final String loanAvailable;
-
     private final Double libLo;
-
     private final Double libLa;
-
     private final String libArea;
-
     private final String libUrl;
 
     public RespBookMapDto(BookApiDto dto, Library library) {

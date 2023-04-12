@@ -237,7 +237,7 @@
         <th>번호</th>
         <th>도서 제목</th>
         <th>내용</th>
-        <th>대출 가능한 주변 도서관</th>
+        <th>대출 가능한 <br>주변 도서관</th>
       </tr>
       </thead>
       <tbody id="book-info-column">
@@ -245,7 +245,7 @@
         <td th:text="${book.seqId}"></td>
         <td th:text="${book.title}"></td>
         <td th:text="${book.content}"></td>
-        <td><button class="loan-check-btn" th:data-isbn="${book.isbn}"> 대출가능 여부 </button></td>
+        <td><button class="loan-check-btn" th:data-isbn="${book.isbn}"> 내 주변 도서관</button></td>
       </tr>
       </tbody>
     </table>

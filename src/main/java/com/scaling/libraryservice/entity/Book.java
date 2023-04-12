@@ -26,4 +26,7 @@ public class Book {
 
     @Column(name = "AUTHR_NM")
     private String author;
+
+    @Column(name = "ISBN_THIRTEEN_NO")
+    private String isbn;
 }
