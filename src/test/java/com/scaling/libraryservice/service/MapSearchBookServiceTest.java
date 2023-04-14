@@ -1,33 +1,21 @@
 package com.scaling.libraryservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.scaling.libraryservice.dto.RespBookMapDto;
-import com.scaling.libraryservice.entity.Library;
-import com.scaling.libraryservice.exception.OpenApiException;
 import com.scaling.libraryservice.repository.LibraryRepository;
 import com.scaling.libraryservice.util.OpenApiQuerySender;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest
-class MapBookServiceTest {
+class MapSearchBookServiceTest {
 
     @Autowired
-    private MapBookService mapBookService;
+    private MapSearchBookService mapSearchBookService;
 
     @Autowired
     private LibraryRepository libraryRepository;
@@ -54,7 +42,7 @@ class MapBookServiceTest {
 
         /* when */
 
-        List<RespBookMapDto> result = mapBookService.loanAbleLibrary(isbn,area);
+        List<RespBookMapDto> result = mapSearchBookService.loanAbleLibraries(isbn,area);
 
         /* then */
 

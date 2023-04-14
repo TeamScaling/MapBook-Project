@@ -35,11 +35,11 @@ class OpenApiQuerySenderTest {
         paramMap.put("isbn13", isbn);
         paramMap.put("format", "json");
 
-        String apiUri = "http://data4library.kr/api/bookEx";
+        String apiUrl = "http://data4library.kr/api/bookEx";
         /* when */
 
 
-        Executable executable = () -> sender.sendParamQuery(paramMap,apiUri);
+        Executable executable = () -> sender.sendParamQuery(paramMap, apiUrl);
 
         /* then */
 

@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.service;
 
-import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.dto.BookApiDto;
 import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.entity.Library;
@@ -29,20 +28,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MapBookService {
+public class MapSearchBookService {
 
-    private final String OPEN_API_URI = "http://data4library.kr/api/bookExist";
-    private final String AUTH_KEY = "41dff2848f961076d263639f9051792ef9bf91c46f0eef0c63abd1358adcb1b6";
+    @Value("data4.bookExist.api.url")
+    private String OPEN_API_URL;
+    @Value("data4.bookExist.api.authKey")
+    private String AUTH_KEY;
     private final LibraryRepository libraryRepo;
-    private final Map<String, List<Library>> libraryMap = new ConcurrentHashMap<>();
+    private final Map<String, List<Library>> libraryCache = new ConcurrentHashMap<>();
     private final OpenApiQuerySender querySender;
 
 
     // consider : 코드 가독성을 위해 CompletableFuture 도입 고려.
     //오픈API에 보내는 요청을 병렬 처리하여 속도를 올린다.
     @Transactional(readOnly = true)
-    @Timer
-    public List<RespBookMapDto> loanAbleLibrary(String isbn, String area)
+    public List<RespBookMapDto> loanAbleLibraries(String isbn, String area)
         throws OpenApiException {
 
         // map 캐싱을 기반한 메소드에서 도서관 위치 정보를 얻는다.
@@ -56,11 +56,12 @@ public class MapBookService {
 
             tasks.add(() -> {
 
-                Map<String,String> paramMap
-                    = createParamMap(isbn, AUTH_KEY, l.getLibNo(), "json");
+                Map<String, String> paramMap
+                    = createParamMap(isbn, l.getLibNo());
 
                 ResponseEntity<String> resp = querySender
-                    .sendParamQuery(paramMap, OPEN_API_URI);
+                    .sendParamQuery(paramMap, OPEN_API_URL);
+
 
                 BookApiDto dto = bindToDto(resp);
 
@@ -90,32 +91,32 @@ public class MapBookService {
     }
 
     // map을 이용하여 library에 대한 정보 데이터를 캐싱 한다.
+
     private List<Library> getLibraries(String area) {
 
-        if (libraryMap.containsKey(area)) {
+        if (libraryCache.containsKey(area)) {
 
-            log.info("map hit !!");
-            return libraryMap.get(area);
+            log.info("cache hit !!");
+            return libraryCache.get(area);
 
         } else {
 
             List<Library> libraryList = libraryRepo.findLibInfo(area);
-            libraryMap.put(area, libraryList);
-            log.info("no library in map !!");
+            libraryCache.put(area, libraryList);
+            log.info("no library in cache !!");
 
             return libraryList;
         }
     }
 
-    private Map<String, String> createParamMap(String isbn, String authKey,
-        int libCode, String respFormat) {
+    private Map<String, String> createParamMap(String isbn, int libCode) {
 
         Map<String, String> paramMap = new HashMap<>();
 
-        paramMap.put("authKey", authKey);
+        paramMap.put("authKey", AUTH_KEY);
+        paramMap.put("format", "json");
         paramMap.put("libCode", String.valueOf(libCode));
         paramMap.put("isbn13", isbn);
-        paramMap.put("format", respFormat);
 
         return paramMap;
     }

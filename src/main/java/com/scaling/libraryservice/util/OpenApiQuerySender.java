@@ -30,6 +30,8 @@ public class OpenApiQuerySender {
 
         paramMap.forEach((key, value) -> uriBuilder.queryParam(key, value));
 
+        log.info("paramMap :"+ uriBuilder.toUriString());
+
         ResponseEntity<String> resp;
 
         try {
