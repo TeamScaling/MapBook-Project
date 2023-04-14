@@ -6,7 +6,9 @@ import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.entity.Library;
 import com.scaling.libraryservice.exception.OpenApiException;
 import com.scaling.libraryservice.repository.LibraryRepository;
+import com.scaling.libraryservice.util.OpenApiQuerySender;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -20,36 +22,28 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BookMapService {
+public class MapBookService {
 
-    @Value("${data4.bookExist.api.url}")
-    private String openApiUrl;
-    @Value("${data4.bookExist.api.authKey}")
-    private String authKey;
-    @Value("${data4.bookExist.api.format}")
-    private String respFormat;
+    private final String OPEN_API_URI = "http://data4library.kr/api/bookExist";
+    private final String AUTH_KEY = "41dff2848f961076d263639f9051792ef9bf91c46f0eef0c63abd1358adcb1b6";
     private final LibraryRepository libraryRepo;
-    private final RestTemplate restTemplate;
     private final Map<String, List<Library>> libraryMap = new ConcurrentHashMap<>();
+    private final OpenApiQuerySender querySender;
 
 
     // consider : 코드 가독성을 위해 CompletableFuture 도입 고려.
     //오픈API에 보내는 요청을 병렬 처리하여 속도를 올린다.
     @Transactional(readOnly = true)
     @Timer
-    public List<RespBookMapDto> loanAbleLibrary(String isbn, String area) throws OpenApiException {
+    public List<RespBookMapDto> loanAbleLibrary(String isbn, String area)
+        throws OpenApiException {
 
         // map 캐싱을 기반한 메소드에서 도서관 위치 정보를 얻는다.
         List<Library> libraryList = getLibraries(area);
@@ -61,7 +55,15 @@ public class BookMapService {
         for (Library l : libraryList) {
 
             tasks.add(() -> {
-                BookApiDto dto = sendQuery(isbn, l.getLibNo());
+
+                Map<String,String> paramMap
+                    = createParamMap(isbn, AUTH_KEY, l.getLibNo(), "json");
+
+                ResponseEntity<String> resp = querySender
+                    .sendParamQuery(paramMap, OPEN_API_URI);
+
+                BookApiDto dto = bindToDto(resp);
+
                 return new RespBookMapDto(dto, l);
             });
         }
@@ -105,33 +107,22 @@ public class BookMapService {
         }
     }
 
-    // Open API에 요청을 보내고, 응답 받은 json 데이터를 mapToDto 메소드에 보낸다.
-    BookApiDto sendQuery(String isbn, int libCode) throws OpenApiException {
+    private Map<String, String> createParamMap(String isbn, String authKey,
+        int libCode, String respFormat) {
 
-        UriComponentsBuilder builder
-            = UriComponentsBuilder.fromHttpUrl(openApiUrl)
-            .queryParam("authKey", authKey)
-            .queryParam("libCode", libCode)
-            .queryParam("isbn13", isbn)
-            .queryParam("format", respFormat);
+        Map<String, String> paramMap = new HashMap<>();
 
-        ResponseEntity<String> resp;
+        paramMap.put("authKey", authKey);
+        paramMap.put("libCode", String.valueOf(libCode));
+        paramMap.put("isbn13", isbn);
+        paramMap.put("format", respFormat);
 
-        try {
-            resp = restTemplate.exchange(builder.toUriString(),
-                HttpMethod.GET, HttpEntity.EMPTY, String.class);
-
-        } catch (RestClientException e) {
-            log.error(e.toString());
-
-            throw new OpenApiException(e.toString(), e);
-        }
-
-        return mapToDto(resp);
+        return paramMap;
     }
 
+
     // 매개 변수로 받은 응답 엔티티 객체에서 원하는 key에 해당하는 value를 추출하여 dto로 mapping 한다.
-    private BookApiDto mapToDto(ResponseEntity<String> response) throws OpenApiException {
+    private BookApiDto bindToDto(ResponseEntity<String> response) throws OpenApiException {
 
         Objects.requireNonNull(response);
 
@@ -149,24 +140,5 @@ public class BookMapService {
             respJsonObj.getJSONObject("request")
             , respJsonObj.getJSONObject("result"));
     }
-
-    // 단일 쓰레드로 Open API에 요청 처리하는 메소드.
-
-    /*public List<RespBookMapDto> loanAbleLibraryCG(String isbn, String area) {
-
-        List<Library> libList
-            = libraryRepo.findLibInfo(area);
-
-        List<RespBookMapDto> result = new ArrayList<>();
-
-        for (Library l : libList) {
-
-            BookApiDto dto = sendQuery(isbn, l.getLibNo());
-
-            result.add(new RespBookMapDto(dto, l));
-        }
-
-        return result;
-    }*/
 
 }

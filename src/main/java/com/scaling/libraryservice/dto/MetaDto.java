@@ -7,7 +7,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class MetaDto {
+public class
+MetaDto {
 
     private long totalPages;
     private long totalElements;

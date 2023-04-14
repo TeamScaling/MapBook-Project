@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.controller;
 
 import com.scaling.libraryservice.dto.RespBookMapDto;
-import com.scaling.libraryservice.service.BookMapService;
+import com.scaling.libraryservice.service.MapBookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class BookMapController {
+public class MapBookController {
 
-    private final BookMapService bookMapService;
+    private final MapBookService mapBookService;
 
     @GetMapping("/mapSearch")
     public String mapSearch() {
@@ -33,9 +33,8 @@ public class BookMapController {
         log.info("isbn : " + isbn);
 
         List<RespBookMapDto> result
-            = bookMapService.loanAbleLibrary(isbn, area);
+            = mapBookService.loanAbleLibrary(isbn, area);
 
-        System.out.println(result);
 
         model.put("loanAble", result);
 
@@ -49,9 +48,11 @@ public class BookMapController {
         @RequestParam("area") String area) {
 
         List<RespBookMapDto> result
-            = bookMapService.loanAbleLibrary(isbn, area);
+            = mapBookService.loanAbleLibrary(isbn, area);
 
         return ResponseEntity.ok(result);
     }
+
+
 
 }

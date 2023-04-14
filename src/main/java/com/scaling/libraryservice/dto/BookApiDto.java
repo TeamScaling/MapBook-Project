@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.ToString;
 import org.json.JSONObject;
 
-@Getter @ToString
+@Getter
+@ToString
 public class BookApiDto {
 
     private final String isbn13;
@@ -15,7 +16,7 @@ public class BookApiDto {
 
     private final String loanAvailable;
 
-    public BookApiDto(JSONObject req, JSONObject result){
+    public BookApiDto(JSONObject req, JSONObject result) {
 
         this.isbn13 = req.getString("isbn13");
         this.libCode = req.getString("libCode");
