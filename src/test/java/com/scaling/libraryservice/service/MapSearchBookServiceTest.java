@@ -2,6 +2,7 @@ package com.scaling.libraryservice.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import com.scaling.libraryservice.dto.ReqMapBookDto;
 import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.repository.LibraryRepository;
 import com.scaling.libraryservice.util.OpenApiQuerySender;
@@ -42,7 +43,7 @@ class MapSearchBookServiceTest {
 
         /* when */
 
-        List<RespBookMapDto> result = mapSearchBookService.loanAbleLibraries(isbn,area);
+        List<RespBookMapDto> result = mapSearchBookService.loanAbleLibraries(new ReqMapBookDto());
 
         /* then */
 

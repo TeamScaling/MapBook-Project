@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.controller;
 
+import com.scaling.libraryservice.dto.ReqMapBookDto;
 import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.service.MapSearchBookService;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -26,15 +28,12 @@ public class MapBookController {
     }
 
     @GetMapping("/mapSearch/markers")
-    public String mapMarkerView(ModelMap model, @RequestParam("isbn") String isbn) {
+    public String mapMarkerView(ModelMap model, @ModelAttribute ReqMapBookDto mapBookDto) {
 
-        String area = "성남";
-
-        log.info("isbn : " + isbn);
+        log.info("isbn : " + mapBookDto.getIsbn());
 
         List<RespBookMapDto> result
-            = mapSearchBookService.loanAbleLibraries(isbn, area);
-
+            = mapSearchBookService.loanAbleLibraries(mapBookDto);
 
         model.put("loanAble", result);
 
@@ -44,15 +43,13 @@ public class MapBookController {
 
     @GetMapping("/mapSearch/markers/json")
     @ResponseBody
-    public ResponseEntity<List<RespBookMapDto>> mapMarkerJson(@RequestParam("isbn") String isbn,
-        @RequestParam("area") String area) {
+    public ResponseEntity<List<RespBookMapDto>> mapMarkerJson(@ModelAttribute ReqMapBookDto mapBookDto) {
 
         List<RespBookMapDto> result
-            = mapSearchBookService.loanAbleLibraries(isbn, area);
+            = mapSearchBookService.loanAbleLibraries(mapBookDto);
 
         return ResponseEntity.ok(result);
     }
-
 
 
 }

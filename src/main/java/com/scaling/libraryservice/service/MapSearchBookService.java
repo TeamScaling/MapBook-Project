@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.service;
 
 import com.scaling.libraryservice.dto.BookApiDto;
+import com.scaling.libraryservice.dto.ReqMapBookDto;
 import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.entity.Library;
 import com.scaling.libraryservice.exception.OpenApiException;
@@ -20,7 +21,6 @@ import java.util.concurrent.Future;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MapSearchBookService {
 
-    @Value("data4.bookExist.api.url")
-    private String OPEN_API_URL;
-    @Value("data4.bookExist.api.authKey")
-    private String AUTH_KEY;
+    private final String OPEN_API_URL = "http://data4library.kr/api/bookExist";
+
+    private final String AUTH_KEY = "41dff2848f961076d263639f9051792ef9bf91c46f0eef0c63abd1358adcb1b6";
     private final LibraryRepository libraryRepo;
     private final Map<String, List<Library>> libraryCache = new ConcurrentHashMap<>();
     private final OpenApiQuerySender querySender;
@@ -42,11 +41,11 @@ public class MapSearchBookService {
     // consider : 코드 가독성을 위해 CompletableFuture 도입 고려.
     //오픈API에 보내는 요청을 병렬 처리하여 속도를 올린다.
     @Transactional(readOnly = true)
-    public List<RespBookMapDto> loanAbleLibraries(String isbn, String area)
+    public List<RespBookMapDto> loanAbleLibraries(ReqMapBookDto mapBookDto)
         throws OpenApiException {
 
         // map 캐싱을 기반한 메소드에서 도서관 위치 정보를 얻는다.
-        List<Library> libraryList = getLibraries(area);
+        List<Library> libraryList = getLibraries(mapBookDto.getArea());
 
         ExecutorService service = Executors.newFixedThreadPool(10);
 
@@ -57,15 +56,12 @@ public class MapSearchBookService {
             tasks.add(() -> {
 
                 Map<String, String> paramMap
-                    = createParamMap(isbn, l.getLibNo());
+                    = createParamMap(mapBookDto.getIsbn(), l.getLibNo());
 
                 ResponseEntity<String> resp = querySender
                     .sendParamQuery(paramMap, OPEN_API_URL);
 
-
-                BookApiDto dto = bindToDto(resp);
-
-                return new RespBookMapDto(dto, l);
+                return new RespBookMapDto(bindToDto(resp), l);
             });
         }
 
