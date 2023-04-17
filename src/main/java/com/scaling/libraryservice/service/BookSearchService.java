@@ -50,8 +50,14 @@ public class BookSearchService {
     public RespBooksDto searchByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
+        //기본 검색
         String query = splitTarget(title);
-        Page<Book> books = bookRepository.findBooksByTitlePage(query, pageable);
+        Page<Book> books = bookRepository.findBooksByTitleNormal(query, pageable);
+
+        // 검색 결과가 없는 경우, 다른 방법으로 동적으로 검색결과 변경
+        if (books.getContent().isEmpty()) {
+            books = bookRepository.findBooksByTitleFlexible(query, pageable);
+        }
 
         List<BookDto> documents = books.getContent()
             .stream()
