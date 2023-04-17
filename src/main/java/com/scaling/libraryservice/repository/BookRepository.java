@@ -21,13 +21,11 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findBooksByAuthor(@Param("query") String query, Pageable pageable);
 
     // 제목검색 FULLTEXT 서치 이용 + 페이징
-    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)",
-        countQuery = "SELECT COUNT(*) FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)",nativeQuery = true)
+    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     Page<Book> findBooksByTitleNormal(@Param("query") String query, Pageable pageable);
 
     // 검색결과 없을시 검색
-    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)",
-        countQuery = "SELECT COUNT(*) FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)",nativeQuery = true)
+    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)", nativeQuery = true)
     Page<Book> findBooksByTitleFlexible(@Param("query") String query, Pageable pageable);
 
     }
