@@ -1,8 +1,7 @@
 package com.scaling.libraryservice.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import com.scaling.libraryservice.entity.Library;
+import com.scaling.libraryservice.entity.Location;
 import com.scaling.libraryservice.repository.LibraryRepository;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -12,8 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class FinderWithCoordinateTest {
 
-    @Autowired
-    private CoordinateFinder finder;
 
     @Autowired
     private LibraryRepository libraryRepo;
@@ -24,7 +21,7 @@ class FinderWithCoordinateTest {
 
         List<Library> libraries = libraryRepo.findAll();
 
-        Location location = new LocationImp(35.8094167,127.147738);
+        Location location = new Location(35.8094167,127.147738);
 
 
         /* when */

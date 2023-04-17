@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.ToString;
 import org.json.JSONObject;
 
-@Getter
-@ToString
-public class BookApiDto {
+// OpenAPI의 대출 가능 여부 응답을 담는 객체.
+@Getter @ToString
+public class ApiBookExistDto {
 
     private final String isbn13;
 
@@ -16,7 +16,7 @@ public class BookApiDto {
 
     private final String loanAvailable;
 
-    public BookApiDto(JSONObject req, JSONObject result) {
+    public ApiBookExistDto(JSONObject req, JSONObject result) {
 
         this.isbn13 = req.getString("isbn13");
         this.libCode = req.getString("libCode");

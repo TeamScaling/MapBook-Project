@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.entity;
 
-import com.scaling.libraryservice.util.Location;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,7 +10,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "lib_info")
 @ToString @Getter
-public class Library implements Location {
+public class Library {
 
     @Id @Column(name = "LBRRY_CD")
     private Integer libCd;
@@ -39,16 +38,6 @@ public class Library implements Location {
 
     @Column(name = "TWO_AREA_NM")
     private String twoAreaNm;
-
-    @Override
-    public double getLat() {
-        return libLat;
-    }
-
-    @Override
-    public double getLon() {
-        return libLon;
-    }
 
     public String getTwoAreaNm(){
 

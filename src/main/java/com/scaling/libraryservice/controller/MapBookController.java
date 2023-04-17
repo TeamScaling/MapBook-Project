@@ -1,8 +1,11 @@
 package com.scaling.libraryservice.controller;
 
+import com.scaling.libraryservice.dto.LibraryDto;
 import com.scaling.libraryservice.dto.ReqMapBookDto;
-import com.scaling.libraryservice.dto.RespBookMapDto;
-import com.scaling.libraryservice.service.MapSearchBookService;
+import com.scaling.libraryservice.dto.RespMapBookDto;
+import com.scaling.libraryservice.service.LibraryFindService;
+import com.scaling.libraryservice.service.LibraryOpenApiService;
+import com.scaling.libraryservice.service.MapBookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,47 +14,35 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequiredArgsConstructor
-@Slf4j
+@RequiredArgsConstructor @Slf4j
 public class MapBookController {
 
-    private final MapSearchBookService mapSearchBookService;
+    private final MapBookService mapBookService;
 
-    @GetMapping("/mapSearch")
-    public String mapSearch() {
+    private final LibraryOpenApiService libraryOpenApiService;
 
-        return "mapSearch";
-    }
+    private final LibraryFindService libraryFindService;
 
-    @GetMapping("/mapSearch/markers")
-    public String mapMarkerView(ModelMap model, @ModelAttribute ReqMapBookDto mapBookDto) {
+    @GetMapping("/mapBook/search")
+    public String getLoanableMapBookMarkers(ModelMap model, @ModelAttribute ReqMapBookDto mapBookDto) {
 
-        log.info("isbn : " + mapBookDto.getIsbn());
+        // 사용자의 위치 정보를 바탕으로 주변 도서관 목록을 검색 한다.
+        List<LibraryDto> nearByLibraries
+            = libraryFindService.findNearByLibraries(mapBookDto);
 
-        List<RespBookMapDto> result
-            = mapSearchBookService.loanAbleLibraries(mapBookDto);
+        // 사용자의 주변 도서관을 대상으로 도서가 대출 가능 한지 확인 한다.
+        List<ResponseEntity<String>> loanAbleLibraries
+            = libraryOpenApiService.multiQuery(nearByLibraries, mapBookDto.getIsbn(),10);
 
-        log.info(result+"");
+        // 주변 도서관 목록과 대출 가능 여부 데이터를 조합하여 map marker를 만들기 위한 결과를 만든다.
+        List<RespMapBookDto> mapBooks
+            = mapBookService.getMapBooks(nearByLibraries, loanAbleLibraries);
 
-        model.put("loanAble", result);
+        model.put("mapBooks", mapBooks);
 
         return "mapMarker";
     }
-
-
-    @GetMapping("/mapSearch/markers/json")
-    @ResponseBody
-    public ResponseEntity<List<RespBookMapDto>> mapMarkerJson(@ModelAttribute ReqMapBookDto mapBookDto) {
-
-        List<RespBookMapDto> result
-            = mapSearchBookService.loanAbleLibraries(mapBookDto);
-
-        return ResponseEntity.ok(result);
-    }
-
 
 }

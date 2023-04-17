@@ -10,19 +10,19 @@ import org.springframework.data.domain.Pageable;
 
 @Getter
 @Setter @ToString
-public class RespBooksDto {
+public class RespSearchBooksDto {
 
-    private MetaDto meta;
+    private SearchBookMetaDto meta;
     private List<BookDto> documents;
 
-    public RespBooksDto(MetaDto metaDto, List<BookDto> documents) {
-        this.meta = metaDto;
+    public RespSearchBooksDto(SearchBookMetaDto searchBookMetaDto, List<BookDto> documents) {
+        this.meta = searchBookMetaDto;
         this.documents = documents;
     }
 
-    public RespBooksDto(Pageable pageable, Page<Book> books, List<BookDto> documents) {
+    public RespSearchBooksDto(Pageable pageable, Page<Book> books, List<BookDto> documents) {
         this.documents = documents;
-        this.meta = new MetaDto();
+        this.meta = new SearchBookMetaDto();
         this.meta.setCurrentPage(pageable.getPageNumber());
         this.meta.setPageSize(pageable.getPageSize());
         this.meta.setTotalElements(books.getTotalElements());

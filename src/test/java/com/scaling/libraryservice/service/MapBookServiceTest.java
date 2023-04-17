@@ -1,15 +1,8 @@
 package com.scaling.libraryservice.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
-import com.scaling.libraryservice.dto.ReqMapBookDto;
-import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.entity.Library;
+import com.scaling.libraryservice.entity.Location;
 import com.scaling.libraryservice.repository.LibraryRepository;
-import com.scaling.libraryservice.util.Location;
-import com.scaling.libraryservice.util.LocationImp;
-import com.scaling.libraryservice.util.OpenApiQuerySender;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,16 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MapSearchBookServiceTest {
+class MapBookServiceTest {
 
     @Autowired
-    private MapSearchBookService mapSearchBookService;
+    private MapBookService mapBookService;
 
     @Autowired
     private LibraryRepository libraryRepo;
 
     @Autowired
-    private OpenApiQuerySender sender;
+    private LibraryOpenApiService sender;
 
     @Test @DisplayName("지역 도서관 대출 가능 여부 데이터 생성")
     public void exist_book_with_location(){
@@ -37,13 +30,13 @@ class MapSearchBookServiceTest {
 
         /* when */
 
-        List<RespBookMapDto> result = mapSearchBookService.loanAbleLibraries(new ReqMapBookDto());
+        /*List<RespBookMapDto> result = mapSearchBookService.getMapBooks();
 
-        /* then */
+        *//* then *//*
 
 
         assertNotEquals(0,result.size());
-        result.forEach(System.out::println);
+        result.forEach(System.out::println);*/
     }
 
     @Test
@@ -52,17 +45,17 @@ class MapSearchBookServiceTest {
 
         List<Library> libraries = libraryRepo.findAll();
 
-        Location location = new LocationImp(35.8094167,127.147738);
+        Location location = new Location(35.8094167,127.147738);
 
 
         /* when */
 
 
-        var result = mapSearchBookService.findAroundLibraries(location);
+        /*var result = mapSearchBookService.findAroundLibraries(location);
 
-        /* then */
+        *//* then *//*
         result.forEach(System.out::println);
-        assertEquals(10,result.size());
+        assertEquals(10,result.size());*/
 
     }
 

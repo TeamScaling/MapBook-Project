@@ -1,7 +1,5 @@
 package com.scaling.libraryservice.dto;
 
-import com.scaling.libraryservice.util.Location;
-import com.scaling.libraryservice.util.LocationImp;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,18 +9,16 @@ import lombok.ToString;
 @Getter @Setter @ToString
 public class ReqMapBookDto {
 
-    private String isbn;
-    private double lat;
+    private final String isbn;
+    private final double lat;
 
-    private double lon;
+    private final double lon;
+    private final String oneArea;
+    private final String twoArea;
 
-    private String oneArea;
+    public boolean isAddressRequest(){
 
-    private String twoArea;
-
-    public Location bindLocation(){
-
-        return new LocationImp(this.lat,this.lon);
+        return oneArea != null & twoArea != null;
     }
 
 }
