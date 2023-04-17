@@ -30,8 +30,8 @@ public class BookRepositoryTest {
 
 
             /* when */
-            List<Book> books1 = bookRepository.findBooksByTitlePage(title1);
-            List<Book> books2 = bookRepository.findBooksByTitlePage(title2);
+            List<Book> books1 = bookRepository.findBooksByTitleNormal(title1);
+            List<Book> books2 = bookRepository.findBooksByTitleNormal(title2);
 
             Book book1 = books1
                 .stream()
@@ -105,8 +105,8 @@ public class BookRepositoryTest {
         // 테스트에 필요한 공통 메서드
         boolean isEqualBook(String title1, String title2) {
 
-            List<Book> result1 = bookRepository.findBooksByTitlePage(splitTarget(title1));
-            List<Book> result2 = bookRepository.findBooksByTitlePage(splitTarget(title2));
+            List<Book> result1 = bookRepository.findBooksByTitleNormal(splitTarget(title1));
+            List<Book> result2 = bookRepository.findBooksByTitleNormal(splitTarget(title2));
 
             Book book1 = result1.get(0);
             Book book2 = result2.get(0);
