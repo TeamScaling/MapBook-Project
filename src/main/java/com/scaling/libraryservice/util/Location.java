@@ -1,9 +1,12 @@
 package com.scaling.libraryservice.util;
 
-public class Location {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-    private String area = "서울특별시 강남구";
+public interface Location {
 
+    double getLat();
 
+    double getLon();
 
 }

@@ -26,8 +26,8 @@ public class RespBookMapDto {
         this.hasBook = dto.getHasBook();
         this.loanAvailable = dto.getLoanAvailable();
 
-        this.libLo = library.getLibLo();
-        this.libLa = library.getLibLa();
+        this.libLo = library.getLibLon();
+        this.libLa = library.getLibLat();
         this.libArea = library.getLibArea();
         this.libNm = library.getLibNm();
         this.libUrl = library.getLibUrl();

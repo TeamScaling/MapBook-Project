@@ -35,6 +35,8 @@ public class MapBookController {
         List<RespBookMapDto> result
             = mapSearchBookService.loanAbleLibraries(mapBookDto);
 
+        log.info(result+"");
+
         model.put("loanAble", result);
 
         return "mapMarker";

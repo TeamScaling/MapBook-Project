@@ -4,8 +4,12 @@ import com.scaling.libraryservice.dto.BookApiDto;
 import com.scaling.libraryservice.dto.ReqMapBookDto;
 import com.scaling.libraryservice.dto.RespBookMapDto;
 import com.scaling.libraryservice.entity.Library;
+import com.scaling.libraryservice.exception.LocationException;
 import com.scaling.libraryservice.exception.OpenApiException;
 import com.scaling.libraryservice.repository.LibraryRepository;
+import com.scaling.libraryservice.util.CoordinateFinder;
+import com.scaling.libraryservice.util.Location;
+import com.scaling.libraryservice.util.LocationImp;
 import com.scaling.libraryservice.util.OpenApiQuerySender;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -37,7 +42,18 @@ public class MapSearchBookService {
     private final Map<String, List<Library>> libraryCache = new ConcurrentHashMap<>();
     private final OpenApiQuerySender querySender;
 
+    private List<Library> libraries;
+    private final CoordinateFinder finder;
 
+    @PostConstruct
+    private void init(){
+        if (libraries == null) {
+
+            this.libraries = libraryRepo.findAll();
+        }
+    }
+
+    // consider  한번 검색했던 유저를 기억해서 반응성을 좀 더 올릴 수 있지 않을까?
     // consider : 코드 가독성을 위해 CompletableFuture 도입 고려.
     //오픈API에 보내는 요청을 병렬 처리하여 속도를 올린다.
     @Transactional(readOnly = true)
@@ -45,7 +61,7 @@ public class MapSearchBookService {
         throws OpenApiException {
 
         // map 캐싱을 기반한 메소드에서 도서관 위치 정보를 얻는다.
-        List<Library> libraryList = getLibraries(mapBookDto.getArea());
+        List<Library> libraryList = findAroundLibraries(mapBookDto.bindLocation());
 
         ExecutorService service = Executors.newFixedThreadPool(10);
 
@@ -86,9 +102,20 @@ public class MapSearchBookService {
         return result;
     }
 
+    List<Library> findAroundLibraries(Location location) {
+
+        Library library
+            = (Library) finder.findNearestLocation(libraries, location)
+            .orElseThrow(LocationException::new);
+
+        return getCachedLibraries(library.getOneAreaNm(),library.getTwoAreaNm());
+    }
+
     // map을 이용하여 library에 대한 정보 데이터를 캐싱 한다.
 
-    private List<Library> getLibraries(String area) {
+    private List<Library> getCachedLibraries(String oneArea,String twoArea) {
+
+        String area = oneArea+" "+twoArea;
 
         if (libraryCache.containsKey(area)) {
 
@@ -97,7 +124,7 @@ public class MapSearchBookService {
 
         } else {
 
-            List<Library> libraryList = libraryRepo.findLibInfo(area);
+            List<Library> libraryList = libraryRepo.findAroundLib(oneArea,twoArea);
             libraryCache.put(area, libraryList);
             log.info("no library in cache !!");
 
