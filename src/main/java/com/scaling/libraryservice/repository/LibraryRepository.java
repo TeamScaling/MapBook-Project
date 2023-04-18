@@ -8,8 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface LibraryRepository extends JpaRepository<Library, Integer> {
 
-    @Query("select l from Library l where l.libArea = :area")
+    @Query("select l from Library l where l.twoAreaNm = :area")
     List<Library> findLibInfo(@Param("area") String area);
-
-
 }

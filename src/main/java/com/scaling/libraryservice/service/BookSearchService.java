@@ -2,8 +2,8 @@ package com.scaling.libraryservice.service;
 
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.dto.BookDto;
-import com.scaling.libraryservice.dto.MetaDto;
-import com.scaling.libraryservice.dto.RespBooksDto;
+import com.scaling.libraryservice.dto.SearchBookMetaDto;
+import com.scaling.libraryservice.dto.RespSearchBooksDto;
 import com.scaling.libraryservice.entity.Book;
 import com.scaling.libraryservice.repository.BookRepository;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ public class BookSearchService {
 
     //작가 검색 FULLTEXT + 페이징
     @Timer
-    public RespBooksDto searchByAuthor(String author, int page, int size) {
+    public RespSearchBooksDto searchByAuthor(String author, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         String query = splitTarget(author);
@@ -38,16 +38,16 @@ public class BookSearchService {
             .map(BookDto::new)
             .collect(Collectors.toList());
 
-        MetaDto meta =
-            new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+        SearchBookMetaDto meta =
+            new SearchBookMetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, document);
+        return new RespSearchBooksDto(meta, document);
     }
 
 
     //제목 검색 FULLTEXT + 페이징
     @Timer
-    public RespBooksDto searchByTitle(String title, int page, int size) {
+    public RespSearchBooksDto searchByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         String query = splitTarget(title);
@@ -58,10 +58,10 @@ public class BookSearchService {
             .map(BookDto::new)
             .collect(Collectors.toList());
 
-        MetaDto meta =
-            new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+        SearchBookMetaDto meta =
+            new SearchBookMetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, documents);
+        return new RespSearchBooksDto(meta, documents);
     }
 
 

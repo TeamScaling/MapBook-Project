@@ -1,13 +1,12 @@
 package com.scaling.libraryservice.dto;
 
-import com.scaling.libraryservice.entity.Library;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter
 @ToString
-public class RespBookMapDto {
+public class RespMapBookDto {
 
     private final String isbn13;
     private final String libCode;
@@ -19,18 +18,18 @@ public class RespBookMapDto {
     private final String libArea;
     private final String libUrl;
 
-    public RespBookMapDto(BookApiDto dto, Library library) {
+    public RespMapBookDto(ApiBookExistDto dto, LibraryDto libraryDto) {
 
         this.isbn13 = dto.getIsbn13();
         this.libCode = dto.getLibCode();
         this.hasBook = dto.getHasBook();
         this.loanAvailable = dto.getLoanAvailable();
 
-        this.libLo = library.getLibLo();
-        this.libLa = library.getLibLa();
-        this.libArea = library.getLibArea();
-        this.libNm = library.getLibNm();
-        this.libUrl = library.getLibUrl();
+        this.libLo = libraryDto.getLibLon();
+        this.libLa = libraryDto.getLibLat();
+        this.libArea = libraryDto.getLibArea();
+        this.libNm = libraryDto.getLibNm();
+        this.libUrl = libraryDto.getLibUrl();
 
     }
 }

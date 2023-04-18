@@ -22,15 +22,26 @@ public class Library {
     private Integer libNo;
 
     @Column(name = "LBRRY_LO")
-    private Double libLo;
+    private Double libLon;
 
     @Column(name = "LBRRY_LA")
-    private Double libLa;
+    private Double libLat;
 
     @Column(name = "WETHR_AREA_CD")
     private String libArea;
 
     @Column(name = "HMPG_VALUE")
     private String libUrl;
+
+    @Column(name = "ONE_AREA_NM")
+    private String oneAreaNm;
+
+    @Column(name = "TWO_AREA_NM")
+    private String twoAreaNm;
+
+    public String getTwoAreaNm(){
+
+        return twoAreaNm.split(" ")[0];
+    }
 
 }

@@ -44,6 +44,8 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api" // java.lang.NoClassDefFoundError (javax.annotation.Entity) 대응 코드
 
     implementation group: 'org.json', name: 'json', version: '20220924'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.1'
+
 }
 
 

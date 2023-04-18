@@ -385,25 +385,32 @@
   //   })
   // }
 
-  document.addEventListener('DOMContentLoaded', function () {
-    const loanCheckButtons = document.querySelectorAll('.loan-check-btn');
 
-    loanCheckButtons.forEach(button => {
-      button.addEventListener('click', function (event) {
-        const isbn2 = event.currentTarget.getAttribute('data-isbn');
-        const isbn = BigInt(Number(isbn2));
-        openLibraryPage(isbn);
-        console.log(isbn);
+  document.addEventListener("DOMContentLoaded", function () {
+    const loanCheckButtons = document.querySelectorAll(".loan-check-btn");
+
+    loanCheckButtons.forEach((button) => {
+      button.addEventListener("click", function (event) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var lat = position.coords.latitude, // 위도
+              lon = position.coords.longitude; // 경도
+
+          const isbn2 = event.target.getAttribute("data-isbn");
+          const isbn = BigInt(Number(isbn2));
+          openLibraryPage(isbn.toString(), lat, lon);
+          console.log(isbn, lat, lon);
+        });
       });
     });
   });
 
+  function openLibraryPage(isbn, lat, lon) {
 
-
-
-  function openLibraryPage(isbn) {
-    window.location.href = `/mapSearch/markers?isbn=${isbn}`;
+    window.location.href = `/mapBook/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
   }
+
+
+
 
 </script>
 </body>

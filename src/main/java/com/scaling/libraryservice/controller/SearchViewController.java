@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.controller;
 
-import com.scaling.libraryservice.dto.RespBooksDto;
+import com.scaling.libraryservice.dto.RespSearchBooksDto;
 import com.scaling.libraryservice.service.BookSearchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class SearchViewController {
 
         if (!query.isEmpty()) {
 
-            RespBooksDto searchResult = searchService.searchByTitle(query, page, size);
+            RespSearchBooksDto searchResult = searchService.searchByTitle(query, page, size);
 
             model.put("searchResult", searchResult);
             model.put("totalPages", searchResult.getMeta().getTotalPages());
