@@ -3,6 +3,7 @@ package com.scaling.libraryservice.controller;
 import com.scaling.libraryservice.dto.RespBooksDto;
 import com.scaling.libraryservice.service.BookSearchService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,22 +15,16 @@ public class SearchRestController {
 
     private final BookSearchService searchService;
 
-    // 작가 검색 JPA
   /* fixme : url "/books/author" -> "/books/search?target=author&query=남궁성"
         사라님 메소드의 url뿐만 아니라 기존의 search 메소드도 url 변경 필요 ("/books/search?target=title&query="자바의 정석")*/
-    @GetMapping(value = "/books/author/page")
-    public ResponseEntity<RespBooksDto> searchByAuthor(@RequestParam("query") String query,
-        @RequestParam("page") int page, @RequestParam("size") int size) {
 
-        return ResponseEntity.ok(searchService.searchByAuthor(query, page, size));
+    // 도서 검색
+    @GetMapping(value = "/books/test")
+    public ResponseEntity<RespBooksDto> searchBooksFlexible(@RequestParam("query") String query,
+        @RequestParam("page") int page, @RequestParam("size") int size,
+        @RequestParam("target") String target) {
+
+        return ResponseEntity.ok(searchService.searchBooksFlexible(query, page, size, target));
     }
-
-    @GetMapping(value = "/books/title/page")
-    public ResponseEntity<RespBooksDto> searchByTitle(@RequestParam("query") String query,
-        @RequestParam("page") int page, @RequestParam("size") int size) {
-
-        return ResponseEntity.ok(searchService.searchByTitle(query, page, size));
-    }
-
 
 }

@@ -24,14 +24,12 @@ public class BookSearchService {
 
     private final BookRepository bookRepository;
 
-    //작가 검색 FULLTEXT + 페이징
-    @Timer
-    public RespBooksDto searchByAuthor(String author, int page, int size) {
+    // 도서 검색
+    public RespBooksDto searchBooksFlexible(String query, int page, int size, String target) {
+
         Pageable pageable = createPageable(page, size);
 
-        String query = splitTarget(author);
-
-        Page<Book> books = bookRepository.findBooksByAuthor(query, pageable);
+        Page<Book> books = findBooksByTarget(splitTarget(query), pageable, target);
 
         List<BookDto> document = convertToBookDtoList(books);
 
@@ -40,31 +38,21 @@ public class BookSearchService {
         return new RespBooksDto(meta, document);
     }
 
-
-    //제목 검색 FULLTEXT + 페이징
-    @Timer
-    public RespBooksDto searchByTitle(String title, int page, int size) {
-        Pageable pageable = createPageable(page, size);
-
-        String query = splitTarget(title);
-
-        Page<Book> books = bookRepository.findBooksByTitleNormal(query, pageable);
-
-        // 검색 결과가 없는 경우, 다른 방법으로 동적으로 검색결과 변경
-        if (books.getContent().isEmpty()) {
-            books = bookRepository.findBooksByTitleFlexible(query, pageable);
-        }
-
-        List<BookDto> document = convertToBookDtoList(books);
-
-        MetaDto meta = createMetaDto(books, page, size);
-
-        return new RespBooksDto(meta, document);
-    }
 
     // pageable 객체에 값 전달
     public Pageable createPageable(int page, int size) {
         return PageRequest.of(page - 1, size);
+    }
+
+    // target에 따라 쿼리 선택하여 동적으로 변동
+    private Page<Book> findBooksByTarget(String query, Pageable pageable, String target) {
+        if (target.equals("author")) {
+            return bookRepository.findBooksByAuthor(query, pageable);
+        } else if (target.equals("title")) {
+            return bookRepository.findBooksByTitleFlexible(query, pageable);
+        } else {
+            return null; //api 추가될 것 고려하여 일단 Null로 넣어놓음
+        }
     }
 
     // 띄어쓰기 전처리
@@ -86,9 +74,6 @@ public class BookSearchService {
     private MetaDto createMetaDto(Page<Book> books, int page, int size) {
         return new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
     }
-
-
-
 
 
 
