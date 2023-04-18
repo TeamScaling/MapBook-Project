@@ -219,11 +219,11 @@
 <header>
   <div class="search-box">
     <form action="/books/search">
-      <select aria-label="선택">
-        <option>전체</option>
-        <option>도서명</option>
-        <option>저자</option>
-        <option>출판사</option>
+      <select name="target" aria-label="선택">
+        <option value="title">도서명</option>
+        <option value="author">저자</option>
+        <option value="publisher">출판사</option>
+        <option value="all">전체</option>
       </select>
       <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
       <button type="submit">검색</button>
