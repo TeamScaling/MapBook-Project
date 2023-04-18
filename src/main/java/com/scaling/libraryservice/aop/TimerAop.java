@@ -25,7 +25,8 @@ public class TimerAop {
         Object result = joinPoint.proceed(); //메서드가 실행되는 부분
 
         stopWatch.stop();
-        log.info("Repository에서 소요된 시간 : " + stopWatch.getTotalTimeSeconds());
+        log.info(joinPoint.getTarget()+" : " + stopWatch.getTotalTimeSeconds()
+        );
 
         return result;
     }

@@ -2,7 +2,7 @@ package com.scaling.libraryservice.service;
 
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.exception.OpenApiException;
-import com.scaling.libraryservice.util.CreatableParamMap;
+import com.scaling.libraryservice.util.ParamMapCreatable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +29,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @RequiredArgsConstructor
 @Setter @Getter
-public class LibraryOpenApiService {
+public class ApiQueryService {
 
     private final RestTemplate restTemplate;
-
-    private String apiUrl = "http://data4library.kr/api/bookExist";
-
     private String authKey = "55db267f8f05b0bf8e23e8d3f65bb67d206a6b5ce24f5e0ee4625bcf36e4e2bb";
 
     // OpenAPI에 단일 요청을 보낸다.
@@ -45,9 +42,8 @@ public class LibraryOpenApiService {
 
         //Param 방식의 OpenAPI에 맞춰 Uri을 동적으로 생성하는 builder
         UriComponentsBuilder uriBuilder
-            = UriComponentsBuilder.fromHttpUrl(apiUrl)
-            .queryParam("authKey", authKey)
-            .queryParam("format", "json");
+            = UriComponentsBuilder.fromHttpUrl(paramMap.get("apiUri"))
+            .queryParam("authKey", authKey);
 
         //매개 변수로 받은 paramMap을 순회하며, param들을 builder에 추가한다.
         paramMap.forEach((key, value) -> uriBuilder.queryParam(key, value));
@@ -62,7 +58,7 @@ public class LibraryOpenApiService {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            throw new OpenApiException(e.toString(), e);
+            throw e;
         }
 
         return resp;
@@ -72,7 +68,7 @@ public class LibraryOpenApiService {
     // OpenApi에 대한 단일 요청 성능을 높이기 위한 멀티 쓰레드 병렬 요청
     @Timer
     @Transactional(readOnly = true)
-    public List<ResponseEntity<String>> multiQuery(List<? extends CreatableParamMap> params,
+    public List<ResponseEntity<String>> multiQuery(List<? extends ParamMapCreatable> params,
         String target,int nThreads) throws OpenApiException {
 
         Objects.requireNonNull(params);
@@ -83,7 +79,7 @@ public class LibraryOpenApiService {
         List<Callable<ResponseEntity<String>>> tasks = new ArrayList<>();
 
         // 멀티쓰레드를 이용하여 각기 다른 요청을 보내기 위해, 요청 param을 map 형태로 만들어 반환 할 수 있는 객체 list
-        for (CreatableParamMap l : params) {
+        for (ParamMapCreatable l : params) {
 
             tasks.add(() -> singleQuery(l.createParamMap(target)));
         }
@@ -112,5 +108,7 @@ public class LibraryOpenApiService {
 
         return result;
     }
+
+
 
 }

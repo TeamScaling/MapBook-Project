@@ -3,7 +3,7 @@ package com.scaling.libraryservice.util;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.scaling.libraryservice.exception.OpenApiException;
-import com.scaling.libraryservice.service.LibraryOpenApiService;
+import com.scaling.libraryservice.service.ApiQueryService;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.web.client.RestTemplate;
 
-class LibraryOpenApiServiceTest {
+class ApiQueryServiceTest {
 
-    private LibraryOpenApiService sender;
+    private ApiQueryService sender;
 
     @BeforeEach
     public void setUp(){
-        this.sender = new LibraryOpenApiService(new RestTemplate());
+        this.sender = new ApiQueryService(new RestTemplate());
     }
 
 

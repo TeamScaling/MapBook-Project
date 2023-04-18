@@ -19,7 +19,7 @@ class MapBookServiceTest {
     private LibraryRepository libraryRepo;
 
     @Autowired
-    private LibraryOpenApiService sender;
+    private ApiQueryService sender;
 
     @Test @DisplayName("지역 도서관 대출 가능 여부 데이터 생성")
     public void exist_book_with_location(){

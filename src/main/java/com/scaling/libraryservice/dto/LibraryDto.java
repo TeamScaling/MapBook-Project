@@ -1,14 +1,15 @@
 package com.scaling.libraryservice.dto;
 
 import com.scaling.libraryservice.entity.Library;
-import com.scaling.libraryservice.util.CreatableParamMap;
+import com.scaling.libraryservice.util.ParamMapCreatable;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
+// Library entity를 담는 dto
 @Getter @Setter
-public class LibraryDto implements CreatableParamMap{
+public class LibraryDto implements ParamMapCreatable {
 
     private String libNm;
 
@@ -42,8 +43,10 @@ public class LibraryDto implements CreatableParamMap{
 
         Map<String, String> paramMap = new HashMap<>();
 
+        paramMap.put("apiUri","http://data4library.kr/api/bookExist");
         paramMap.put("libCode", String.valueOf(this.libNo));
         paramMap.put("isbn13", target);
+        paramMap.put("format","json");
 
         return paramMap;
     }

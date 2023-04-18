@@ -1,6 +1,11 @@
 package com.scaling.libraryservice.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.json.JSONObject;
 
@@ -23,6 +28,5 @@ public class ApiBookExistDto {
         this.hasBook = result.getString("hasBook");
         this.loanAvailable = result.getString("loanAvailable");
     }
-
 
 }
