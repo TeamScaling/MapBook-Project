@@ -1,0 +1,37 @@
+package com.scaling.libraryservice.entity;
+
+import com.scaling.libraryservice.dto.LoanItemDto;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Setter @Getter
+public class LoanItem extends TimeStamp {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long no;
+
+    @Column(nullable = false)
+    private Integer ranking;
+
+    @Column(name = "ISBN_THIRTEEN_NO",nullable = false)
+    private Double isbn13;
+
+    @Column(nullable = false)
+    private Integer loan_count;
+
+    public LoanItem(LoanItemDto dto) {
+        this.ranking = dto.getRanking();
+        this.isbn13 = dto.getIsbn13();
+        this.loan_count = dto.getLoan_count();
+    }
+
+    public LoanItem() {
+
+    }
+}
