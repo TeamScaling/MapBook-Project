@@ -12,21 +12,29 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Integer> {
 
-    // 제목검색 FULLTEXT 서치 이용
+    // 제목검색 FULLTEXT 서치 이용 + 페이징
     @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
-    List<Book> findBooksByTitleNormal(@Param("query") String query);
+    Page<Book> findBooksByTitleNormal(@Param("query") String query, Pageable pageable);
+
+    // 제목에 대한 더 넓은 검색
+    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)", nativeQuery = true)
+    Page<Book> findBooksByTitleDetail(@Param("query") String query, Pageable pageable);
 
     // 작가검색 FULLTEXT 서치 이용 + 페이징
     @Query(value = "SELECT * FROM books WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     Page<Book> findBooksByAuthor(@Param("query") String query, Pageable pageable);
 
-    // 제목검색 FULLTEXT 서치 이용 + 페이징
-    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
-    Page<Book> findBooksByTitleNormal(@Param("query") String query, Pageable pageable);
+    // 제목 검색 결과가 없을 경우 재검색을 위한 쿼리
+    default Page<Book> findBooksByTitleFlexible(String query, Pageable pageable) {
+        Page<Book> books = findBooksByTitleNormal(query, pageable);
+        if (books.getContent().isEmpty()) {
+            books = findBooksByTitleDetail(query, pageable);
+        }
+        return books;
+    }
 
-    // 검색결과 없을시 검색
-    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)", nativeQuery = true)
-    Page<Book> findBooksByTitleFlexible(@Param("query") String query, Pageable pageable);
+
+
 
     }
 
