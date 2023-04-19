@@ -1,5 +1,6 @@
-package com.scaling.libraryservice.service;
+package com.scaling.libraryservice.mapBook.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -8,7 +9,6 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
-import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -67,7 +67,7 @@ class LibraryFindServiceTest {
         var result = libraryFindService.findNearByLibraries(dto);
 
         /* then */
-        result.forEach(System.out::println);
+        /*result.forEach(System.out::println);*/
         assertNotEquals(0,result.size());
     }
 
@@ -91,11 +91,25 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.findLibrariesByAreaCd(areaCd);
+        Executable e = () -> libraryFindService.findLibraries(areaCd);
 
         /* then */
 
-        System.out.println(result);
+        assertDoesNotThrow(e);
+    }
+
+    @Test @DisplayName("커스텀으로 만든 지역 코드로 도서관 찾기 에러 발생")
+    public void find_libraries_by_areaCd_error(){
+        /* given */
+        int areaCd = 1;
+
+        /* when */
+
+        Executable e = () -> libraryFindService.findLibraries(areaCd);
+
+        /* then */
+
+        assertThrows(LocationException.class,e);
     }
 
 }

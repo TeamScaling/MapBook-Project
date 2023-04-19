@@ -10,9 +10,8 @@ import lombok.ToString;
 public class ReqMapBookDto {
 
     private final String isbn;
-    private final double lat;
-
-    private final double lon;
+    private final Double lat;
+    private final Double lon;
     private final String oneArea;
     private final String twoArea;
 

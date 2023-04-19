@@ -26,13 +26,7 @@ public class MapBookService {
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(respOpenApiDtoMap);
 
-        return matchLoanableLibraries(nearByLibraries, respOpenApiDtoMap);
-    }
-
-    // 대출 가능 응답 결과와 도서관 정보를 매칭하기 위한 내부 메소드.
-    private List<RespMapBookDto> matchLoanableLibraries(List<LibraryDto> nearByLibraries,
-        Map<Integer, ApiBookExistDto> respOpenApiDtoMap) {
-
+        // 대출 가능 응답 결과와 도서관 정보를 매칭하기 위한 내부 메소드.
         List<RespMapBookDto> result = new ArrayList<>();
 
         for (LibraryDto l : nearByLibraries) {
