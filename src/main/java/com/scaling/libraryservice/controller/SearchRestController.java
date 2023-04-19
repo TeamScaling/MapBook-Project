@@ -3,7 +3,6 @@ package com.scaling.libraryservice.controller;
 import com.scaling.libraryservice.dto.RespBooksDto;
 import com.scaling.libraryservice.service.BookSearchService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,11 +19,11 @@ public class SearchRestController {
 
     // 도서 검색
     @GetMapping(value = "/books/test")
-    public ResponseEntity<RespBooksDto> searchBooksFlexible(@RequestParam("query") String query,
+    public ResponseEntity<RespBooksDto> searchBooks(@RequestParam("query") String query,
         @RequestParam("page") int page, @RequestParam("size") int size,
         @RequestParam("target") String target) {
 
-        return ResponseEntity.ok(searchService.searchBooksFlexible(query, page, size, target));
+        return ResponseEntity.ok(searchService.searchBooks(query, page, size, target));
     }
 
 }

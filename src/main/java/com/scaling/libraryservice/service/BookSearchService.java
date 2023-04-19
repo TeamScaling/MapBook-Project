@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.service;
 
-import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.dto.BookDto;
 import com.scaling.libraryservice.dto.MetaDto;
 import com.scaling.libraryservice.dto.RespBooksDto;
@@ -25,7 +24,7 @@ public class BookSearchService {
     private final BookRepository bookRepository;
 
     // 도서 검색
-    public RespBooksDto searchBooksFlexible(String query, int page, int size, String target) {
+    public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
         Pageable pageable = createPageable(page, size);
 
