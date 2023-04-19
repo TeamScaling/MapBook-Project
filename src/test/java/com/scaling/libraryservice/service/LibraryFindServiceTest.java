@@ -3,12 +3,12 @@ package com.scaling.libraryservice.service;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.scaling.libraryservice.dto.LibraryDto;
-import com.scaling.libraryservice.dto.ReqMapBookDto;
-import com.scaling.libraryservice.entity.LibraryMeta;
-import com.scaling.libraryservice.exception.LocationException;
-import com.scaling.libraryservice.repository.LibraryMetaRepository;
-import com.scaling.libraryservice.repository.LibraryRepository;
+import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+import com.scaling.libraryservice.mapBook.exception.LocationException;
+import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
+import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
+import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

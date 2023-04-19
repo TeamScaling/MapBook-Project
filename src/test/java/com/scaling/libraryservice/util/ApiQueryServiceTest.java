@@ -2,8 +2,8 @@ package com.scaling.libraryservice.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.scaling.libraryservice.exception.OpenApiException;
-import com.scaling.libraryservice.service.ApiQueryService;
+import com.scaling.libraryservice.mapBook.exception.OpenApiException;
+import com.scaling.libraryservice.mapBook.service.ApiQueryService;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
