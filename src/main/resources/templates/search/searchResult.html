@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
-  <title>검색 결과 - 항해도서관</title>
+  <title>검색 결과 - 책있나?</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -247,7 +247,7 @@
         <td th:text="${book.seqId}"></td>
         <td th:text="${book.title}"></td>
         <td th:text="${book.content}"></td>
-        <td><button class="loan-check-btn" th:data-isbn="${book.isbn}"> 내 주변 도서관</button></td>
+        <td><button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()"> 내 주변 도서관</button></td>
       </tr>
       </tbody>
     </table>
@@ -271,6 +271,14 @@
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  function openPopup() {
+    const areaCd = document.getElementById('search-input').value;
+    const url = `/library/mapSearch?areaCd=${areaCd}`;
+    window.open(url, 'areaCdInfo', 'width=1200,height=800');
+    return false;
+  }
+</script>
 <script th:inline = "javascript">
   $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -337,6 +345,7 @@
     });
   });
 
+
   $(document).ready(function() {
     $('.loan-check-btn').on('click', function() {
       var isbn = $(this).attr('data-isbn');
@@ -345,46 +354,6 @@
       console.log(isbn);
     });
   });
-
-
-
-
-
-
-
-  // function loan_able_check(isbn) {
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   const query = urlParams.get('query');
-  //
-  //   var size = [[${size}]] // "size" 값을 추출하여 변수에 저장
-  //
-  //   $.ajax({
-  //     url: "/mapSearch/markers",
-  //     type: "post",
-  //     data: {},
-  //     dataType: "xml",
-  //     success: function (xml) {
-  //       var searchResult = [[${searchResult.getMeta()}]];
-  //       console.log(searchResult);
-  //       $(xml).find('row').each(function(){
-  //         var book_isbn = $(this).find('ISBN').text();
-  //         console.log(book_isbn);
-  //         if(isbn === book_isbn){
-  //           var loan_status = $(this).find('LOAN_STATUS')[0];
-  //           var loan_status_number = loan_status.textContent.substring(3);
-  //           // var loan_status_name = $(this).find('LOAN_STATUS_NAME')[0];
-  //           // var loan_status_message = loan_status_name.textContent;
-  //           if(loan_status_number === "1"){
-  //             alert("대출 가능합니다.")
-  //           } else {
-  //             alert("대출 불가능합니다. 현재 예약중입니다.")
-  //           }
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
-
 
   document.addEventListener("DOMContentLoaded", function () {
     const loanCheckButtons = document.querySelectorAll(".loan-check-btn");
@@ -397,16 +366,23 @@
 
           const isbn2 = event.target.getAttribute("data-isbn");
           const isbn = BigInt(Number(isbn2));
-          openLibraryPage(isbn.toString(), lat, lon);
+          openPopup(isbn.toString(), lat, lon);
           console.log(isbn, lat, lon);
         });
       });
     });
   });
 
-  function openLibraryPage(isbn, lat, lon) {
+  /*function openLibraryPage(isbn, lat, lon) {
 
-    window.location.href = `/mapBook/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
+    window.location.href = `/map-book/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
+  }*/
+
+  function openPopup(isbn, lat, lon) {
+
+    const url = `/map-book/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
+    window.open(url, 'areaCdInfo', 'width=1200,height=800');
+    return false;
   }
 
 

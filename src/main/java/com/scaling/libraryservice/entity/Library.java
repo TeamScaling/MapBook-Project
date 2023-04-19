@@ -39,6 +39,9 @@ public class Library {
     @Column(name = "TWO_AREA_NM")
     private String twoAreaNm;
 
+    @Column(name = "AREA_CD")
+    private Integer areaCd;
+
     public String getTwoAreaNm(){
 
         return twoAreaNm.split(" ")[0];

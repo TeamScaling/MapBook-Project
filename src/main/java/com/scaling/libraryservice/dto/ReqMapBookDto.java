@@ -21,4 +21,10 @@ public class ReqMapBookDto {
         return oneArea != null & twoArea != null;
     }
 
+    public boolean isValidCoordinate(){
+
+        return this.lat > 33.173360 & this.lat < 38.319297
+            & this.lon > 126.559157 & this.lon <127.225938;
+    }
+
 }
