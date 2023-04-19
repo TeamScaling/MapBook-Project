@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.repository;
 
-import com.scaling.libraryservice.entity.Book;
+import com.scaling.libraryservice.search.entity.Book;
+import com.scaling.libraryservice.search.repository.BookRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

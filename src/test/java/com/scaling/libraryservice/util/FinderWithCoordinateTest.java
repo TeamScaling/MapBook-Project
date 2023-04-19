@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.util;
 
-import com.scaling.libraryservice.entity.Library;
-import com.scaling.libraryservice.entity.Location;
-import com.scaling.libraryservice.repository.LibraryRepository;
+import com.scaling.libraryservice.mapBook.entity.Library;
+import com.scaling.libraryservice.mapBook.dto.Location;
+import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

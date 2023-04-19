@@ -1,8 +1,10 @@
 package com.scaling.libraryservice.service;
 
-import com.scaling.libraryservice.entity.Library;
-import com.scaling.libraryservice.entity.Location;
-import com.scaling.libraryservice.repository.LibraryRepository;
+import com.scaling.libraryservice.mapBook.entity.Library;
+import com.scaling.libraryservice.mapBook.dto.Location;
+import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
+import com.scaling.libraryservice.mapBook.service.ApiQueryService;
+import com.scaling.libraryservice.mapBook.service.MapBookService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

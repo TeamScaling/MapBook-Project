@@ -1,9 +1,9 @@
 package com.scaling.libraryservice;
 
-import com.scaling.libraryservice.dto.LoanItemDto;
-import com.scaling.libraryservice.service.ApiBindService;
-import com.scaling.libraryservice.service.ApiDataManageService;
-import com.scaling.libraryservice.service.ApiQueryService;
+import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
+import com.scaling.libraryservice.mapBook.service.ApiBindService;
+import com.scaling.libraryservice.mapBook.service.ApiDataManageService;
+import com.scaling.libraryservice.mapBook.service.ApiQueryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
