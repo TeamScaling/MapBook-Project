@@ -1,0 +1,8 @@
+#log:
+#  config:
+#    path: /logs/local
+#    filename: local_log
+
+#logging:
+#  level:
+#    root: warn
