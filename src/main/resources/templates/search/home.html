@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>책있나?</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    /* 전체 레이아웃 */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      font-family: sans-serif;
+    }
+
+    /* 헤더 */
+    header {
+      background-color: white;
+      color: black;
+      padding: 20px;
+    }
+
+    /* 메인 섹션 */
+    main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 200px;
+    }
+
+    .search-box {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,.1);
+    }
+
+    input[type="text"] {
+      width: 350px;
+      height: 30px;
+      padding: 5px;
+      border: none;
+      border-radius: 5px 0 0 5px;
+      outline: none;
+      background-color: #f2f2f2;
+    }
+
+    button[type="submit"] {
+      height: 40px;
+      width: 40px;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      background-color: midnightblue;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover{
+      background-color: steelblue;
+    }
+    /* select 요소 안의 option 태그에 스타일 적용 */
+    select {
+      border: #ffffff;
+      font-size: 13px;
+      border-radius: 4px;
+    }
+
+    /* 푸터 */
+    footer {
+      background-color: white;
+      color: black;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+  <script>
+    function goToLibraryView() {
+      window.location.href = "/library/searchView";
+    }
+  </script>
+</head>
+<body>
+<header>
+</header>
+<main>
+  <div class="search-box">
+    <h1>MapBook</h1>
+    <p>지식의 지도, MapBook에 오신 것을 환영합니다.</p>
+    <form action="/books/search">
+      <select name="target" aria-label="선택">
+        <option value="title">도서명</option>
+        <option value="author">저자</option>
+        <option value="publisher">출판사</option>
+        <option value="all">전체</option>
+      </select>
+      <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
+      <button type="submit">검색</button>
+    </form>
+    <button type="submit" onclick="goToLibraryView()">도서관View</button>
+  </div>
+</main>
+<footer class>
+  <p>&copy; 2023 HanghaeLibrary reserved.</p>
+</footer>
+</body>
+</html>

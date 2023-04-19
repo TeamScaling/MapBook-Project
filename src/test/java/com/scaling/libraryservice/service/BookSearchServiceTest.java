@@ -1,12 +1,12 @@
 package com.scaling.libraryservice.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.scaling.libraryservice.dto.RespBooksDto;
-import com.scaling.libraryservice.entity.Book;
-import com.scaling.libraryservice.repository.BookRepository;
-import java.util.Collections;
+import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.entity.Book;
+import com.scaling.libraryservice.search.repository.BookRepository;
+import com.scaling.libraryservice.search.service.BookSearchService;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -54,7 +53,7 @@ class BookSearchServiceTest {
         int size = 10;
 
         /* when */
-        RespBooksDto books = bookSearchService.searchByTitle(query, page, size);
+        RespBooksDto books = bookSearchService.searchBooks(query, page, size,"title");
 
         /* then */
         //Assertions 로 검색결과가 있는지 확인

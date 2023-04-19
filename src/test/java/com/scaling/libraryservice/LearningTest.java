@@ -23,4 +23,10 @@ public class LearningTest {
         service.shutdown();
     }
 
+    @Test
+    public void hashSet_List(){
+
+
+    }
+
 }
