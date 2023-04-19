@@ -12,15 +12,15 @@ import org.json.JSONObject;
 @ToString
 public class LoanItemDto {
 
-    private final int no;
+    private final Integer no;
 
-    private final int ranking;
+    private final Integer ranking;
 
     private final String bookName;
 
     private final Double isbn13;
 
-    private final int loan_count;
+    private final Integer loan_count;
 
     public LoanItemDto(JSONObject obj) {
 

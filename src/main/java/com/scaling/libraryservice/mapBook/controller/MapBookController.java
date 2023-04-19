@@ -30,7 +30,25 @@ public class MapBookController {
     private final LibraryFindService libraryFindService;
     private final ApiBindService apiBindService;
 
-    @GetMapping("/map-book/search")
+    public String getLoanableMapBookSingle(ModelMap model,
+        @ModelAttribute ReqMapBookDto mapBookDto) {
+
+        LibraryDto nearestLibrary
+            = libraryFindService.findNearestLibraryWithCoordinate(mapBookDto);
+
+        var responseEntity
+            = apiQueryService.singleQuery(nearestLibrary.createParamMap(mapBookDto.getIsbn()));
+
+        ApiBookExistDto bookExist
+            = apiBindService.getBookExistDto(responseEntity);
+        
+
+        model.put("mapBooks", bookExist);
+
+        return "mapBook/mapBookMarker";
+    }
+
+    @GetMapping("/books/mapBook/search")
     public String getLoanableMapBookMarkers(ModelMap model,
         @ModelAttribute ReqMapBookDto mapBookDto) {
 
@@ -55,42 +73,5 @@ public class MapBookController {
         return "mapBook/mapBookMarker";
     }
 
-    @GetMapping("/library/searchView")
-    public String mapBookView(ModelMap model) {
-
-        model.put("libraryMeta", libraryFindService.getLibraryMeta());
-
-        return "libraryView/viewSearch";
-    }
-
-    @PostMapping("/library/all")
-    public String getLibraryAll(ModelMap model) {
-
-        List<LibraryDto> libraries = libraryFindService.getLibraries();
-
-        model.put("libraries", libraries);
-
-        return "mapBook/LibraryMarkers";
-    }
-
-    @GetMapping("/library/mapSearch")
-    public String getLibrariesByAreaCd(ModelMap model, @RequestParam("areaCd") int areaCd) {
-
-        List<LibraryDto> libraries
-            = libraryFindService.findLibrariesByAreaCd(areaCd);
-
-        if (!libraries.isEmpty()) {
-
-            LibraryDto libraryDto = libraries.get(0);
-
-            String metaStr = areaCd + " / " + libraryDto.getFullAreaNm();
-
-            model.put("meta", metaStr);
-        }
-
-        model.put("libraries", libraries);
-
-        return "mapBook/LibraryMarkers";
-    }
 
 }

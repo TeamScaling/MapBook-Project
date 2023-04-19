@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j @Setter @Getter
+@Slf4j
+@Setter
+@Getter
 public class LibraryFindService {
 
     private List<LibraryDto> libraries;
@@ -34,46 +36,53 @@ public class LibraryFindService {
         this.libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
     }
 
-    public List<LibraryDto> findLibrariesByAreaCd(int areaCd){
-
-        return libraries.stream().filter(l -> l.getAreaCd() == areaCd).toList();
-    }
-
-    // 변경 사항 없이 안전한 LibraryMeta이기에 Dto로 전환 X
-    public List<LibraryMeta> getLibraryMeta(){
-
-        return libraryMetaRepo.findAll();
-    }
-
+    // 사용자의 위치 정보 또는 주소 선택 정보에 따라 사용자 주변의 도서관을 반환 한다.
     @Timer
     public List<LibraryDto> findNearByLibraries(ReqMapBookDto userLocation)
-    throws LocationException{
-        
-        if (!userLocation.isValidCoordinate()){
-            
-            throw new LocationException("잘못된 위치 정보");
-        }
-        
+        throws LocationException {
+
         // 사용자의 위치 정보(위도/경도)가 없고, 찾고자 하는 도서관 지역을 선택 했을 때,
         if (userLocation.isAddressRequest()) {
 
             return findNearestLibraryWithAddress(userLocation);
         } else {
 
+            if (!userLocation.isValidCoordinate()) {
+                throw new LocationException("잘못된 위치 정보");
+            }
+
             // 사용자가 위치 정보 방식으로 요청 했을 때, 전달 받은 사용자의 위도/경도를 기준으로 가장 가까운 도서관을 찾는다.
             LibraryDto nearestLibrary
-                = findNearestLibraryWithCoordinate(userLocation).orElseThrow(LocationException::new);
+                = findNearestLibraryWithCoordinate(userLocation);
 
-            return getNearByLibraries(nearestLibrary.getOneAreaNm(),nearestLibrary.getTwoAreaNm());
+            return getNearByLibraries(nearestLibrary.getAreaCd());
         }
-
     }
 
+    // 사용자 근처의 도서관이 아닌 선택한 지역의 도서관
+    public List<LibraryDto> findLibraries(int areaCd) throws LocationException {
+
+        var result
+            = libraries.stream().filter(l -> l.getAreaCd() == areaCd).toList();
+
+        if (result.isEmpty()) {
+            throw new LocationException("[존재하지 않는 area Code] area Code : " + areaCd);
+        }
+
+        return result;
+    }
+
+    // viewSearch.html에서 참고할 도서관 메타 정보.
+    public List<LibraryMeta> getLibraryMeta() {
+
+        return libraryMetaRepo.findAll();
+    }
+
+    // 사용자의 위치 정보와 가장 거리가 가까운 도서관을 찾는다.
     @Timer
-    private Optional<? extends LibraryDto> findNearestLibraryWithCoordinate(ReqMapBookDto userLocation) {
-        
-        
-        // 사용자의 위치 정보와 가장 거리가 가까운 도서관을 찾는다.
+    public LibraryDto findNearestLibraryWithCoordinate(ReqMapBookDto userLocation)
+        throws LocationException {
+
         return libraries.stream().min((l1, l2) -> {
 
             double d1 = HaversineCalculater.calculateDistance(
@@ -83,10 +92,10 @@ public class LibraryFindService {
                 userLocation.getLat(), userLocation.getLon(), l2.getLibLat(), l2.getLibLon());
 
             return Double.compare(d1, d2);
-        });
+        }).orElseThrow(() -> new LocationException("최단 거리 도서관 찾기 실패"));
     }
 
-    // 사용자가 위치 정보 대신 주소 방식을 선택 했을 때, 호출 된다.
+    // 사용자가 위치 정보 대신 주소 방식을 선택 했을 때 호출 된다.
     private List<LibraryDto> findNearestLibraryWithAddress(ReqMapBookDto userLocation) {
 
         Objects.requireNonNull(userLocation);
@@ -97,10 +106,17 @@ public class LibraryFindService {
     // oneArea - '도/특별시/광역시' / twoArea - '시/군/구'
     private List<LibraryDto> getNearByLibraries(String oneArea, String twoArea) {
 
-       return libraries.stream()
+        return libraries.stream()
             .filter(i -> i.getOneAreaNm().equals(oneArea)
                 & i.getTwoAreaNm().equals(twoArea))
             .toList();
+    }
+
+    // 사용자 근처의 도서관 areaCd - 도/특별시/광역시 + 시/군/구를 합쳐서 만든 지역 code
+    private List<LibraryDto> getNearByLibraries(int areaCd) {
+
+        return libraries.stream()
+            .filter(i -> i.getAreaCd() == areaCd).toList();
     }
 
 

@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.service;
+package com.scaling.libraryservice.mapBook.service;
 
 import com.scaling.libraryservice.mapBook.entity.Library;
 import com.scaling.libraryservice.mapBook.dto.Location;

@@ -42,6 +42,18 @@ public class ApiBindService {
         return respOpenApiDtoMap;
     }
 
+    @Timer //Http 응답 결과를 필요한 객체로 Mapping 하고, 도서관 코드를 key로 하는 Map으로 담는다.
+    public ApiBookExistDto getBookExistDto(ResponseEntity<String> apiResponse)
+        throws OpenApiException {
+
+        Objects.requireNonNull(apiResponse);
+
+        JSONObject respJsonObj = getJsonObjFromResponse(apiResponse);
+
+        return new ApiBookExistDto(respJsonObj.getJSONObject("request"),
+            respJsonObj.getJSONObject("result"));
+    }
+
     public List<LoanItemDto> getLoanItem(ResponseEntity<String> responseEntity)
         throws OpenApiException {
 

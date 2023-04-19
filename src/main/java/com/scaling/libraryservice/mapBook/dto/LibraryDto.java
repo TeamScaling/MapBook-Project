@@ -7,10 +7,13 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 // Library entity를 담는 dto
-@Getter @Setter
+@Getter
+@Setter
 @ToString
+@Slf4j
 public class LibraryDto implements ParamMapCreatable {
 
     private String libNm;
@@ -43,9 +46,9 @@ public class LibraryDto implements ParamMapCreatable {
         this.areaCd = library.getAreaCd();
     }
 
-    public String getFullAreaNm(){
+    public String getFullAreaNm() {
 
-        return this.oneAreaNm+" "+this.twoAreaNm;
+        return this.oneAreaNm + " " + this.twoAreaNm;
     }
 
     @Override
@@ -53,10 +56,10 @@ public class LibraryDto implements ParamMapCreatable {
 
         Map<String, String> paramMap = new HashMap<>();
 
-        paramMap.put("apiUri","http://data4library.kr/api/bookExist");
+        paramMap.put("apiUri", "http://data4library.kr/api/bookExist");
         paramMap.put("libCode", String.valueOf(this.libNo));
         paramMap.put("isbn13", target);
-        paramMap.put("format","json");
+        paramMap.put("format", "json");
 
         return paramMap;
     }

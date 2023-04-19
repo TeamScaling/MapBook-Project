@@ -18,7 +18,7 @@
   <script>
     function openPopup() {
       const areaCd = document.getElementById('search-input').value;
-      const url = `/library/mapSearch?areaCd=${areaCd}`;
+      const url = `/mapLibrary/search?areaCd=${areaCd}`;
       window.open(url, 'areaCdInfo', 'width=1200,height=800');
       return false;
     }
@@ -33,7 +33,7 @@
 </div>
 <br>
 <div id="search-form">
-  <form action="/library/all" method="post">
+  <form action="/mapLibrary/all" method="post">
     <button type="submit">도서관 전체 보기</button>
   </form>
 </div>
