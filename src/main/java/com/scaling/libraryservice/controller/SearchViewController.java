@@ -16,9 +16,9 @@ public class SearchViewController {
 
     private final BookSearchService searchService;
 
-    @GetMapping("/books")
+    @GetMapping("/")
     public String home() {
-        return "home";
+        return "search/home";
     }
 
     @GetMapping("/books/search")
@@ -37,6 +37,6 @@ public class SearchViewController {
         }
         //fixme : query가 empty일 때, 사용자가 공백 검색을 못하게 alert를 띄운다.
 
-        return "searchResult";
+        return "search/searchResult";
     }
 }

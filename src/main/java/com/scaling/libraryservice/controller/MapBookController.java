@@ -5,8 +5,8 @@ import com.scaling.libraryservice.dto.LibraryDto;
 import com.scaling.libraryservice.dto.ReqMapBookDto;
 import com.scaling.libraryservice.dto.RespMapBookDto;
 import com.scaling.libraryservice.service.ApiBindService;
-import com.scaling.libraryservice.service.LibraryFindService;
 import com.scaling.libraryservice.service.ApiQueryService;
+import com.scaling.libraryservice.service.LibraryFindService;
 import com.scaling.libraryservice.service.MapBookService;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +17,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,14 +26,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class MapBookController {
 
     private final MapBookService mapBookService;
-
     private final ApiQueryService apiQueryService;
-
     private final LibraryFindService libraryFindService;
-
     private final ApiBindService apiBindService;
 
-    @GetMapping("/mapBook/search")
+    @GetMapping("/map-book/search")
     public String getLoanableMapBookMarkers(ModelMap model,
         @ModelAttribute ReqMapBookDto mapBookDto) {
 
@@ -43,7 +42,6 @@ public class MapBookController {
         List<ResponseEntity<String>> loanableLibraries
             = apiQueryService.multiQuery(nearByLibraries, mapBookDto.getIsbn(), 10);
 
-
         // 대출 가능 도서 응답 데이터를 담는 객체 map으로 바인딩 한다.
         Map<Integer, ApiBookExistDto> apiBookExistMap
             = apiBindService.getBookExistMap(loanableLibraries);
@@ -54,7 +52,45 @@ public class MapBookController {
 
         model.put("mapBooks", mapBooks);
 
-        return "mapMarker";
+        return "mapBook/mapBookMarker";
+    }
+
+    @GetMapping("/library/searchView")
+    public String mapBookView(ModelMap model) {
+
+        model.put("libraryMeta", libraryFindService.getLibraryMeta());
+
+        return "libraryView/viewSearch";
+    }
+
+    @PostMapping("/library/all")
+    public String getLibraryAll(ModelMap model) {
+
+        List<LibraryDto> libraries = libraryFindService.getLibraries();
+
+        model.put("libraries", libraries);
+
+        return "mapBook/LibraryMarkers";
+    }
+
+    @GetMapping("/library/mapSearch")
+    public String getLibrariesByAreaCd(ModelMap model, @RequestParam("areaCd") int areaCd) {
+
+        List<LibraryDto> libraries
+            = libraryFindService.findLibrariesByAreaCd(areaCd);
+
+        if (!libraries.isEmpty()) {
+
+            LibraryDto libraryDto = libraries.get(0);
+
+            String metaStr = areaCd + " / " + libraryDto.getFullAreaNm();
+
+            model.put("meta", metaStr);
+        }
+
+        model.put("libraries", libraries);
+
+        return "mapBook/LibraryMarkers";
     }
 
 }

@@ -3,24 +3,29 @@ package com.scaling.libraryservice.service;
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.dto.LibraryDto;
 import com.scaling.libraryservice.dto.ReqMapBookDto;
+import com.scaling.libraryservice.entity.LibraryMeta;
 import com.scaling.libraryservice.exception.LocationException;
+import com.scaling.libraryservice.repository.LibraryMetaRepository;
 import com.scaling.libraryservice.repository.LibraryRepository;
 import com.scaling.libraryservice.util.HaversineCalculater;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-@Slf4j
+@Slf4j @Setter @Getter
 public class LibraryFindService {
 
     private List<LibraryDto> libraries;
     private final LibraryRepository libraryRepo;
+    private final LibraryMetaRepository libraryMetaRepo;
 
     @PostConstruct
     private void init() {
@@ -29,9 +34,26 @@ public class LibraryFindService {
         this.libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
     }
 
-    @Timer
-    public List<LibraryDto> findNearByLibraries(ReqMapBookDto userLocation) {
+    public List<LibraryDto> findLibrariesByAreaCd(int areaCd){
 
+        return libraries.stream().filter(l -> l.getAreaCd() == areaCd).toList();
+    }
+
+    // 변경 사항 없이 안전한 LibraryMeta이기에 Dto로 전환 X
+    public List<LibraryMeta> getLibraryMeta(){
+
+        return libraryMetaRepo.findAll();
+    }
+
+    @Timer
+    public List<LibraryDto> findNearByLibraries(ReqMapBookDto userLocation)
+    throws LocationException{
+        
+        if (!userLocation.isValidCoordinate()){
+            
+            throw new LocationException("잘못된 위치 정보");
+        }
+        
         // 사용자의 위치 정보(위도/경도)가 없고, 찾고자 하는 도서관 지역을 선택 했을 때,
         if (userLocation.isAddressRequest()) {
 
@@ -48,8 +70,9 @@ public class LibraryFindService {
     }
 
     @Timer
-    public Optional<? extends LibraryDto> findNearestLibraryWithCoordinate(ReqMapBookDto userLocation) {
-
+    private Optional<? extends LibraryDto> findNearestLibraryWithCoordinate(ReqMapBookDto userLocation) {
+        
+        
         // 사용자의 위치 정보와 가장 거리가 가까운 도서관을 찾는다.
         return libraries.stream().min((l1, l2) -> {
 

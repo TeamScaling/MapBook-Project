@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 // Library entity를 담는 dto
 @Getter @Setter
+@ToString
 public class LibraryDto implements ParamMapCreatable {
 
     private String libNm;
@@ -27,6 +29,8 @@ public class LibraryDto implements ParamMapCreatable {
 
     private String twoAreaNm;
 
+    private Integer areaCd;
+
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();
         this.libNo = library.getLibNo();
@@ -36,6 +40,12 @@ public class LibraryDto implements ParamMapCreatable {
         this.libUrl = library.getLibUrl();
         this.oneAreaNm = library.getOneAreaNm();
         this.twoAreaNm = library.getTwoAreaNm();
+        this.areaCd = library.getAreaCd();
+    }
+
+    public String getFullAreaNm(){
+
+        return this.oneAreaNm+" "+this.twoAreaNm;
     }
 
     @Override
