@@ -94,11 +94,26 @@
         <option value="publisher">출판사</option>
         <option value="all">전체</option>
       </select>
-      <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
-      <button type="submit">검색</button>
+      <label>
+        <input type="text" name="query" placeholder="검색어를 입력하세요">
+      </label>
+      <button type="button" onclick="handleSearch()">검색</button>
+      <p>
     </form>
     <button type="submit" onclick="goToLibraryView()">도서관View</button>
   </div>
+  <script>
+    //2자미만 검색시 알람
+    function handleSearch() {
+      const query = document.querySelector('input[name="query"]').value.trim();
+      if (query.length < 2) {
+        alert('검색어를 두글자 이상 입력해주세요');
+      } else {
+        location.href = `/books/search?target=all&query=${query}`;
+      }
+    }
+
+  </script>
 </main>
 <footer class>
   <p>&copy; 2023 HanghaeLibrary reserved.</p>
