@@ -91,6 +91,7 @@
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left; /* left에서 center로 수정 */
+
     }
 
     /* th: 컬럼 제목 부분 */
@@ -120,6 +121,18 @@
     #book-info-column tr:hover td {
       color: black;
     }
+
+    /*복사버튼 사이즈*/
+
+    .copy-btn {
+      width: 40px;
+      max-width: 100px;
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer; /* 클릭 가능한 요소로 변경 */
+
+    }
+
 
     /*번호,제목,이미지*/
 
@@ -309,6 +322,17 @@
       color: #333;
     }
 
+    /*홈버튼*/
+    .home-button {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+      margin-top: -10px;
+      vertical-align: middle;
+      border: none;
+      background-color: transparent;
+    }
 
     /*.pagination .current a {*/
     /*  background-color: #007bff;*/
@@ -337,7 +361,17 @@
         <span th:text="${size}"></span>건이 검색되었습니다.
       </p>
     </form>
+
+    <div>
+      <a href="/" class="home-button">
+        <span>Home</span>
+      </a>
+    </div>
   </div>
+
+<!--  홈버튼-->
+
+
 </header>
 
 <script>
@@ -371,6 +405,8 @@
       <tr>
         <th>번호</th>
         <th>도서 제목</th>
+        <th>제목<br>복사</th>
+        <th>작가</th>
         <th>내용</th>
         <th>이미지</th>
         <th>대출 가능한 <br>주변 도서관</th>
@@ -379,15 +415,24 @@
                   <tbody id="book-info-column">
                   <tr th:each="book : ${searchResult.documents}">
                     <td th:text="${book.seqId}"></td>
-                    <td th:text="${book.title}"></td>
+                    <td>
+                      <span th:text="${book.title}"></span>
+                    </td>
+                    <td><button class="copy-btn" th:data-title="${book.title}">복사</button></td>
+                    <td th:text="${book.author}"></td>
                     <td th:text="${book.content}"></td>
                     <td>
-                      <img class="book-image" th:src="${book.bookImg}" alt="준비중"  src="../static/images/empty_img.png"/>
+                      <img class="book-image" th:src="${book.bookImg}" alt="준비중" src="../static/images/empty_img.png"/>
                     </td>
                     <td><button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()"> 내 주변<br>도서관</button></td>
                   </tr>
-      </tbody>
+
+                  </tbody>
     </table>
+
+    <div class="alert alert-success" role="alert" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
+      도서 제목이 클립보드에 복사되었습니다.
+    </div>
 
   </div>
 </main>
@@ -410,6 +455,53 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  // 제목 복사 붙여넣기 기능
+  // var copyBtns = document.querySelectorAll('.copy-btn');
+  // copyBtns.forEach(function(btn) {
+  //   btn.addEventListener('click', function(event) {
+  //     // 이벤트 버블링 방지
+  //     event.stopPropagation();
+  //
+  //     // 클립보드에 복사할 텍스트 가져오기
+  //     var text = event.target.dataset.title;
+  //
+  //     // 클립보드에 복사
+  //     navigator.clipboard.writeText(text)
+  //     .then(function() {
+  //       console.log('제목이 클립보드에 복사되었습니다.');
+  //     })
+  //     .catch(function(err) {
+  //       console.error('클립보드 복사에 실패하였습니다.', err);
+  //     });
+  //   });
+  // });
+
+  var copyBtns = document.querySelectorAll('.copy-btn');
+  var alertBox = document.querySelector('.alert');
+  copyBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(event) {
+      // 이벤트 버블링 방지
+      event.stopPropagation();
+
+      // 클립보드에 복사할 텍스트 가져오기
+      var text = event.target.dataset.title;
+
+      // 클립보드에 복사
+      navigator.clipboard.writeText(text)
+      .then(function() {
+        console.log('제목이 클립보드에 복사되었습니다.');
+        // 알람 띄우기
+        alertBox.style.display = 'block';
+        setTimeout(function() {
+          alertBox.style.display = 'none';
+        }, 500); // 0.5초 후 알람 닫기
+      })
+      .catch(function(err) {
+        console.error('클립보드 복사에 실패하였습니다.', err);
+      });
+    });
+  });
+
   function openPopup() {
     const areaCd = document.getElementById('search-input').value;
     const url = `/library/mapSearch?areaCd=${areaCd}`;
