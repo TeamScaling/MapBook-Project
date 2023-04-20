@@ -1,5 +1,7 @@
 package com.scaling.libraryservice.mapBook.service;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
@@ -10,6 +12,7 @@ import com.scaling.libraryservice.mapBook.util.MapBookMatcher;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,48 +24,47 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CacheMapBookService {
 
-
-    private Map<ReqMapBookDto, List<RespMapBookDto>> cachedReqMapBook;
+    private Cache<ReqMapBookDto, List<RespMapBookDto>> cacheManager;
     private final LibraryFindService libraryFindService;
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
     private final MapBookMatcher mapBookMatcher;
 
-
     @PostConstruct
     public void init() {
-        this.cachedReqMapBook = new ConcurrentHashMap<>();
+        this.cacheManager = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(1000)
+            .build();
+
     }
 
     public List<RespMapBookDto> getMapBooks(ReqMapBookDto mapBookDto) {
 
-        String isbn13 = mapBookDto.getIsbn();
+        List<RespMapBookDto> value = cacheManager.getIfPresent(mapBookDto);
 
-        if (cachedReqMapBook.containsKey(mapBookDto)) {
+        if (value != null) {
 
             log.info(mapBookDto.getIsbn() + "  cache hit !!!!!!!!!!!!!!!!");
-            return cachedReqMapBook.get(mapBookDto);
 
         } else {
 
             log.info(mapBookDto.getIsbn() + "  cache miss...............");
 
-            List<LibraryDto> nearByLibraries
-                = libraryFindService.getNearByLibraries(mapBookDto);
+            List<LibraryDto> nearByLibraries = libraryFindService.getNearByLibraries(mapBookDto);
 
-            List<ResponseEntity<String>> responseEntities
-                = apiQuerySender.multiQuery(nearByLibraries, isbn13, 10);
+            Map<Integer, ApiBookExistDto> bookExistMap = apiQueryBinder.bindBookExistMap(
+                apiQuerySender.multiQuery(
+                    nearByLibraries,
+                    mapBookDto.getIsbn(),
+                    nearByLibraries.size()));
 
-            Map<Integer, ApiBookExistDto> bookExistMap
-                = apiQueryBinder.bindBookExistMap(responseEntities);
+            value = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
 
-            List<RespMapBookDto> result
-                = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
-
-            cachedReqMapBook.put(mapBookDto, result);
-
-            return result;
+            cacheManager.put(mapBookDto, value);
         }
+
+        return value;
     }
 
 

@@ -2,6 +2,7 @@ package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -24,12 +26,27 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @Slf4j
-@RequiredArgsConstructor
-@Setter @Getter
+@Setter
+@Getter
 public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
 
+    public ApiQuerySender() {
+
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(3000);
+
+        this.restTemplate = new RestTemplate(factory);
+    }
+
+    public ApiQuerySender(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    @Timer
     // OpenAPI에 단일 요청을 보낸다.
     public ResponseEntity<String> singleQueryJson(UriComponentsBuilder uriBuilder)
         throws RestClientException {
@@ -41,8 +58,11 @@ public class ApiQuerySender {
         ResponseEntity<String> resp;
 
         try {
-            resp = restTemplate.exchange(uriBuilder.toUriString(),
-                HttpMethod.GET, HttpEntity.EMPTY, String.class);
+            resp = restTemplate.exchange(
+                uriBuilder.toUriString(),
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                String.class);
 
         } catch (RestClientException e) {
             log.error(e.toString());

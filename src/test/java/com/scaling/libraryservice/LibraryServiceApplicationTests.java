@@ -1,8 +1,8 @@
 package com.scaling.libraryservice;
 
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.service.ApiDataManageService;
+import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +19,7 @@ class LibraryServiceApplicationTests {
     private ApiQuerySender apiQuerySender;
 
     private ApiQueryBinder apiQueryBinder;
+
 
     @BeforeEach
     public void setUp() {
@@ -37,5 +38,6 @@ class LibraryServiceApplicationTests {
         updateService.addLoanItemList(list);
 
     }
+
 
 }

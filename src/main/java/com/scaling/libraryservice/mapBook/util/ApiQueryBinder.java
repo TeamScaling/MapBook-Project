@@ -41,7 +41,8 @@ public class ApiQueryBinder {
 
         JSONObject respJsonObj = getJsonObjFromResponse(apiResponse);
 
-        return new ApiBookExistDto(respJsonObj.getJSONObject("request"),
+        return new ApiBookExistDto(
+            respJsonObj.getJSONObject("request"),
             respJsonObj.getJSONObject("result"));
     }
 
@@ -49,8 +50,9 @@ public class ApiQueryBinder {
         throws OpenApiException {
 
         JSONObject respJsonObj = getJsonObjFromResponse(responseEntity);
-        List<LoanItemDto> result = new ArrayList<>();
         JSONArray jsonArray = respJsonObj.getJSONArray("docs");
+
+        List<LoanItemDto> result = new ArrayList<>();
 
         for (int i = 0; i < jsonArray.length(); i++) {
             result.add(new LoanItemDto(jsonArray.getJSONObject(i).getJSONObject("doc")));

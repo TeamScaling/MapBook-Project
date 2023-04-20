@@ -5,7 +5,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.github.tomakehurst.wiremock" level="TRACE">
+    <logger name="com.github.tomakehurst.wiremock" level="INFO">
         <appender-ref ref="STDOUT" />
     </logger>
 
