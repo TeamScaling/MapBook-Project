@@ -29,4 +29,7 @@ public class Book {
 
     @Column(name = "ISBN_THIRTEEN_NO")
     private String isbn;
+
+    @Column(name = "IMAGE_URL")
+    private String bookImg;
 }
