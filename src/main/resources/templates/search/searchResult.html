@@ -26,17 +26,22 @@
       align-items: center;
     }
 
+    /*테이블 맥스 미니멈 사이즈*/
+
     table{
-      min-width: 1200px;
+      min-width: 700px;
+      max-width: 1000px;
     }
 
     div[id="book-info-box"] {
       padding: 10px;
     }
 
+    /*대출 가능한 주변도서관 버튼*/
+
     button[type="submit"] {
       height: 40px;
-      width: 40px;
+      width: 40px; /* 변경된 부분 */
       border: none;
       border-radius: 0 5px 5px 0;
       background-color: midnightblue;
@@ -71,32 +76,137 @@
       margin: 5px;
     }
 
+    /*책 정보 보여주는 테이블*/
+
     #book-info-column {
       border-collapse: collapse;
-      width: 100%;
+      /*background: cornflowerblue;*/
+      min-width: 800px;
+      max-width: 1200px;
     }
 
-    #book-info-column td, #book-info-column th {
+    /*td : 컬럼 내용   */
+
+    #book-info-column td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
+      /*background: crimson;*/
+    }
+
+    /* th: 컬럼 제목 부분 */
+    #book-info-column th {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: right;
+      /*background: crimson;*/
     }
 
     #book-info-column th {
       padding-top: 12px;
       padding-bottom: 12px;
-      text-align: left;
+      text-align: center;
       background-color: #4CAF50;
       color: white;
     }
+
 
     #book-info-column tr:nth-child(even) {
       background-color: #f2f2f2;
     }
 
+    /*마우스 올렸을 때 컬럼 색 변경*/
+    /*#book-info-column tr:hover {*/
+    /*  background-color: cadetblue;*/
+    /*  border-color: white;*/
+    /*}*/
+
     #book-info-column tr:hover {
-      background-color: #ddd;
+      background-color: lightblue;
+      border-color: white;
     }
+
+    #book-info-column tr:hover td {
+      color: black;
+    }
+
+    /*번호,제목,이미지*/
+
+    .seqId-col {
+      width: 50px;
+      max-width: 200px;
+      background: crimson;
+      text-align: center;
+
+    }
+
+    .title-col {
+      width: 150px;
+      max-width: 150px;
+      text-align: center;
+
+    }
+
+    .content-col {
+      width: 300px;
+      max-width: 300px;
+      text-align: center;
+
+    }
+
+    /*책이미지 들어가는 곳*/
+    .book-image {
+      max-width: 80px;
+      max-height: 120px;
+      display: block;
+      margin: 0 auto;
+    }
+
+
+
+    .loan-check-btn {
+      width: 60px;
+      max-width: 100px;
+      text-align: center;
+
+    }
+
+    .book-table {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    /*책 이미지*/
+
+    .book-image {
+      width: 100px;
+      /*height: 150px;*/
+      vertical-align: top;
+    }
+
+    /*.book-info {*/
+    /*  width: calc(100% - 150px);*/
+    /*  height: 150px;*/
+    /*}*/
+
+    /*.book-info td:first-child {*/
+    /*  width: 50px;*/
+    /*}*/
+
+    /*.book-info td:nth-child(2),*/
+    /*.book-info td:nth-child(3) {*/
+    /*  width: 300px;*/
+    /*}*/
+
+    /*.book-info td:last-child {*/
+    /*  width: 50px;*/
+    /*}*/
+
+
+
+
+
+    /*페이지 처리*/
 
     .pagination {
       display: flex;
@@ -124,9 +234,11 @@
       background-color: steelblue;
     }
 
+    /*검색박스*/
+
     .search-box {
-      width: 538px;
-      height: 100px;
+      width: 540px;
+      height: 120px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -225,12 +337,19 @@
         <option value="publisher">출판사</option>
         <option value="all">전체</option>
       </select>
-      <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
-      <button type="submit">검색</button>
-      <p><span id="search-query"></span>에 대한 자료검색 결과이며 총 도서 수: <span th:text="${size}"></span>건이 검색되었습니다.</p>
+      <label>
+        <input type="text" name="query" placeholder="검색어를 입력하세요">
+      </label>
+      <button type="button" onclick="handleSearch()">검색</button>
+      <p>
+        <span id="query"></span>에 대한 자료검색 결과이며 총 도서 수:
+        <span th:text="${size}"></span>건이 검색되었습니다.
+      </p>
     </form>
   </div>
+
 </header>
+
 <main>
   <div>
     <table>
@@ -239,34 +358,39 @@
         <th>번호</th>
         <th>도서 제목</th>
         <th>내용</th>
+        <th>이미지</th>
         <th>대출 가능한 <br>주변 도서관</th>
-      </tr>
-      </thead>
-      <tbody id="book-info-column">
-      <tr th:each="book : ${searchResult.documents}">
-        <td th:text="${book.seqId}"></td>
-        <td th:text="${book.title}"></td>
-        <td th:text="${book.content}"></td>
-        <td><button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()"> 내 주변 도서관</button></td>
-      </tr>
+                  </tr>
+                  </thead>
+                  <tbody id="book-info-column">
+                  <tr th:each="book : ${searchResult.documents}">
+                    <td th:text="${book.seqId}"></td>
+                    <td th:text="${book.title}"></td>
+                    <td th:text="${book.content}"></td>
+                    <td>
+                      <img class="book-image" th:src="${book.bookImg}" alt="준비중"  src="../static/images/empty_img.png"/>
+                    </td>
+                    <td><button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()"> 내 주변<br>도서관</button></td>
+                  </tr>
       </tbody>
     </table>
+
   </div>
 </main>
 <footer>
   <div class="pagination">
     <button id="prevBtn">Prev</button>
-<!--    <a href="#" id="prevBtn" class="page-link prev" aria-label="Previous">-->
-      <span aria-hidden="true">&laquo;</span>
-      <span class="sr-only">Previous</span>
-<!--    </a>-->
+    <!--    <a href="#" id="prevBtn" class="page-link prev" aria-label="Previous">-->
+    <span aria-hidden="true">&laquo;</span>
+    <span class="sr-only">Previous</span>
+    <!--    </a>-->
     <ul class="pages">
     </ul>
     <button id="nextBtn">Next</button>
-<!--    <a href="#" id="nextBtn" class="page-link next" aria-label="Next">-->
-      <span aria-hidden="true">&raquo;</span>
-      <span class="sr-only">Next</span>
-<!--    </a>-->
+    <!--    <a href="#" id="nextBtn" class="page-link next" aria-label="Next">-->
+    <span aria-hidden="true">&raquo;</span>
+    <span class="sr-only">Next</span>
+    <!--    </a>-->
   </div>
 </footer>
 
