@@ -1,9 +1,9 @@
 package com.scaling.libraryservice;
 
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.mapBook.service.ApiBindService;
+import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.service.ApiDataManageService;
-import com.scaling.libraryservice.mapBook.service.ApiQueryService;
+import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +16,23 @@ class LibraryServiceApplicationTests {
     @Autowired
     private ApiDataManageService updateService;
 
-    private ApiQueryService apiQueryService;
+    private ApiQuerySender apiQuerySender;
 
-    private ApiBindService apiBindService;
+    private ApiQueryBinder apiQueryBinder;
 
     @BeforeEach
     public void setUp() {
-        apiQueryService = new ApiQueryService(new RestTemplate());
-        apiBindService = new ApiBindService();
+        apiQuerySender = new ApiQuerySender(new RestTemplate());
+        apiQueryBinder = new ApiQueryBinder();
     }
 
     @Test
     void contextLoads() {
 
         var result
-            = apiQueryService.singleQuery(LoanItemDto.createParamMap(5000));
+            = apiQuerySender.singleQueryJson(new LoanItemDto().configUriBuilder("100"));
 
-        var list= apiBindService.getLoanItem(result);
+        var list= apiQueryBinder.bindLoanItem(result);
 
         updateService.addLoanItemList(list);
 

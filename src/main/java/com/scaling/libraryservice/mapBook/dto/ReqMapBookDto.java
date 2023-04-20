@@ -1,9 +1,12 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import com.scaling.libraryservice.mapBook.service.LibraryFindService;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
 
 @RequiredArgsConstructor
 @Getter @Setter @ToString
@@ -14,6 +17,8 @@ public class ReqMapBookDto {
     private final Double lon;
     private final String oneArea;
     private final String twoArea;
+    @Nullable
+    private Integer areaCd;
 
     public boolean isAddressRequest(){
 
@@ -26,4 +31,26 @@ public class ReqMapBookDto {
             & this.lon > 126.559157 & this.lon <127.225938;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ReqMapBookDto that = (ReqMapBookDto) o;
+        return Objects.equals(isbn, that.isbn) && Objects.equals(areaCd,
+            that.areaCd);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isbn, areaCd);
+    }
+
+    public void updateAreaCd(){
+
+        this.areaCd = LibraryFindService.outPutAreaCd(this);
+    }
 }

@@ -38,7 +38,7 @@ class LibraryFindServiceTest {
         this.libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
 
         libraryFindService = new LibraryFindService(libraryRepo,libraryMetaRepo);
-        libraryFindService.setLibraries(libraries);
+
 
     }
 
@@ -50,7 +50,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.findNearByLibraries(dto);
+        var result = libraryFindService.getNearByLibraries(dto);
 
         /* then */
         result.forEach(System.out::println);
@@ -64,7 +64,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.findNearByLibraries(dto);
+        var result = libraryFindService.getNearByLibraries(dto);
 
         /* then */
         /*result.forEach(System.out::println);*/
@@ -78,7 +78,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.findNearByLibraries(dto);
+        Executable e = () -> libraryFindService.getNearByLibraries(dto);
 
         /* then */
         assertThrows(LocationException.class,e);
@@ -91,7 +91,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.findLibraries(areaCd);
+        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
 
         /* then */
 
@@ -105,7 +105,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.findLibraries(areaCd);
+        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
 
         /* then */
 

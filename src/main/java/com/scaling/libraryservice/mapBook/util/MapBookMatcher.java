@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.service;
+package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
@@ -11,16 +11,15 @@ import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
-public class MapBookService {
+public class MapBookMatcher {
 
-    @Transactional(readOnly = true) @Timer
-    public List<RespMapBookDto> getMapBooks(List<LibraryDto> nearByLibraries,
+    @Timer
+    public List<RespMapBookDto> matchMapBooks(List<LibraryDto> nearByLibraries,
         Map<Integer, ApiBookExistDto> respOpenApiDtoMap) throws OpenApiException {
 
         Objects.requireNonNull(nearByLibraries);

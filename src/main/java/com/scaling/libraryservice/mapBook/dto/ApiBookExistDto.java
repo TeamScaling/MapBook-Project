@@ -1,11 +1,6 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import java.util.HashMap;
-import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.json.JSONObject;
 

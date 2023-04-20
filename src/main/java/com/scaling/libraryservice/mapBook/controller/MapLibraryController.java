@@ -29,7 +29,7 @@ public class MapLibraryController {
     @PostMapping("/all")
     public String getLibraryAll(ModelMap model) {
 
-        List<LibraryDto> libraries = libraryFindService.getLibraries();
+        List<LibraryDto> libraries = libraryFindService.getAllLibraries();
 
         model.put("libraries", libraries);
 
@@ -40,7 +40,7 @@ public class MapLibraryController {
     public String getLibrariesByAreaCd(ModelMap model, @RequestParam("areaCd") int areaCd) {
 
         List<LibraryDto> libraries
-            = libraryFindService.findLibraries(areaCd);
+            = libraryFindService.getNearByLibraries(areaCd);
 
         if (!libraries.isEmpty()) {
 
