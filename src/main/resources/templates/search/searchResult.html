@@ -90,30 +90,21 @@
     #book-info-column td {
       border: 1px solid #ddd;
       padding: 8px;
-      text-align: left;
-      /*background: crimson;*/
+      text-align: left; /* left에서 center로 수정 */
     }
 
     /* th: 컬럼 제목 부분 */
-    #book-info-column th {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: right;
-      /*background: crimson;*/
-    }
 
-    #book-info-column th {
+    th {
       padding-top: 12px;
       padding-bottom: 12px;
       text-align: center;
-      background-color: #4CAF50;
-      color: white;
     }
-
 
     #book-info-column tr:nth-child(even) {
       background-color: #f2f2f2;
     }
+
 
     /*마우스 올렸을 때 컬럼 색 변경*/
     /*#book-info-column tr:hover {*/
@@ -330,7 +321,7 @@
 <body>
 <header>
   <div class="search-box">
-    <form action="/books/search">
+    <form id="search-form" action="/books/search">
       <select name="target" aria-label="선택">
         <option value="title">도서명</option>
         <option value="author">저자</option>
@@ -338,32 +329,40 @@
         <option value="all">전체</option>
       </select>
       <label>
-        <input type="text" name="query" placeholder="검색어를 입력하세요">
+        <input id="query-input" type="text" name="query" placeholder="검색어를 입력하세요">
       </label>
-      <button type="button" onclick="handleSearch()">검색</button>
+      <button id="search-button" type="submit">검색</button>
       <p>
-        <span id="query"></span>에 대한 자료검색 결과이며 총 도서 수:
+        '<span id="query"></span>' 에 대한 자료검색 결과이며 총 도서 수:
         <span th:text="${size}"></span>건이 검색되었습니다.
       </p>
     </form>
   </div>
-  <script>
-    //검색어 보이는 기능
-    const query = new URLSearchParams(window.location.search).get('query');
-    document.getElementById('query').textContent = query;
-
-    //2자미만 검색시 알람
-    function handleSearch() {
-      const query = document.querySelector('input[name="query"]').value.trim();
-      if (query.length < 2) {
-        alert('검색어를 두글자 이상 입력해주세요');
-      } else {
-        location.href = `/books/search?target=all&query=${query}`;
-      }
-    }
-
-  </script>
 </header>
+
+<script>
+  const form = document.getElementById('search-form');
+  const queryInput = document.getElementById('query-input');
+
+  form.addEventListener('submit', function(event) {
+    if (queryInput.value.trim().length < 2) {
+      event.preventDefault(); // 검색을 실행하지 않음
+      alert('검색어를 두글자 이상 입력해주세요.');
+    }
+  });
+
+  queryInput.addEventListener('keypress', function(event) {
+    if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
+      event.preventDefault(); // 검색을 실행하지 않음
+      alert('검색어를 두글자 이상 입력해주세요.');
+    }
+  });
+
+  const query = new URLSearchParams(window.location.search).get('query');
+  document.getElementById('query').textContent = query;
+</script>
+
+
 
 <main>
   <div>
