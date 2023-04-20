@@ -88,17 +88,39 @@
     <h1>MapBook</h1>
     <p>지식의 지도, MapBook에 오신 것을 환영합니다.</p>
     <form action="/books/search">
-      <select aria-label="선택">
-        <option>전체</option>
-        <option>도서명</option>
-        <option>저자</option>
-        <option>출판사</option>
+      <select name="target" aria-label="선택">
+        <option value="title">도서명</option>
+        <option value="author">저자</option>
+        <option value="publisher">출판사</option>
+        <option value="all">전체</option>
       </select>
-      <label>  <input type="text" name="query" placeholder="검색어를 입력하세요"></label>
-      <button type="submit">검색</button>
+      <label>
+        <input id="query-input" type="text" name="query" placeholder="검색어를 입력하세요">
+      </label>
+      <button id="search-button" type="submit">검색</button>
+      <p>
     </form>
     <button type="submit" onclick="goToLibraryView()">도서관View</button>
   </div>
+  <script>
+    //2자미만 검색시 알람
+    const form = document.querySelector('form[action="/books/search"]');
+    const queryInput = document.getElementById('query-input');
+
+    form.addEventListener('submit', function(event) {
+      if (queryInput.value.trim().length < 2) {
+        event.preventDefault(); // 검색을 실행하지 않음
+        alert('검색어를 두글자 이상 입력해주세요.');
+      }
+    });
+
+    queryInput.addEventListener('keypress', function(event) {
+      if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
+        event.preventDefault(); // 검색을 실행하지 않음
+        alert('검색어를 두글자 이상 입력해주세요.');
+      }
+    });
+  </script>
 </main>
 <footer class>
   <p>&copy; 2023 HanghaeLibrary reserved.</p>
