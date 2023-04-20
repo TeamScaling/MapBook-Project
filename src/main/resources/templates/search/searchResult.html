@@ -322,6 +322,17 @@
       color: #333;
     }
 
+    /*홈버튼*/
+    .home-button {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+      margin-top: -10px;
+      vertical-align: middle;
+      border: none;
+      background-color: transparent;
+    }
 
     /*.pagination .current a {*/
     /*  background-color: #007bff;*/
@@ -350,7 +361,17 @@
         <span th:text="${size}"></span>건이 검색되었습니다.
       </p>
     </form>
+
+    <div>
+      <a href="/" class="home-button">
+        <span>Home</span>
+      </a>
+    </div>
   </div>
+
+<!--  홈버튼-->
+
+
 </header>
 
 <script>
