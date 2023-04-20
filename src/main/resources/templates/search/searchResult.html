@@ -371,6 +371,7 @@
       <tr>
         <th>번호</th>
         <th>도서 제목</th>
+        <th>작가</th>
         <th>내용</th>
         <th>이미지</th>
         <th>대출 가능한 <br>주변 도서관</th>
@@ -380,6 +381,7 @@
                   <tr th:each="book : ${searchResult.documents}">
                     <td th:text="${book.seqId}"></td>
                     <td th:text="${book.title}"></td>
+                    <td th:text="${book.author}"></td>
                     <td th:text="${book.content}"></td>
                     <td>
                       <img class="book-image" th:src="${book.bookImg}" alt="준비중"  src="../static/images/empty_img.png"/>
