@@ -347,7 +347,13 @@
       </p>
     </form>
   </div>
+  <script>
+    const query = new URLSearchParams(window.location.search).get('query');
+    document.getElementById('query').textContent = query;
 
+
+
+  </script>
 </header>
 
 <main>
