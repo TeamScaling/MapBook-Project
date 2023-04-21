@@ -2,6 +2,7 @@ package com.scaling.libraryservice.mapBook.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
@@ -11,12 +12,10 @@ import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.util.MapBookMatcher;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,6 +38,7 @@ public class CacheMapBookService {
 
     }
 
+    @Timer
     public List<RespMapBookDto> getMapBooks(ReqMapBookDto mapBookDto) {
 
         List<RespMapBookDto> value = cacheManager.getIfPresent(mapBookDto);

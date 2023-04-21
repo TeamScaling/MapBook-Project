@@ -9,6 +9,7 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,29 +18,17 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest
 class LibraryFindServiceTest {
 
+    @Autowired
     private LibraryFindService libraryFindService;
-    @Autowired
-    private LibraryRepository libraryRepo;
-
-    private List<LibraryDto> libraries;
-
-    @Autowired
-    private LibraryMetaRepository libraryMetaRepo;
 
     @BeforeEach
     void setUp() {
-        this.libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
-
-        libraryFindService = new LibraryFindService(libraryRepo,libraryMetaRepo);
-
-
     }
 
     @Test @DisplayName("위도/경도 데이터만으로 주변 도서관을 검색")

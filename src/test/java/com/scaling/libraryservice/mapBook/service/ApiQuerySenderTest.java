@@ -8,7 +8,6 @@ import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +31,7 @@ class ApiQuerySenderTest {
 
     private RestTemplate restTemplateForMock;
 
-    private String target = "9788089365210";
+    private final String target = "9788089365210";
 
 
     @BeforeEach
@@ -57,12 +56,12 @@ class ApiQuerySenderTest {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://mockServer.kr/api/bookExist");
 
-        apiQuerySender = new ApiQuerySender(restTemplateForMock);
 
         /* when */
 
-        var result
-            = apiQuerySender.singleQueryJson(builder);
+        apiQuerySender = new ApiQuerySender(restTemplateForMock);
+
+        apiQuerySender.singleQueryJson(builder);
 
         /* then */
         mockServer.verify();
@@ -78,6 +77,9 @@ class ApiQuerySenderTest {
 
         server.start();
 
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setReadTimeout(5000);
+
         server.stubFor(WireMock.get("/api/bookExist?format=json")
             .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(200000))
         );
@@ -85,7 +87,7 @@ class ApiQuerySenderTest {
         UriComponentsBuilder builder
             = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/bookExist");
 
-        apiQuerySender = new ApiQuerySender();
+        apiQuerySender = new ApiQuerySender(new RestTemplate(factory));
 
         /* when */
 
@@ -115,12 +117,6 @@ class ApiQuerySenderTest {
 
         int libNo = 141053;
         String isbn13 = "9788089365210";
-        Map<String,String> paramMap = new HashMap<>();
-
-        paramMap.put("apiUrl","http://data4library.kr/api/bookExist");
-        paramMap.put("libCode", String.valueOf(libNo));
-        paramMap.put("isbn13", isbn13);
-        paramMap.put("format", "json");
 
         /* when */
 
