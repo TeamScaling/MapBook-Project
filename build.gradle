@@ -43,6 +43,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 
+    implementation 'org.apache.commons:commons-csv:1.8'
 
 
     // queryDSL 설정

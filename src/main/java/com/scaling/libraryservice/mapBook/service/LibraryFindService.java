@@ -118,4 +118,7 @@ public class LibraryFindService {
                 & i.getTwoAreaNm().equals(userLocation.getTwoArea())).findFirst().orElseThrow();
     }
 
+    public static List<LibraryDto> getLibraries() {
+        return libraries;
+    }
 }
