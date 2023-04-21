@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.entity.BookSet;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -110,11 +111,92 @@ public class CsvMerger {
                 writer.write("");
                 writer.newLine();
                 headerSaved = true;
-            }else{
+            } else {
 
             }
 
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void merge3() {
+
+        // 입력 파일 경로와 패턴 입력
+        String inputFolder = "C:\\teamScaling\\book";
+        String inputFilePattern = "*.csv";
+
+        // 출력 파일명 입력
+        String outputFileName = "books.csv";
+
+        File folder = new File(inputFolder);
+        File[] files = folder.listFiles((dir, name) -> name.endsWith(".csv"));
+
+        System.out.println(folder.exists());
+
+        boolean headerSaved = false;
+
+        Set<BookSet> uniqueLines = new HashSet<>();
+
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFileName),
+            StandardCharsets.UTF_8)) {
+
+            for (File file : files) {
+                List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+
+                try (Reader reader = Files.newBufferedReader(file.toPath(),
+                    StandardCharsets.UTF_8);
+                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
+                        .withDelimiter(',')
+                        .withQuote('"')
+                        .withAllowMissingColumnNames()
+                        .withIgnoreSurroundingSpaces()
+                        .withIgnoreEmptyLines()
+                        .withEscape('\\'))) {
+
+                    // 헤더 처리
+                    if (!headerSaved) {
+                        writer.write(lines.get(0));
+                        writer.newLine();
+                        headerSaved = true;
+                    }
+
+                    for (CSVRecord record : csvParser) {
+                        try {
+                            String isbn = record.get(1);
+                            String title = record.get(3);
+                            String authr = record.get(4);
+                            String publisher = record.get(5);
+                            String image = record.get(9);
+                            String content = record.get(10);
+
+                            uniqueLines.add(new BookSet(isbn, title, authr, publisher, image,content));
+                        } catch (IllegalStateException | ArrayIndexOutOfBoundsException e) {
+                            System.err.println(
+                                "Error processing line " + record.getRecordNumber() + ": "
+                                    + e.getMessage());
+                        }
+                    }
+
+                }
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 중복이 제거된 데이터를 새로운 파일에 저장
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFileName),
+            StandardCharsets.UTF_8)) {
+            writer.write("ISBN_THIRTEEN_NO,TITLE_NM,AUTHR_NM,PUBLISHER_NM,IMAGE_URL,CONTENT");
+            writer.newLine();
+            for (BookSet uniqueLine : uniqueLines) {
+                writer.write(uniqueLine.joinString());
+                writer.newLine();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

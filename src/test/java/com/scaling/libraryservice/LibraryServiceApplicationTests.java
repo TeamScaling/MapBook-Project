@@ -23,5 +23,10 @@ class LibraryServiceApplicationTests {
 
     }
 
+    @Test
+    void merge3(){
+        csvMerger.merge3();
+    }
+
 
 }
