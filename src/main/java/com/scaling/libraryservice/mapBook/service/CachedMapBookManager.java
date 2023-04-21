@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CacheMapBookService {
+public class CachedMapBookManager {
 
-    private Cache<ReqMapBookDto, List<RespMapBookDto>> cacheManager;
+    private Cache<ReqMapBookDto, List<RespMapBookDto>> mapBookCache;
     private final LibraryFindService libraryFindService;
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
@@ -31,7 +31,7 @@ public class CacheMapBookService {
 
     @PostConstruct
     public void init() {
-        this.cacheManager = Caffeine.newBuilder()
+        this.mapBookCache = Caffeine.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .maximumSize(1000)
             .build();
@@ -41,7 +41,7 @@ public class CacheMapBookService {
     @Timer
     public List<RespMapBookDto> getMapBooks(ReqMapBookDto mapBookDto) {
 
-        List<RespMapBookDto> value = cacheManager.getIfPresent(mapBookDto);
+        List<RespMapBookDto> value = mapBookCache.getIfPresent(mapBookDto);
 
         if (value != null) {
 
@@ -61,7 +61,7 @@ public class CacheMapBookService {
 
             value = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
 
-            cacheManager.put(mapBookDto, value);
+            mapBookCache.put(mapBookDto, value);
         }
 
         return value;

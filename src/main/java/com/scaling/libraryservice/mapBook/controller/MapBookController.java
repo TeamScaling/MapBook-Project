@@ -4,7 +4,7 @@ import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.service.CacheMapBookService;
+import com.scaling.libraryservice.mapBook.service.CachedMapBookManager;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
@@ -23,7 +23,7 @@ public class MapBookController {
 
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
-    private final CacheMapBookService cacheMapBookService;
+    private final CachedMapBookManager cachedMapBookManager;
 
     @GetMapping("/books/mapBook/search")
     public String getLoanableMapBookMarkers(ModelMap model,
@@ -31,7 +31,7 @@ public class MapBookController {
 
         mapBookDto.updateAreaCd();
 
-        List<RespMapBookDto> mapBooks = cacheMapBookService.getMapBooks(mapBookDto);
+        List<RespMapBookDto> mapBooks = cachedMapBookManager.getMapBooks(mapBookDto);
 
         model.put("mapBooks", mapBooks);
 
