@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.dto;
+package com.scaling.libraryservice.mapBook.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

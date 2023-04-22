@@ -17,6 +17,7 @@ public class RespMapBookDto {
     private final Double libLa;
     private final String libArea;
     private final String libUrl;
+    private final Integer areaCd;
 
     public RespMapBookDto(ApiBookExistDto dto, LibraryDto libraryDto) {
 
@@ -30,6 +31,7 @@ public class RespMapBookDto {
         this.libArea = libraryDto.getLibArea();
         this.libNm = libraryDto.getLibNm();
         this.libUrl = libraryDto.getLibUrl();
+        this.areaCd = libraryDto.getAreaCd();
 
     }
 }

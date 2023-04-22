@@ -1,5 +1,6 @@
-package com.scaling.libraryservice.service;
+package com.scaling.libraryservice.mapBook.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -8,7 +9,7 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
-import com.scaling.libraryservice.mapBook.service.LibraryFindService;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,29 +18,17 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@SpringBootTest
 class LibraryFindServiceTest {
 
+    @Autowired
     private LibraryFindService libraryFindService;
-    @Autowired
-    private LibraryRepository libraryRepo;
-
-    private List<LibraryDto> libraries;
-
-    @Autowired
-    private LibraryMetaRepository libraryMetaRepo;
 
     @BeforeEach
     void setUp() {
-        this.libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
-
-        libraryFindService = new LibraryFindService(libraryRepo,libraryMetaRepo);
-        libraryFindService.setLibraries(libraries);
-
     }
 
     @Test @DisplayName("위도/경도 데이터만으로 주변 도서관을 검색")
@@ -50,7 +39,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.findNearByLibraries(dto);
+        var result = libraryFindService.getNearByLibraries(dto);
 
         /* then */
         result.forEach(System.out::println);
@@ -64,10 +53,10 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.findNearByLibraries(dto);
+        var result = libraryFindService.getNearByLibraries(dto);
 
         /* then */
-        result.forEach(System.out::println);
+        /*result.forEach(System.out::println);*/
         assertNotEquals(0,result.size());
     }
 
@@ -78,7 +67,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.findNearByLibraries(dto);
+        Executable e = () -> libraryFindService.getNearByLibraries(dto);
 
         /* then */
         assertThrows(LocationException.class,e);
@@ -91,11 +80,25 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.findLibrariesByAreaCd(areaCd);
+        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
 
         /* then */
 
-        System.out.println(result);
+        assertDoesNotThrow(e);
+    }
+
+    @Test @DisplayName("커스텀으로 만든 지역 코드로 도서관 찾기 에러 발생")
+    public void find_libraries_by_areaCd_error(){
+        /* given */
+        int areaCd = 1;
+
+        /* when */
+
+        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
+
+        /* then */
+
+        assertThrows(LocationException.class,e);
     }
 
 }

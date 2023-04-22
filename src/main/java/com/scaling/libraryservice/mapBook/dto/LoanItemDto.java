@@ -1,26 +1,28 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Getter
 @RequiredArgsConstructor
 @ToString
-public class LoanItemDto {
+public class LoanItemDto implements ConfigureUriBuilder {
 
-    private final int no;
+    private Integer no;
 
-    private final int ranking;
+    private Integer ranking;
 
-    private final String bookName;
+    private String bookName;
 
-    private final Double isbn13;
+    private Double isbn13;
 
-    private final int loan_count;
+    private Integer loan_count;
 
     public LoanItemDto(JSONObject obj) {
 
@@ -39,5 +41,15 @@ public class LoanItemDto {
         paramMap.put("format", "json");
 
         return paramMap;
+    }
+
+    @Override
+    public UriComponentsBuilder configUriBuilder(String pageSize) {
+        UriComponentsBuilder uriBuilder
+            = UriComponentsBuilder.fromHttpUrl("http://data4library.kr/api/loanItemSrch")
+            .queryParam("pageSize", pageSize)
+            .queryParam("format","json");
+
+        return uriBuilder;
     }
 }

@@ -33,7 +33,17 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.apache.opennlp', name: 'opennlp-tools', version: '2.1.1'
-    implementation 'com.github.shin285:KOMORAN:3.3.4'
+
+    // https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
+    testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.5'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+
+
 
     // queryDSL 설정
     implementation "com.querydsl:querydsl-jpa"
@@ -45,6 +55,7 @@ dependencies {
 
     implementation group: 'org.json', name: 'json', version: '20220924'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.1'
+
 
 }
 

@@ -610,7 +610,7 @@
 
   function openPopup(isbn, lat, lon) {
 
-    const url = `/map-book/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
+    const url = `/books/mapBook/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
     window.open(url, 'areaCdInfo', 'width=1200,height=800');
     return false;
   }
