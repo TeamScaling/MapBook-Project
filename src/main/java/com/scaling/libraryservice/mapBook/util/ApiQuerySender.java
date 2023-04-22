@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +63,7 @@ public class ApiQuerySender {
     public List<ResponseEntity<String>> multiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
         String target, int nThreads) throws RestClientException {
 
+
         Objects.requireNonNull(uriBuilders);
 
         ExecutorService service = Executors.newFixedThreadPool(nThreads);
@@ -91,6 +93,11 @@ public class ApiQuerySender {
         } finally {
             service.shutdown();
         }
+
+        String logMeta
+            = uriBuilders.get(0).configUriBuilder(target).build().getHost();
+
+        log.info("Total API requests sent to {}: {}", logMeta, result.size());
 
         return result;
     }

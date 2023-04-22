@@ -12,14 +12,11 @@ import lombok.ToString;
 @ToString @Getter
 public class Library {
 
-    @Id @Column(name = "LBRRY_CD")
-    private Integer libCd;
+    @Id @Column(name = "LBRRY_NO")
+    private Integer libNo;
 
     @Column(name = "LBRRY_NM")
     private String libNm;
-
-    @Column(name = "LBRRY_NO")
-    private Integer libNo;
 
     @Column(name = "LBRRY_LO")
     private Double libLon;

@@ -25,7 +25,14 @@ public class TimerAop {
         Object result = joinPoint.proceed(); //메서드가 실행되는 부분
 
         stopWatch.stop();
-        log.info(joinPoint.getTarget()+" : " + stopWatch.getTotalTimeSeconds());
+
+        String joinPointNm = joinPoint.getTarget().getClass().getName();
+
+        // double 범위 초과로 인한 지수 표현 방지
+        String totalTime = String.format("%.6f",stopWatch.getTotalTimeSeconds());
+
+
+        log.info("[{}s] in [{}]",totalTime,joinPointNm);
 
         return result;
     }

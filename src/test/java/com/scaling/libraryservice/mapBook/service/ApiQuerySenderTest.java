@@ -120,11 +120,14 @@ class ApiQuerySenderTest {
 
         /* when */
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
+        var result
+            = apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
+//        Executable executable = () -> apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
 
         /* then */
 
-        assertDoesNotThrow(executable);
+        /*assertDoesNotThrow(executable);*/
+        System.out.println(result);
     }
     
     @Test @DisplayName("인기 대출 목록 API 요청 성공")
