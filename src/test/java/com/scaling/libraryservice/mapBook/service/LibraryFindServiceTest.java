@@ -4,22 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
-import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
-import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 class LibraryFindServiceTest {
@@ -80,7 +72,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
+        Executable e = () -> libraryFindService.getNearByAllLibraries(areaCd);
 
         /* then */
 
@@ -94,11 +86,31 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
+        Executable e = () -> libraryFindService.getNearByAllLibraries(areaCd);
 
         /* then */
 
         assertThrows(LocationException.class,e);
+    }
+
+    @Test
+    public void evaluate_hasBook_verse_basic(){
+        /* given */
+
+        String isbn13 = "9791163032212";
+        Integer areaCd = 26200;
+
+        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699,null,null);
+
+        /* when */
+
+        var result1= libraryFindService.getNearByHasBookLibraries(isbn13,areaCd);
+        var result2 = libraryFindService.getNearByLibraries(dto);
+
+        /* then */
+
+        System.out.println(result1.size());
+        System.out.println(result2.size());
     }
 
 }
