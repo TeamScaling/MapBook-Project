@@ -94,28 +94,37 @@ public class CsvMerger {
 
     public void merge2() {
 
-        String inputFolder = "C:\\teamScaling\\book";
-        String outputFileName = "books.csv";
+        // 입력 파일 경로와 패턴 입력
+        String inputFolder = "C:\\teamScaling\\total";
+        String inputFilePattern = "*.csv";
+
+        // 출력 파일명 입력
+        String outputFileName = "total_books.csv";
 
         File folder = new File(inputFolder);
         File[] files = folder.listFiles((dir, name) -> name.endsWith(".csv"));
 
+        System.out.println(folder.exists());
+
         boolean headerSaved = false;
 
-        Set<String> uniqueLines = new HashSet<>();
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFileName), StandardCharsets.UTF_8)) {
+            for (File file : files) {
+                List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputFileName),
-            StandardCharsets.UTF_8)) {
+                // 헤더 처리
+                if (!headerSaved) {
+                    writer.write(lines.get(0));
+                    writer.newLine();
+                    headerSaved = true;
+                }
 
-            if (!headerSaved) {
-                writer.write("");
-                writer.newLine();
-                headerSaved = true;
-            } else {
-
+                // 본문 처리
+                for (int i = 1; i < lines.size(); i++) {
+                    writer.write(lines.get(i));
+                    writer.newLine();
+                }
             }
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -126,11 +135,11 @@ public class CsvMerger {
     public void merge3() {
 
         // 입력 파일 경로와 패턴 입력
-        String inputFolder = "C:\\teamScaling\\book";
+        String inputFolder = "C:\\teamScaling\\total1";
         String inputFilePattern = "*.csv";
 
         // 출력 파일명 입력
-        String outputFileName = "books.csv";
+        String outputFileName = "bookTotal.csv";
 
         File folder = new File(inputFolder);
         File[] files = folder.listFiles((dir, name) -> name.endsWith(".csv"));
@@ -149,13 +158,7 @@ public class CsvMerger {
 
                 try (Reader reader = Files.newBufferedReader(file.toPath(),
                     StandardCharsets.UTF_8);
-                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
-                        .withDelimiter(',')
-                        .withQuote('"')
-                        .withAllowMissingColumnNames()
-                        .withIgnoreSurroundingSpaces()
-                        .withIgnoreEmptyLines()
-                        .withEscape('\\'))) {
+                    CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT)) {
 
                     // 헤더 처리
                     if (!headerSaved) {
@@ -166,12 +169,12 @@ public class CsvMerger {
 
                     for (CSVRecord record : csvParser) {
                         try {
-                            String isbn = record.get(1);
-                            String title = record.get(3);
-                            String authr = record.get(4);
-                            String publisher = record.get(5);
-                            String image = record.get(9);
-                            String content = record.get(10);
+                            String isbn = record.get(0);
+                            String title = record.get(1);
+                            String authr = record.get(2);
+                            String publisher = record.get(3);
+                            String image = record.get(4);
+                            String content = record.get(5);
 
                             uniqueLines.add(new BookSet(isbn, title, authr, publisher, image,content));
                         } catch (IllegalStateException | ArrayIndexOutOfBoundsException e) {
