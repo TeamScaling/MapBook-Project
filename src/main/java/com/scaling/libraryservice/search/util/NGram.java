@@ -12,5 +12,6 @@ public class NGram {
 		}
 		return ngrams;
 	}
+
 }
 
