@@ -25,10 +25,14 @@ public class LoanItem extends TimeStamp {
     @Column(nullable = false)
     private Integer loan_count;
 
+    @Column(name = "class_no")
+    private String classNo;
+
     public LoanItem(LoanItemDto dto) {
         this.ranking = dto.getRanking();
         this.isbn13 = dto.getIsbn13();
         this.loan_count = dto.getLoan_count();
+        this.classNo = dto.getClassNo();
     }
 
     public LoanItem() {

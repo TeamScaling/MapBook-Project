@@ -34,12 +34,12 @@ public class BookSearchService {
     @Timer
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
         Pageable pageable = createPageable(page, size);
-//
+
         if(isEnglish(query)) {
 
             String[] split = query.split("\\s+");
-            System.out.println("split = " + split);
 
+            //fixme : ?? 6개 이상으로 나누는 목적이 어떤건지 모르겠습니다.
             List<String> filteredWords = Arrays.stream(split)
                 .filter(word -> word.length() > 6)
                 .toList();
@@ -132,7 +132,7 @@ public class BookSearchService {
 
     }
 
-    private String parsedQuery(String query){
+    String parsedQuery(String query){
         List<String> ngramList = NGram.getNGrams(query.replaceAll("\\s", ""), 4);
 
         String[] fields = {"ENG_TITLE_NM"};
@@ -144,13 +144,15 @@ public class BookSearchService {
         try {
             parsedQuery = parser.parse(QueryParser.escape(String.join(" ", ngramList)));
         } catch (ParseException e) {
-            // 예외 처리 로직
+
+            //fixme log로 처리 하셔야 합니다....
+            //예외 처리 로직
             e.printStackTrace(  );
         }
         return String.valueOf(parsedQuery);
     }
 
-    private boolean isEnglish(String input){
+    boolean isEnglish(String input){
         String pattern = "^[a-zA-Z\\s+]+$";
         return input.matches(pattern);
     }

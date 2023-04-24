@@ -43,6 +43,11 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 
+    // https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp
+    implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '4.4.0'
+    implementation 'edu.stanford.nlp:stanford-corenlp:4.2.2:models'
+
+
 
 
     // queryDSL 설정
