@@ -39,7 +39,7 @@ public class CsvMerger {
         List<LibraryDto> libraries = libraryFindService.getAllLibraries();
 
         String inputFolder = "C:\\teamScaling\\test";  // 본인 폴더로 지정.
-        String outputFileName = "은평구.csv";  // 해당 지역 이름으로 저장.
+        String outputFileName = "중랑구.csv";  // 해당 지역 이름으로 저장.
 
         File folder = new File(inputFolder);
         File[] files = folder.listFiles((dir, name) -> name.endsWith(".csv"));
