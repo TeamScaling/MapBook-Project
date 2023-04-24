@@ -47,6 +47,8 @@ dependencies {
     implementation group: 'edu.stanford.nlp', name: 'stanford-corenlp', version: '4.4.0'
     implementation 'edu.stanford.nlp:stanford-corenlp:4.2.2:models'
 
+    implementation 'com.github.shin285:KOMORAN:3.3.4'
+
 
 
 

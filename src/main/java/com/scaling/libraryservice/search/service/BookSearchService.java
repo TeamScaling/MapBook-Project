@@ -152,7 +152,7 @@ public class BookSearchService {
         return String.valueOf(parsedQuery);
     }
 
-    boolean isEnglish(String input){
+    public boolean isEnglish(String input){
         String pattern = "^[a-zA-Z\\s+]+$";
         return input.matches(pattern);
     }

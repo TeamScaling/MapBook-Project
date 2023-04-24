@@ -1,6 +1,7 @@
 package com.scaling.libraryservice;
 
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+import com.scaling.libraryservice.search.util.Tokenizer;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -14,11 +15,14 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class LearningTest {
 
+    @Autowired
+    private Tokenizer tokenizer;
 
     @Test
     public void test() {
@@ -90,7 +94,7 @@ public class LearningTest {
 
     @Test
     public void english_korean(){
-        String text = "e-mail에 꼭 필요한 알짜표현!!";
+        String text = "email에 꼭 필요한 알짜표현!!";
 
         text = text.replaceAll("([a-zA-Z])([가-힣])", "$1 $2");
 
@@ -100,6 +104,17 @@ public class LearningTest {
         while (matcher.find()) {
             System.out.println(matcher.group());
         }
+    }
+
+    @Test
+    public void tokenizer(){
+        /* given */
+        String text = "e-mail에 꼭 필요한 알짜표현!!";
+        /* when */
+        var result= tokenizer.tokenize(text);
+        /* then */
+
+        System.out.println(result);
     }
 
 
