@@ -2,9 +2,11 @@ package com.scaling.libraryservice.search.service;
 
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
+import com.scaling.libraryservice.search.dto.RelatedBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
+import com.scaling.libraryservice.search.repository.RelatedSearchRepository;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,8 @@ public class BookSearchService {
 
     private final BookRepository bookRepository;
 
+    private final RelatedSearch relatedSearch;
+
     // 도서 검색
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
@@ -34,11 +38,40 @@ public class BookSearchService {
         Objects.requireNonNull(books);
 
         List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
+//==========================작업중==============================================>
+        //relatedSearch레포에서 번호로 검색
+        List<String> relatedRanks = relatedSearch.findRelatedRanks(document);
+        System.out.println("relatedRanks : " + relatedRanks.toString());
+
+//         ISBN 번호로 책 목록 조회
+
+        List<Book> relatedBooks = bookRepository.findBooksByIsbnList(relatedRanks);
+        List<BookDto> relatedDocument = relatedBooks.stream()
+            .map(book -> {
+                BookDto bookDto = new BookDto(book);
+                bookDto.setTitle(book.getRelatedTitle());
+                return bookDto;
+            })
+            .collect(Collectors.toList());
+
+
+        System.out.println("relatedDocument : "+relatedDocument);
+
+        List<RelatedBookDto> relatedBookDtos = relatedDocument.stream()
+            .map(bookDto -> new RelatedBookDto(bookDto.getTitle()))
+            .distinct()
+            .collect(Collectors.toList());
+        System.out.println("relatedBookDtos : " + relatedBookDtos.toString());
+
+
+//=========================작업끝===============================================>
+
+
 
         MetaDto meta
             = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, document);
+        return new RespBooksDto(meta, document,relatedBookDtos);
     }
 
 

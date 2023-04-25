@@ -25,16 +25,6 @@ public class RelatedSearch {
     public List<String> findRelatedRanks(List<BookDto> document) {
         Map<String, Integer> countMap = new HashMap<>();
 
-//        for (BookDto book : document) {
-//            String kdcNm = book.getKdcNm();
-//            if (kdcNm != null && kdcNm.matches("\\d+\\.\\d+")) { // 숫자 패턴 체크
-//                String[] splitKdcNm = kdcNm.split("\\.");
-//                String firstDigit = splitKdcNm[0];
-//
-//                countMap.put(firstDigit, countMap.getOrDefault(firstDigit, 0) + 1);
-//            }
-//        }
-
         for (BookDto book : document) {
             String kdcNm = book.getKdcNm();
             if (kdcNm != null && kdcNm.matches("\\d+\\.\\d+")) { // 숫자 패턴 체크
