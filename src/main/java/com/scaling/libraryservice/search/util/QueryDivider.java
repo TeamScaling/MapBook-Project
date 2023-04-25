@@ -35,14 +35,14 @@ public class QueryDivider {
                 if (c == ' ' & engFirst) {
 
                 } else {
-                    if(c >=46){
+                    if (c >= 46) {
                         engBuffer.append(c);
                         engFirst = false;
                     }
 
                 }
 
-            } else  {
+            } else {
 
                 if (!engBuffer.isEmpty()) {
 
@@ -55,13 +55,11 @@ public class QueryDivider {
                 if (c == ' ' & !korFirst) {
                     korBuffer.append(c);
                 } else {
-                    if(c >47){
+                    if (c > 47) {
                         korBuffer.append(c);
                         korFirst = false;
                     }
                 }
-
-
 
             }
         }
@@ -78,7 +76,6 @@ public class QueryDivider {
 
         result.put("eng", eng);
         result.put("kor", kor);
-
 
         return result;
     }

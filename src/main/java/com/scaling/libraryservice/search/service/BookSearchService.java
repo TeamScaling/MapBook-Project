@@ -178,9 +178,7 @@ public class BookSearchService {
 
             log.info("english title");
 
-            query = splitTarget(query);
-
-            System.out.println(query);
+            query = "+"+query;
 
             books = bookRepository.findBooksByEngTitleFlexible(query, pageable);
 
@@ -199,38 +197,32 @@ public class BookSearchService {
             String korToken = String.join(" ", korTokens);
             String engToken = String.join(" ", engTokens);
 
-            log.info("korToken : {}, length : {}",korToken,korToken.length());
-            log.info("engToken : {}, length : {}",engToken,engToken.length());
-
             StringBuilder builder = new StringBuilder();
-
-            if(!korToken.isEmpty()){
-                List<String> nnKorTokens = tokenizer.tokenize(korToken);
-                korToken = String.join(" ",nnKorTokens);
-            }
-
 
             engTokens.forEach(t -> builder.append("%").append(t).append("% "));
 
-            engToken = builder.toString().trim();
+            log.info("korToken : {}, length : {}",korToken,korToken.length());
+            log.info("engToken : {}, length : {}",engToken,engToken.length());
 
-            log.info("[korToken < engToken] korToken : {} // engToken : {}",korToken, engToken);
+            if (korToken.length() >= engToken.length()) {
 
-            books = bookRepository.findBooksByEngAndKor(engToken, korToken, pageable);
-
-            /*if (korToken.length() > engToken.length()) {
-
-                log.info("korToken > engToken");
+                log.info("korToken >= engToken");
 
                 books = bookRepository.findBooksByTitleNmode(query,pageable);
 
             } else {
 
+                if(!korToken.isEmpty()){
+                    List<String> nnKorTokens = tokenizer.tokenize(korToken);
+                    korToken = String.join(" ",nnKorTokens);
+                }
 
-            }*/
+                log.info("[korToken < engToken] korToken : {} // engToken : {}",korToken, engToken);
+
+                books = bookRepository.findBooksByEngAndKor(builder.toString().trim(), korToken, pageable);
+            }
 
         }
-
 
         meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
