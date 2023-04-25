@@ -43,22 +43,26 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query("SELECT DISTINCT b FROM Book b WHERE b.isbn IN :isbnList")
     List<Book> findBooksByIsbnList(@Param("isbnList") List<String> isbnList);
 
+    @Query(value = "SELECT * FROM books WHERE KDC_NM LIKE :firstDigit% ORDER BY isbn_thirteen_no DESC LIMIT 10", nativeQuery = true)
+    List<Book> findRelatedQuery(@Param("firstDigit") String firstDigit);
+
+
 
 //    @org.springframework.data.jpa.repository.Query(value = "SELECT * FROM ranks5000 WHERE class_no LIKE :firstDigit% ORDER BY loan_count DESC Limit 30;", nativeQuery = true)
 //    List<com.scaling.libraryservice.search.entity.Query> findRelatedQuery(@Param("firstDigit") String firstDigit);
 
     //중복제거
-    @org.springframework.data.jpa.repository.Query(value = "SELECT DISTINCT * FROM ranks5000 WHERE class_no LIKE :firstDigit% ORDER BY loan_count DESC LIMIT 30;", nativeQuery = true)
-    List<com.scaling.libraryservice.search.entity.Query> findRelatedQuery(@Param("firstDigit") String firstDigit);
+//    @org.springframework.data.jpa.repository.Query(value = "SELECT DISTINCT * FROM ranks5000 WHERE class_no LIKE :firstDigit% ORDER BY loan_count DESC LIMIT 30;", nativeQuery = true)
+//    List<com.scaling.libraryservice.search.entity.Query> findRelatedQuery(@Param("firstDigit") String firstDigit);
 
 
-    default List<QueryDto> findRelatedQueryDto(String firstDigit) {
-        List<com.scaling.libraryservice.search.entity.Query> ranksList = findRelatedQuery(firstDigit);
-
-        return ranksList.stream()
-            .map(QueryDto::new)
-            .collect(Collectors.toList());
-    }
+//    default List<QueryDto> findRelatedQueryDto(String firstDigit) {
+//        List<com.scaling.libraryservice.search.entity.Query> ranksList = findRelatedQuery(firstDigit);
+//
+//        return ranksList.stream()
+//            .map(QueryDto::new)
+//            .collect(Collectors.toList());
+//    }
 
 
 

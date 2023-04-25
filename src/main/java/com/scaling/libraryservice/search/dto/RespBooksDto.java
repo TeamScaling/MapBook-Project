@@ -31,4 +31,9 @@ public class RespBooksDto {
         this.meta.setTotalElements(books.getTotalElements());
         this.meta.setTotalPages(books.getTotalPages());
     }
+
+    public RespBooksDto(MetaDto metaDto, List<BookDto> documents) {
+        this.meta = metaDto;
+        this.documents = documents;
+    }
 }
