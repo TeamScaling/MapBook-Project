@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>검색 결과 - 책있나?</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
@@ -28,7 +29,7 @@
 
     /*테이블 맥스 미니멈 사이즈*/
 
-    table{
+    table {
       min-width: 700px;
       max-width: 1000px;
     }
@@ -167,7 +168,6 @@
     }
 
 
-
     .loan-check-btn {
       width: 60px;
       max-width: 100px;
@@ -205,9 +205,6 @@
     /*.book-info td:last-child {*/
     /*  width: 50px;*/
     /*}*/
-
-
-
 
 
     /*페이지 처리*/
@@ -250,7 +247,21 @@
       padding-top: 20px;
       background-color: #fff;
       border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0,0,0,.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      column-gap: 10px;
+    }
+
+    .related-box {
+      width: 540px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
       column-gap: 10px;
     }
 
@@ -369,8 +380,23 @@
     </div>
   </div>
 
-<!--  홈버튼-->
+  <!--  홈버튼-->
 
+<!--  추천도서-->
+  <div class="related-box">
+    <form id="related-form" action="/books/search">
+
+      <p>
+        연관 검색어 :
+        <span th:each="book, iter : ${searchResult.relatedBookDtoList}">
+          <span th:text="${book.title}"></span>
+          <span th:if="${!iter.last}">, </span>
+        </span>
+      </p>
+
+    </form>
+
+  </div>
 
 </header>
 
@@ -378,14 +404,14 @@
   const form = document.getElementById('search-form');
   const queryInput = document.getElementById('query-input');
 
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit', function (event) {
     if (queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 두글자 이상 입력해주세요.');
     }
   });
 
-  queryInput.addEventListener('keypress', function(event) {
+  queryInput.addEventListener('keypress', function (event) {
     if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 두글자 이상 입력해주세요.');
@@ -395,7 +421,6 @@
   const query = new URLSearchParams(window.location.search).get('query');
   document.getElementById('query').textContent = query;
 </script>
-
 
 
 <main>
@@ -410,27 +435,35 @@
         <th>내용</th>
         <th>이미지</th>
         <th>대출 가능한 <br>주변 도서관</th>
-                  </tr>
-                  </thead>
-                  <tbody id="book-info-column">
-                  <tr th:each="book : ${searchResult.documents}">
-                    <td th:text="${book.seqId}"></td>
-                    <td>
-                      <span th:text="${book.title}"></span>
-                    </td>
-                    <td><button class="copy-btn" th:data-title="${book.title}">복사</button></td>
-                    <td th:text="${book.author}"></td>
-                    <td th:text="${book.content}"></td>
-                    <td>
-                      <img class="book-image" th:src="${book.bookImg}" alt="준비중" src="../static/images/empty_img.png"/>
-                    </td>
-                    <td><button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()"> 내 주변<br>도서관</button></td>
-                  </tr>
+      </tr>
+      </thead>
+      <tbody id="book-info-column">
+      <tr th:each="book : ${searchResult.documents}">
+        <td th:text="${book.isbn}"></td>
+        <td>
+          <span th:text="${book.title}"></span>
+        </td>
+        <td>
+          <button class="copy-btn" th:data-title="${book.title}">복사</button>
+        </td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.content}"></td>
+        <td>
+          <img class="book-image" th:src="${book.bookImg}" alt="준비중"
+               src="../static/images/empty_img.png"/>
+        </td>
+        <td>
+          <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()">
+            내 주변<br>도서관
+          </button>
+        </td>
+      </tr>
 
-                  </tbody>
+      </tbody>
     </table>
 
-    <div class="alert alert-success" role="alert" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
+    <div class="alert alert-success" role="alert"
+         style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
       도서 제목이 클립보드에 복사되었습니다.
     </div>
 
@@ -478,8 +511,8 @@
 
   var copyBtns = document.querySelectorAll('.copy-btn');
   var alertBox = document.querySelector('.alert');
-  copyBtns.forEach(function(btn) {
-    btn.addEventListener('click', function(event) {
+  copyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
       // 이벤트 버블링 방지
       event.stopPropagation();
 
@@ -488,15 +521,15 @@
 
       // 클립보드에 복사
       navigator.clipboard.writeText(text)
-      .then(function() {
+      .then(function () {
         console.log('제목이 클립보드에 복사되었습니다.');
         // 알람 띄우기
         alertBox.style.display = 'block';
-        setTimeout(function() {
+        setTimeout(function () {
           alertBox.style.display = 'none';
         }, 500); // 0.5초 후 알람 닫기
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.error('클립보드 복사에 실패하였습니다.', err);
       });
     });
@@ -509,8 +542,8 @@
     return false;
   }
 </script>
-<script th:inline = "javascript">
-  $(document).ready(function() {
+<script th:inline="javascript">
+  $(document).ready(function () {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('query');
     let currentPage = parseInt(urlParams.get('page') || 1);
@@ -539,12 +572,11 @@
       }
     }
 
-
     // 페이지 링크 생성 및 할당
     generatePageLinks();
 
     // 이전 페이지 버튼 클릭 시 이벤트 처리
-    $("#prevBtn").on("click", function() {
+    $("#prevBtn").on("click", function () {
       if (currentPage > 1) {
         const prevPageUrl = url + (currentPage - 1);
         window.location.href = prevPageUrl;
@@ -552,7 +584,7 @@
     });
 
     // 다음 페이지 버튼 클릭 시 이벤트 처리
-    $("#nextBtn").on("click", function() {
+    $("#nextBtn").on("click", function () {
       const nextPage = currentPage + 1;
       if (nextPage <= totalPages) {
         const nextPageUrl = url + nextPage;
@@ -566,7 +598,7 @@
 
     // 페이지 버튼에 대한 current 클래스 추가 및 제거
     const pageLinks = $(".page-link");
-    pageLinks.each(function(index) {
+    pageLinks.each(function (index) {
       if (index + 1 === currentPage) {
         $(this).parent().addClass("current");
       } else {
@@ -575,9 +607,8 @@
     });
   });
 
-
-  $(document).ready(function() {
-    $('.loan-check-btn').on('click', function() {
+  $(document).ready(function () {
+    $('.loan-check-btn').on('click', function () {
       var isbn = $(this).attr('data-isbn');
       var bigNumberIsbn = new BigNumber(isbn);
       isbn = bigNumberIsbn.toFixed();
@@ -614,8 +645,6 @@
     window.open(url, 'areaCdInfo', 'width=1200,height=800');
     return false;
   }
-
-
 
 
 </script>
