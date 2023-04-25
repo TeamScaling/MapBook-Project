@@ -7,8 +7,11 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.NGram;
+import com.scaling.libraryservice.search.util.QueryDivider;
+import com.scaling.libraryservice.search.util.Tokenizer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,16 +33,17 @@ public class BookSearchService {
 
     private final BookRepository bookRepository;
 
+    private final Tokenizer tokenizer;
+
     // 도서 검색
     @Timer
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
         Pageable pageable = createPageable(page, size);
 
-        if(isEnglish(query)) {
+        if (isEnglish(query)) {
 
             String[] split = query.split("\\s+");
 
-            //fixme : ?? 6개 이상으로 나누는 목적이 어떤건지 모르겠습니다.
             List<String> filteredWords = Arrays.stream(split)
                 .filter(word -> word.length() > 6)
                 .toList();
@@ -102,7 +106,7 @@ public class BookSearchService {
     }
 
 
-    private RespBooksDto searchBooksInKorean(String query, int page, int size, String target){
+    private RespBooksDto searchBooksInKorean(String query, int page, int size, String target) {
         Pageable pageable = createPageable(page, size);
 
         Page<Book> books = findBooksByTarget(splitTarget(query), pageable, target);
@@ -117,7 +121,7 @@ public class BookSearchService {
         return new RespBooksDto(meta, document);
     }
 
-    private RespBooksDto searchBooksInEnglish(String query, Pageable pageable, int page, int size){
+    private RespBooksDto searchBooksInEnglish(String query, Pageable pageable, int page, int size) {
 
         Page<Book> books = bookRepository.findBooksByEnglishTitleNormal(query, pageable);
 
@@ -132,7 +136,7 @@ public class BookSearchService {
 
     }
 
-    String parsedQuery(String query){
+    String parsedQuery(String query) {
         List<String> ngramList = NGram.getNGrams(query.replaceAll("\\s", ""), 4);
 
         String[] fields = {"ENG_TITLE_NM"};
@@ -145,16 +149,92 @@ public class BookSearchService {
             parsedQuery = parser.parse(QueryParser.escape(String.join(" ", ngramList)));
         } catch (ParseException e) {
 
-            //fixme log로 처리 하셔야 합니다....
-            //예외 처리 로직
-            e.printStackTrace(  );
+            log.error(e.getMessage());
         }
         return String.valueOf(parsedQuery);
     }
 
-    public boolean isEnglish(String input){
-        String pattern = "^[a-zA-Z\\s+]+$";
+    public static boolean isEnglish(String input) {
+        String pattern = "^[a-zA-Z0-9\\.\\s]+$";
         return input.matches(pattern);
+    }
+
+    public static boolean isKorean(String input) {
+        String pattern = "^[가-힣0-9\\.\\s]+$";
+        return input.matches(pattern);
+    }
+
+    @Timer
+    public RespBooksDto searchBooks2(String query, int page, int size, String target) {
+        //"퍼펙트 EJB";
+        Pageable pageable = createPageable(page, size);
+
+        Page<Book> books;
+        MetaDto meta;
+
+        log.info("isEnglish : "+isEnglish(query));
+
+        if (isEnglish(query)) {
+
+            log.info("english title");
+
+            query = splitTarget(query);
+
+            System.out.println(query);
+
+            books = bookRepository.findBooksByEngTitleFlexible(query, pageable);
+
+        } else if (isKorean(query)) {
+
+            log.info("korean title");
+
+            return searchBooksInKorean(query, page, size, target);
+        } else {
+
+            Map<String, List<String>> titleMap = QueryDivider.divideTitle(query);
+
+            List<String> engTokens = titleMap.get("eng");
+            List<String> korTokens = titleMap.get("kor");
+
+            String korToken = String.join(" ", korTokens);
+            String engToken = String.join(" ", engTokens);
+
+            log.info("korToken : {}, length : {}",korToken,korToken.length());
+            log.info("engToken : {}, length : {}",engToken,engToken.length());
+
+            StringBuilder builder = new StringBuilder();
+
+            if(!korToken.isEmpty()){
+                List<String> nnKorTokens = tokenizer.tokenize(korToken);
+                korToken = String.join(" ",nnKorTokens);
+            }
+
+
+            engTokens.forEach(t -> builder.append("%").append(t).append("% "));
+
+            engToken = builder.toString().trim();
+
+            log.info("[korToken < engToken] korToken : {} // engToken : {}",korToken, engToken);
+
+            books = bookRepository.findBooksByEngAndKor(engToken, korToken, pageable);
+
+            /*if (korToken.length() > engToken.length()) {
+
+                log.info("korToken > engToken");
+
+                books = bookRepository.findBooksByTitleNmode(query,pageable);
+
+            } else {
+
+
+            }*/
+
+        }
+
+
+        meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+
+        return new RespBooksDto(meta, books.stream().map(BookDto::new).toList());
     }
 
 }

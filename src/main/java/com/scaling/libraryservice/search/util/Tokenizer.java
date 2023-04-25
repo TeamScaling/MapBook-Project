@@ -20,9 +20,8 @@ public class Tokenizer {
         List<Token> tokenList = analyzeResultList.getTokenList();
 
         List<String> nounList =
-            tokenList.stream().filter(i ->  i.getPos().equals("SL"))
+            tokenList.stream().filter(i ->  i.getPos().equals("NNP") | i.getPos().equals("NNG"))
                 .map(Token::getMorph).toList();
-
         return nounList;
     }
 

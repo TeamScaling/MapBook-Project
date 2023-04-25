@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.service;
+package com.scaling.libraryservice.mapBook.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +37,7 @@ class BookSearchServiceTest {
         Pageable pageable = PageRequest.of(page - 1, size);
 
         /* when */
-        Page<Book> books = bookRepository.findBooksByTitleNormal(query, pageable);
+        Page<Book> books = bookRepository.findBooksByTitleBmode(query, pageable);
 
         /* then */
         assertTrue(books.isEmpty());
