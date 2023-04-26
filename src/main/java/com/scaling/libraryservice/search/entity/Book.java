@@ -15,8 +15,8 @@ import lombok.ToString;
 public class Book {
 
     @Id
-    @Column(name = "SEQ_NO")
-    private Integer seqId;
+    @Column(name = "id_no")
+    private Long id;
 
     @Column(name = "TITLE_NM")
     private String title;

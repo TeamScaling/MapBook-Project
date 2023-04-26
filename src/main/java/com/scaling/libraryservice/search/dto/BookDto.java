@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class BookDto {
 
-    private final Integer seqId;
+    private final Long id;
 
     private final String title;
 
@@ -23,7 +23,7 @@ public class BookDto {
 
     public BookDto(Book book) {
 
-        this.seqId = book.getSeqId();
+        this.id = book.getId();
         this.title = book.getTitle();
 
         if (book.getContent().isEmpty()) {
