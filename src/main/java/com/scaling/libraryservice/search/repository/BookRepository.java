@@ -79,5 +79,28 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findBooksByEngAndKor2(@Param("engToken") String engToken,
         @Param("korToken") String korToken, Pageable pageable);
 
+    @Query(value = "SELECT * FROM books "
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE) order by loan_cnt"
+        , nativeQuery = true)
+    Page<Book> findBooksByKorTitleNmodeOrder(@Param("query") String query, Pageable pageable);
+
+    @Query(value = "SELECT * FROM books "
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode) order by loan_cnt desc"
+        , nativeQuery = true)
+    Page<Book> findBooksByKorTitleBmodeOrder(@Param("query") String query, Pageable pageable);
+
+    @Query(value = "SELECT * FROM books "
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode)"
+        , nativeQuery = true)
+    Page<Book> findBooksByKorTitleBmode(@Param("query") String query, Pageable pageable);
+
+    default Page<Book> findBooksByOneTitleFlexible(String query, Pageable pageable) {
+        Page<Book> books = findBooksByKorTitleBmodeOrder(query, pageable);
+        if (books.getContent().isEmpty()) {
+            books = findBooksByTitleNmode(query, pageable);
+        }
+        return books;
+    }
+
 }
 

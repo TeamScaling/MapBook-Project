@@ -10,6 +10,7 @@ import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.util.MapBookMatcher;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -53,13 +54,17 @@ public class CachedMapBookManager {
 
             List<LibraryDto> nearByLibraries = libraryFindService.getNearByLibraries(mapBookDto);
 
-            Map<Integer, ApiBookExistDto> bookExistMap = apiQueryBinder.bindBookExistMap(
-                apiQuerySender.multiQuery(
-                    nearByLibraries,
-                    mapBookDto.getIsbn(),
-                    nearByLibraries.size()));
+            if(!nearByLibraries.isEmpty()){
+                Map<Integer, ApiBookExistDto> bookExistMap = apiQueryBinder.bindBookExistMap(
+                    apiQuerySender.multiQuery(
+                        nearByLibraries,
+                        mapBookDto.getIsbn(),
+                        nearByLibraries.size()));
 
-            value = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
+                value = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
+            }else{
+                value = new ArrayList<>();
+            }
 
             mapBookCache.put(mapBookDto, value);
         }

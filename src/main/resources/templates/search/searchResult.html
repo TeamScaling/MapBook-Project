@@ -414,7 +414,7 @@
                   </thead>
                   <tbody id="book-info-column">
                   <tr th:each="book : ${searchResult.documents}">
-                    <td th:text="${book.seqId}"></td>
+                    <td th:text="${book.id}"></td>
                     <td>
                       <span th:text="${book.title}"></span>
                     </td>

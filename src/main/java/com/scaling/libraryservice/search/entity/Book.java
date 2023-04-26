@@ -15,8 +15,8 @@ import lombok.ToString;
 public class Book {
 
     @Id
-    @Column(name = "SEQ_NO")
-    private Integer seqId;
+    @Column(name = "id_no")
+    private Long id;
 
     @Column(name = "TITLE_NM")
     private String title;
@@ -32,4 +32,11 @@ public class Book {
 
     @Column(name = "IMAGE_URL")
     private String bookImg;
+
+    @Column(name = "loan_cnt")
+    private Integer loanCnt;
+
+    public Integer getLoanCnt() {
+        return loanCnt == null ? 0 : this.loanCnt;
+    }
 }

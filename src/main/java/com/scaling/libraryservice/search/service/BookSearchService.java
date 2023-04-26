@@ -9,6 +9,7 @@ import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.NGram;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 
 @Service
@@ -121,6 +123,34 @@ public class BookSearchService {
         return new RespBooksDto(meta, document);
     }
 
+    private RespBooksDto searchBooksInKorean2(String query, int page, int size, String target) {
+        Pageable pageable = createPageable(page, size);
+
+        Page<Book> books;
+
+        if (query.split(" ").length == 1) {
+            books = bookRepository.findBooksByOneTitleFlexible(query, pageable);
+
+        } else {
+            books = findBooksByTarget(splitTarget(query), pageable, target);
+        }
+
+        List<BookDto> document;
+
+        if (books != null) {
+            document = books.getContent().stream().map(BookDto::new).toList();
+            MetaDto meta
+                = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+
+            return new RespBooksDto(meta, document);
+        } else {
+
+            return new RespBooksDto(
+                new MetaDto(),
+                new ArrayList<>());
+        }
+    }
+
     private RespBooksDto searchBooksInEnglish(String query, Pageable pageable, int page, int size) {
 
         Page<Book> books = bookRepository.findBooksByEnglishTitleNormal(query, pageable);
@@ -166,27 +196,37 @@ public class BookSearchService {
 
     @Timer
     public RespBooksDto searchBooks2(String query, int page, int size, String target) {
+
         //"퍼펙트 EJB";
         Pageable pageable = createPageable(page, size);
 
         Page<Book> books;
         MetaDto meta;
 
-        log.info("isEnglish : "+isEnglish(query));
+        log.info("isEnglish : " + isEnglish(query));
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         if (isEnglish(query)) {
 
-            log.info("english title");
+            log.info("english title : [{}]",query);
 
-            query = "+"+query;
+            query = "+" + query;
 
             books = bookRepository.findBooksByEngTitleFlexible(query, pageable);
+            stopWatch.stop();
+
+            // double 범위 초과로 인한 지수 표현 방지
+            String totalTime = String.format("%.6f", stopWatch.getTotalTimeSeconds());
+
+            log.info("[{}s] in [onlyEnglish]", totalTime);
 
         } else if (isKorean(query)) {
 
-            log.info("korean title");
+            log.info("korean title : [{}]",query);
 
-            return searchBooksInKorean(query, page, size, target);
+            return searchBooksInKorean2(query, page, size, target);
         } else {
 
             Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
@@ -201,26 +241,36 @@ public class BookSearchService {
 
             engTokens.forEach(t -> builder.append("%").append(t).append("% "));
 
-            log.info("korToken : {}, length : {}",korToken,korToken.length());
-            log.info("engToken : {}, length : {}",engToken,engToken.length());
+            log.info("korToken : {}, length : {}", korToken, korToken.length());
+            log.info("engToken : {}, length : {}", engToken, engToken.length());
+
+            stopWatch.stop();
+
+            // double 범위 초과로 인한 지수 표현 방지
+            String totalTime = String.format("%.6f", stopWatch.getTotalTimeSeconds());
+
+            log.info("[{}s] in [English+korean]", totalTime);
 
             if (korToken.length() >= engToken.length()) {
 
                 log.info("korToken >= engToken");
 
-                books = bookRepository.findBooksByTitleNmode(query,pageable);
+                books = bookRepository.findBooksByTitleNmode(query, pageable);
 
             } else {
 
-                if(!korToken.isEmpty()){
+                if (!korToken.isEmpty()) {
                     List<String> nnKorTokens = titleTokenizer.tokenize(korToken);
-                    korToken = String.join(" ",nnKorTokens);
+                    korToken = String.join(" ", nnKorTokens);
                 }
 
-                log.info("[korToken < engToken] korToken : {} // engToken : {}",korToken, engToken);
+                log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
+                    engToken);
 
-                books = bookRepository.findBooksByEngAndKor(builder.toString().trim(), korToken, pageable);
+                books = bookRepository.findBooksByEngAndKor(builder.toString().trim(), korToken,
+                    pageable);
             }
+
 
         }
 
