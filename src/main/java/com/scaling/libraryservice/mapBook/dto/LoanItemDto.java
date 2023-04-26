@@ -24,6 +24,8 @@ public class LoanItemDto implements ConfigureUriBuilder {
 
     private Integer loan_count;
 
+    private String classNo;
+
     public LoanItemDto(JSONObject obj) {
 
         this.no = obj.getInt("no");
@@ -31,22 +33,14 @@ public class LoanItemDto implements ConfigureUriBuilder {
         this.bookName = obj.getString("bookname");
         this.isbn13 = Double.parseDouble(obj.getString("isbn13"));
         this.loan_count = Integer.parseInt(obj.getString("loan_count"));
-    }
-
-    public static Map<String, String> createParamMap(int pageSize) {
-        Map<String,String> paramMap = new HashMap<>();
-
-        paramMap.put("apiUri","http://data4library.kr/api/loanItemSrch");
-        paramMap.put("pageSize", String.valueOf(pageSize));
-        paramMap.put("format", "json");
-
-        return paramMap;
+        this.classNo = obj.getString("class_no");
     }
 
     @Override
     public UriComponentsBuilder configUriBuilder(String pageSize) {
         UriComponentsBuilder uriBuilder
             = UriComponentsBuilder.fromHttpUrl("http://data4library.kr/api/loanItemSrch")
+            .queryParam("authKey","0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72")
             .queryParam("pageSize", pageSize)
             .queryParam("format","json");
 
