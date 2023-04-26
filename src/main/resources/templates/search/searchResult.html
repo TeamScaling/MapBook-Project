@@ -387,16 +387,35 @@
     <form id="related-form" action="/books/search">
 
       <p>
-        연관 검색어 :
+        추천도서 :
         <span th:each="book, iter : ${searchResult.relatedBookDtoList}">
           <span th:text="${book.title}"></span>
-          <span th:if="${!iter.last}">, </span>
         </span>
       </p>
+
+
 
     </form>
 
   </div>
+
+  <!--  추천도서-->
+  <div class="related-box">
+    <form id= action="/books/search">
+
+      <p>
+        연관검색어:
+        <span th:each="token : ${searchResult.tokenDto.tokens}">
+        <span th:text="${token}"></span>
+      </span>
+      </p>
+
+
+    </form>
+
+  </div>
+
+
 
 </header>
 

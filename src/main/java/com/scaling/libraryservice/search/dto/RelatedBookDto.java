@@ -45,4 +45,27 @@ public class RelatedBookDto {
     public int hashCode() {
         return Objects.hash(title);
     }
+
+    public String getRelatedTitle() {
+        String[] titleParts = this.title.split(":");
+        if (titleParts.length > 1) {
+            String titlePrefix = titleParts[0];
+            String[] titlePrefixParts = titlePrefix.trim().split("=");
+            if (titlePrefixParts.length > 0) {
+                titlePrefix = titlePrefixParts[0].trim();
+            }
+            return removeParentheses(removeDash(titlePrefix)).trim();
+        }
+        return removeParentheses(removeDash(this.title)).trim();
+    }
+
+    private String removeParentheses(String text) {
+        return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
+    }
+
+    private String removeDash(String text) {
+        return text.replaceAll("-.*$", "").trim();
+    }
+
+
 }

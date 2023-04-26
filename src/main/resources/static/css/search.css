@@ -55,19 +55,19 @@
 }
 
 #related-form {
-    width: 720px;
-    height: 180px;
-    margin: 30px auto 20px auto;
+    /*width: 720px;*/
+    /*height: 180px;*/
+    /*margin: 30px auto 20px auto;*/
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*align-items: center;*/
+    /*justify-content: center;*/
     /*padding: 20px 0 0;*/
-    border-radius: 10px;
-    background-color: #ffffff;
+    /*border-radius: 10px;*/
+    /*background-color: #ffffff;*/
     /*border: 2px rosybrown; !* 모든 가장자리 두께를 2px로 설정합니다. *!*/
-    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.15);
+    /*box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.15);*/
 }
 
 #search-result {

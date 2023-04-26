@@ -16,11 +16,13 @@ public class RespBooksDto {
     private List<BookDto> documents;
 
     private List<RelatedBookDto> relatedBookDtoList;
+    private TokenDto tokenDto;
 
-    public RespBooksDto(MetaDto metaDto, List<BookDto> documents, List<RelatedBookDto> relatedBookDtos) {
+    public RespBooksDto(MetaDto metaDto, List<BookDto> documents, List<RelatedBookDto> relatedBookDtos,TokenDto tokenDto) {
         this.meta = metaDto;
         this.documents = documents;
         this.relatedBookDtoList = relatedBookDtos;
+        this.tokenDto = tokenDto;
     }
 
     public RespBooksDto(Pageable pageable, Page<Book> books, List<BookDto> documents) {
