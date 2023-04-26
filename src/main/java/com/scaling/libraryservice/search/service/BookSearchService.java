@@ -30,7 +30,6 @@ public class BookSearchService {
 
     private final BookRepository bookRepository;
 
-    private final RelatedSearch relatedSearch;
 
     // 도서 검색
     @Timer
@@ -44,38 +43,19 @@ public class BookSearchService {
 
         List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
 //==========================작업중==============================================>
-        // 1. kdc로 검색하는 버전
-        // document에서 가장 많은 kdc번호 추출
-        Map<String, Integer> countMap = new HashMap<>();
 
-        for (BookDto book : document) {
-            String kdcNm = book.getKdcNm();
-            if (kdcNm != null && kdcNm.matches("\\d+\\.\\d+")) { // 숫자 패턴 체크
-                String[] splitKdcNm = kdcNm.split("\\.");
-                String firstDigit = kdcNm.substring(0, 5); // 첫 번째 5글자 추출
-                System.out.println("firstDigit : " + firstDigit);
-
-
-                countMap.put(firstDigit, countMap.getOrDefault(firstDigit, 0) + 1);
-            }
-        }
-
-        String mostFrequentFirstDigit = Collections.max(countMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-        System.out.println("가장 많은 kdc 번호 : " + mostFrequentFirstDigit);
-
-        // 같은 kdc 번호를 가진 자료 검색
-        List<Book> ls = bookRepository.findRelatedQuery(mostFrequentFirstDigit);
-        System.out.println("ls : " + ls);
-
-        //RelatedBookDto로 변환
-
-        List<RelatedBookDto> relatedBookDtos = ls.stream()
-            .map(bookDto -> new RelatedBookDto(bookDto.getTitle()))
+        // document 리스트에서 무작위로 10개의 요소를 추출하여 relatedBookDtos 리스트에 추가
+        List<RelatedBookDto> relatedBookDtos = document.stream()
+            .filter(bookDto -> bookDto.getTitle() != null)
+            .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
             .distinct()
+            .limit(100) // 상위 100개까지만 선택
+            .collect(Collectors.toList());
+        Collections.shuffle(relatedBookDtos); // 리스트를 무작위로 섞음
+        relatedBookDtos = relatedBookDtos.stream()
+            .limit(10) // 상위 10개만 선택
             .collect(Collectors.toList());
         System.out.println("relatedBookDtos : " + relatedBookDtos.toString());
-
-
 
 
 //=========================작업끝===============================================>
