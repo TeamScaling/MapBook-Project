@@ -3,9 +3,10 @@ package com.scaling.libraryservice.search.dto;
 import com.scaling.libraryservice.search.entity.Book;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
-@Setter
+@Setter @ToString
 public class BookDto {
 
     private final Long id;
