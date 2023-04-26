@@ -34,8 +34,8 @@ class LibraryServiceApplicationTests {
 
         /* when */
 
-        var library1= libraryFindService.getNearByLibrariesHasBook(dto);
-        var library2 = libraryFindService.getNearByLibraries(dto);
+        var library1= libraryFindService.getNearByLibraries(dto);
+        var library2 = libraryFindService.getNearByAllLibraries(dto.getAreaCd());
 
         /* then */
 

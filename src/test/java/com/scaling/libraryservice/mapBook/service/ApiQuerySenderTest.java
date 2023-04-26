@@ -135,11 +135,6 @@ class ApiQuerySenderTest {
         /* given */
 
         int pageSize = 30;
-        Map<String,String> paramMap = new HashMap<>();
-
-        paramMap.put("apiUrl","http://data4library.kr/api/loanItemSrch");
-        paramMap.put("pageSize", String.valueOf(pageSize));
-        paramMap.put("format", "json");
         
         /* when */
 
