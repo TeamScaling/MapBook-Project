@@ -1,5 +1,8 @@
 package com.scaling.libraryservice.config;
 
+import com.scaling.libraryservice.search.util.Tokenizer;
+import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
+import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +23,17 @@ public class AppConfig {
 
         return new RestTemplate(factory);
     }
+
+    // 토크나이저 빈으로 주입
+    @Bean
+    public Komoran komoran() {
+        return new Komoran(DEFAULT_MODEL.FULL);
+    }
+
+//    @Bean
+//    public Tokenizer tokenizer(Komoran komoran) {
+//        return new Tokenizer(komoran);
+//    }
 
 
 }

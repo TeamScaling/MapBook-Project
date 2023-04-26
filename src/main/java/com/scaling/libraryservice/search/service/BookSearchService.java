@@ -8,13 +8,16 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.repository.RelatedSearchRepository;
+import com.scaling.libraryservice.search.util.Tokenizer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import kr.co.shineware.nlp.komoran.core.Komoran;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,8 +46,6 @@ public class BookSearchService {
 
         List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
 //==========================작업중==============================================>
-
-        // document 리스트에서 무작위로 10개의 요소를 추출하여 relatedBookDtos 리스트에 추가
         List<RelatedBookDto> relatedBookDtos = document.stream()
             .filter(bookDto -> bookDto.getTitle() != null)
             .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
@@ -56,6 +57,42 @@ public class BookSearchService {
             .limit(10) // 상위 10개만 선택
             .collect(Collectors.toList());
         System.out.println("relatedBookDtos : " + relatedBookDtos.toString());
+
+        //토큰으로 명사화
+
+        Tokenizer tokenizer = new Tokenizer(new Komoran("models-full"));
+
+        List<String> nouns = relatedBookDtos.stream()
+            .map(RelatedBookDto::getTitle)
+            .flatMap(title -> tokenizer.tokenize(title).stream())
+            .collect(Collectors.toList());
+
+        Map<String, Long> countedNouns = nouns.stream()
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        List<String> filteredNouns = countedNouns.entrySet().stream()
+            .filter(entry -> entry.getValue() >= 2)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+
+        System.out.println("filteredNouns : " + filteredNouns);
+
+
+
+
+
+        // document 리스트에서 무작위로 10개의 요소를 추출하여 relatedBookDtos 리스트에 추가
+//        List<RelatedBookDto> relatedBookDtos = document.stream()
+//            .filter(bookDto -> bookDto.getTitle() != null)
+//            .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
+//            .distinct()
+//            .limit(100) // 상위 100개까지만 선택
+//            .collect(Collectors.toList());
+//        Collections.shuffle(relatedBookDtos); // 리스트를 무작위로 섞음
+//        relatedBookDtos = relatedBookDtos.stream()
+//            .limit(10) // 상위 10개만 선택
+//            .collect(Collectors.toList());
+//        System.out.println("relatedBookDtos : " + relatedBookDtos.toString());
 
 
 //=========================작업끝===============================================>
