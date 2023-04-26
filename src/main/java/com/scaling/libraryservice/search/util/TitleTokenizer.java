@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class Tokenizer {
+public class TitleTokenizer {
 
     private final Komoran komoran;
 

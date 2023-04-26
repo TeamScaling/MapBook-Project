@@ -2,8 +2,8 @@ package com.scaling.libraryservice;
 
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
-import com.scaling.libraryservice.search.util.QueryDivider;
-import com.scaling.libraryservice.search.util.Tokenizer;
+import com.scaling.libraryservice.search.util.TitleDivider;
+import com.scaling.libraryservice.search.util.TitleTokenizer;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 public class LearningTest {
 
 
-    private Tokenizer tokenizer = new Tokenizer(new Komoran(DEFAULT_MODEL.FULL));
+    private TitleTokenizer titleTokenizer = new TitleTokenizer(new Komoran(DEFAULT_MODEL.FULL));
 
     @Test
     public void test() {
@@ -116,7 +116,7 @@ public class LearningTest {
     public void english_korean() {
         String text = "e-mail에 꼭 필요한 알짜표현";
 
-        var result = QueryDivider.divideTitle(text);
+        var result = TitleDivider.divideTitle(text);
 
         System.out.println(result);
     }
@@ -194,7 +194,7 @@ public class LearningTest {
         /* given */
         String text = "Easy web publishing with HTML";
         /* when */
-        var result = tokenizer.tokenize(text);
+        var result = titleTokenizer.tokenize(text);
         /* then */
 
         System.out.println();

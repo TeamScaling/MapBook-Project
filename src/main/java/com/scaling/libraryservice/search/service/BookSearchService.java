@@ -7,8 +7,8 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.NGram;
-import com.scaling.libraryservice.search.util.QueryDivider;
-import com.scaling.libraryservice.search.util.Tokenizer;
+import com.scaling.libraryservice.search.util.TitleDivider;
+import com.scaling.libraryservice.search.util.TitleTokenizer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class BookSearchService {
 
     private final BookRepository bookRepository;
 
-    private final Tokenizer tokenizer;
+    private final TitleTokenizer titleTokenizer;
 
     // 도서 검색
     @Timer
@@ -189,7 +189,7 @@ public class BookSearchService {
             return searchBooksInKorean(query, page, size, target);
         } else {
 
-            Map<String, List<String>> titleMap = QueryDivider.divideTitle(query);
+            Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
 
             List<String> engTokens = titleMap.get("eng");
             List<String> korTokens = titleMap.get("kor");
@@ -213,7 +213,7 @@ public class BookSearchService {
             } else {
 
                 if(!korToken.isEmpty()){
-                    List<String> nnKorTokens = tokenizer.tokenize(korToken);
+                    List<String> nnKorTokens = titleTokenizer.tokenize(korToken);
                     korToken = String.join(" ",nnKorTokens);
                 }
 
