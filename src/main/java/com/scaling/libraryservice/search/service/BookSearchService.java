@@ -218,7 +218,7 @@ public class BookSearchService {
                 books = bookRepository.findBooksByKorMtFlexible(query, pageable);
             } else {
                 query = splitTarget(query);
-                log.info("Multi Kor query : [{}]", query);
+                log.info("Multi Eng query : [{}]", query);
                 books = bookRepository.findBooksByEngMtFlexible(query, pageable);
             }
         }
@@ -264,19 +264,32 @@ public class BookSearchService {
 
         } else {
 
+            List<String> nnKorTokens = new ArrayList<>();
+
             // 한글 제목 내용을 명사 단위로만 검색 한다.
             if (!korToken.isEmpty()) {
-                List<String> nnKorTokens = titleTokenizer.tokenize(korToken);
+                nnKorTokens = titleTokenizer.tokenize(korToken);
                 korToken = String.join(" ", nnKorTokens);
             }
 
-            log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
-                engToken);
+            if(nnKorTokens.size() <=1){
+                korToken = splitTarget(korToken);
 
-            return bookRepository.findBooksByEngKorBool(
-                engQueryBuilder.toString().trim(),
-                korToken,
-                pageable);
+                log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
+                    engToken);
+
+
+                return bookRepository.findBooksByEngKorBool(
+                    engQueryBuilder.toString().trim(),
+                    korToken,
+                    pageable);
+            }else{
+
+                return bookRepository.findBooksByEngKorNatural(
+                    engQueryBuilder.toString().trim(),
+                    korToken,
+                    pageable);
+            }
         }
 
     }
