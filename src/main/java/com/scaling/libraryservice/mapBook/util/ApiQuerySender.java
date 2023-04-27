@@ -31,7 +31,9 @@ public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
 
-    @Timer
+    private final CircuitBreaker circuitBreaker;
+
+    /*@Timer
     // OpenAPI에 단일 요청을 보낸다.
     public ResponseEntity<String> singleQueryJson(UriComponentsBuilder uriBuilder)
         throws RestClientException {
@@ -51,6 +53,39 @@ public class ApiQuerySender {
 
         } catch (RestClientException e) {
             log.error(e.toString());
+
+            circuitBreaker.observeError(uriBuilder,e);
+
+            throw e;
+        }
+
+        return resp;
+    }*/
+
+    @Timer
+    // OpenAPI에 단일 요청을 보낸다.
+    public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,String target)
+        throws RestClientException {
+
+        Objects.requireNonNull(configUriBuilder);
+
+        UriComponentsBuilder uriBuilder = configUriBuilder.configUriBuilder(target);
+
+        uriBuilder.queryParam("format", "json");
+
+        ResponseEntity<String> resp;
+
+        try {
+            resp = restTemplate.exchange(
+                uriBuilder.toUriString(),
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                String.class);
+
+        } catch (RestClientException e) {
+            log.error(e.toString());
+
+            circuitBreaker.observeError(configUriBuilder,e);
 
             throw e;
         }
@@ -72,7 +107,7 @@ public class ApiQuerySender {
 
         for (ConfigureUriBuilder b : uriBuilders) {
 
-            tasks.add(() -> singleQueryJson(b.configUriBuilder(target)));
+            tasks.add(() -> singleQueryJson(b,target));
         }
 
         List<Future<ResponseEntity<String>>> futures;

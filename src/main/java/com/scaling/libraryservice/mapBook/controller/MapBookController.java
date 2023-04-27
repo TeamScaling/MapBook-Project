@@ -38,7 +38,7 @@ public class MapBookController {
         return "mapBook/mapBookMarker";
     }
 
-    public String getLoanableMapBookSingle(ModelMap model,
+    /*public String getLoanableMapBookSingle(ModelMap model,
         @ModelAttribute ReqMapBookDto mapBookDto) {
 
         LibraryDto nearestLibrary
@@ -54,7 +54,7 @@ public class MapBookController {
         model.put("mapBooks", bookExist);
 
         return "mapBook/mapBookMarker";
-    }
+    }*/
 
 
 

@@ -67,6 +67,8 @@ public class LibraryDto implements ConfigureUriBuilder {
             .queryParam("libCode", String.valueOf(this.libNo));
     }
 
-
-
+    @Override
+    public String getApiUrl() {
+        return API_URL;
+    }
 }

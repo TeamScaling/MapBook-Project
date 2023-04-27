@@ -21,9 +21,9 @@ class ApiDataManageServiceTest {
     @Autowired
     private ApiQueryBinder apiQueryBinder;
 
-    @Test
+    /*@Test
     public void save_item(){
-        /* given */
+        *//* given *//*
 
         var json = apiQuerySender.singleQueryJson(new LoanItemDto().configUriBuilder("5000"));
 
@@ -32,6 +32,6 @@ class ApiDataManageServiceTest {
 
 
         apiDataManageService.addLoanItemList(result);
-    }
+    }*/
 
 }

@@ -26,6 +26,8 @@ public class LoanItemDto implements ConfigureUriBuilder {
 
     private String classNo;
 
+    private static final String API_URL = "http://data4library.kr/api/loanItemSrch";
+
     public LoanItemDto(JSONObject obj) {
 
         this.no = obj.getInt("no");
@@ -39,11 +41,16 @@ public class LoanItemDto implements ConfigureUriBuilder {
     @Override
     public UriComponentsBuilder configUriBuilder(String pageSize) {
         UriComponentsBuilder uriBuilder
-            = UriComponentsBuilder.fromHttpUrl("http://data4library.kr/api/loanItemSrch")
+            = UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("authKey","0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72")
             .queryParam("pageSize", pageSize)
             .queryParam("format","json");
 
         return uriBuilder;
+    }
+
+    @Override
+    public String getApiUrl() {
+        return API_URL;
     }
 }
