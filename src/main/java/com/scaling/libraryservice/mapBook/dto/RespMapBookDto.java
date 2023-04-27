@@ -41,6 +41,7 @@ public class RespMapBookDto {
 
     public RespMapBookDto(LibraryDto libraryDto) {
 
+        this.hasBook = "Y";
         this.libLo = libraryDto.getLibLon();
         this.libLa = libraryDto.getLibLat();
         this.libArea = libraryDto.getLibArea();

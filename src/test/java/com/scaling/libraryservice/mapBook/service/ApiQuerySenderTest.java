@@ -1,12 +1,11 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
-import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
@@ -21,7 +20,6 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 class ApiQuerySenderTest {
 
@@ -55,24 +53,13 @@ class ApiQuerySenderTest {
         mockServer.expect(MockRestRequestMatchers.requestTo("http://mockServer.kr/api/bookExist?format=json"))
             .andRespond(MockRestResponseCreators.withSuccess());
 
-
-        AbstractApiConnection mockConnection = new AbstractApiConnection() {
-            @Override
-            public UriComponentsBuilder configUriBuilder(String target) {
-                return UriComponentsBuilder.fromHttpUrl("http://mockServer.kr/api/bookExist");
-            }
-
-            @Override
-            public String getApiUrl() {
-                return "http://mockServer.kr/api/bookExist";
-            }
-        };
+        MockApiConnection.setApiUrl("http://mockServer.kr/api/bookExist");
 
         /* when */
 
         apiQuerySender = new ApiQuerySender(restTemplateForMock,new CircuitBreaker());
 
-        apiQuerySender.singleQueryJson(mockConnection,target);
+        apiQuerySender.singleQueryJson(new MockApiConnection(),target);
 
         /* then */
         mockServer.verify();
@@ -107,7 +94,7 @@ class ApiQuerySenderTest {
         apiQuerySender.singleQueryJson(mockBuilder,target);
 
         /* then */
-        System.out.println(mockBuilder.getErrorCnt());
+        System.out.println(mockBuilder.getApiStatus().getErrorCnt());
         server.stop();
     }
 

@@ -1,7 +1,5 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import org.junit.jupiter.api.Test;
@@ -15,7 +13,7 @@ class LibraryDtoTest {
 
         ApiObservable api = (ApiObservable) builder;
 
-        System.out.println(api.apiAccessible());
+        System.out.println(api.getApiStatus().getApiUri());
 
     }
 

@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
-import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -56,10 +56,10 @@ public class ApiQuerySender {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            try {
-                circuitBreaker.receiveError(configUriBuilder);
-            } catch (NotSupportedException ex) {
-                throw new RuntimeException(ex);
+            if(ApiObservable.class.isAssignableFrom(configUriBuilder.getClass())){
+                ApiObservable apiObserver = (ApiObservable) configUriBuilder;
+
+                circuitBreaker.receiveError(apiObserver,e);
             }
 
         }

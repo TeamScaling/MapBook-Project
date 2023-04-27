@@ -39,6 +39,10 @@ public class ApiQueryBinder {
     public ApiBookExistDto bindBookExist(ResponseEntity<String> apiResponse)
         throws OpenApiException {
 
+        if (apiResponse == null){
+            return null;
+        }
+
         JSONObject respJsonObj = getJsonObjFromResponse(apiResponse);
 
         return new ApiBookExistDto(
@@ -63,7 +67,6 @@ public class ApiQueryBinder {
     private JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity)
         throws OpenApiException {
 
-        Objects.requireNonNull(responseEntity);
         JSONObject respJsonObj =
             new JSONObject(responseEntity.getBody()).getJSONObject("response");
 

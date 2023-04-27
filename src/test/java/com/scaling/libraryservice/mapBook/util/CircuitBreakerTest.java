@@ -3,17 +3,19 @@ package com.scaling.libraryservice.mapBook.util;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
+import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 class CircuitBreakerTest {
+    
 
     @Test
     public void mapTest(){
@@ -41,6 +43,7 @@ class CircuitBreakerTest {
         WireMockServer server = new WireMockServer(port);
 
         String target = "9788089365210";
+        String mockUrl = "http://localhost:" + 8089 + "/api/bookExist";
 
         server.start();
 
@@ -55,11 +58,15 @@ class CircuitBreakerTest {
         ApiQuerySender apiQuerySender
             = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
 
+
+
         /* when */
 
         for(int i=0; i<10; i++){
 
             apiQuerySender.singleQueryJson(new MockApiConnection(),target);
+            System.out.println(new LibraryDto().getApiStatus().getErrorCnt());
+            System.out.println(new LoanItemDto().getApiStatus().getErrorCnt());
         }
 
         /* then */

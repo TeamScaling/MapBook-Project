@@ -1,5 +1,7 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import com.scaling.libraryservice.mapBook.domain.ApiObservable;
+import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -9,7 +11,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Getter
 @RequiredArgsConstructor
 @ToString
-public class LoanItemDto extends AbstractApiConnection {
+public class LoanItemDto implements ConfigureUriBuilder, ApiObservable {
 
     private Integer no;
 
@@ -22,8 +24,9 @@ public class LoanItemDto extends AbstractApiConnection {
     private Integer loan_count;
 
     private String classNo;
-
     private static final String API_URL = "http://data4library.kr/api/loanItemSrch";
+
+    private static final ApiStatus apiStatus = new ApiStatus(API_URL,10);
 
     public LoanItemDto(JSONObject obj) {
 
@@ -49,5 +52,10 @@ public class LoanItemDto extends AbstractApiConnection {
     @Override
     public String getApiUrl() {
         return API_URL;
+    }
+
+    @Override
+    public ApiStatus getApiStatus() {
+        return apiStatus;
     }
 }

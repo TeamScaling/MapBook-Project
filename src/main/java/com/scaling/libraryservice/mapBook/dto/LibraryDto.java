@@ -3,12 +3,10 @@ package com.scaling.libraryservice.mapBook.dto;
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.entity.Library;
-import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 import org.springframework.web.util.UriComponentsBuilder;
 
 // Library entity를 담는 dto
@@ -16,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Setter
 @ToString
 @Slf4j
-public class LibraryDto implements ConfigureUriBuilder, ApiObservable {
+public class LibraryDto implements ConfigureUriBuilder,ApiObservable {
 
     private String libNm;
 
@@ -35,16 +33,9 @@ public class LibraryDto implements ConfigureUriBuilder, ApiObservable {
     private String twoAreaNm;
 
     private Integer areaCd;
-
-    private static boolean apiAccessible = true;
-    private static Integer errorCnt = 0;
-    private static DateTime closedTime = null;
-    private static DateTime openedTime = null;
-
-    private static DateTime recentClosedTime = null;
-
     private static final String API_URL = "http://data4library.kr/api/bookExist";
     private static final String AUTH_KEY = "55db267f8f05b0bf8e23e8d3f65bb67d206a6b5ce24f5e0ee4625bcf36e4e2bb";
+    private static ApiStatus apiStatus = new ApiStatus(API_URL,10);
 
     public LibraryDto() {
     }
@@ -85,41 +76,7 @@ public class LibraryDto implements ConfigureUriBuilder, ApiObservable {
         return API_URL;
     }
 
-    @Override
-    public Integer getErrorCnt() {
-        return errorCnt;
-    }
-
-    @Override
-    public DateTime getClosedTime() {
-        return closedTime;
-    }
-
-    @Override
-    public boolean apiAccessible() {
-        return apiAccessible;
-    }
-
-    @Override
-    public void closeAccess() {
-        apiAccessible = false;
-        closedTime = DateTime.now();
-    }
-
-    @Override
-    public void openAccess() {
-        apiAccessible = true;
-        openedTime = DateTime.now();
-        recentClosedTime = closedTime;
-        closedTime = null;
-    }
-
-    @Override
-    public void upErrorCnt() {
-        ++errorCnt;
-
-        if(errorCnt > 10){
-            CircuitBreaker.closeObserver(this);
-        }
+    public  ApiStatus getApiStatus() {
+        return apiStatus;
     }
 }
