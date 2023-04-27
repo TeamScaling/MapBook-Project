@@ -29,20 +29,4 @@ public class RespBooksDto {
         this.tokenDto = tokenDto;
     }
 
-    public RespBooksDto(Pageable pageable, Page<Book> books, List<BookDto> documents) {
-        this.documents = documents;
-        this.meta = new MetaDto();
-        this.meta.setCurrentPage(pageable.getPageNumber());
-        this.meta.setPageSize(pageable.getPageSize());
-        this.meta.setTotalElements(books.getTotalElements());
-        this.meta.setTotalPages(books.getTotalPages());
-    }
-
-    public void setRelatedBooks(List<RelatedBookDto> relatedBooks) {
-        this.relatedBooks = relatedBooks;
-    }
-
-    public void setTokenDto(TokenDto tokenDto) {
-        this.tokenDto = tokenDto;
-    }
 }
