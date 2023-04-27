@@ -2,77 +2,49 @@ package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.entity.Book;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
-@Setter @ToString
-public class BookDto {
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class RelatedBookDto {
+    private String title;
 
-    private final Long id;
-
-    private final String title;
-
-    private final String content;
-
-    private final String author;
-
-    private final String isbn;
-
-    private String bookImg;
-
-
-    public BookDto(Book book) {
-
-        this.id = book.getId();
-        this.title = book.getTitle();
-
-        if (book.getContent().isEmpty()) {
-            this.content = "[내용 없음]";
-        } else {
-            this.content = book.getContent();
-        }
-        this.author = book.getAuthor();
-        this.isbn = book.getIsbn();
-        this.bookImg =book.getBookImg();
-
-        if (book.getBookImg().isEmpty()) {
-            this.bookImg = "[내용 없음]";
-        } else {
-            this.bookImg = book.getBookImg();
-        }
+    public RelatedBookDto(Book book) {
+        BookDto bookDto = new BookDto(book);
+        this.title = bookDto.getTitle();
     }
 
 
+    public String getTitle() {
+        return title;
+    }
 
     @Override
     public String toString() {
-        return "BookDto{" +
-            ", title='" + title + '\'' +
-            ", isbn='" + isbn + '\'' +
+        return "RelatedBookDto{" +
+            "title='" + title + '\'' +
             '}';
     }
 
-
     //중복제거
+// equals()와 hashCode() 메소드 구현
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        BookDto bookDto = (BookDto) o;
-        return Objects.equals(title, bookDto.title);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RelatedBookDto that = (RelatedBookDto) o;
+        return Objects.equals(title, that.title);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(title);
     }
-
 
     public String getRelatedTitle() {
         String[] titleParts = this.title.split(":");
@@ -94,8 +66,5 @@ public class BookDto {
     private String removeDash(String text) {
         return text.replaceAll("-.*$", "").trim();
     }
-
-
-
 
 }
