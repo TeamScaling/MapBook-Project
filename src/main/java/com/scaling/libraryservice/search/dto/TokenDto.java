@@ -13,4 +13,11 @@ import lombok.Setter;
 public class TokenDto {
     private List<String> tokens;
 
+    @Override
+    public String toString() {
+        return "Tokens{" +
+            "token='" + tokens + '\'' +
+            '}';
+    }
+
 }

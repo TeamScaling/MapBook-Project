@@ -44,6 +44,15 @@ public class BookDto {
         }
     }
 
+    public BookDto(BookDto bookDto) {
+        this.id = bookDto.getId();
+        this.title = bookDto.getTitle();
+        this.content = bookDto.getContent();
+        this.author = bookDto.getAuthor();
+        this.isbn = bookDto.getIsbn();
+        this.bookImg = bookDto.getBookImg();
+    }
+
 
 
     @Override

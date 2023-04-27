@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j @Timer
 public class BookSearchService {
 
     private final BookRepository bookRepository;

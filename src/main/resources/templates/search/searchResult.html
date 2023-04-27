@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>검색 결과 - 책있나?</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
@@ -28,7 +29,7 @@
 
     /*테이블 맥스 미니멈 사이즈*/
 
-    table{
+    table {
       min-width: 700px;
       max-width: 1000px;
     }
@@ -167,7 +168,6 @@
     }
 
 
-
     .loan-check-btn {
       width: 60px;
       max-width: 100px;
@@ -205,9 +205,6 @@
     /*.book-info td:last-child {*/
     /*  width: 50px;*/
     /*}*/
-
-
-
 
 
     /*페이지 처리*/
@@ -250,7 +247,21 @@
       padding-top: 20px;
       background-color: #fff;
       border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0,0,0,.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      column-gap: 10px;
+    }
+
+    .related-box {
+      width: 540px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
       column-gap: 10px;
     }
 
@@ -370,6 +381,51 @@
   </div>
 
 <!--  홈버튼-->
+
+  <!--  추천도서-->
+  <div class="related-box">
+    <form id="related-form" action="/books/search">
+
+      <!-- search/searchResult 템플릿 -->
+      <p>
+        추천도서 :
+        <span th:if="${searchResult.relatedBooks == null}">
+        추천 도서가 없습니다.
+    </span>
+        <span th:each="book, iter : ${searchResult.relatedBooks}">
+        <span th:text="${book.title}"></span>
+        <span th:if="${!iter.isLast()}">, </span>
+    </span>
+      </p>
+
+
+
+
+    </form>
+
+  </div>
+
+  <!--  추천도서-->
+  <div class="related-box">
+    <form action="/books/search">
+
+      <!-- search/searchResult 템플릿 -->
+      <p>
+        연관검색어 :
+        <span th:if="${searchResult.tokenDto == null}">
+        검색 결과가 없습니다.
+    </span>
+        <span th:each="token, status : ${searchResult.tokenDto?.tokens}">
+        <span th:text="${token}"></span>
+        <span th:if="${!status.last}">, </span>
+    </span>
+      </p>
+
+
+
+    </form>
+
+  </div>
 
 
 </header>
