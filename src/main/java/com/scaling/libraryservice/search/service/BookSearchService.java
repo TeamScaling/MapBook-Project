@@ -304,7 +304,10 @@ public class BookSearchService {
         return new RespBooksDto(meta, document,randomTop10,tokenDto);
 
 
+
     }
+
+
 
 
     // 추천책 상위 100권
@@ -329,7 +332,7 @@ public class BookSearchService {
         return relatedBookDtos;
     }
 
-    // 연관검색어 명사 추출
+    // 연관검색어 명사 추출 한글
     public TokenDto processRelatedBooks(List<RelatedBookDto> relatedBooks) {
         Tokenizer tokenizer = new Tokenizer(new Komoran(DEFAULT_MODEL.FULL));
         List<String> nouns = relatedBooks.stream()
@@ -339,10 +342,21 @@ public class BookSearchService {
         Map<String, Long> countedNouns = nouns.stream()
             .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
+//        List<String> token = countedNouns.entrySet().stream()
+//            .filter(entry -> entry.getKey().length() >= 2 && entry.getValue() >= 1)
+//            .map(Map.Entry::getKey)
+//            .limit(10)
+//            .collect(Collectors.toList());
+
+
+        // 가장 많이 나온 단어가 앞쪽에 나오도록 정렬
         List<String> token = countedNouns.entrySet().stream()
             .filter(entry -> entry.getKey().length() >= 2 && entry.getValue() >= 1)
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
             .map(Map.Entry::getKey)
+            .limit(10)
             .collect(Collectors.toList());
+
 
         log.info("filteredNouns : " + token);
 
