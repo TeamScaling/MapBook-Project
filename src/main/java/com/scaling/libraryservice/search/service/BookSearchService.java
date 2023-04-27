@@ -3,18 +3,25 @@ package com.scaling.libraryservice.search.service;
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
+import com.scaling.libraryservice.search.dto.RelatedBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.dto.TokenDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
+import com.scaling.libraryservice.search.util.KorTokenizer;
 import com.scaling.libraryservice.search.util.NGram;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
+import kr.co.shineware.nlp.komoran.core.Komoran;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -167,6 +174,8 @@ public class BookSearchService {
     @Timer
     public RespBooksDto searchBooks2(String query, int page, int size, String target) {
 
+        System.out.print("target : " + target);
+
         Pageable pageable = createPageable(page, size);
 
         Page<Book> books;
@@ -188,10 +197,30 @@ public class BookSearchService {
             books = engKorResolve(query, pageable);
         }
 
+//==========================작업중==============================================>
+        List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
+
+        // 최소 10권 결과일때도 결과값 나오도록 처리
+        int limit = Math.max(document.size(), 10);
+
+        // 상위 limit권
+        List<RelatedBookDto> relatedBooks = getTopRelatedBooks(document, limit);
+
+        // 10권 랜덤 추천
+        List<RelatedBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
+        log.info("randomTop10 : " + randomTop10);
+
+        // 토크나이저로 연관검색어 추출
+        TokenDto tokenDto = processRelatedBooks(relatedBooks);
+
+//==========================작업중==============================================>
+
+
         meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta
-            , books.stream().map(BookDto::new).toList());
+        return new RespBooksDto(meta, document,randomTop10,tokenDto);
+
+
     }
 
     private RespBooksDto queryResolve(String query, int page, int size, String target,
@@ -222,20 +251,38 @@ public class BookSearchService {
                 books = bookRepository.findBooksByEngMtFlexible(query, pageable);
             }
         }
+//==========================작업중==============================================>
 
+        MetaDto meta;
         List<BookDto> document;
 
         if (books != null) {
             document = books.getContent().stream().map(BookDto::new).toList();
-            MetaDto meta
-                = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-            return new RespBooksDto(meta, document);
+            // 최소 10권 결과일때도 결과값 나오도록 처리
+            int limit = Math.max(document.size(), 10);
+
+            // 상위 limit권
+            List<RelatedBookDto> relatedBooks = getTopRelatedBooks(document, limit);
+
+            // 10권 랜덤 추천
+            List<RelatedBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
+            log.info("randomTop10 : " + randomTop10);
+
+            // 토크나이저로 연관검색어 추출
+            TokenDto tokenDto = processRelatedBooks(relatedBooks);
+
+            meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+
+            return new RespBooksDto(meta, document,randomTop10,tokenDto);
+
+//==========================작업중==============================================>
+
         } else {
 
             return new RespBooksDto(
                 new MetaDto(),
-                new ArrayList<>());
+                new ArrayList<>(),new ArrayList<>(),new TokenDto());
         }
     }
 
@@ -292,6 +339,60 @@ public class BookSearchService {
             }
         }
 
+    }
+
+    // 추천책 상위 100권
+    @Timer
+    private List<RelatedBookDto> getTopRelatedBooks(List<BookDto> document, int limit) {
+        return document.stream()
+            .filter(bookDto -> bookDto.getTitle() != null)
+            .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
+            .distinct()
+            .limit(limit)
+            .collect(Collectors.toList());
+    }
+
+
+    // 랜덤으로 10권 선택
+    @Timer
+    public List<RelatedBookDto> getRandomTop10RelatedBooks(List<RelatedBookDto> relatedBooks) {
+        Collections.shuffle(relatedBooks);
+        List<RelatedBookDto> relatedBookDtos = relatedBooks.stream()
+            .limit(10)
+            .collect(Collectors.toList());
+        return relatedBookDtos;
+    }
+
+    // 연관검색어 명사 추출 한글
+    public TokenDto processRelatedBooks(List<RelatedBookDto> relatedBooks) {
+        KorTokenizer tokenizer = new KorTokenizer(new Komoran(DEFAULT_MODEL.FULL));
+        List<String> nouns = relatedBooks.stream()
+            .flatMap(relatedBookDto -> tokenizer.tokenize(relatedBookDto.getTitle()).stream())
+            .collect(Collectors.toList());
+
+        Map<String, Long> countedNouns = nouns.stream()
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+//        List<String> token = countedNouns.entrySet().stream()
+//            .filter(entry -> entry.getKey().length() >= 2 && entry.getValue() >= 1)
+//            .map(Map.Entry::getKey)
+//            .limit(10)
+//            .collect(Collectors.toList());
+
+
+        // 가장 많이 나온 단어가 앞쪽에 나오도록 정렬
+        List<String> token = countedNouns.entrySet().stream()
+            .filter(entry -> entry.getKey().length() >= 2 && entry.getValue() >= 1)
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .map(Map.Entry::getKey)
+            .limit(10)
+            .collect(Collectors.toList());
+
+
+        log.info("filteredNouns : " + token);
+
+        TokenDto tokenDto = new TokenDto(token);
+        return tokenDto;
     }
 
 }

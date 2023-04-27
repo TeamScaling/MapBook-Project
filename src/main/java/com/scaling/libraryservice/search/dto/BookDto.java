@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.entity.Book;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -42,5 +43,49 @@ public class BookDto {
             this.bookImg = book.getBookImg();
         }
     }
+
+    // 중복제거
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BookDto bookDto = (BookDto) o;
+        return Objects.equals(title, bookDto.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title);
+    }
+
+
+    // dto에 담기전에 전처리
+    public String getRelatedTitle() {
+        String[] titleParts = this.title.split(":");
+        if (titleParts.length > 1) {
+            String titlePrefix = titleParts[0];
+            String[] titlePrefixParts = titlePrefix.trim().split("=");
+            if (titlePrefixParts.length > 0) {
+                titlePrefix = titlePrefixParts[0].trim();
+            }
+            return removeParentheses(removeDash(titlePrefix)).trim();
+        }
+        return removeParentheses(removeDash(this.title)).trim();
+    }
+
+    private String removeParentheses(String text) {
+        return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
+    }
+
+    private String removeDash(String text) {
+        return text.replaceAll("-.*$", "").trim();
+    }
+
+
+
 
 }
