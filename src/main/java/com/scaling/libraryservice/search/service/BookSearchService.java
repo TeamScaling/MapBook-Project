@@ -11,7 +11,7 @@ import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.NGram;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
-import com.scaling.libraryservice.search.util.Tokenizer;
+import com.scaling.libraryservice.search.util.KorTokenizer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +31,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import com.scaling.libraryservice.search.entity.Token;
-
 
 
 @Service
@@ -334,7 +332,7 @@ public class BookSearchService {
 
     // 연관검색어 명사 추출 한글
     public TokenDto processRelatedBooks(List<RelatedBookDto> relatedBooks) {
-        Tokenizer tokenizer = new Tokenizer(new Komoran(DEFAULT_MODEL.FULL));
+        KorTokenizer tokenizer = new KorTokenizer(new Komoran(DEFAULT_MODEL.FULL));
         List<String> nouns = relatedBooks.stream()
             .flatMap(relatedBookDto -> tokenizer.tokenize(relatedBookDto.getTitle()).stream())
             .collect(Collectors.toList());
