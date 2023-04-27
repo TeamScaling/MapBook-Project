@@ -38,14 +38,14 @@ public class MapBookController {
         return "mapBook/mapBookMarker";
     }
 
-    /*public String getLoanableMapBookSingle(ModelMap model,
+    public String getLoanableMapBookSingle(ModelMap model,
         @ModelAttribute ReqMapBookDto mapBookDto) {
 
         LibraryDto nearestLibrary
             = LibraryFindService.findNearestLibraryWithCoordinate(mapBookDto);
 
         var responseEntity
-            = apiQuerySender.singleQueryJson(nearestLibrary.configUriBuilder(mapBookDto.getIsbn()));
+            = apiQuerySender.singleQueryJson(nearestLibrary,mapBookDto.getIsbn());
 
         ApiBookExistDto bookExist
             = apiQueryBinder.bindBookExist(responseEntity);
@@ -54,7 +54,7 @@ public class MapBookController {
         model.put("mapBooks", bookExist);
 
         return "mapBook/mapBookMarker";
-    }*/
+    }
 
 
 

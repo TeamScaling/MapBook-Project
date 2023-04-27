@@ -8,12 +8,14 @@ import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
@@ -120,61 +122,60 @@ class ApiQuerySenderTest {
         System.out.println(apiQuerySender);
         assertNotNull(apiQuerySender);
     }
-/*
     @Test @DisplayName("도서 소장 여부 API 요청 성공")
     void singleQuery_bookExist_success() {
-        *//* given *//*
+         //given
 
         int libNo = 141053;
         String isbn13 = "9788089365210";
 
-        *//* when *//*
+         //when
 
         var result
-            = apiQuerySender.singleQueryJson(new libraryDto(isbn13));
-//        Executable executable = () -> apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
+            = apiQuerySender.singleQueryJson(new LibraryDto(libNo),isbn13);
+        Executable executable = () -> apiQuerySender.singleQueryJson(new LibraryDto(),isbn13);
 
-        *//* then *//*
+         //then
 
-        *//*assertDoesNotThrow(executable);*//*
+        assertDoesNotThrow(executable);
         System.out.println(result);
     }
     
     @Test @DisplayName("인기 대출 목록 API 요청 성공")
     public void loanItem_api_success(){
-        *//* given *//*
+         //given
 
         int pageSize = 30;
         
-        *//* when *//*
+         //when
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(new LoanItemDto().configUriBuilder("30"));
+        Executable executable = () -> apiQuerySender.singleQueryJson(new LoanItemDto(),pageSize+"");
 
-        *//* then *//*
+         //then
 
         assertDoesNotThrow(executable);
     }
 
     @Test @DisplayName("open API에 잘못된 요청을 보냈을 때 에러 처리")
     public void incorrect_libNo_error(){
-        *//* given *//*
+         //given
 
         int inCorrectLibNo = 1410;
         String isbn13 = "9788089365210";
 
         libraryDto.setLibNo(inCorrectLibNo);
 
-        *//* when *//*
+         //when
 
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
+        Executable executable = () -> apiQuerySender.singleQueryJson(new LibraryDto(),isbn13);
 
-        *//* then *//*
+         //then
 
         assertDoesNotThrow(executable);
     }
 
     @Test
     void multiQuery() {
-    }*/
+    }
 }

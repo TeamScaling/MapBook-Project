@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.transaction.NotSupportedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -29,41 +31,11 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
-
     private final CircuitBreaker circuitBreaker;
-
-    /*@Timer
-    // OpenAPI에 단일 요청을 보낸다.
-    public ResponseEntity<String> singleQueryJson(UriComponentsBuilder uriBuilder)
-        throws RestClientException {
-
-        Objects.requireNonNull(uriBuilder);
-
-        uriBuilder.queryParam("format", "json");
-
-        ResponseEntity<String> resp;
-
-        try {
-            resp = restTemplate.exchange(
-                uriBuilder.toUriString(),
-                HttpMethod.GET,
-                HttpEntity.EMPTY,
-                String.class);
-
-        } catch (RestClientException e) {
-            log.error(e.toString());
-
-            circuitBreaker.observeError(uriBuilder,e);
-
-            throw e;
-        }
-
-        return resp;
-    }*/
 
     @Timer
     // OpenAPI에 단일 요청을 보낸다.
-    public ResponseEntity<String> singleQueryJson(AbstractApiConnection configUriBuilder,String target)
+    public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,String target)
         throws RestClientException {
 
         Objects.requireNonNull(configUriBuilder);
@@ -84,7 +56,11 @@ public class ApiQuerySender {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            circuitBreaker.receiveError(configUriBuilder);
+            try {
+                circuitBreaker.receiveError(configUriBuilder);
+            } catch (NotSupportedException ex) {
+                throw new RuntimeException(ex);
+            }
 
         }
 
@@ -93,7 +69,7 @@ public class ApiQuerySender {
 
     // OpenApi에 대한 단일 요청 성능을 높이기 위한 멀티 쓰레드 병렬 요청
     @Timer
-    public List<ResponseEntity<String>> multiQuery(List<? extends AbstractApiConnection> uriBuilders,
+    public List<ResponseEntity<String>> multiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
         String target, int nThreads) throws RestClientException {
 
 
@@ -103,7 +79,7 @@ public class ApiQuerySender {
 
         List<Callable<ResponseEntity<String>>> tasks = new ArrayList<>();
 
-        for (AbstractApiConnection b : uriBuilders) {
+        for (ConfigureUriBuilder b : uriBuilders) {
 
             tasks.add(() -> singleQueryJson(b,target));
         }

@@ -8,16 +8,18 @@ import lombok.ToString;
 @ToString
 public class RespMapBookDto {
 
-    private final String isbn13;
-    private final String libCode;
-    private final String libNm;
-    private final String hasBook;
-    private final String loanAvailable;
-    private final Double libLo;
-    private final Double libLa;
-    private final String libArea;
-    private final String libUrl;
-    private final Integer areaCd;
+    private String isbn13;
+    private String libCode;
+    private String libNm;
+    private String hasBook;
+    private String loanAvailable;
+    private Double libLo;
+    private Double libLa;
+    private String libArea;
+    private String libUrl;
+    private Integer areaCd;
+
+    private Boolean available;
 
     public RespMapBookDto(ApiBookExistDto dto, LibraryDto libraryDto) {
 
@@ -33,5 +35,21 @@ public class RespMapBookDto {
         this.libUrl = libraryDto.getLibUrl();
         this.areaCd = libraryDto.getAreaCd();
 
+        this.available = true;
+
     }
+
+    public RespMapBookDto(LibraryDto libraryDto) {
+
+        this.libLo = libraryDto.getLibLon();
+        this.libLa = libraryDto.getLibLat();
+        this.libArea = libraryDto.getLibArea();
+        this.libNm = libraryDto.getLibNm();
+        this.libUrl = libraryDto.getLibUrl();
+        this.areaCd = libraryDto.getAreaCd();
+
+        this.available = false;
+    }
+
+
 }

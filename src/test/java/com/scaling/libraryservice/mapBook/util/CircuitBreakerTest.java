@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
+import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.DisplayName;
@@ -51,18 +52,6 @@ class CircuitBreakerTest {
         );
 
 
-        AbstractApiConnection mockBuilder = new AbstractApiConnection() {
-            @Override
-            public UriComponentsBuilder configUriBuilder(String target) {
-                return UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/bookExist");
-            }
-
-            @Override
-            public String getApiUrl() {
-                return "http://localhost:" + port + "/api/bookExist";
-            }
-        };
-
         ApiQuerySender apiQuerySender
             = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
 
@@ -70,7 +59,7 @@ class CircuitBreakerTest {
 
         for(int i=0; i<10; i++){
 
-            apiQuerySender.singleQueryJson(mockBuilder,target);
+            apiQuerySender.singleQueryJson(new MockApiConnection(),target);
         }
 
         /* then */

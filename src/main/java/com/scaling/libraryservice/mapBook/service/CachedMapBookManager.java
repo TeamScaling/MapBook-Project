@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,15 +55,22 @@ public class CachedMapBookManager {
 
             List<LibraryDto> nearByLibraries = libraryFindService.getNearByLibraries(mapBookDto);
 
-            if(!nearByLibraries.isEmpty()){
-                Map<Integer, ApiBookExistDto> bookExistMap = apiQueryBinder.bindBookExistMap(
-                    apiQuerySender.multiQuery(
-                        nearByLibraries,
-                        mapBookDto.getIsbn(),
-                        nearByLibraries.size()));
+            if (!nearByLibraries.isEmpty()) {
 
-                value = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
-            }else{
+                if (!nearByLibraries.get(0).apiAccessible()) {
+
+                    log.info("서버가 닫혀 있어서 아무 것도 줄 수 없어요~~~ 대신 소장한 도서관이나 보여줄게");
+                    return nearByLibraries.stream().map(RespMapBookDto::new).toList();
+                } else {
+                    Map<Integer, ApiBookExistDto> bookExistMap = apiQueryBinder.bindBookExistMap(
+                        apiQuerySender.multiQuery(
+                            nearByLibraries,
+                            mapBookDto.getIsbn(),
+                            nearByLibraries.size()));
+
+                    value = mapBookMatcher.matchMapBooks(nearByLibraries, bookExistMap);
+                }
+            } else {
                 value = new ArrayList<>();
             }
 
