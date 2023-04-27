@@ -386,12 +386,18 @@
   <div class="related-box">
     <form id="related-form" action="/books/search">
 
+      <!-- search/searchResult 템플릿 -->
       <p>
         추천도서 :
+        <span th:if="${searchResult.relatedBookDtoList == null}">
+        추천 도서가 없습니다.
+    </span>
         <span th:each="book, iter : ${searchResult.relatedBookDtoList}">
-          <span th:text="${book.title}"></span>
-        </span>
+        <span th:text="${book.title}"></span>
+        <span th:if="${!iter.isLast()}">, </span>
+    </span>
       </p>
+
 
 
 
@@ -401,14 +407,20 @@
 
   <!--  추천도서-->
   <div class="related-box">
-    <form id= action="/books/search">
+    <form action="/books/search">
 
+      <!-- search/searchResult 템플릿 -->
       <p>
-        연관검색어:
-        <span th:each="token : ${searchResult.tokenDto.tokens}">
+        연관검색어 :
+        <span th:if="${searchResult.tokenDto == null}">
+        검색 결과가 없습니다.
+    </span>
+        <span th:each="token, status : ${searchResult.tokenDto?.tokens}">
         <span th:text="${token}"></span>
-      </span>
+        <span th:if="${!status.last}">, </span>
+    </span>
       </p>
+
 
 
     </form>
