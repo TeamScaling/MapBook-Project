@@ -52,9 +52,11 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
 
     // spring boot 입력시 검색 가능 / springBoot는 검색 안됨.
+    @Timer
     @Query(value = "select * from books use index (idx_title_nm_space_based) where match (TITLE_NM) against (:query in BOOLEAN MODE)", nativeQuery = true)
     Page<Book> findBooksByEnglishBmode(@Param("query") String query, Pageable pageable);
 
+    @Timer
     @Query(value = "select * from books use index (idx_title_nm_space_based) where match (TITLE_NM) against (:query in NATURAL LANGUAGE MODE)", nativeQuery = true)
     Page<Book> findBooksByEnglishNmode(@Param("query") String query, Pageable pageable);
 
@@ -71,6 +73,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Param("korToken") String korToken, Pageable pageable);
 
 
+    @Timer
     @Query(value = "select * from "
         + "(select * from books "
         + "where match(TITLE_NM) against(:korToken IN NATURAL LANGUAGE MODE)) "

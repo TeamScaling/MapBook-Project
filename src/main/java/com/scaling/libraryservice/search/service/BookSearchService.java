@@ -123,41 +123,18 @@ public class BookSearchService {
         Objects.requireNonNull(books);
 
         List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
-        // 여기에 넣어야 겠구만
-        //==========================작업중==============================================>
-
-        //추천 책
-        List<RelatedBookDto> relatedBookDtos100 = document.stream()
-            .filter(bookDto -> bookDto.getTitle() != null)
-            .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
-            .distinct()
-            .limit(300) // 상위 100개까지만 선택
-            .collect(Collectors.toList());
-
-        Collections.shuffle(relatedBookDtos100); // 리스트를 무작위로 섞음
-        List<RelatedBookDto> relatedBookDtos = relatedBookDtos100.stream()
-            .limit(10) // 상위 10개만 선택
-            .collect(Collectors.toList());
-
-        //중복허용
-        Tokenizer tokenizer = new Tokenizer(new Komoran(DEFAULT_MODEL.FULL));
-        List<String> nouns = relatedBookDtos100.stream()
-            .flatMap(relatedBookDto -> tokenizer.tokenize(relatedBookDto.getTitle()).stream())
-            .collect(Collectors.toList());
+//==========================작업중==============================================>
 
 
-        Map<String, Long> countedNouns = nouns.stream()
-            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
-        List<String> token = countedNouns.entrySet().stream()
-            .filter(entry -> entry.getKey().length() >= 2 && entry.getValue() >= 1)
-            .map(Map.Entry::getKey)
-            .collect(Collectors.toList());
+        //상위 100권
+        List<RelatedBookDto> relatedBooks = getTop100RelatedBooks(document);
 
-        System.out.println("filteredNouns : " + token);
+        //10권 랜덤 추천
+        List<RelatedBookDto> randomTop10= getRandomTop10RelatedBooks(relatedBooks);
 
-        TokenDto tokenDto = new TokenDto(token);
-
+        //토크나이저로 연관검색어 추출
+        TokenDto tokenDto = processRelatedBooks(relatedBooks);
 
 //=========================작업끝===============================================>
 
@@ -165,7 +142,7 @@ public class BookSearchService {
         MetaDto meta
             = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, document,relatedBookDtos,tokenDto);
+        return new RespBooksDto(meta, document,randomTop10,tokenDto);
     }
 
     private RespBooksDto searchBooksInEnglish(String query, Pageable pageable, int page, int size) {
@@ -176,10 +153,23 @@ public class BookSearchService {
 
         List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
 
+//==========================작업중==============================================>
+
+        //상위 100권
+        List<RelatedBookDto> relatedBooks = getTop100RelatedBooks(document);
+
+        //10권 랜덤 추천
+        List<RelatedBookDto> randomTop10= getRandomTop10RelatedBooks(relatedBooks);
+
+        //토크나이저로 연관검색어 추출
+        TokenDto tokenDto = processRelatedBooks(relatedBooks);
+
+//=========================작업끝===============================================>
+
         MetaDto meta
             = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, document);
+        return new RespBooksDto(meta, document,randomTop10,tokenDto);
 
     }
 
@@ -213,8 +203,6 @@ public class BookSearchService {
 
     @Timer
     public RespBooksDto searchBooks2(String query, int page, int size, String target) {
-
-        System.out.println("query" + query);
         //"퍼펙트 EJB";
         Pageable pageable = createPageable(page, size);
 
@@ -278,6 +266,53 @@ public class BookSearchService {
 
         return new RespBooksDto(meta, books.stream().map(BookDto::new).toList());
     }
+
+
+    // 추천책 상위 100권
+    @Timer
+    private List<RelatedBookDto> getTop100RelatedBooks(List<BookDto> document) {
+
+        return document.stream()
+            .filter(bookDto -> bookDto.getTitle() != null)
+            .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
+            .distinct()
+            .limit(100)
+            .collect(Collectors.toList());
+    }
+
+    // 랜덤으로 10권 선택
+    @Timer
+    public List<RelatedBookDto> getRandomTop10RelatedBooks(List<RelatedBookDto> relatedBooks) {
+        Collections.shuffle(relatedBooks);
+        List<RelatedBookDto> relatedBookDtos = relatedBooks.stream()
+            .limit(10)
+            .collect(Collectors.toList());
+        return relatedBookDtos;
+    }
+
+    // 연관검색어 명사 추출
+    public TokenDto processRelatedBooks(List<RelatedBookDto> relatedBooks) {
+        Tokenizer tokenizer = new Tokenizer(new Komoran(DEFAULT_MODEL.FULL));
+        List<String> nouns = relatedBooks.stream()
+            .flatMap(relatedBookDto -> tokenizer.tokenize(relatedBookDto.getTitle()).stream())
+            .collect(Collectors.toList());
+
+        Map<String, Long> countedNouns = nouns.stream()
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+        List<String> token = countedNouns.entrySet().stream()
+            .filter(entry -> entry.getKey().length() >= 2 && entry.getValue() >= 1)
+            .map(Map.Entry::getKey)
+            .collect(Collectors.toList());
+
+        log.info("filteredNouns : " + token);
+
+        TokenDto tokenDto = new TokenDto(token);
+        return tokenDto;
+    }
+
+
+
 
 }
 
