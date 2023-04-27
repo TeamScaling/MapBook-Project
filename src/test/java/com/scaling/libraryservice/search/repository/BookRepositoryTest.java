@@ -32,7 +32,7 @@ class BookRepositoryTest {
             .collect(Collectors.joining(" "));
 
         /* when */
-        var result = bookRepos.findBooksByEnglishNmode("spring boot",pageable);
+        var result = bookRepos.findBooksByEngNatural("spring boot",pageable);
 
 
         /* then */
@@ -50,7 +50,7 @@ class BookRepositoryTest {
         
         /* when */
 
-        var result = bookRepos.findBooksByEngAndKor2("%C++%","볼랜드",pageable);
+        var result = bookRepos.findBooksByEngKorNatural("%C++%","볼랜드",pageable);
 
         /* then */
         System.out.println(result.getContent());
@@ -72,7 +72,7 @@ class BookRepositoryTest {
             .map(name -> "+" + name)
             .collect(Collectors.joining(" "));
 
-        var result = bookRepos.findBooksByEngAndKor("%EJB%","퍼펙트",pageable);
+        var result = bookRepos.findBooksByEngKorBool("%EJB%","퍼펙트",pageable);
 
         /* then */
         System.out.println(result.getContent());

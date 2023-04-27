@@ -25,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 
 @Service
@@ -75,7 +74,6 @@ public class BookSearchService {
 
     }
 
-
     // pageable 객체에 값 전달
     public Pageable createPageable(int page, int size) {
         return PageRequest.of(page - 1, size);
@@ -86,7 +84,7 @@ public class BookSearchService {
         if (target.equals("author")) {
             return bookRepository.findBooksByAuthor(query, pageable);
         } else if (target.equals("title")) {
-            return bookRepository.findBooksByTitleFlexible(query, pageable);
+            return bookRepository.findBooksByKorMtFlexible(query, pageable);
         } else {
             return null; //api 추가될 것 고려하여 일단 Null로 넣어놓음
         }
@@ -121,34 +119,6 @@ public class BookSearchService {
             = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
         return new RespBooksDto(meta, document);
-    }
-
-    private RespBooksDto searchBooksInKorean2(String query, int page, int size, String target) {
-        Pageable pageable = createPageable(page, size);
-
-        Page<Book> books;
-
-        if (query.split(" ").length == 1) {
-            books = bookRepository.findBooksByOneTitleFlexible(query, pageable);
-
-        } else {
-            books = findBooksByTarget(splitTarget(query), pageable, target);
-        }
-
-        List<BookDto> document;
-
-        if (books != null) {
-            document = books.getContent().stream().map(BookDto::new).toList();
-            MetaDto meta
-                = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
-
-            return new RespBooksDto(meta, document);
-        } else {
-
-            return new RespBooksDto(
-                new MetaDto(),
-                new ArrayList<>());
-        }
     }
 
     private RespBooksDto searchBooksInEnglish(String query, Pageable pageable, int page, int size) {
@@ -197,86 +167,131 @@ public class BookSearchService {
     @Timer
     public RespBooksDto searchBooks2(String query, int page, int size, String target) {
 
-        //"퍼펙트 EJB";
         Pageable pageable = createPageable(page, size);
 
         Page<Book> books;
         MetaDto meta;
 
-        log.info("isEnglish : " + isEnglish(query));
-
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-
         if (isEnglish(query)) {
 
-            log.info("english title : [{}]",query);
+            log.info("english title : [{}]", query);
 
-            query = "+" + query;
-
-            books = bookRepository.findBooksByEngTitleFlexible(query, pageable);
-            stopWatch.stop();
-
-            // double 범위 초과로 인한 지수 표현 방지
-            String totalTime = String.format("%.6f", stopWatch.getTotalTimeSeconds());
-
-            log.info("[{}s] in [onlyEnglish]", totalTime);
+            return queryResolve(query, page, size, target, false);
 
         } else if (isKorean(query)) {
 
-            log.info("korean title : [{}]",query);
+            log.info("korean title : [{}]", query);
 
-            return searchBooksInKorean2(query, page, size, target);
+            return queryResolve(query, page, size, target, true);
         } else {
-
-            Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
-
-            List<String> engTokens = titleMap.get("eng");
-            List<String> korTokens = titleMap.get("kor");
-
-            String korToken = String.join(" ", korTokens);
-            String engToken = String.join(" ", engTokens);
-
-            StringBuilder builder = new StringBuilder();
-
-            engTokens.forEach(t -> builder.append("%").append(t).append("% "));
-
-            log.info("korToken : {}, length : {}", korToken, korToken.length());
-            log.info("engToken : {}, length : {}", engToken, engToken.length());
-
-            stopWatch.stop();
-
-            // double 범위 초과로 인한 지수 표현 방지
-            String totalTime = String.format("%.6f", stopWatch.getTotalTimeSeconds());
-
-            log.info("[{}s] in [English+korean]", totalTime);
-
-            if (korToken.length() >= engToken.length()) {
-
-                log.info("korToken >= engToken");
-
-                books = bookRepository.findBooksByTitleNmode(query, pageable);
-
-            } else {
-
-                if (!korToken.isEmpty()) {
-                    List<String> nnKorTokens = titleTokenizer.tokenize(korToken);
-                    korToken = String.join(" ", nnKorTokens);
-                }
-
-                log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
-                    engToken);
-
-                books = bookRepository.findBooksByEngAndKor(builder.toString().trim(), korToken,
-                    pageable);
-            }
-
-
+            log.info("korean & english title : [{}]", query);
+            books = engKorResolve(query, pageable);
         }
 
         meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, books.stream().map(BookDto::new).toList());
+        return new RespBooksDto(meta
+            , books.stream().map(BookDto::new).toList());
+    }
+
+    private RespBooksDto queryResolve(String query, int page, int size, String target,
+        boolean isKor) {
+        Pageable pageable = createPageable(page, size);
+
+        Page<Book> books;
+
+        if (query.split(" ").length == 1) {
+
+            if (isKor) {
+                log.info("Single Kor query : [{}]", query);
+                books = bookRepository.findBooksByKorNatural(query, pageable);
+            } else {
+                log.info("Single Eng query : [{}]", query);
+                books = bookRepository.findBooksByEngNatural(query, pageable);
+            }
+
+        } else {
+
+            if (isKor) {
+                query = splitTarget(query);
+                log.info("Multi Kor query : [{}]", query);
+                books = bookRepository.findBooksByKorMtFlexible(query, pageable);
+            } else {
+                query = splitTarget(query);
+                log.info("Multi Eng query : [{}]", query);
+                books = bookRepository.findBooksByEngMtFlexible(query, pageable);
+            }
+        }
+
+        List<BookDto> document;
+
+        if (books != null) {
+            document = books.getContent().stream().map(BookDto::new).toList();
+            MetaDto meta
+                = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+
+            return new RespBooksDto(meta, document);
+        } else {
+
+            return new RespBooksDto(
+                new MetaDto(),
+                new ArrayList<>());
+        }
+    }
+
+    private Page<Book> engKorResolve(String query, Pageable pageable) {
+
+        Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
+
+        List<String> engTokens = titleMap.get("eng");
+        List<String> korTokens = titleMap.get("kor");
+
+        String korToken = String.join(" ", korTokens);
+        String engToken = String.join(" ", engTokens);
+
+        StringBuilder engQueryBuilder = new StringBuilder();
+
+        engTokens.forEach(t -> engQueryBuilder.append("%").append(t).append("% "));
+
+        log.info("korToken : {}, length : {}", korToken, korToken.length());
+        log.info("engToken : {}, length : {}", engToken, engToken.length());
+
+        if (korToken.length() >= engToken.length()) {
+
+            log.info("korToken >= engToken");
+
+            return bookRepository.findBooksByKorNatural(query, pageable);
+
+        } else {
+
+            List<String> nnKorTokens = new ArrayList<>();
+
+            // 한글 제목 내용을 명사 단위로만 검색 한다.
+            if (!korToken.isEmpty()) {
+                nnKorTokens = titleTokenizer.tokenize(korToken);
+                korToken = String.join(" ", nnKorTokens);
+            }
+
+            if(nnKorTokens.size() <=1){
+                korToken = splitTarget(korToken);
+
+                log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
+                    engToken);
+
+
+                return bookRepository.findBooksByEngKorBool(
+                    engQueryBuilder.toString().trim(),
+                    korToken,
+                    pageable);
+            }else{
+
+                return bookRepository.findBooksByEngKorNatural(
+                    engQueryBuilder.toString().trim(),
+                    korToken,
+                    pageable);
+            }
+        }
+
     }
 
 }
