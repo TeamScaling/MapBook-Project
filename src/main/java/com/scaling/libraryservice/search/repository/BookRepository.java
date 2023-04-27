@@ -14,46 +14,35 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     // fixme : 메소드 이름 변경  findBooksByTitleNormal
     // 제목검색 FULLTEXT 서치 이용 + 페이징
-    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
-    Page<Book> findBooksByTitleBmode(@Param("query") String query, Pageable pageable);
+    @Query(value = "SELECT * FROM books "
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+    Page<Book> findBooksByKorBool(@Param("query") String query, Pageable pageable);
 
     // fixme : 메소드 이름 변경  findBooksByTitleDetail
     // 제목에 대한 더 넓은 검색
-    @Query(value = "SELECT * FROM books WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)", nativeQuery = true)
-    Page<Book> findBooksByTitleNmode(@Param("query") String query, Pageable pageable);
+    @Query(value = "SELECT * FROM books "
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)", nativeQuery = true)
+    Page<Book> findBooksByKorNatural(@Param("query") String query, Pageable pageable);
 
     // 작가검색 FULLTEXT 서치 이용 + 페이징
-    @Query(value = "SELECT * FROM books WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
+    @Query(value = "SELECT * FROM books "
+        + "WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     Page<Book> findBooksByAuthor(@Param("query") String query, Pageable pageable);
-
-    // 제목 검색 결과가 없을 경우 재검색을 위한 쿼리
-    default Page<Book> findBooksByTitleFlexible(String query, Pageable pageable) {
-        Page<Book> books = findBooksByTitleBmode(query, pageable);
-        if (books.getContent().isEmpty()) {
-            books = findBooksByTitleNmode(query, pageable);
-        }
-        return books;
-    }
-
-    // 제목 검색 결과가 없을 경우 재검색을 위한 쿼리
-    default Page<Book> findBooksByEngTitleFlexible(String query, Pageable pageable) {
-        Page<Book> books = findBooksByEnglishBmode(query, pageable);
-        if (books.getContent().isEmpty()) {
-            books = findBooksByEnglishNmode(query, pageable);
-        }
-        return books;
-    }
 
     @Query(value = "SELECT * FROM books WHERE MATCH(ENG_TITLE_NM) AGAINST (:query IN NATURAL LANGUAGE MODE)", nativeQuery = true)
     Page<Book> findBooksByEnglishTitleNormal(String query, Pageable pageable);
 
 
     // spring boot 입력시 검색 가능 / springBoot는 검색 안됨.
-    @Query(value = "select * from books use index (idx_title_nm_space_based) where match (TITLE_NM) against (:query in BOOLEAN MODE)", nativeQuery = true)
-    Page<Book> findBooksByEnglishBmode(@Param("query") String query, Pageable pageable);
+    @Query(value = "select * from books "
+        + "use index (idx_title_nm_space_based) "
+        + "where match (TITLE_NM) against (:query in BOOLEAN MODE)", nativeQuery = true)
+    Page<Book> findBooksByEngBool(@Param("query") String query, Pageable pageable);
 
-    @Query(value = "select * from books use index (idx_title_nm_space_based) where match (TITLE_NM) against (:query in NATURAL LANGUAGE MODE)", nativeQuery = true)
-    Page<Book> findBooksByEnglishNmode(@Param("query") String query, Pageable pageable);
+    @Query(value = "select * from books "
+        + "use index (idx_title_nm_space_based) "
+        + "where match (TITLE_NM) against (:query in NATURAL LANGUAGE MODE)", nativeQuery = true)
+    Page<Book> findBooksByEngNatural(@Param("query") String query, Pageable pageable);
 
     @Timer
     @Query(value = "select * from "
@@ -64,7 +53,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "select count(*) from (select * from (select SEQ_NO,ISBN_THIRTEEN_NO,TITLE_NM "
                 + "from books where match(TITLE_NM) against(:korToken IN BOOLEAN MODE)) as l\n"
                 + "where l.TITLE_NM like :engToken) as c")
-    Page<Book> findBooksByEngAndKor(@Param("engToken") String engToken,
+    Page<Book> findBooksByEngKorBool(@Param("engToken") String engToken,
         @Param("korToken") String korToken, Pageable pageable);
 
 
@@ -76,28 +65,60 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
             "select count(*) from (select * from (select SEQ_NO,ISBN_THIRTEEN_NO,TITLE_NM "
                 + "from books where match(TITLE_NM) against(:korToken IN NATURAL LANGUAGE MODE)) as l\n"
                 + "where l.TITLE_NM like :engToken) as c")
-    Page<Book> findBooksByEngAndKor2(@Param("engToken") String engToken,
+    Page<Book> findBooksByEngKorNatural(@Param("engToken") String engToken,
         @Param("korToken") String korToken, Pageable pageable);
 
     @Query(value = "SELECT * FROM books "
-        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE) order by loan_cnt"
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE) "
+        + "order by loan_cnt"
         , nativeQuery = true)
-    Page<Book> findBooksByKorTitleNmodeOrder(@Param("query") String query, Pageable pageable);
+    Page<Book> findBooksByKorTitleNaturalOrder(@Param("query") String query, Pageable pageable);
 
     @Query(value = "SELECT * FROM books "
         + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode) order by loan_cnt desc"
         , nativeQuery = true)
-    Page<Book> findBooksByKorTitleBmodeOrder(@Param("query") String query, Pageable pageable);
+    Page<Book> findBooksByKorTitleBoolOrder(@Param("query") String query, Pageable pageable);
 
     @Query(value = "SELECT * FROM books "
         + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode)"
         , nativeQuery = true)
-    Page<Book> findBooksByKorTitleBmode(@Param("query") String query, Pageable pageable);
+    Page<Book> findBooksByKorTitleBool(@Param("query") String query, Pageable pageable);
 
-    default Page<Book> findBooksByOneTitleFlexible(String query, Pageable pageable) {
-        Page<Book> books = findBooksByKorTitleBmodeOrder(query, pageable);
+    @Query(value = "select * from books use index (idx_title_nm_space_based) "
+        + "where match (TITLE_NM) against (:query in BOOLEAN MODE) "
+        + "order by loan_cnt desc ", nativeQuery = true)
+    Page<Book> findBooksByEngBoolOrder(@Param("query") String query, Pageable pageable);
+
+    // 제목 검색 결과가 없을 경우 재검색을 위한 쿼리
+    default Page<Book> findBooksByKorMtFlexible(String query, Pageable pageable) {
+        Page<Book> books = findBooksByKorBool(query, pageable);
         if (books.getContent().isEmpty()) {
-            books = findBooksByTitleNmode(query, pageable);
+            books = findBooksByKorNatural(query, pageable);
+        }
+        return books;
+    }
+
+    // 제목 검색 결과가 없을 경우 재검색을 위한 쿼리
+    default Page<Book> findBooksByEngMtFlexible(String query, Pageable pageable) {
+        Page<Book> books = findBooksByEngBool(query, pageable);
+        if (books.getContent().isEmpty()) {
+            books = findBooksByEngNatural(query, pageable);
+        }
+        return books;
+    }
+
+    default Page<Book> findBooksBySgKorFlexible(String query, Pageable pageable) {
+        Page<Book> books = findBooksByKorTitleBool(query, pageable);
+        if (books.getContent().isEmpty()) {
+            books = findBooksByKorNatural(query, pageable);
+        }
+        return books;
+    }
+
+    default Page<Book> findBooksBySgEngFlexible(String query, Pageable pageable) {
+        Page<Book> books = findBooksByEngBoolOrder(query, pageable);
+        if (books.getContent().isEmpty()) {
+            books = findBooksByEngNatural(query, pageable);
         }
         return books;
     }
