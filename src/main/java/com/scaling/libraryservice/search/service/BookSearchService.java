@@ -71,10 +71,25 @@ public class BookSearchService {
 
             List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
 
+ //==========================작업중==============================================>
+
+            // 최소 10권 결과일때도 결과값 나오도록 처리
+            int limit = Math.max(document.size(), 10);
+
+            // 상위 limit권
+            List<RelatedBookDto> relatedBooks = getTopRelatedBooks(document, limit);
+
+            // 10권 랜덤 추천
+            List<RelatedBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
+
+            //토크나이저로 연관검색어 추출
+            TokenDto tokenDto = processRelatedBooks(relatedBooks);
+
+//=========================작업끝===============================================>
             MetaDto meta
                 = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-            return new RespBooksDto(meta, document);
+            return new RespBooksDto(meta, document,randomTop10,tokenDto);
 
         }
 
@@ -125,13 +140,14 @@ public class BookSearchService {
         List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
 //==========================작업중==============================================>
 
+        // 최소 10권 결과일때도 결과값 나오도록 처리
+        int limit = Math.max(document.size(), 10);
 
+        // 상위 limit권
+        List<RelatedBookDto> relatedBooks = getTopRelatedBooks(document, limit);
 
-        //상위 100권
-        List<RelatedBookDto> relatedBooks = getTop100RelatedBooks(document);
-
-        //10권 랜덤 추천
-        List<RelatedBookDto> randomTop10= getRandomTop10RelatedBooks(relatedBooks);
+        // 10권 랜덤 추천
+        List<RelatedBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
 
         //토크나이저로 연관검색어 추출
         TokenDto tokenDto = processRelatedBooks(relatedBooks);
@@ -155,13 +171,16 @@ public class BookSearchService {
 
 //==========================작업중==============================================>
 
-        //상위 100권
-        List<RelatedBookDto> relatedBooks = getTop100RelatedBooks(document);
+        // 최소 10권 결과일때도 결과값 나오도록 처리
+        int limit = Math.max(document.size(), 10);
 
-        //10권 랜덤 추천
-        List<RelatedBookDto> randomTop10= getRandomTop10RelatedBooks(relatedBooks);
+        // 상위 limit권
+        List<RelatedBookDto> relatedBooks = getTopRelatedBooks(document, limit);
 
-        //토크나이저로 연관검색어 추출
+        // 10권 랜덤 추천
+        List<RelatedBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
+
+        // 토크나이저로 연관검색어 추출
         TokenDto tokenDto = processRelatedBooks(relatedBooks);
 
 //=========================작업끝===============================================>
@@ -262,23 +281,43 @@ public class BookSearchService {
         }
 
 
+//==========================작업중==============================================>
+        List<BookDto> document = books.getContent().stream().map(BookDto::new).toList();
+
+        // 최소 10권 결과일때도 결과값 나오도록 처리
+        int limit = Math.max(document.size(), 10);
+
+        // 상위 limit권
+        List<RelatedBookDto> relatedBooks = getTopRelatedBooks(document, limit);
+
+        // 10권 랜덤 추천
+        List<RelatedBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
+
+        // 토크나이저로 연관검색어 추출
+        TokenDto tokenDto = processRelatedBooks(relatedBooks);
+
+//==========================작업중==============================================>
+
+
         meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta, books.stream().map(BookDto::new).toList());
+        return new RespBooksDto(meta, document,randomTop10,tokenDto);
+
+
     }
 
 
     // 추천책 상위 100권
     @Timer
-    private List<RelatedBookDto> getTop100RelatedBooks(List<BookDto> document) {
-
+    private List<RelatedBookDto> getTopRelatedBooks(List<BookDto> document, int limit) {
         return document.stream()
             .filter(bookDto -> bookDto.getTitle() != null)
             .map(bookDto -> new RelatedBookDto(bookDto.getRelatedTitle()))
             .distinct()
-            .limit(100)
+            .limit(limit)
             .collect(Collectors.toList());
     }
+
 
     // 랜덤으로 10권 선택
     @Timer
