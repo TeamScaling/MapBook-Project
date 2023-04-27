@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.entity.Library;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Setter
 @ToString
 @Slf4j
-public class LibraryDto implements ConfigureUriBuilder {
+public class LibraryDto extends AbstractApiConnection {
 
     private String libNm;
 
@@ -35,6 +34,9 @@ public class LibraryDto implements ConfigureUriBuilder {
 
     private static final String API_URL = "http://data4library.kr/api/bookExist";
     private static final String AUTH_KEY = "55db267f8f05b0bf8e23e8d3f65bb67d206a6b5ce24f5e0ee4625bcf36e4e2bb";
+
+    public LibraryDto() {
+    }
 
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();

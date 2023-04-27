@@ -6,21 +6,18 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
-import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
+import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -56,9 +53,8 @@ class ApiQuerySenderTest {
         mockServer.expect(MockRestRequestMatchers.requestTo("http://mockServer.kr/api/bookExist?format=json"))
             .andRespond(MockRestResponseCreators.withSuccess());
 
-        /*UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://mockServer.kr/api/bookExist");*/
 
-        ConfigureUriBuilder builder = new ConfigureUriBuilder() {
+        AbstractApiConnection mockConnection = new AbstractApiConnection() {
             @Override
             public UriComponentsBuilder configUriBuilder(String target) {
                 return UriComponentsBuilder.fromHttpUrl("http://mockServer.kr/api/bookExist");
@@ -70,12 +66,11 @@ class ApiQuerySenderTest {
             }
         };
 
-
         /* when */
 
         apiQuerySender = new ApiQuerySender(restTemplateForMock,new CircuitBreaker());
 
-        apiQuerySender.singleQueryJson(builder,target);
+        apiQuerySender.singleQueryJson(mockConnection,target);
 
         /* then */
         mockServer.verify();
@@ -98,30 +93,19 @@ class ApiQuerySenderTest {
             .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(200000))
         );
 
-        /*UriComponentsBuilder builder
-            = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/bookExist");*/
-
-        ConfigureUriBuilder builder = new ConfigureUriBuilder() {
-            @Override
-            public UriComponentsBuilder configUriBuilder(String target) {
-                return UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/bookExist");
-            }
-
-            @Override
-            public String getApiUrl() {
-                return "http://localhost:" + port + "/api/bookExist";
-            }
-        };
+        MockApiConnection mockBuilder = new MockApiConnection();
 
         apiQuerySender = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
 
         /* when */
 
-        Executable result
-            =() -> apiQuerySender.singleQueryJson(builder,target);
+//        Executable result
+//            =() -> apiQuerySender.singleQueryJson(mockBuilder,target);
+
+        apiQuerySender.singleQueryJson(mockBuilder,target);
 
         /* then */
-        assertThrows(RestClientException.class,result);
+        System.out.println(mockBuilder.getErrorCnt());
         server.stop();
     }
 

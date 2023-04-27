@@ -1,8 +1,5 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -12,7 +9,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Getter
 @RequiredArgsConstructor
 @ToString
-public class LoanItemDto implements ConfigureUriBuilder {
+public class LoanItemDto extends AbstractApiConnection {
 
     private Integer no;
 

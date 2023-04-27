@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.dto.AbstractApiConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Marker;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +63,7 @@ public class ApiQuerySender {
 
     @Timer
     // OpenAPI에 단일 요청을 보낸다.
-    public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,String target)
+    public ResponseEntity<String> singleQueryJson(AbstractApiConnection configUriBuilder,String target)
         throws RestClientException {
 
         Objects.requireNonNull(configUriBuilder);
@@ -73,7 +72,7 @@ public class ApiQuerySender {
 
         uriBuilder.queryParam("format", "json");
 
-        ResponseEntity<String> resp;
+        ResponseEntity<String> resp = null;
 
         try {
             resp = restTemplate.exchange(
@@ -85,9 +84,8 @@ public class ApiQuerySender {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            circuitBreaker.observeError(configUriBuilder,e);
+            circuitBreaker.receiveError(configUriBuilder);
 
-            throw e;
         }
 
         return resp;
@@ -95,7 +93,7 @@ public class ApiQuerySender {
 
     // OpenApi에 대한 단일 요청 성능을 높이기 위한 멀티 쓰레드 병렬 요청
     @Timer
-    public List<ResponseEntity<String>> multiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
+    public List<ResponseEntity<String>> multiQuery(List<? extends AbstractApiConnection> uriBuilders,
         String target, int nThreads) throws RestClientException {
 
 
@@ -105,7 +103,7 @@ public class ApiQuerySender {
 
         List<Callable<ResponseEntity<String>>> tasks = new ArrayList<>();
 
-        for (ConfigureUriBuilder b : uriBuilders) {
+        for (AbstractApiConnection b : uriBuilders) {
 
             tasks.add(() -> singleQueryJson(b,target));
         }
