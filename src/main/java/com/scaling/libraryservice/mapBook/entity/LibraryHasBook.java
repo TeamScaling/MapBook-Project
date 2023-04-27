@@ -12,12 +12,14 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.ToString;
 
-@Entity @Getter
+@Entity
+@Getter
 @Table(name = "lib_hasbook")
 @ToString(exclude = "library")
 public class LibraryHasBook {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "ISBN")
@@ -33,8 +35,7 @@ public class LibraryHasBook {
     @Column(name = "REGIS_DATA")
     private LocalDate regisDate;
 
-    @Column(name = "area_cd"
-        + "")
+    @Column(name = "area_cd")
     private Integer areaCd;
 
 }

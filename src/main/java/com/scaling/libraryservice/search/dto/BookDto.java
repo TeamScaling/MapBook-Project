@@ -4,20 +4,21 @@ import com.scaling.libraryservice.search.entity.Book;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
-@Setter
+@Setter @ToString
 public class BookDto {
 
-    private Integer seqId;
+    private final Long id;
 
-    private String title;
+    private final String title;
 
-    private String content;
+    private final String content;
 
-    private String author;
+    private final String author;
 
-    private String isbn;
+    private final String isbn;
 
     private String bookImg;
 
@@ -25,7 +26,8 @@ public class BookDto {
 
 
     public BookDto(Book book) {
-        this.seqId = book.getSeqId();
+
+        this.id = book.getId();
         this.title = book.getTitle();
 
         if (book.getContent().isEmpty()) {
