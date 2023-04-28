@@ -9,8 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class CacheProxyTest {
 
-    @Autowired
-    private CacheProxy cacheProxy;
 
     @Test
     public void load(){
