@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Marker;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +26,37 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 @Slf4j
 @Setter
-@Getter @RequiredArgsConstructor
+@Getter
+@RequiredArgsConstructor
 public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
+    private final CircuitBreaker circuitBreaker;
+
+    public boolean checkConnection(String apiUrl) {
+
+        ResponseEntity<String> resp = restTemplate.exchange(
+            apiUrl,
+            HttpMethod.OPTIONS,
+            HttpEntity.EMPTY,
+            String.class);
+
+        return resp.getStatusCode().is2xxSuccessful();
+    }
 
     @Timer
     // OpenAPI에 단일 요청을 보낸다.
-    public ResponseEntity<String> singleQueryJson(UriComponentsBuilder uriBuilder)
+    public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,
+        String target)
         throws RestClientException {
 
-        Objects.requireNonNull(uriBuilder);
+        Objects.requireNonNull(configUriBuilder);
+
+        UriComponentsBuilder uriBuilder = configUriBuilder.configUriBuilder(target);
 
         uriBuilder.queryParam("format", "json");
 
-        ResponseEntity<String> resp;
+        ResponseEntity<String> resp = null;
 
         try {
             resp = restTemplate.exchange(
@@ -52,7 +68,12 @@ public class ApiQuerySender {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            throw e;
+            if (ApiObservable.class.isAssignableFrom(configUriBuilder.getClass())) {
+                ApiObservable apiObserver = (ApiObservable) configUriBuilder;
+
+                circuitBreaker.receiveError(apiObserver, e);
+            }
+
         }
 
         return resp;
@@ -63,7 +84,6 @@ public class ApiQuerySender {
     public List<ResponseEntity<String>> multiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
         String target, int nThreads) throws RestClientException {
 
-
         Objects.requireNonNull(uriBuilders);
 
         ExecutorService service = Executors.newFixedThreadPool(nThreads);
@@ -72,7 +92,7 @@ public class ApiQuerySender {
 
         for (ConfigureUriBuilder b : uriBuilders) {
 
-            tasks.add(() -> singleQueryJson(b.configUriBuilder(target)));
+            tasks.add(() -> singleQueryJson(b, target));
         }
 
         List<Future<ResponseEntity<String>>> futures;

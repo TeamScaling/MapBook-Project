@@ -1,15 +1,17 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
+import com.scaling.libraryservice.mapBook.apiConnection.MockApiConnection;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import java.util.HashMap;
-import java.util.Map;
+import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 class ApiQuerySenderTest {
 
@@ -41,7 +41,7 @@ class ApiQuerySenderTest {
         RestTemplate restTemplate = new RestTemplate();
 
         mockServer = MockRestServiceServer.bindTo(restTemplateForMock).build();
-        apiQuerySender = new ApiQuerySender(restTemplate);
+        apiQuerySender = new ApiQuerySender(restTemplate,new CircuitBreaker());
 
         libraryDto = new LibraryDto(141053);
 
@@ -54,14 +54,13 @@ class ApiQuerySenderTest {
         mockServer.expect(MockRestRequestMatchers.requestTo("http://mockServer.kr/api/bookExist?format=json"))
             .andRespond(MockRestResponseCreators.withSuccess());
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://mockServer.kr/api/bookExist");
-
+        MockApiConnection.setApiUrl("http://mockServer.kr/api/bookExist");
 
         /* when */
 
-        apiQuerySender = new ApiQuerySender(restTemplateForMock);
+        apiQuerySender = new ApiQuerySender(restTemplateForMock,new CircuitBreaker());
 
-        apiQuerySender.singleQueryJson(builder);
+        apiQuerySender.singleQueryJson(new MockApiConnection(),target);
 
         /* then */
         mockServer.verify();
@@ -84,18 +83,15 @@ class ApiQuerySenderTest {
             .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(200000))
         );
 
-        UriComponentsBuilder builder
-            = UriComponentsBuilder.fromHttpUrl("http://localhost:" + port + "/api/bookExist");
+        MockApiConnection mockBuilder = new MockApiConnection();
 
-        apiQuerySender = new ApiQuerySender(new RestTemplate(factory));
+        apiQuerySender = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
 
-        /* when */
 
-        Executable result
-            =() -> apiQuerySender.singleQueryJson(builder);
+        apiQuerySender.singleQueryJson(mockBuilder,target);
 
         /* then */
-        assertThrows(RestClientException.class,result);
+        System.out.println(mockBuilder.getApiStatus().getErrorCnt());
         server.stop();
     }
 
@@ -110,61 +106,63 @@ class ApiQuerySenderTest {
         System.out.println(apiQuerySender);
         assertNotNull(apiQuerySender);
     }
-
     @Test @DisplayName("도서 소장 여부 API 요청 성공")
     void singleQuery_bookExist_success() {
-        /* given */
+         //given
 
         int libNo = 141053;
         String isbn13 = "9788089365210";
 
-        /* when */
+         //when
 
         var result
-            = apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
-//        Executable executable = () -> apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
+            = apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
+        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
 
-        /* then */
+         //then
 
-        /*assertDoesNotThrow(executable);*/
+        assertDoesNotThrow(executable);
         System.out.println(result);
     }
     
     @Test @DisplayName("인기 대출 목록 API 요청 성공")
     public void loanItem_api_success(){
-        /* given */
+         //given
 
         int pageSize = 30;
         
-        /* when */
+         //when
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(new LoanItemDto().configUriBuilder("30"));
+        Executable executable = () -> apiQuerySender.singleQueryJson(new LoanItemDto(),pageSize+"");
 
-        /* then */
+         //then
 
         assertDoesNotThrow(executable);
     }
 
     @Test @DisplayName("open API에 잘못된 요청을 보냈을 때 에러 처리")
     public void incorrect_libNo_error(){
-        /* given */
+         //given
 
         int inCorrectLibNo = 1410;
         String isbn13 = "9788089365210";
 
         libraryDto.setLibNo(inCorrectLibNo);
 
-        /* when */
+         //when
 
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(libraryDto.configUriBuilder(isbn13));
+        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
 
-        /* then */
+         //then
 
         assertDoesNotThrow(executable);
     }
 
     @Test
-    void multiQuery() {
+    void is_Access_api() {
+
+        System.out.println(apiQuerySender.checkConnection("http://data4library.kr/api/bookExist"));
+
     }
 }
