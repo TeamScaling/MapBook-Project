@@ -33,13 +33,13 @@ public class AppConfig {
         return new Komoran(DEFAULT_MODEL.FULL);
     }
     @Bean
-    public RelationRule relBookPolicy() {
+    public RelationTokenRule relationTokenRule() {
 
         return new RelationTokenRule();
     }
 
     @Bean
-    public RecommendRule recommendPolicy() {
+    public RecommendRanRule recommendRanRule() {
 
         return new RecommendRanRule();
     }

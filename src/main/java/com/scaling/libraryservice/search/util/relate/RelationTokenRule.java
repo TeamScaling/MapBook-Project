@@ -1,9 +1,9 @@
 package com.scaling.libraryservice.search.util.relate;
 
 import com.scaling.libraryservice.search.dto.MetaDto;
-import com.scaling.libraryservice.search.dto.RelatedBookDto;
+import com.scaling.libraryservice.search.dto.RecommendBookDto;
+import com.scaling.libraryservice.search.dto.RelationWords;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.dto.TokenDto;
 import com.scaling.libraryservice.search.util.KorTokenizer;
 import java.util.Collections;
 import java.util.List;
@@ -12,26 +12,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
 @Slf4j
 public class RelationTokenRule implements RelationRule {
 
 
     @Override
-    public RespBooksDto relatedBooks(RespBooksDto relatedBooks) {
+    public RelationWords relatedBooks(List<RecommendBookDto> recommendBooks) {
 
-        TokenDto tokenDto = processRelatedBooks(relatedBooks.getRelatedBooks());
 
-        return new RespBooksDto(new MetaDto(), Collections.emptyList(), null, tokenDto);
+        return processRelatedBooks(recommendBooks);
     }
 
     // 연관검색어 명사 추출 한글
-    public TokenDto processRelatedBooks(List<RelatedBookDto> relatedBooks) {
+    public RelationWords processRelatedBooks(List<RecommendBookDto> relatedBooks) {
         KorTokenizer tokenizer = new KorTokenizer(new Komoran(DEFAULT_MODEL.FULL));
         List<String> nouns = relatedBooks.stream()
             .flatMap(relatedBookDto -> tokenizer.tokenize(relatedBookDto.getTitle()).stream())
@@ -51,8 +46,8 @@ public class RelationTokenRule implements RelationRule {
 
         log.info("filteredNouns : " + token);
 
-        TokenDto tokenDto = new TokenDto(token);
-        return tokenDto;
+        RelationWords relationWords = new RelationWords(token);
+        return relationWords;
     }
 
 

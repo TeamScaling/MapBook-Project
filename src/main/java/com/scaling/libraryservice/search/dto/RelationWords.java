@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TokenDto {
+public class RelationWords {
     private List<String> tokens;
 
     @Override

@@ -265,6 +265,20 @@
       column-gap: 10px;
     }
 
+    .recommend-box{
+      width: 540px;
+      height: 80px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+      column-gap: 10px;
+    }
+
     .pagination {
       display: flex;
       justify-content: center;
@@ -383,51 +397,34 @@
 <!--  홈버튼-->
 
   <!--  추천도서-->
-  <div class="related-box">
-    <form id="related-form" action="/books/search">
-
-      <!-- search/searchResult 템플릿 -->
-      <p>
-        추천도서 :
-        <span th:if="${searchResult.relatedBooks == null}">
+  <div class="recommend-box">
+    <!-- search/searchResult 템플릿 -->
+    <p>
+      추천도서 :
+      <span th:if="${recommends.getRecommendBooks().isEmpty()}">
         추천 도서가 없습니다.
-    </span>
-        <span th:each="book, iter : ${searchResult.relatedBooks}">
+      </span>
+      <span th:each="book, iter : ${recommends.getRecommendBooks()}">
         <span th:text="${book.title}"></span>
         <span th:if="${!iter.isLast()}">, </span>
-    </span>
-      </p>
-
-
-
-
-    </form>
-
+      </span>
+    </p>
   </div>
 
   <!--  연관도서-->
   <div class="related-box">
-    <form action="/books/search">
-
-      <!-- search/searchResult 템플릿 -->
-      <p>
-        연관검색어 :
-        <span th:if="${searchResult.tokenDto == null}">
+    <!-- search/searchResult 템플릿 -->
+    <p>
+      연관검색어 :
+      <span th:if="${relationWords == null}">
         검색 결과가 없습니다.
-    </span>
-        <span th:each="token, status : ${searchResult.tokenDto?.tokens}">
+      </span>
+      <span th:each="token, status : ${relationWords?.tokens}">
         <span th:text="${token}"></span>
         <span th:if="${!status.last}">, </span>
-    </span>
-      </p>
-
-
-
-    </form>
-
+      </span>
+    </p>
   </div>
-
-
 </header>
 
 <script>

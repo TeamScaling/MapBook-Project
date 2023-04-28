@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.search.service;
 
+import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.dto.RespRecommend;
 import com.scaling.libraryservice.search.util.recommend.RecommendRule;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +15,8 @@ public class RecommendService {
         this.recommendRule = recommendRule;
     }
 
-    public RespBooksDto getRecommendBook(RespBooksDto searchResult){
+    @Timer
+    public RespRecommend getRecommendBook(RespBooksDto searchResult){
         return recommendRule.recommendBooks(searchResult);
     }
 }

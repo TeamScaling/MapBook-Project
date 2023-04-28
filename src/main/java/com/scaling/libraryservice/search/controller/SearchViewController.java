@@ -1,9 +1,12 @@
 package com.scaling.libraryservice.search.controller;
 
+import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.search.dto.RelationWords;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.dto.RespRecommend;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.search.service.RecommendService;
-import com.scaling.libraryservice.search.service.RelationService;
+import com.scaling.libraryservice.search.service.RelationWordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -18,7 +21,7 @@ public class SearchViewController {
 
     private final BookSearchService searchService;
 
-    private final RelationService relationService;
+    private final RelationWordService relationWordService;
 
     private final RecommendService recommendService;
 
@@ -28,23 +31,22 @@ public class SearchViewController {
     }
 
     @GetMapping("/books/search")
+    @Timer
     public String SearchBook(@RequestParam(value = "query", required = false) String query,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
         @RequestParam(value = "target", defaultValue = "title") String target, ModelMap model) {
 
         if (!query.isEmpty()) {
-            RespBooksDto books = searchService.searchBooks2(query, page, size,target);
-            RespBooksDto relatedBooks = relationService.getRelatedBooks(books);
-            RespBooksDto relatedTokens = recommendService.getRecommendBook(relatedBooks);
-
-            // searchService.searchBooks2() 메소드에서 리턴된 객체를 searchResult로 대체
-            RespBooksDto searchResult = new RespBooksDto(books.getMeta(), books.getDocuments(), relatedBooks.getRelatedBooks(), relatedTokens.getTokenDto());
-
+            RespBooksDto searchResult = searchService.searchBooks2(query, page, size,target);
+            RespRecommend recommends = recommendService.getRecommendBook(searchResult);
+            RelationWords relationWords = relationWordService.getRelatedWords(recommends.getRecommendBooks());
 
             model.put("searchResult", searchResult);
             model.put("totalPages", searchResult.getMeta().getTotalPages());
             model.put("size", searchResult.getMeta().getTotalElements());
+            model.put("recommends",recommends);
+            model.put("relationWords",relationWords);
         }
         //fixme : query가 empty일 때, 사용자가 공백 검색을 못하게 alert를 띄운다.
 

@@ -11,10 +11,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RelatedBookDto {
+public class RecommendBookDto {
     private String title;
 
-    public RelatedBookDto(Book book) {
+    public RecommendBookDto(Book book) {
         BookDto bookDto = new BookDto(book);
         this.title = bookDto.getTitle();
     }
@@ -37,7 +37,7 @@ public class RelatedBookDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RelatedBookDto that = (RelatedBookDto) o;
+        RecommendBookDto that = (RecommendBookDto) o;
         return Objects.equals(title, that.title);
     }
 
