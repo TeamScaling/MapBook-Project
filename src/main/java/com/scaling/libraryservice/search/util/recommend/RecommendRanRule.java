@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.search.service;
+package com.scaling.libraryservice.search.util.recommend;
 
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.search.dto.BookDto;
@@ -7,17 +7,12 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-@Service
-@RequiredArgsConstructor
-@Slf4j
 @Timer
-public class RelatedBooks {
+public class RecommendRanRule implements RecommendRule {
 
-    public RespBooksDto relatedBooks(RespBooksDto searchResult) {
+    @Override
+    public RespBooksDto recommendBooks(RespBooksDto searchResult) {
         List<BookDto> document = searchResult.getDocuments();
 
         // 최소 10권 결과일때도 결과값 나오도록 처리

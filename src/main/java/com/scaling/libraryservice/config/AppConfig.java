@@ -1,5 +1,9 @@
 package com.scaling.libraryservice.config;
 
+import com.scaling.libraryservice.search.util.recommend.RecommendRanRule;
+import com.scaling.libraryservice.search.util.recommend.RecommendRule;
+import com.scaling.libraryservice.search.util.relate.RelationTokenRule;
+import com.scaling.libraryservice.search.util.relate.RelationRule;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 public class AppConfig {
 
     @Bean
-    public RestTemplate restTemplate(){
+    public RestTemplate restTemplate() {
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 
@@ -24,9 +28,20 @@ public class AppConfig {
     }
 
     @Bean
-    public Komoran komoran(){
+    public Komoran komoran() {
 
         return new Komoran(DEFAULT_MODEL.FULL);
+    }
+    @Bean
+    public RelationRule relBookPolicy() {
+
+        return new RelationTokenRule();
+    }
+
+    @Bean
+    public RecommendRule recommendPolicy() {
+
+        return new RecommendRanRule();
     }
 
 

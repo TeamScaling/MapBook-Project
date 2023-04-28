@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.search.service;
+package com.scaling.libraryservice.search.util.relate;
 
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.RelatedBookDto;
@@ -19,18 +19,16 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class RelatedTokens {
+public class RelationTokenRule implements RelationRule {
 
-    private final RelatedBooks relatedBooks;
 
-    public RespBooksDto RelatedTokens(RespBooksDto searchResult) {
+    @Override
+    public RespBooksDto relatedBooks(RespBooksDto relatedBooks) {
 
-        List<RelatedBookDto> relatedBooks = this.relatedBooks.relatedBooks(searchResult).getRelatedBooks();
-        TokenDto tokenDto = processRelatedBooks(relatedBooks);
+        TokenDto tokenDto = processRelatedBooks(relatedBooks.getRelatedBooks());
 
         return new RespBooksDto(new MetaDto(), Collections.emptyList(), null, tokenDto);
     }
-
 
     // 연관검색어 명사 추출 한글
     public TokenDto processRelatedBooks(List<RelatedBookDto> relatedBooks) {

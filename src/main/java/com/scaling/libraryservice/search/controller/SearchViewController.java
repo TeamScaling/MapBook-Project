@@ -2,8 +2,8 @@ package com.scaling.libraryservice.search.controller;
 
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
-import com.scaling.libraryservice.search.service.RelatedBooks;
-import com.scaling.libraryservice.search.service.RelatedTokens;
+import com.scaling.libraryservice.search.service.RecommendService;
+import com.scaling.libraryservice.search.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -18,9 +18,9 @@ public class SearchViewController {
 
     private final BookSearchService searchService;
 
-    private final RelatedBooks relatedBooks;
+    private final RelationService relationService;
 
-    private final RelatedTokens relatedTokens;
+    private final RecommendService recommendService;
 
     @GetMapping("/")
     public String home() {
@@ -35,8 +35,8 @@ public class SearchViewController {
 
         if (!query.isEmpty()) {
             RespBooksDto books = searchService.searchBooks2(query, page, size,target);
-            RespBooksDto relatedBooks = this.relatedBooks.relatedBooks(books);
-            RespBooksDto relatedTokens = this.relatedTokens.RelatedTokens(relatedBooks);
+            RespBooksDto relatedBooks = relationService.getRelatedBooks(books);
+            RespBooksDto relatedTokens = recommendService.getRecommendBook(relatedBooks);
 
             // searchService.searchBooks2() 메소드에서 리턴된 객체를 searchResult로 대체
             RespBooksDto searchResult = new RespBooksDto(books.getMeta(), books.getDocuments(), relatedBooks.getRelatedBooks(), relatedTokens.getTokenDto());
