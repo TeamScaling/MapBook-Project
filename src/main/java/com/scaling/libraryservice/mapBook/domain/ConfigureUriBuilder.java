@@ -6,4 +6,6 @@ public interface ConfigureUriBuilder {
 
     UriComponentsBuilder configUriBuilder(String target);
 
+    String getApiUrl();
+
 }

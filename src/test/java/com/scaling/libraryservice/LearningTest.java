@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
+import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
 
 public class LearningTest {
@@ -39,6 +40,22 @@ public class LearningTest {
         }
 
         service.shutdown();
+    }
+
+    @Test
+    public void thread(){
+
+        try {
+            for(int i=0; i<3; i++){
+                Thread.sleep(5000);
+                System.out.println("hello "+ DateTime.now());
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } {
+
+        }
+
     }
 
     @Test
