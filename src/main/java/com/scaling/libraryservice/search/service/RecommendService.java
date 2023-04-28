@@ -19,4 +19,9 @@ public class RecommendService {
     public RespRecommend getRecommendBook(RespBooksDto searchResult){
         return recommendRule.recommendBooks(searchResult);
     }
+
+    public void getRecommendBook2(String query){
+
+    }
+
 }

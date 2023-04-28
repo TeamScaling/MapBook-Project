@@ -38,9 +38,9 @@ public class SearchViewController {
         @RequestParam(value = "target", defaultValue = "title") String target, ModelMap model) {
 
         if (!query.isEmpty()) {
-            RespBooksDto searchResult = searchService.searchBooks2(query, page, size,target);
-            RespRecommend recommends = recommendService.getRecommendBook(searchResult);
-            RelationWords relationWords = relationWordService.getRelatedWords(recommends.getRecommendBooks());
+            RespBooksDto searchResult = searchService.searchBooks2(query,page,size,target);
+            RespRecommend recommends = null;
+            RelationWords relationWords = null;
 
             model.put("searchResult", searchResult);
             model.put("totalPages", searchResult.getMeta().getTotalPages());

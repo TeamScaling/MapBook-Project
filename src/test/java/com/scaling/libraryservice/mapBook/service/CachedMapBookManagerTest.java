@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class CachedMapBookManagerTest {
 
     @Autowired
-    private CachedMapBookManager cachedMapBookManager;
+    private CachedMapBook cachedMapBook;
 
     /*@Test
     public void load(){
@@ -33,7 +33,7 @@ class CachedMapBookManagerTest {
 
         ReqMapBookDto mockReqMapBookDto = new ReqMapBookDto("1234","37.3");
 
-        cachedMapBookManager.getMapBooks(new ReqMapBookDto());
+        cachedMapBook.getMapBooks(new ReqMapBookDto());
 
         *//* when *//*
 

@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.mapBook.dto;
 
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
+import com.scaling.libraryservice.caching.CacheKey;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.lang.Nullable;
 
 @RequiredArgsConstructor
 @Getter @Setter @ToString
-public class ReqMapBookDto {
+public class ReqMapBookDto implements CacheKey {
 
     private final String isbn;
     private final Double lat;
