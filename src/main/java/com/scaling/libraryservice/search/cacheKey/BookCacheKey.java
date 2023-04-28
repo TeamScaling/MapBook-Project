@@ -3,7 +3,7 @@ package com.scaling.libraryservice.search.cacheKey;
 import com.scaling.libraryservice.caching.CacheKey;
 import java.util.Objects;
 
-public class BookHashKey implements CacheKey {
+public class BookCacheKey implements CacheKey {
 
     private final String query;
 
@@ -17,7 +17,7 @@ public class BookHashKey implements CacheKey {
         return page;
     }
 
-    public BookHashKey(String query, int page) {
+    public BookCacheKey(String query, int page) {
         this.query = query;
         this.page = page;
     }
@@ -30,7 +30,7 @@ public class BookHashKey implements CacheKey {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        BookHashKey that = (BookHashKey) o;
+        BookCacheKey that = (BookCacheKey) o;
         return page == that.page && Objects.equals(query, that.query);
     }
 

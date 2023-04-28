@@ -5,8 +5,8 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.caching.CacheKey;
 import com.scaling.libraryservice.caching.CustomCacheManager;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
-import com.scaling.libraryservice.search.cacheKey.BookHashKey;
+import com.scaling.libraryservice.caching.CustomCacheable;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -37,7 +38,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j @Timer
+@Slf4j @Timer @Getter
 public class BookSearchService {
 
     private final BookRepository bookRepository;
@@ -45,6 +46,8 @@ public class BookSearchService {
     private final TitleTokenizer titleTokenizer;
 
     private final CustomCacheManager<RespBooksDto> cacheManager;
+
+    private CacheKey cacheKey;
 
     @PostConstruct
     private void init() {
@@ -185,21 +188,13 @@ public class BookSearchService {
         return input.matches(pattern);
     }
 
-    @Timer
+    @Timer @CustomCacheable
     public RespBooksDto searchBooks2(String query, int page, int size, String target) {
 
         Pageable pageable = createPageable(page, size);
-
         Page<Book> books;
         MetaDto meta;
-
-        BookHashKey key = new BookHashKey(query,page);
-
         RespBooksDto result;
-
-        if(cacheManager.isContainItem(this.getClass(),key)){
-            return cacheManager.get(this.getClass(),key);
-        }
 
         if (isEnglish(query)) {
 
@@ -221,7 +216,6 @@ public class BookSearchService {
 
         result = new RespBooksDto(meta,books.stream().map(BookDto::new).toList());
 
-        cacheManager.put(this.getClass(),key,result);
 
         return result;
     }

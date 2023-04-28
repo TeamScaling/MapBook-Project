@@ -6,7 +6,7 @@ import com.scaling.libraryservice.caching.CacheKey;
 import com.scaling.libraryservice.caching.CustomCacheManager;
 import com.scaling.libraryservice.caching.Customer;
 import com.scaling.libraryservice.caching.NameCacheKey;
-import com.scaling.libraryservice.search.cacheKey.BookHashKey;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -24,7 +24,7 @@ class CustomCacheManagerTest {
 
     private CustomCacheManager customCacheManager;
 
-    private BookHashKey bookHashKey;
+    private BookCacheKey bookCacheKey;
 
     @PostConstruct
     public void init(){
@@ -36,7 +36,7 @@ class CustomCacheManagerTest {
 
         customCacheManager.registerCaching(cache,bookSearchService.getClass());
 
-        bookHashKey = new BookHashKey("자바",1);
+        bookCacheKey = new BookCacheKey("자바",1);
 
     }
 
@@ -76,16 +76,17 @@ class CustomCacheManagerTest {
 
         /* when */
 
-        BookHashKey bookHashKey = new BookHashKey("자바",1);
+        BookCacheKey bookCacheKey = new BookCacheKey("자바",1);
 
         var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
 
-        customCacheManager.put(bookSearchService.getClass(),bookHashKey,booksDto);
+        customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
         /* then */
 
 
-        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),bookHashKey);
+        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),
+            bookCacheKey);
 
         assertEquals(booksDto,result);
     }
@@ -105,16 +106,18 @@ class CustomCacheManagerTest {
 
         var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
 
-        customCacheManager.put(bookSearchService.getClass(),bookHashKey,booksDto);
+        customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
         /* then */
-        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),bookHashKey);
+        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),
+            bookCacheKey);
 
         assertEquals(booksDto,result);
 
         customCacheManager.removeCaching(bookSearchService.getClass());
 
-        var result2= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),bookHashKey);
+        var result2= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),
+            bookCacheKey);
 
         assertNull(result2);
     }
@@ -125,14 +128,16 @@ class CustomCacheManagerTest {
 
         var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
 
-        customCacheManager.put(bookSearchService.getClass(),bookHashKey,booksDto);
+        customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
         /* when */
-        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),bookHashKey);
+        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),
+            bookCacheKey);
 
         assertNotNull(result);
         customCacheManager.removeCaching(bookSearchService.getClass());
-        var result2= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),bookHashKey);
+        var result2= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),
+            bookCacheKey);
         /* then */
         assertNull(result2);
     }
@@ -143,10 +148,11 @@ class CustomCacheManagerTest {
 
         var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
 
-        customCacheManager.put(bookSearchService.getClass(),bookHashKey,booksDto);
+        customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
         /* when */
-        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),bookHashKey);
+        var result= (RespBooksDto) customCacheManager.get(bookSearchService.getClass(),
+            bookCacheKey);
 
         boolean result2= customCacheManager.isUsingCaching(bookSearchService.getClass());
         /* then */

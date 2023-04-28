@@ -3,7 +3,8 @@ package com.scaling.libraryservice.mapBook.util;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
+import com.scaling.libraryservice.apiConnection.BExistConnection;
+import com.scaling.libraryservice.caching.CustomCacheable;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
@@ -59,19 +60,19 @@ public class MapBookApiHandler {
         }
     }
 
-    @Timer
+    @Timer @CustomCacheable
     public List<RespMapBookDto> matchMapBooks(List<LibraryDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(reqMapBookDto);
 
-        List<RespMapBookDto> cachingItem = customCacheManager.get(this.getClass(), reqMapBookDto);
+        /*List<RespMapBookDto> cachingItem = customCacheManager.get(this.getClass(), reqMapBookDto);
 
         if (cachingItem != null) {
 
             return cachingItem;
-        }
+        }*/
 
         List<BExistConnection> bExistConnections = nearByLibraries.stream()
             .map(n -> new BExistConnection(n.getLibNo())).toList();
@@ -86,7 +87,7 @@ public class MapBookApiHandler {
 
         var result = mappingLoanableLib(nearByLibraries,bookExistMap);
 
-        customCacheManager.put(this.getClass(), reqMapBookDto, result);
+       /* customCacheManager.put(this.getClass(), reqMapBookDto, result);*/
 
         return result;
     }

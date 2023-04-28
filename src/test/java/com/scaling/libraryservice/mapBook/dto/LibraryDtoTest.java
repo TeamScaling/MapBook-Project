@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.mapBook.dto;
 
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
-import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
+import com.scaling.libraryservice.apiConnection.BExistConnection;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import org.junit.jupiter.api.Test;
 

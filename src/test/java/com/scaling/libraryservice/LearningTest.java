@@ -1,5 +1,6 @@
 package com.scaling.libraryservice;
 
+import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.search.util.TitleDivider;
@@ -9,6 +10,7 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +26,17 @@ public class LearningTest {
 
 
     private TitleTokenizer titleTokenizer = new TitleTokenizer(new Komoran(DEFAULT_MODEL.FULL));
+
+    @Test
+    public void reflection(){
+        /* given */
+
+        /* when */
+        var result = HasBookCacheKey.class.getDeclaredFields();
+        /* then */
+
+        System.out.println(result[0].getName());
+    }
 
     @Test
     public void test() {

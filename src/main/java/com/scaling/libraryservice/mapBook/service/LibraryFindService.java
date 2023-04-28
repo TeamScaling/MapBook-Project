@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.aop.Timer;
 import com.scaling.libraryservice.caching.CacheKey;
+import com.scaling.libraryservice.caching.CustomCacheable;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
@@ -78,15 +79,9 @@ public class LibraryFindService {
             .toList();
     }
 
-
+    @CustomCacheable
     List<LibraryDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
 
-        HasBookCacheKey cacheKey = new HasBookCacheKey(isbn13,areaCd);
-
-        if(cacheManager.isContainItem(this.getClass(),cacheKey)){
-
-            return cacheManager.get(this.getClass(),cacheKey);
-        }
 
         List<LibraryDto> result
             = libraryHasBookRepo.findHasBookLibraries(Double.parseDouble(isbn13), areaCd)
@@ -95,8 +90,6 @@ public class LibraryFindService {
         if (result.isEmpty()) {
             log.info(areaCd + " 이 지역의 도서관 중 소장하는 도서관 없음");
         }
-
-        cacheManager.put(this.getClass(),cacheKey,result);
 
         return result;
     }

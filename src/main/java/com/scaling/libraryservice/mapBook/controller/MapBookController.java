@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.controller;
 
-import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
+import com.scaling.libraryservice.apiConnection.BExistConnection;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;

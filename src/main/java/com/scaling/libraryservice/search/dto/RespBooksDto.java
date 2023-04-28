@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.search.dto;
 
-import com.scaling.libraryservice.search.cacheKey.BookHashKey;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +13,7 @@ public class RespBooksDto {
     private MetaDto meta;
     private List<BookDto> documents;
 
-    private BookHashKey bookHashKey;
+    private BookCacheKey bookCacheKey;
 
     public RespBooksDto(MetaDto metaDto, List<BookDto> documents) {
         this.meta = metaDto;
