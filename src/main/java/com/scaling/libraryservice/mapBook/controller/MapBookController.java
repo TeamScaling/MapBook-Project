@@ -1,14 +1,9 @@
 package com.scaling.libraryservice.mapBook.controller;
 
-import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
-import com.scaling.libraryservice.mapBook.dto.ApiStatus;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.service.CachedMapBookManager;
-import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -23,15 +18,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @RequiredArgsConstructor
 @Slf4j
 public class MapBookController {
-
-    private final ApiQuerySender apiQuerySender;
-    private final ApiQueryBinder apiQueryBinder;
     private final CachedMapBookManager cachedMapBookManager;
     private final MapBookApiHandler mapBookApiHandler;
 
     @PostConstruct
     public void init() {
-        mapBookApiHandler.isAccessOpenApi();
+        mapBookApiHandler.checkOpenApi();
     }
 
     @GetMapping("/books/mapBook/search")
@@ -40,7 +32,7 @@ public class MapBookController {
 
         mapBookDto.updateAreaCd();
 
-        if (!new LibraryDto().getApiStatus().apiAccessible()) {
+        if (!BExistConnection.apiStatus.apiAccessible()) {
             return getHasBookMarkers(model, mapBookDto);
         }
 
@@ -62,7 +54,7 @@ public class MapBookController {
         return "mapBook/hasLibMarker";
     }
 
-    public String getLoanableMapBookSingle(ModelMap model,
+    /*public String getLoanableMapBookSingle(ModelMap model,
         @ModelAttribute ReqMapBookDto mapBookDto) {
 
         LibraryDto nearestLibrary
@@ -77,7 +69,7 @@ public class MapBookController {
         model.put("mapBooks", bookExist);
 
         return "mapBook/mapBookMarker";
-    }
+    }*/
 
 
 }

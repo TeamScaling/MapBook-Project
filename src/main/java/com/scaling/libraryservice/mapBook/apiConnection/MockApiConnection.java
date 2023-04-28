@@ -1,14 +1,15 @@
-package com.scaling.libraryservice.mapBook.dto;
+package com.scaling.libraryservice.mapBook.apiConnection;
 
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class MockApiConnection implements ConfigureUriBuilder,ApiObservable {
+public class MockApiConnection implements ConfigureUriBuilder, ApiObservable {
 
     private static String apiUrl = "http://localhost:" + 8089 + "/api/bookExist";
 
-    private static ApiStatus apiStatus = new ApiStatus(apiUrl,5);
+    private static final ApiStatus apiStatus = new ApiStatus(apiUrl,5);
 
     public static void setApiUrl(String apiUrl) {
         MockApiConnection.apiUrl = apiUrl;

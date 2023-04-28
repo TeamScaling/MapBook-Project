@@ -72,7 +72,7 @@ public class ApiQueryBinder {
 
         if (respJsonObj.has("error")) {
             String error = respJsonObj.getString("error");
-            log.error("[data4library bookExist API error] message :" + error);
+            log.error("[API error] message :" + error);
             throw new OpenApiException(error);
         }
 

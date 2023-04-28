@@ -1,16 +1,7 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
-import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest
 class CachedMapBookManagerTest {

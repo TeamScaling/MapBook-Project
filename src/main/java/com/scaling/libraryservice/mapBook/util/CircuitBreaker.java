@@ -1,12 +1,10 @@
 package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.transaction.NotSupportedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +38,7 @@ public class CircuitBreaker {
 
     public static void closeObserver(ApiStatus status) {
         status.closeAccess();
-        log.info(status.getApiUri() + " is closed by api server error at [{}]",
+        log.info(status.getApiUri() + " is closed by nested api server error at [{}]",
             status.getClosedTime());
     }
 

@@ -6,9 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
+import com.scaling.libraryservice.mapBook.apiConnection.MockApiConnection;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,10 +87,6 @@ class ApiQuerySenderTest {
 
         apiQuerySender = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
 
-        /* when */
-
-//        Executable result
-//            =() -> apiQuerySender.singleQueryJson(mockBuilder,target);
 
         apiQuerySender.singleQueryJson(mockBuilder,target);
 
@@ -119,8 +116,8 @@ class ApiQuerySenderTest {
          //when
 
         var result
-            = apiQuerySender.singleQueryJson(new LibraryDto(libNo),isbn13);
-        Executable executable = () -> apiQuerySender.singleQueryJson(new LibraryDto(),isbn13);
+            = apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
+        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
 
          //then
 
@@ -155,7 +152,7 @@ class ApiQuerySenderTest {
          //when
 
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(new LibraryDto(),isbn13);
+        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
 
          //then
 
@@ -163,6 +160,9 @@ class ApiQuerySenderTest {
     }
 
     @Test
-    void multiQuery() {
+    void is_Access_api() {
+
+        System.out.println(apiQuerySender.checkConnection("http://data4library.kr/api/bookExist"));
+
     }
 }

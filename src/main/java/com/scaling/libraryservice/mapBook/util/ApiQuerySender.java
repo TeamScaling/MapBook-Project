@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.transaction.NotSupportedException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,15 +26,28 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 @Slf4j
 @Setter
-@Getter @RequiredArgsConstructor
+@Getter
+@RequiredArgsConstructor
 public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
     private final CircuitBreaker circuitBreaker;
 
+    public boolean checkConnection(String apiUrl) {
+
+        ResponseEntity<String> resp = restTemplate.exchange(
+            apiUrl,
+            HttpMethod.OPTIONS,
+            HttpEntity.EMPTY,
+            String.class);
+
+        return resp.getStatusCode().is2xxSuccessful();
+    }
+
     @Timer
     // OpenAPI에 단일 요청을 보낸다.
-    public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,String target)
+    public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,
+        String target)
         throws RestClientException {
 
         Objects.requireNonNull(configUriBuilder);
@@ -56,10 +68,10 @@ public class ApiQuerySender {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            if(ApiObservable.class.isAssignableFrom(configUriBuilder.getClass())){
+            if (ApiObservable.class.isAssignableFrom(configUriBuilder.getClass())) {
                 ApiObservable apiObserver = (ApiObservable) configUriBuilder;
 
-                circuitBreaker.receiveError(apiObserver,e);
+                circuitBreaker.receiveError(apiObserver, e);
             }
 
         }
@@ -72,7 +84,6 @@ public class ApiQuerySender {
     public List<ResponseEntity<String>> multiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
         String target, int nThreads) throws RestClientException {
 
-
         Objects.requireNonNull(uriBuilders);
 
         ExecutorService service = Executors.newFixedThreadPool(nThreads);
@@ -81,7 +92,7 @@ public class ApiQuerySender {
 
         for (ConfigureUriBuilder b : uriBuilders) {
 
-            tasks.add(() -> singleQueryJson(b,target));
+            tasks.add(() -> singleQueryJson(b, target));
         }
 
         List<Future<ResponseEntity<String>>> futures;

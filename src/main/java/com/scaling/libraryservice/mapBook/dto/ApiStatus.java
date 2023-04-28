@@ -61,8 +61,6 @@ public class ApiStatus {
         } else {
             log.info(" service for {} was closed at [{}]",apiUri,closedTime);
         }
-
-
     }
 
 }

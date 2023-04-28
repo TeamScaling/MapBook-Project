@@ -3,12 +3,11 @@ package com.scaling.libraryservice.mapBook.util;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.mapBook.dto.MockApiConnection;
+import com.scaling.libraryservice.mapBook.apiConnection.MockApiConnection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -65,7 +64,7 @@ class CircuitBreakerTest {
         for(int i=0; i<10; i++){
 
             apiQuerySender.singleQueryJson(new MockApiConnection(),target);
-            System.out.println(new LibraryDto().getApiStatus().getErrorCnt());
+            System.out.println(BExistConnection.apiStatus.getErrorCnt());
             System.out.println(new LoanItemDto().getApiStatus().getErrorCnt());
         }
 
