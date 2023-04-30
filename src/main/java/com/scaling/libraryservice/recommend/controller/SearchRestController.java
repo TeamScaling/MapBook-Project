@@ -35,7 +35,7 @@ public class SearchRestController {
 
         System.out.println("query.............."+recommendDto.getQuery());
 
-        return ResponseEntity.ok(recommendService.getRecommendBook2(recommendDto.getQuery()));
+        return ResponseEntity.ok(recommendService.getRecommendBook(recommendDto.getQuery()));
     }
 
 }

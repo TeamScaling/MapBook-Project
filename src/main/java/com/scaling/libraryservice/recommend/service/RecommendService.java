@@ -2,19 +2,19 @@ package com.scaling.libraryservice.recommend.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.recommend.dto.RespRecommend;
+import com.scaling.libraryservice.recommend.repository.RecommendRepository;
+import com.scaling.libraryservice.recommend.util.RecommendRule;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.recommend.dto.RespRecommend;
 import com.scaling.libraryservice.search.entity.Book;
-import com.scaling.libraryservice.recommend.repository.RecommendRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
-import com.scaling.libraryservice.recommend.util.RecommendRule;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -45,39 +45,18 @@ public class RecommendService {
     }
 
     @Timer
-    public RespRecommend getRecommendBook(RespBooksDto searchResult){
+    public RespRecommend getRecommendBook2(RespBooksDto searchResult) {
         return recommendRule.recommendBooks(searchResult);
     }
 
     @CustomCacheable
-    public List<String> getRecommendBook2(String query){
+    @Timer
+    public List<String> getRecommendBook(String query) {
 
         List<BookDto> result = pickSelectQuery(query).stream().map(BookDto::new).toList();
 
         return result.stream().map(r -> getRelatedTitle(r.getTitle())).toList();
     }
-
-    public String getRelatedTitle(String title) {
-        String[] titleParts = title.split(":");
-        if (titleParts.length > 1) {
-            String titlePrefix = titleParts[0];
-            String[] titlePrefixParts = titlePrefix.trim().split("=");
-            if (titlePrefixParts.length > 0) {
-                titlePrefix = titlePrefixParts[0].trim();
-            }
-            return removeParentheses(removeDash(titlePrefix)).trim();
-        }
-        return removeParentheses(removeDash(title)).trim();
-    }
-
-    private String removeParentheses(String text) {
-        return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
-    }
-
-    private String removeDash(String text) {
-        return text.replaceAll("-.*$", "").trim();
-    }
-
 
     public List<Book> pickSelectQuery(String query) {
 
@@ -94,7 +73,7 @@ public class RecommendService {
             }
 
             case KOR_MT -> {
-                return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(),size);
+                return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size);
             }
 
             case ENG_SG -> {
@@ -122,6 +101,27 @@ public class RecommendService {
         }
 
         return null;
+    }
+
+    private String getRelatedTitle(String title) {
+        String[] titleParts = title.split(":");
+        if (titleParts.length > 1) {
+            String titlePrefix = titleParts[0];
+            String[] titlePrefixParts = titlePrefix.trim().split("=");
+            if (titlePrefixParts.length > 0) {
+                titlePrefix = titlePrefixParts[0].trim();
+            }
+            return removeParentheses(removeDash(titlePrefix)).trim();
+        }
+        return removeParentheses(removeDash(title)).trim();
+    }
+
+    private String removeParentheses(String text) {
+        return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
+    }
+
+    private String removeDash(String text) {
+        return text.replaceAll("-.*$", "").trim();
     }
 
 }
