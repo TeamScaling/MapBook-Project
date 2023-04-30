@@ -58,8 +58,7 @@ public class BookDto {
     @Override
     public String toString() {
         return "BookDto{" +
-            ", title='" + title + '\'' +
-            ", isbn='" + isbn + '\'' +
+            ", title='" + title + '\''+
             '}';
     }
 

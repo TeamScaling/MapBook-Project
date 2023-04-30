@@ -8,8 +8,10 @@ import com.scaling.libraryservice.search.dto.RespRecommend;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
-@Timer
+@Timer @Slf4j
+
 public class RecommendRanRule implements RecommendRule {
 
     @Override
@@ -22,8 +24,16 @@ public class RecommendRanRule implements RecommendRule {
         // 상위 limit권
         List<RecommendBookDto> relatedBooks = getTopRelatedBooks(document, limit);
 
+        System.out.println("============================");
+        log.info("상위책 100권 : " + relatedBooks);
+        System.out.println("============================");
+
         // 10권 랜덤 추천
         List<RecommendBookDto> randomTop10 = getRandomTop10RelatedBooks(relatedBooks);
+
+        System.out.println("============================");
+        log.info("랜덤추천 : " + randomTop10);
+        System.out.println("============================");
 
 
 

@@ -14,6 +14,10 @@ public class RespBooksDto {
     private List<RecommendBookDto> recommendBooks;
     private RelationWords relationWords;
 
+    // 기본 생성자 추가
+    public RespBooksDto() {
+    }
+
     public RespBooksDto(MetaDto metaDto, List<BookDto> documents) {
         this.meta = metaDto;
         this.documents = documents;
@@ -25,5 +29,23 @@ public class RespBooksDto {
         this.recommendBooks = recommendBooks;
         this.relationWords = relationWords;
     }
+
+    @Override
+    public String toString() {
+        return " metaDto : " + meta +
+            " documents :" + documents+
+            " recommendBooks : " + recommendBooks +
+            " relationWords : " + relationWords;
+    }
+
+    public String getTitle() {
+        if (documents != null && documents.size() > 0) {
+            return documents.get(0).getTitle();
+        } else {
+            return null;
+        }
+    }
+
+
 
 }

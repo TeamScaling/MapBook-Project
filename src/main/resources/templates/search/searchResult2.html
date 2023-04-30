@@ -8,9 +8,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
-<!--엑시오스 라이브러리-->
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
 
 
   <style>
@@ -399,44 +396,35 @@
 
 <!--  홈버튼-->
 
+  <!--  추천도서-->
+  <div class="recommend-box">
+    <!-- search/searchResult 템플릿 -->
+    <p>
+      추천도서 :
+      <span th:if="${recommends.getRecommendBooks().isEmpty()}">
+        추천 도서가 없습니다.
+      </span>
+      <span th:each="book, iter : ${recommends.getRecommendBooks()}">
+        <span th:text="${book.title}"></span>
+        <span th:if="${!iter.isLast()}">, </span>
+      </span>
+    </p>
+  </div>
 
-
-  <!--  Thymeleaf 템플릿 추천도서-->
-<!--  <div class="recommend-box">-->
-<!--    &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;-->
-<!--    <p>-->
-<!--      추천도서 :-->
-<!--      <span th:if="${recommends.getRecommendBooks().isEmpty()}">-->
-<!--        추천 도서가 없습니다.-->
-<!--      </span>-->
-<!--      <span th:each="book, iter : ${recommends.getRecommendBooks()}">-->
-<!--        <span th:text="${book.title}"></span>-->
-<!--        <span th:if="${!iter.isLast()}">, </span>-->
-<!--      </span>-->
-<!--    </p>-->
-<!--  </div>-->
-<!--  &lt;!&ndash; 추천도서 &ndash;&gt;-->
-<!--  <div class="recommend-box" id="recommend-box">-->
-<!--    &lt;!&ndash; 추천 도서 목록이 AJAX를 통해 동적으로 채워집니다. &ndash;&gt;-->
-<!--  </div>-->
-
-
-
-
-  <!--  &lt;!&ndash;  연관도서&ndash;&gt;-->
-<!--  <div class="related-box">-->
-<!--    &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;-->
-<!--    <p>-->
-<!--      연관검색어 :-->
-<!--      <span th:if="${relationWords == null}">-->
-<!--        검색 결과가 없습니다.-->
-<!--      </span>-->
-<!--      <span th:each="token, status : ${relationWords?.tokens}">-->
-<!--        <span th:text="${token}"></span>-->
-<!--        <span th:if="${!status.last}">, </span>-->
-<!--      </span>-->
-<!--    </p>-->
-<!--  </div>-->
+  <!--  연관도서-->
+  <div class="related-box">
+    <!-- search/searchResult 템플릿 -->
+    <p>
+      연관검색어 :
+      <span th:if="${relationWords == null}">
+        검색 결과가 없습니다.
+      </span>
+      <span th:each="token, status : ${relationWords?.tokens}">
+        <span th:text="${token}"></span>
+        <span th:if="${!status.last}">, </span>
+      </span>
+    </p>
+  </div>
 </header>
 
 <script>

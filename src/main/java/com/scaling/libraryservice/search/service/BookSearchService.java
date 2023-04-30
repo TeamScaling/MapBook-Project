@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -193,6 +195,32 @@ public class BookSearchService {
         return new RespBooksDto(meta
             , books.stream().map(BookDto::new).toList());
     }
+
+    @Timer
+    public RespBooksDto searchBooks3(String query, int page, int size, String target, HttpSession session) {
+        Pageable pageable = createPageable(page, size);
+
+        Page<Book> books;
+        MetaDto meta;
+
+        if (isEnglish(query)) {
+            log.info("english title : [{}]", query);
+            return queryResolve(query, page, size, target, false);
+        } else if (isKorean(query)) {
+            log.info("korean title : [{}]", query);
+            return queryResolve(query, page, size, target, true);
+        } else {
+            log.info("korean & english title : [{}]", query);
+            books = engKorResolve(query, pageable);
+        }
+
+        meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
+
+        RespBooksDto searchResult = new RespBooksDto(meta, books.stream().map(BookDto::new).toList());
+
+        return searchResult;
+    }
+
 
     private RespBooksDto queryResolve(String query, int page, int size, String target,
         boolean isKor) {
