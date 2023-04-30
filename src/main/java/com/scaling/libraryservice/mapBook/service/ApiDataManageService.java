@@ -3,7 +3,6 @@ package com.scaling.libraryservice.mapBook.service;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.entity.LoanItem;
 import com.scaling.libraryservice.mapBook.repository.LoanItemRepository;
-import com.scaling.libraryservice.mapBook.repository.RanksRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ public class ApiDataManageService {
 
     private final LoanItemRepository loanItemRepo;
 
-    private final RanksRepository ranksRepository;
 
     @Transactional
     public void addLoanItem(LoanItemDto loanItemDto){

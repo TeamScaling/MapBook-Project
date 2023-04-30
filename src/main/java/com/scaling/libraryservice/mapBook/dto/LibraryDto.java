@@ -30,6 +30,8 @@ public class LibraryDto {
     private String twoAreaNm;
     private Integer areaCd;
 
+    private String hasBook;
+
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();
         this.libNo = library.getLibNo();
@@ -40,6 +42,19 @@ public class LibraryDto {
         this.oneAreaNm = library.getOneAreaNm();
         this.twoAreaNm = library.getTwoAreaNm();
         this.areaCd = library.getAreaCd();
+    }
+
+    public LibraryDto(Library library,String hasBook) {
+        this.libNm = library.getLibNm();
+        this.libNo = library.getLibNo();
+        this.libLon = library.getLibLon();
+        this.libLat = library.getLibLat();
+        this.libArea = library.getLibArea();
+        this.libUrl = library.getLibUrl();
+        this.oneAreaNm = library.getOneAreaNm();
+        this.twoAreaNm = library.getTwoAreaNm();
+        this.areaCd = library.getAreaCd();
+        this.hasBook = hasBook;
     }
 
     public LibraryDto(Integer libNo) {

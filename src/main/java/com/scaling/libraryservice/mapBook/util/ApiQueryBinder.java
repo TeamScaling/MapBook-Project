@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.util;
 
-import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;

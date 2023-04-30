@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.search.util;
 
-import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.commons.timer.Timer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

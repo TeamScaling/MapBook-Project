@@ -5,13 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.apiConnection.BExistConnection;
+import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.apiConnection.MockApiConnection;
+import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
+import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,13 +55,13 @@ class ApiQuerySenderTest {
         mockServer.expect(MockRestRequestMatchers.requestTo("http://mockServer.kr/api/bookExist?format=json"))
             .andRespond(MockRestResponseCreators.withSuccess());
 
-        MockApiConnection.setApiUrl("http://mockServer.kr/api/bookExist");
+        MockApiConn.setApiUrl("http://mockServer.kr/api/bookExist");
 
         /* when */
 
         apiQuerySender = new ApiQuerySender(restTemplateForMock,new CircuitBreaker());
 
-        apiQuerySender.singleQueryJson(new MockApiConnection(),target);
+        apiQuerySender.singleQueryJson(new MockApiConn(),target);
 
         /* then */
         mockServer.verify();
@@ -83,7 +84,7 @@ class ApiQuerySenderTest {
             .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(200000))
         );
 
-        MockApiConnection mockBuilder = new MockApiConnection();
+        MockApiConn mockBuilder = new MockApiConn();
 
         apiQuerySender = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
 
@@ -116,8 +117,8 @@ class ApiQuerySenderTest {
          //when
 
         var result
-            = apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
-        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
+            = apiQuerySender.singleQueryJson(new BExistConn(),isbn13);
+        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConn(),isbn13);
 
          //then
 
@@ -133,7 +134,7 @@ class ApiQuerySenderTest {
         
          //when
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(new LoanItemDto(),pageSize+"");
+        Executable executable = () -> apiQuerySender.singleQueryJson(new LoanItemConn(),pageSize+"");
 
          //then
 
@@ -152,7 +153,7 @@ class ApiQuerySenderTest {
          //when
 
 
-        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConnection(),isbn13);
+        Executable executable = () -> apiQuerySender.singleQueryJson(new BExistConn(),isbn13);
 
          //then
 

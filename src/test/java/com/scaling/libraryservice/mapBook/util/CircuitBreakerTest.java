@@ -2,10 +2,12 @@ package com.scaling.libraryservice.mapBook.util;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.apiConnection.BExistConnection;
+import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.apiConnection.MockApiConnection;
+import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.junit.jupiter.api.DisplayName;
@@ -63,9 +65,9 @@ class CircuitBreakerTest {
 
         for(int i=0; i<10; i++){
 
-            apiQuerySender.singleQueryJson(new MockApiConnection(),target);
-            System.out.println(BExistConnection.apiStatus.getErrorCnt());
-            System.out.println(new LoanItemDto().getApiStatus().getErrorCnt());
+            apiQuerySender.singleQueryJson(new MockApiConn(),target);
+            System.out.println(BExistConn.apiStatus.getErrorCnt());
+            System.out.println(LoanItemConn.apiStatus.getErrorCnt());
         }
 
         /* then */

@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.util;
 
-import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.commons.timer.Timer;
 import lombok.RequiredArgsConstructor;
 
 // 사용자의 위도/경도를 가지고 사용자와 가장 가까운 도서관을 찾기 위한 클래스

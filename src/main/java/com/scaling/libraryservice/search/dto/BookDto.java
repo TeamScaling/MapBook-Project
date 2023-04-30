@@ -82,9 +82,8 @@ public class BookDto {
         return Objects.hash(title);
     }
 
-
-    public String getRelatedTitle() {
-        String[] titleParts = this.title.split(":");
+    public String getRelatedTitle(String title) {
+        String[] titleParts = title.split(":");
         if (titleParts.length > 1) {
             String titlePrefix = titleParts[0];
             String[] titlePrefixParts = titlePrefix.trim().split("=");
@@ -93,7 +92,7 @@ public class BookDto {
             }
             return removeParentheses(removeDash(titlePrefix)).trim();
         }
-        return removeParentheses(removeDash(this.title)).trim();
+        return removeParentheses(removeDash(title)).trim();
     }
 
     private String removeParentheses(String text) {

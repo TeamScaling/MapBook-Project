@@ -38,38 +38,43 @@
       </a>
     </div>
   </div>
+  <button onclick="getRecommend()">추천 도서 보기</button>
 
-<!--  홈버튼-->
-
-<!--  &lt;!&ndash;  추천도서&ndash;&gt;
-  <div class="recommend-box">
-    &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
-    <p>
-      추천도서 :
-      <span th:if="${recommends.getRecommendBooks().isEmpty()}">
-        추천 도서가 없습니다.
-      </span>
-      <span th:each="book, iter : ${recommends.getRecommendBooks()}">
-        <span th:text="${book.title}"></span>
-        <span th:if="${!iter.isLast()}">, </span>
-      </span>
-    </p>
+  <div class="recommend-box" id="recommend-box" style="display: none">
+    <p> ---검색중----</p>
   </div>
 
-  &lt;!&ndash;  연관도서&ndash;&gt;
-  <div class="related-box">
-    &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
-    <p>
-      연관검색어 :
-      <span th:if="${relationWords == null}">
-        검색 결과가 없습니다.
-      </span>
-      <span th:each="token, status : ${relationWords?.tokens}">
-        <span th:text="${token}"></span>
-        <span th:if="${!status.last}">, </span>
-      </span>
-    </p>
-  </div>-->
+  <!--  홈버튼-->
+
+  <!--  &lt;!&ndash;  추천도서&ndash;&gt;
+    <div class="recommend-box">
+      &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
+      <p>
+        추천도서 :
+        <span th:if="${recommends.getRecommendBooks().isEmpty()}">
+          추천 도서가 없습니다.
+        </span>
+        <span th:each="book, iter : ${recommends.getRecommendBooks()}">
+          <span th:text="${book.title}"></span>
+          <span th:if="${!iter.isLast()}">, </span>
+        </span>
+      </p>
+    </div>
+
+    &lt;!&ndash;  연관도서&ndash;&gt;
+    <div class="related-box">
+      &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
+      <p>
+        연관검색어 :
+        <span th:if="${relationWords == null}">
+          검색 결과가 없습니다.
+        </span>
+        <span th:each="token, status : ${relationWords?.tokens}">
+          <span th:text="${token}"></span>
+          <span th:if="${!status.last}">, </span>
+        </span>
+      </p>
+    </div>-->
 </header>
 
 <main>
@@ -84,31 +89,37 @@
         <th>내용</th>
         <th>이미지</th>
         <th>대출 가능한 <br>주변 도서관</th>
-                  </tr>
-                  </thead>
-                  <tbody id="book-info-column">
-                  <tr th:each="book : ${searchResult.documents}">
-                    <td th:text="${book.id}"></td>
-                    <td>
-                      <span th:text="${book.title}"></span>
-                    </td>
-                    <td><button class="copy-btn" th:data-title="${book.title}">복사</button></td>
-                    <td th:text="${book.author}"></td>
-                    <td th:text="${book.content}"></td>
-                    <td>
-                      <img class="book-image" th:src="${book.bookImg}" alt="준비중" src="../static/images/empty_img.png"/>
-                    </td>
-                    <td><button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()"> 내 주변<br>도서관</button></td>
-                  </tr>
+      </tr>
+      </thead>
+      <tbody id="book-info-column">
+      <tr th:each="book : ${searchResult.documents}">
+        <td th:text="${book.id}"></td>
+        <td>
+          <span th:text="${book.title}"></span>
+        </td>
+        <td>
+          <button class="copy-btn" th:data-title="${book.title}">복사</button>
+        </td>
+        <td th:text="${book.author}"></td>
+        <td th:text="${book.content}"></td>
+        <td>
+          <img class="book-image" th:src="${book.bookImg}" alt="준비중"
+               src="../static/images/empty_img.png"/>
+        </td>
+        <td>
+          <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()">
+            내 주변<br>도서관
+          </button>
+        </td>
+      </tr>
 
-                  </tbody>
+      </tbody>
     </table>
 
-    <div class="alert alert-success" role="alert" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
+    <div class="alert alert-success" role="alert"
+         style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
       도서 제목이 클립보드에 복사되었습니다.
     </div>
-
-    <button onclick="getRecommend()">추천 </button>
 
   </div>
 </main>
@@ -135,14 +146,14 @@
   const form = document.getElementById('search-form');
   const queryInput = document.getElementById('query-input');
 
-  form.addEventListener('submit', function(event) {
+  form.addEventListener('submit', function (event) {
     if (queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 두글자 이상 입력해주세요.');
     }
   });
 
-  queryInput.addEventListener('keypress', function(event) {
+  queryInput.addEventListener('keypress', function (event) {
     if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 두글자 이상 입력해주세요.');
@@ -152,11 +163,10 @@
   const query = new URLSearchParams(window.location.search).get('query');
   document.getElementById('query').textContent = query;
 
-
   var copyBtns = document.querySelectorAll('.copy-btn');
   var alertBox = document.querySelector('.alert');
-  copyBtns.forEach(function(btn) {
-    btn.addEventListener('click', function(event) {
+  copyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
       // 이벤트 버블링 방지
       event.stopPropagation();
 
@@ -165,15 +175,15 @@
 
       // 클립보드에 복사
       navigator.clipboard.writeText(text)
-      .then(function() {
+      .then(function () {
         console.log('제목이 클립보드에 복사되었습니다.');
         // 알람 띄우기
         alertBox.style.display = 'block';
-        setTimeout(function() {
+        setTimeout(function () {
           alertBox.style.display = 'none';
         }, 500); // 0.5초 후 알람 닫기
       })
-      .catch(function(err) {
+      .catch(function (err) {
         console.error('클립보드 복사에 실패하였습니다.', err);
       });
     });
@@ -191,8 +201,8 @@
   let searchResultData = /*[[${searchResult}]]*/ [];
   /*]]>*/
 </script>
-<script th:inline = "javascript">
-  $(document).ready(function() {
+<script th:inline="javascript">
+  $(document).ready(function () {
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('query');
     let currentPage = parseInt(urlParams.get('page') || 1);
@@ -221,12 +231,11 @@
       }
     }
 
-
     // 페이지 링크 생성 및 할당
     generatePageLinks();
 
     // 이전 페이지 버튼 클릭 시 이벤트 처리
-    $("#prevBtn").on("click", function() {
+    $("#prevBtn").on("click", function () {
       if (currentPage > 1) {
         const prevPageUrl = url + (currentPage - 1);
         window.location.href = prevPageUrl;
@@ -234,7 +243,7 @@
     });
 
     // 다음 페이지 버튼 클릭 시 이벤트 처리
-    $("#nextBtn").on("click", function() {
+    $("#nextBtn").on("click", function () {
       const nextPage = currentPage + 1;
       if (nextPage <= totalPages) {
         const nextPageUrl = url + nextPage;
@@ -248,7 +257,7 @@
 
     // 페이지 버튼에 대한 current 클래스 추가 및 제거
     const pageLinks = $(".page-link");
-    pageLinks.each(function(index) {
+    pageLinks.each(function (index) {
       if (index + 1 === currentPage) {
         $(this).parent().addClass("current");
       } else {
@@ -257,9 +266,8 @@
     });
   });
 
-
-  $(document).ready(function() {
-    $('.loan-check-btn').on('click', function() {
+  $(document).ready(function () {
+    $('.loan-check-btn').on('click', function () {
       var isbn = $(this).attr('data-isbn');
       var bigNumberIsbn = new BigNumber(isbn);
       isbn = bigNumberIsbn.toFixed();
@@ -285,8 +293,6 @@
     });
   });
 
-
-
   function openPopup(isbn, lat, lon) {
 
     const url = `/books/mapBook/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
@@ -294,24 +300,54 @@
     return false;
   }
 
-
   /*--------------------------------------------*/
 
-  function getRecommend(){
+  /*function addHTML(itemDto) {
+    /!**
+     * class="search-itemDto" 인 녀석에서
+     * image, title, lprice, addProduct 활용하기
+     * 참고) onclick='addProduct(${JSON.stringify(itemDto)})'
+     *!/
+    return `<div class="search-itemDto">
+        <div class="search-itemDto-left">
+            <img src="${itemDto.image}" alt="">
+        </div>
+        <div class="search-itemDto-center">
+            <div>${itemDto.title}</div>
+            <div class="price">
+                ${numberWithCommas(itemDto.lprice)}
+                <span class="unit">원</span>
+            </div>
+        </div>
+        <div class="search-itemDto-right">
+            <img src="../images/icon-save.png" alt="" onclick='addProduct(${JSON.stringify(itemDto)})'>
+        </div>
+    </div>`
+  }*/
+
+  function getRecommend() {
+
+    // 현재 페이지 URL에서 'query' 파라미터 값 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('query');
+
+    if ($('#recommend-box').css('display') === 'none') {
+      $('#recommend-box').show();
+    }
 
     $.ajax({
       type: 'Post',
       url: `/books/recommend`,
       contentType: "application/json",
-      data: JSON.stringify(searchResultData),
+      data: JSON.stringify({query}), // query 파라미터를 data 객체에 추가
       success: function (response) {
-        /*$('#search-result-box').empty();
-        // 4. for 문마다 itemDto를 꺼내서 HTML 만들고 검색결과 목록에 붙이기!
+
+        $('#recommend-box').empty();
         for (let i = 0; i < response.length; i++) {
-          let itemDto = response[i];
-          let tempHtml = addHTML(itemDto);
-          $('#search-result-box').append(tempHtml);
-        }*/
+          let bookNm = response[i];
+          $('#recommend-box').append(`(${i+1}) ${bookNm}  `);
+        }
+        console.log(response);
       },
       error(error) {
         console.error(error);

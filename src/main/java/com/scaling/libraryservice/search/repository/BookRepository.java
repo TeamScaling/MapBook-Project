@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.search.repository;
 
-import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.entity.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BookRepository extends JpaRepository<Book, Integer> {
+public interface BookRepository extends JpaRepository<Book, Long> {
 
     // fixme : 메소드 이름 변경  findBooksByTitleNormal
     // 제목검색 FULLTEXT 서치 이용 + 페이징
@@ -64,25 +64,23 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         @Param("korToken") String korToken, Pageable pageable);
 
     @Query(value = "SELECT * FROM books "
-        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE) "
-        + "order by loan_cnt"
+        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode)"
         , nativeQuery = true)
-    Page<Book> findBooksByKorTitleNaturalOrder(@Param("query") String query, Pageable pageable);
+    Page<Book> findBooksByKorTitleBool(@Param("query") String query, Pageable pageable);
+
 
     @Query(value = "SELECT * FROM books "
         + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode) order by loan_cnt desc"
         , nativeQuery = true)
     Page<Book> findBooksByKorTitleBoolOrder(@Param("query") String query, Pageable pageable);
 
-    @Query(value = "SELECT * FROM books "
-        + "WHERE MATCH(TITLE_NM) AGAINST (:query IN boolean mode)"
-        , nativeQuery = true)
-    Page<Book> findBooksByKorTitleBool(@Param("query") String query, Pageable pageable);
-
     @Query(value = "select * from books use index (idx_title_nm_space_based) "
         + "where match (TITLE_NM) against (:query in BOOLEAN MODE) "
         + "order by loan_cnt desc ", nativeQuery = true)
     Page<Book> findBooksByEngBoolOrder(@Param("query") String query, Pageable pageable);
+
+
+
 
     // 제목 검색 결과가 없을 경우 재검색을 위한 쿼리
     default Page<Book> findBooksByKorMtFlexible(String query, Pageable pageable) {

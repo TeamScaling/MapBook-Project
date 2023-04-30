@@ -2,19 +2,18 @@ package com.scaling.libraryservice.mapBook.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.caching.CacheKey;
-import com.scaling.libraryservice.caching.CustomCacheable;
-import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.caching.CacheKey;
+import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+import com.scaling.libraryservice.mapBook.entity.Library;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryHasBookRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
 import com.scaling.libraryservice.mapBook.util.HaversineCalculater;
-import com.scaling.libraryservice.caching.CustomCacheManager;
-import java.util.ArrayList;
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +32,7 @@ import org.springframework.stereotype.Service;
 @Getter
 public class LibraryFindService {
 
-    private static List<LibraryDto> libraries;
+    private static List<Library> libraries;
     private final LibraryRepository libraryRepo;
     private final LibraryMetaRepository libraryMetaRepo;
     private final LibraryHasBookRepository libraryHasBookRepo;
@@ -44,7 +43,7 @@ public class LibraryFindService {
     private void init() {
 
         // DB에 담겨진 lib_info (도서관 정보)를 빈이 생성될 때, 함께 List로 가져온다.
-        libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
+        libraries = libraryRepo.findAll();
         hbSupportedArea = libraryHasBookRepo.findSupportedArea();
 
         Cache<CacheKey, List<LibraryDto>> libraryCache = Caffeine.newBuilder()
@@ -68,14 +67,23 @@ public class LibraryFindService {
 
         return isSupportedArea(userLocation) ?
             getNearByHasBookLibraries(userLocation.getIsbn(), userLocation.getAreaCd()) :
-            getNearByAllLibraries(userLocation.getAreaCd());
+            getNearByAllLibraries(userLocation);
     }
 
     // 사용자 주소 선택 방식 주변 도서관
-    public List<LibraryDto> getNearByAllLibraries(int areaCd) throws LocationException {
+    public List<LibraryDto> getNearByAllLibraries(ReqMapBookDto userLocation) throws LocationException {
+
+        return libraries.stream()
+            .filter(l -> Objects.equals(l.getAreaCd(), userLocation.getAreaCd()))
+            .map(LibraryDto::new)
+            .toList();
+    }
+
+    public List<LibraryDto> getNearByAllLibraries(Integer areaCd) throws LocationException {
 
         return libraries.stream()
             .filter(l -> Objects.equals(l.getAreaCd(), areaCd))
+            .map(LibraryDto::new)
             .toList();
     }
 
@@ -85,10 +93,14 @@ public class LibraryFindService {
 
         List<LibraryDto> result
             = libraryHasBookRepo.findHasBookLibraries(Double.parseDouble(isbn13), areaCd)
-            .stream().map(LibraryDto::new).toList();
+            .stream().map(l -> new LibraryDto(l,"Y")).toList();
 
         if (result.isEmpty()) {
-            log.info(areaCd + " 이 지역의 도서관 중 소장하는 도서관 없음");
+            log.info(areaCd + " 이 지역의 도서관 중 소장 하는 도서관 없음");
+
+            return libraries.stream().filter(l -> Objects.equals(l.getAreaCd(), areaCd))
+                .map(l -> new LibraryDto(l,"N"))
+                .toList();
         }
 
         return result;
@@ -111,7 +123,7 @@ public class LibraryFindService {
     public static LibraryDto findNearestLibraryWithCoordinate(ReqMapBookDto userLocation)
         throws LocationException {
 
-        return libraries.stream().min((l1, l2) -> {
+        return libraries.stream().map(LibraryDto::new).min((l1, l2) -> {
 
             double d1 = HaversineCalculater.calculateDistance(
                 userLocation.getLat(), userLocation.getLon(), l1.getLibLat(), l1.getLibLon());
@@ -129,14 +141,14 @@ public class LibraryFindService {
         Objects.requireNonNull(userLocation);
 
         // oneArea - '도/특별시/광역시' / twoArea - '시/군/구'
-        return libraries.stream()
+        return libraries.stream().map(LibraryDto::new)
             .filter(i -> i.getOneAreaNm().equals(userLocation.getOneArea())
                 & i.getTwoAreaNm().equals(userLocation.getTwoArea())).findFirst().orElseThrow();
     }
 
     public static List<LibraryDto> getAllLibraries() {
 
-        return new ArrayList<>(libraries);
+        return libraries.stream().map(LibraryDto::new).toList();
     }
 
     private boolean isSupportedArea(ReqMapBookDto userLocation) {

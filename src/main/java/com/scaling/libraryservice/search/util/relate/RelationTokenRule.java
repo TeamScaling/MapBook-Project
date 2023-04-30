@@ -1,11 +1,8 @@
 package com.scaling.libraryservice.search.util.relate;
 
-import com.scaling.libraryservice.search.dto.MetaDto;
-import com.scaling.libraryservice.search.dto.RecommendBookDto;
+import com.scaling.libraryservice.recommend.dto.RecommendBookDto;
 import com.scaling.libraryservice.search.dto.RelationWords;
-import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.KorTokenizer;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

@@ -1,6 +1,9 @@
 package com.scaling.libraryservice;
 
+import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
+import com.scaling.libraryservice.mapBook.controller.MapBookController;
+import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
@@ -9,6 +12,9 @@ import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -229,6 +235,30 @@ public class LearningTest {
         System.out.println();
 
         System.out.println(result);
+    }
+
+    @Test
+    public void reflection2()
+        throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        /* given */
+
+
+        Method substitute = null;
+
+        for (Method m : MapBookController.class.getMethods()){
+
+            if(m.getName().contains("getHasBookMarkers")){
+                substitute = m;
+            }
+        }
+
+        Class<?> oClazz = BExistConn.class;
+
+        Field field = BExistConn.class.getDeclaredField("apiStatus");
+        ApiObservable apiStatus = (ApiObservable) oClazz.getConstructor().newInstance();
+
+        System.out.println(apiStatus.getApiStatus().getApiUri());
+
     }
 
 
