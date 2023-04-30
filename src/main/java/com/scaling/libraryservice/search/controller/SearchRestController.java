@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.search.controller;
 
-import com.scaling.libraryservice.search.dto.RelationWords;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.dto.RespRecommend;
 import com.scaling.libraryservice.search.service.BookSearchService;
@@ -19,9 +18,6 @@ public class SearchRestController {
     private final BookSearchService searchService;
 
     private final RecommendService recommendService;
-
-  /* fixme : url "/books/author" -> "/books/search?target=author&query=남궁성"
-        사라님 메소드의 url뿐만 아니라 기존의 search 메소드도 url 변경 필요 ("/books/search?target=title&query="자바의 정석")*/
 
     // 도서 검색
     @GetMapping(value = "/books/test")

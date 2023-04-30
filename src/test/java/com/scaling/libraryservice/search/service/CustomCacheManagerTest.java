@@ -78,7 +78,7 @@ class CustomCacheManagerTest {
 
         BookCacheKey bookCacheKey = new BookCacheKey("자바",1);
 
-        var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
+        var booksDto = bookSearchService.searchBooks("자바",1,10,"title");
 
         customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
@@ -104,7 +104,7 @@ class CustomCacheManagerTest {
 
         /* when */
 
-        var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
+        var booksDto = bookSearchService.searchBooks("자바",1,10,"title");
 
         customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
@@ -126,7 +126,7 @@ class CustomCacheManagerTest {
     public void cache_terminate_caching(){
         /* given */
 
-        var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
+        var booksDto = bookSearchService.searchBooks("자바",1,10,"title");
 
         customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 
@@ -146,7 +146,7 @@ class CustomCacheManagerTest {
     public void cache_is_UsingCaching(){
         /* given */
 
-        var booksDto = bookSearchService.searchBooks2("자바",1,10,"title");
+        var booksDto = bookSearchService.searchBooks("자바",1,10,"title");
 
         customCacheManager.put(bookSearchService.getClass(), bookCacheKey,booksDto);
 

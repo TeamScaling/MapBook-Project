@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 @SpringBootTest
@@ -25,7 +26,7 @@ class BookRepositoryTest {
 
         String query = "spring boot";
 
-        Pageable pageable = bookSearchService.createPageable(1,10);
+        Pageable pageable = PageRequest.of(1, 10);
 
         query = Arrays.stream(query.split(" "))
             .map(name -> "+" + name)
@@ -46,7 +47,7 @@ class BookRepositoryTest {
         //e-mail에 꼭 필요한 알짜표현!! 3600=(A)handbook of business letter writing
 
         String query = "(가장 쉽게 배우는)볼랜드 C++ Builder 5";
-        Pageable pageable = bookSearchService.createPageable(1,10);
+        Pageable pageable = PageRequest.of(1, 10);
         
         /* when */
 
@@ -64,8 +65,7 @@ class BookRepositoryTest {
         //e-mail에 꼭 필요한 알짜표현!! 3600=(A)handbook of business letter writing
 
         String query = "퍼펙트 EJB";
-
-        Pageable pageable = bookSearchService.createPageable(1,10);
+        Pageable pageable = PageRequest.of(1, 10);
         /* when */
 
         query = Arrays.stream(query.split(" "))
