@@ -1,9 +1,10 @@
 package com.scaling.libraryservice.mapBook.controller;
 
-import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
+import com.scaling.libraryservice.apiConnection.BExistConnection;
+import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.service.CachedMapBookManager;
+import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -18,8 +19,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @RequiredArgsConstructor
 @Slf4j
 public class MapBookController {
-    private final CachedMapBookManager cachedMapBookManager;
     private final MapBookApiHandler mapBookApiHandler;
+
+    private final LibraryFindService libraryFindService;
 
     @PostConstruct
     public void init() {
@@ -27,16 +29,20 @@ public class MapBookController {
     }
 
     @GetMapping("/books/mapBook/search")
-    public String getLoanableMapBookMarkers(ModelMap model,
-        @ModelAttribute ReqMapBookDto mapBookDto) {
+    public String getMapBooks(ModelMap model,
+        @ModelAttribute ReqMapBookDto reqMapBookDto) {
 
-        mapBookDto.updateAreaCd();
+        reqMapBookDto.updateAreaCd();
 
         if (!BExistConnection.apiStatus.apiAccessible()) {
-            return getHasBookMarkers(model, mapBookDto);
+            return getHasBookMarkers(model, reqMapBookDto);
         }
 
-        List<RespMapBookDto> mapBooks = cachedMapBookManager.getMapBooks(mapBookDto);
+        List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(
+            reqMapBookDto);
+
+        List<RespMapBookDto> mapBooks = mapBookApiHandler.matchMapBooks(
+            nearbyLibraries,reqMapBookDto);
 
         model.put("mapBooks", mapBooks);
 
@@ -47,7 +53,11 @@ public class MapBookController {
     public String getHasBookMarkers(ModelMap model,
         @ModelAttribute ReqMapBookDto mapBookDto) {
 
-        List<RespMapBookDto> hasBookLibs = cachedMapBookManager.getMapBooks(mapBookDto);
+        List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(
+            mapBookDto);
+
+        List<RespMapBookDto> hasBookLibs = mapBookApiHandler.matchMapBooks(
+            nearbyLibraries,mapBookDto);
 
         model.put("hasBookLibs", hasBookLibs);
 

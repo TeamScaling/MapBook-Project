@@ -1,17 +1,24 @@
 package com.scaling.libraryservice.mapBook.util;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.mapBook.apiConnection.BExistConnection;
+import com.scaling.libraryservice.apiConnection.BExistConnection;
+import com.scaling.libraryservice.caching.CustomCacheable;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
+import com.scaling.libraryservice.caching.CacheKey;
+import com.scaling.libraryservice.caching.CustomCacheManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +31,19 @@ public class MapBookApiHandler {
 
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
+
+    private final CustomCacheManager<List<RespMapBookDto>> customCacheManager;
+
+    @PostConstruct
+    public void init() {
+
+        Cache<CacheKey, List<RespMapBookDto>> mapBookCache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(1000)
+            .build();
+
+        customCacheManager.registerCaching(mapBookCache, this.getClass());
+    }
 
     public void checkOpenApi() {
 
@@ -40,23 +60,19 @@ public class MapBookApiHandler {
         }
     }
 
-    private List<BExistConnection> getBExistConns(List<LibraryDto> libraries) {
-        return libraries.stream()
-            .map(n -> new BExistConnection(n.getLibNo())).toList();
-    }
-
-    public BExistConnection getBExist(Integer libNo) {
-
-        return new BExistConnection(libNo);
-    }
-
-
-    @Timer
+    @Timer @CustomCacheable
     public List<RespMapBookDto> matchMapBooks(List<LibraryDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(reqMapBookDto);
+
+        /*List<RespMapBookDto> cachingItem = customCacheManager.get(this.getClass(), reqMapBookDto);
+
+        if (cachingItem != null) {
+
+            return cachingItem;
+        }*/
 
         List<BExistConnection> bExistConnections = nearByLibraries.stream()
             .map(n -> new BExistConnection(n.getLibNo())).toList();
@@ -69,7 +85,15 @@ public class MapBookApiHandler {
         Map<Integer, ApiBookExistDto> bookExistMap
             = apiQueryBinder.bindBookExistMap(responseEntities);
 
-        // 대출 가능 응답 결과와 도서관 정보를 매칭하기 위한 내부 메소드.
+        var result = mappingLoanableLib(nearByLibraries,bookExistMap);
+
+       /* customCacheManager.put(this.getClass(), reqMapBookDto, result);*/
+
+        return result;
+    }
+
+    private List<RespMapBookDto> mappingLoanableLib(List<LibraryDto> nearByLibraries,
+        Map<Integer, ApiBookExistDto> bookExistMap) {
         List<RespMapBookDto> result = new ArrayList<>();
 
         for (LibraryDto l : nearByLibraries) {
@@ -82,6 +106,17 @@ public class MapBookApiHandler {
         }
 
         return result;
+
+    }
+
+    private List<BExistConnection> getBExistConns(List<LibraryDto> libraries) {
+        return libraries.stream()
+            .map(n -> new BExistConnection(n.getLibNo())).toList();
+    }
+
+    public BExistConnection getBExist(Integer libNo) {
+
+        return new BExistConnection(libNo);
     }
 
 }

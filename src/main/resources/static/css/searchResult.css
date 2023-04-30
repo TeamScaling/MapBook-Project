@@ -1,0 +1,354 @@
+
+  /* 헤더 */
+header {
+  margin: auto;
+  width: 538px;
+  background-color: white;
+  color: black;
+  padding: 20px;
+}
+
+main {
+  margin: 50px 100px 50px 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*테이블 맥스 미니멈 사이즈*/
+
+table {
+  min-width: 700px;
+  max-width: 1000px;
+}
+
+div[id="book-info-box"] {
+  padding: 10px;
+}
+
+/*대출 가능한 주변도서관 버튼*/
+
+button[type="submit"] {
+  height: 40px;
+  width: 40px; /* 변경된 부분 */
+  border: none;
+  border-radius: 0 5px 5px 0;
+  background-color: midnightblue;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 검색 버튼에 호버 효과 추가 */
+button[type="submit"]:hover {
+  background-color: steelblue;
+}
+
+input[type="text"] {
+  width: 350px;
+  height: 30px;
+  padding: 5px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  background-color: #f2f2f2;
+}
+
+/* select 요소 안의 option 태그에 스타일 적용 */
+select {
+  border: #ffffff;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+
+a {
+  margin: 5px;
+}
+
+/*책 정보 보여주는 테이블*/
+
+#book-info-column {
+  border-collapse: collapse;
+  /*background: cornflowerblue;*/
+  min-width: 800px;
+  max-width: 1200px;
+}
+
+/*td : 컬럼 내용   */
+
+#book-info-column td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left; /* left에서 center로 수정 */
+
+}
+
+/* th: 컬럼 제목 부분 */
+
+th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+}
+
+#book-info-column tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+
+/*마우스 올렸을 때 컬럼 색 변경*/
+/*#book-info-column tr:hover {*/
+/*  background-color: cadetblue;*/
+/*  border-color: white;*/
+/*}*/
+
+#book-info-column tr:hover {
+  background-color: lightblue;
+  border-color: white;
+}
+
+#book-info-column tr:hover td {
+  color: black;
+}
+
+/*복사버튼 사이즈*/
+
+.copy-btn {
+  width: 40px;
+  max-width: 100px;
+  text-align: center;
+  font-size: 13px;
+  cursor: pointer; /* 클릭 가능한 요소로 변경 */
+
+}
+
+
+/*번호,제목,이미지*/
+
+.seqId-col {
+  width: 50px;
+  max-width: 200px;
+  background: crimson;
+  text-align: center;
+
+}
+
+.title-col {
+  width: 150px;
+  max-width: 150px;
+  text-align: center;
+
+}
+
+.content-col {
+  width: 300px;
+  max-width: 300px;
+  text-align: center;
+
+}
+
+/*책이미지 들어가는 곳*/
+.book-image {
+  max-width: 80px;
+  max-height: 120px;
+  display: block;
+  margin: 0 auto;
+}
+
+
+.loan-check-btn {
+  width: 60px;
+  max-width: 100px;
+  text-align: center;
+
+}
+
+.book-table {
+  width: 100%;
+  max-width: 700px;
+}
+
+/*책 이미지*/
+
+.book-image {
+  width: 100px;
+  /*height: 150px;*/
+  vertical-align: top;
+}
+
+/*.book-info {*/
+/*  width: calc(100% - 150px);*/
+/*  height: 150px;*/
+/*}*/
+
+/*.book-info td:first-child {*/
+/*  width: 50px;*/
+/*}*/
+
+/*.book-info td:nth-child(2),*/
+/*.book-info td:nth-child(3) {*/
+/*  width: 300px;*/
+/*}*/
+
+/*.book-info td:last-child {*/
+/*  width: 50px;*/
+/*}*/
+
+
+/*페이지 처리*/
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.pages {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pages li {
+  margin: 0 5px;
+}
+
+.pages li a {
+  color: black;
+  text-decoration: none;
+}
+
+.page-item.current .page-link {
+  background-color: steelblue;
+}
+
+/*검색박스*/
+
+.search-box {
+  width: 540px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+  column-gap: 10px;
+}
+
+.related-box {
+  width: 540px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+  column-gap: 10px;
+}
+
+.recommend-box{
+  width: 540px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding-top: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+  column-gap: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-link {
+  padding: 0.5rem;
+  margin: 0 0.25rem;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.page-link:hover,
+.page-link:focus {
+  background-color: #eee;
+}
+
+.page-item.current .page-link {
+  background-color: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.page-item.disabled .page-link {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.prev,
+.next {
+  margin: 0 0.5rem;
+}
+
+.prev span,
+.next span {
+  display: inline-block;
+  margin-right: 0.25rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pagination li {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #333;
+}
+
+/*홈버튼*/
+.home-button {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  margin-top: -10px;
+  vertical-align: middle;
+  border: none;
+  background-color: transparent;
+}
+
+/*.pagination .current a {*/
+/*  background-color: #007bff;*/
+/*  color: #fff;*/
+/*  border-color: #007bff;*/
+/*}*/

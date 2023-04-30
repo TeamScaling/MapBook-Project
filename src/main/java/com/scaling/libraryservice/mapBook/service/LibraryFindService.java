@@ -1,6 +1,11 @@
 package com.scaling.libraryservice.mapBook.service;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.caching.CacheKey;
+import com.scaling.libraryservice.caching.CustomCacheable;
+import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
@@ -8,10 +13,12 @@ import com.scaling.libraryservice.mapBook.repository.LibraryHasBookRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryMetaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
 import com.scaling.libraryservice.mapBook.util.HaversineCalculater;
+import com.scaling.libraryservice.caching.CustomCacheManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +37,8 @@ public class LibraryFindService {
     private final LibraryRepository libraryRepo;
     private final LibraryMetaRepository libraryMetaRepo;
     private final LibraryHasBookRepository libraryHasBookRepo;
-
     private static List<Integer> hbSupportedArea;
+    private final CustomCacheManager<List<LibraryDto>> cacheManager;
 
     @PostConstruct
     private void init() {
@@ -39,6 +46,13 @@ public class LibraryFindService {
         // DB에 담겨진 lib_info (도서관 정보)를 빈이 생성될 때, 함께 List로 가져온다.
         libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
         hbSupportedArea = libraryHasBookRepo.findSupportedArea();
+
+        Cache<CacheKey, List<LibraryDto>> libraryCache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(1000)
+            .build();
+
+        cacheManager.registerCaching(libraryCache,this.getClass());
     }
 
     // 사용자의 위치 정보 또는 주소 선택 정보에 따라 사용자 주변의 도서관을 반환 한다.
@@ -65,8 +79,9 @@ public class LibraryFindService {
             .toList();
     }
 
-
+    @CustomCacheable
     List<LibraryDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
+
 
         List<LibraryDto> result
             = libraryHasBookRepo.findHasBookLibraries(Double.parseDouble(isbn13), areaCd)

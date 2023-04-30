@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.apiConnection;
+package com.scaling.libraryservice.apiConnection;
 
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;

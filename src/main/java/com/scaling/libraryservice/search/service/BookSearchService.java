@@ -1,6 +1,12 @@
 package com.scaling.libraryservice.search.service;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.caching.CacheKey;
+import com.scaling.libraryservice.caching.CustomCacheManager;
+import com.scaling.libraryservice.caching.CustomCacheable;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
@@ -14,7 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -29,12 +38,27 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j @Timer @Getter
 public class BookSearchService {
 
     private final BookRepository bookRepository;
 
     private final TitleTokenizer titleTokenizer;
+
+    private final CustomCacheManager<RespBooksDto> cacheManager;
+
+    private CacheKey cacheKey;
+
+    @PostConstruct
+    private void init() {
+
+        Cache<CacheKey, RespBooksDto> bookCache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(1000)
+            .build();
+
+        cacheManager.registerCaching(bookCache,this.getClass());
+    }
 
     // 도서 검색
     @Timer
@@ -164,25 +188,25 @@ public class BookSearchService {
         return input.matches(pattern);
     }
 
-    @Timer
+    @Timer @CustomCacheable
     public RespBooksDto searchBooks2(String query, int page, int size, String target) {
 
         Pageable pageable = createPageable(page, size);
-
         Page<Book> books;
         MetaDto meta;
+        RespBooksDto result;
 
         if (isEnglish(query)) {
 
             log.info("english title : [{}]", query);
 
-            return queryResolve(query, page, size, target, false);
+            books = queryResolve(query, page, size, target, false);
 
         } else if (isKorean(query)) {
 
             log.info("korean title : [{}]", query);
 
-            return queryResolve(query, page, size, target, true);
+            books = queryResolve(query, page, size, target, true);
         } else {
             log.info("korean & english title : [{}]", query);
             books = engKorResolve(query, pageable);
@@ -190,24 +214,24 @@ public class BookSearchService {
 
         meta = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
 
-        return new RespBooksDto(meta
-            , books.stream().map(BookDto::new).toList());
+        result = new RespBooksDto(meta,books.stream().map(BookDto::new).toList());
+
+
+        return result;
     }
 
-    private RespBooksDto queryResolve(String query, int page, int size, String target,
+    private Page<Book> queryResolve(String query, int page, int size, String target,
         boolean isKor) {
         Pageable pageable = createPageable(page, size);
-
-        Page<Book> books;
 
         if (query.split(" ").length == 1) {
 
             if (isKor) {
                 log.info("Single Kor query : [{}]", query);
-                books = bookRepository.findBooksByKorNatural(query, pageable);
+                return bookRepository.findBooksByKorNatural(query, pageable);
             } else {
                 log.info("Single Eng query : [{}]", query);
-                books = bookRepository.findBooksByEngNatural(query, pageable);
+                return bookRepository.findBooksByEngNatural(query, pageable);
             }
 
         } else {
@@ -215,27 +239,12 @@ public class BookSearchService {
             if (isKor) {
                 query = splitTarget(query);
                 log.info("Multi Kor query : [{}]", query);
-                books = bookRepository.findBooksByKorMtFlexible(query, pageable);
+                return bookRepository.findBooksByKorMtFlexible(query, pageable);
             } else {
                 query = splitTarget(query);
                 log.info("Multi Eng query : [{}]", query);
-                books = bookRepository.findBooksByEngMtFlexible(query, pageable);
+                return bookRepository.findBooksByEngMtFlexible(query, pageable);
             }
-        }
-
-        List<BookDto> document;
-
-        if (books != null) {
-            document = books.getContent().stream().map(BookDto::new).toList();
-            MetaDto meta
-                = new MetaDto(books.getTotalPages(), books.getTotalElements(), page, size);
-
-            return new RespBooksDto(meta, document);
-        } else {
-
-            return new RespBooksDto(
-                new MetaDto(),
-                new ArrayList<>());
         }
     }
 
