@@ -1,7 +1,5 @@
 package com.scaling.libraryservice.search.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,29 +12,8 @@ class BookSearchServiceTest {
 
     @Test
     public void load(){
-        /* given */
-
-        var result = bookSearchService.parsedQuery("window api정복");
-
-        /* when */
-
-        /* then */
-
-        System.out.println(bookSearchService.isEnglish("window"));
     }
 
-    @Test
-    public void is_korean(){
-        /* given */
-
-        var result = bookSearchService.isKorean("java 정석");
-
-        /* when */
-
-        /* then */
-        System.out.println(result);
-        assertEquals(false,result);
-    }
 
     @Test
     public void only_eng_title(){
@@ -46,7 +23,7 @@ class BookSearchServiceTest {
 
         /* when */
 
-        var result = bookSearchService.searchBooks2(title,1,10,"title");
+        var result = bookSearchService.searchBooks(title,1,10,"title");
 
         /* then */
 
@@ -61,7 +38,7 @@ class BookSearchServiceTest {
 
         /* when */
 
-        var result = bookSearchService.searchBooks2(title,1,10,"title");
+        var result = bookSearchService.searchBooks(title,1,10,"title");
 
         /* then */
 
@@ -76,7 +53,7 @@ class BookSearchServiceTest {
 
         /* when */
 
-        var result = bookSearchService.searchBooks2(title,1,10,"title");
+        var result = bookSearchService.searchBooks(title,1,10,"title");
 
         /* then */
 
@@ -91,7 +68,7 @@ class BookSearchServiceTest {
 
         /* when */
 
-        var result = bookSearchService.searchBooks2(title,1,10,"title");
+        var result = bookSearchService.searchBooks(title,1,10,"title");
 
         /* then */
 

@@ -2,7 +2,7 @@ package com.scaling.libraryservice;
 
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
-import com.scaling.libraryservice.search.service.BookSearchService;
+import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -10,7 +10,6 @@ import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,9 +120,9 @@ public class LearningTest {
             for (CoreMap token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
                 String word = token.get(CoreAnnotations.TextAnnotation.class);
 
-                if(BookSearchService.isEnglish(word)){
+                if(TitleAnalyzer.isEnglish(word)){
                     System.out.println("eng : "+word);
-                }else if(BookSearchService.isKorean(word)){
+                }else if(TitleAnalyzer.isKorean(word)){
                     System.out.println("kor : "+word);
                 }
 
@@ -136,7 +135,7 @@ public class LearningTest {
     @Test
     public void isEnglish(){
         /* given */
-        var result = BookSearchService.isEnglish("mysql 8.0");
+        var result = TitleAnalyzer.isEnglish("mysql 8.0");
         /* when */
         System.out.println(result);
         /* then */

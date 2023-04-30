@@ -28,12 +28,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query(value = "SELECT * FROM books "
         + "WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     Page<Book> findBooksByAuthor(@Param("query") String query, Pageable pageable);
-
-    @Query(value = "SELECT * FROM books WHERE MATCH(ENG_TITLE_NM) AGAINST (:query IN NATURAL LANGUAGE MODE)", nativeQuery = true)
-    Page<Book> findBooksByEnglishTitleNormal(String query, Pageable pageable);
-
-
-    // spring boot 입력시 검색 가능 / springBoot는 검색 안됨.
+    
     @Query(value = "select * from books "
         + "use index (idx_title_nm_space_based) "
         + "where match (TITLE_NM) against (:query in BOOLEAN MODE)", nativeQuery = true)
@@ -107,7 +102,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         return books;
     }
 
-    default Page<Book> findBooksBySgKorFlexible(String query, Pageable pageable) {
+    default Page<Book> findBooksByKorSgFlexible(String query, Pageable pageable) {
         Page<Book> books = findBooksByKorTitleBool(query, pageable);
         if (books.getContent().isEmpty()) {
             books = findBooksByKorNatural(query, pageable);
@@ -115,7 +110,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         return books;
     }
 
-    default Page<Book> findBooksBySgEngFlexible(String query, Pageable pageable) {
+    default Page<Book> findBooksByEngSgFlexible(String query, Pageable pageable) {
         Page<Book> books = findBooksByEngBoolOrder(query, pageable);
         if (books.getContent().isEmpty()) {
             books = findBooksByEngNatural(query, pageable);
