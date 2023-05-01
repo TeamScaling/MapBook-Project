@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import java.util.Objects;
@@ -8,6 +9,11 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
 
+/**
+ * 사용자 주변 도서관 중 대출 가능 도서관을 찾기 위한 Http 요청 DTO이다.
+ * {@link CacheKey}를 구현하여, {@link CustomCacheManager}
+ * 에서 캐싱 된 데이터를 찾기 위한 Key로 사용 될 수 있다.
+ */
 @Getter @Setter @ToString
 public class ReqMapBookDto implements CacheKey {
 
@@ -64,6 +70,9 @@ public class ReqMapBookDto implements CacheKey {
         return Objects.hash(isbn, areaCd);
     }
 
+    /**
+     *  사용자 요청에서 위/경도 데이터를 지역코드로 변환 한다.
+     */
     public void updateAreaCd(){
 
         this.areaCd = LibraryFindService.outPutAreaCd(this);

@@ -102,6 +102,7 @@ class LibraryFindServiceTest {
 
         var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699,null,null);
 
+        System.out.println(Double.parseDouble(isbn13));
         /* when */
 
         var result1= libraryFindService.getNearByHasBookLibraries(isbn13,areaCd);
@@ -109,8 +110,7 @@ class LibraryFindServiceTest {
 
         /* then */
 
-        System.out.println(result1.size());
-        System.out.println(result2.size());
+        System.out.println(result1);
     }
 
 }

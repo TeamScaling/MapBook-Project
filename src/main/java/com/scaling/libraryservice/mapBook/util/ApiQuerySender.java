@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.mapBook.util;
 
-import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
+import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
@@ -34,27 +34,40 @@ public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
 
+    /**
+     * 대상 Api에 대한 연결 상태를 확인 한다
+     *
+     * @param apiStatus 대상이 되는 Api에 대한 정보를 담는 객체
+     * @return Api에 연결이 정상이면 true, 연결 과정에서 에러가 있으면 false
+     */
     public static boolean checkConnection(ApiStatus apiStatus) {
 
-        try{
-            ResponseEntity<String> resp = new RestTemplate().exchange(
+        ResponseEntity<String> resp = null;
+        try {
+            resp = new RestTemplate().exchange(
                 apiStatus.getApiUri(),
                 HttpMethod.OPTIONS,
                 HttpEntity.EMPTY,
                 String.class);
-        }catch (RestClientException e){
+        } catch (RestClientException e) {
             log.error(e.toString());
-                return false;
+            return false;
         }
 
-        return true;
+        return resp.getStatusCode().is2xxSuccessful();
     }
 
+
+    /**
+     * 대상 Api에 요청을 보내 원하는 응답 데이터를 받는다.
+     *
+     * @param configUriBuilder Api에 대한 요청 param 값들을 담고 있는 객체
+     * @param target           Api에 요청 하고자 하는 데이터 식별 값
+     * @return Api 응답 데이터를 담는 ResponseEntity
+     */
     @Timer
-    // OpenAPI에 단일 요청을 보낸다.
     public ResponseEntity<String> singleQueryJson(ConfigureUriBuilder configUriBuilder,
-        String target)
-        throws RestClientException {
+        String target) {
 
         Objects.requireNonNull(configUriBuilder);
 
@@ -79,16 +92,24 @@ public class ApiQuerySender {
 
                 CircuitBreaker.receiveError(apiObserver, e);
             }
-
         }
 
         return resp;
     }
 
     // OpenApi에 대한 단일 요청 성능을 높이기 위한 멀티 쓰레드 병렬 요청
+
+    /**
+     * Api에 대한 요청을 병렬 처리 한다.
+     *
+     * @param uriBuilders Api에 대한 요청 param 값들을 담고 있는 객체
+     * @param target      Api에 요청 하고자 하는 데이터 식별 값
+     * @param nThreads    병렬 처리를 수행할 쓰레드 갯수
+     * @return Api 응답 데이터 ResponseEntity들을 담은 List
+     */
     @Timer
     public List<ResponseEntity<String>> multiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
-        String target, int nThreads) throws RestClientException {
+        String target, int nThreads) {
 
         Objects.requireNonNull(uriBuilders);
 

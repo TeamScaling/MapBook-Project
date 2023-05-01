@@ -4,11 +4,24 @@ import com.scaling.libraryservice.commons.timer.Timer;
 import lombok.RequiredArgsConstructor;
 
 // 사용자의 위도/경도를 가지고 사용자와 가장 가까운 도서관을 찾기 위한 클래스
+
+/**
+ *  위도/경도 데이터 가지고 두 위치의 거리를 Haversine 공식을 이용해 계산 한다.
+ */
 @RequiredArgsConstructor
 public class HaversineCalculater {
 
+
+    /**
+     * 입력 받은 두 위치의 위/경도 데이터를 통해 두 위치 간의 거리를 반환 한다.
+     * 거리 계산에는 Haversine 공식을 사용 한다.
+     * @param lat1 1번 위치의 위도 double 값
+     * @param lon1 1번 위치의 경도 double 값
+     * @param lat2 2번 위치의 위도 double 값
+     * @param lon2 2번 위치의 경도 double 값
+     * @return 두 위치 간의 거리
+     */
     @Timer
-    // 입력 받은 위/경도 값을 가지고, haversine 공식을 통해 거리를 계산 한다.
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int earthRadiusKm = 6371;
         double latDiff = Math.toRadians(lat2 - lat1);

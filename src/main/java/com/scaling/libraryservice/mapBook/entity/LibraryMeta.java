@@ -7,6 +7,10 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.ToString;
 
+
+/**
+ *  전국 도서관 통계 데이터. 지역별로 도서관 분포를 보여준다.
+ */
 @Getter
 @ToString
 @Entity

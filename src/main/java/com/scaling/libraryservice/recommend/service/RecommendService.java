@@ -13,7 +13,6 @@ import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -49,54 +48,68 @@ public class RecommendService {
         return recommendRule.recommendBooks(searchResult);
     }
 
-    @CustomCacheable
+    /**
+     * 검색어를 가지고 그에 맞는 추천 도서 제목 목록을 반환 한다.
+     *
+     * @param query 추천 받고자 하는 검색어 문자열
+     * @return 추천 도서 제목 문자열을 담고 있는 List
+     */
     @Timer
+    @CustomCacheable
     public List<String> getRecommendBook(String query) {
 
-        List<BookDto> result = pickSelectQuery(query).stream().map(BookDto::new).toList();
-
-        return result.stream().map(r -> getRelatedTitle(r.getTitle())).toList();
+        return pickSelectQuery(query, 5).stream().map(r -> getRelatedTitle(r.getTitle())).toList();
     }
 
-    public List<Book> pickSelectQuery(String query) {
+    /**
+     * 추천 도서 기반이 되는 DB에 검색어에 따라 좋은 성능과 최적의 결과를 얻을 수 있는 쿼리를 선택 하고, 추천 도서 데이터를 반환 한다.
+     *
+     * @param query 추천 받고자 하는 검색어
+     * @param size  추천 도서를 어느 범위까지 보여 줄지에 대한 값
+     * @return 선택된 추천 도서 DTO들을 담은 List
+     */
+    public List<BookDto> pickSelectQuery(String query, int size) {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
         TitleType type = titleQuery.getTitleType();
 
-        int size = 5;
-
         switch (type) {
 
             case KOR_SG -> {
-                return recommendRepo.findBooksByKorBoolOrder(titleQuery.getKorToken(), size);
+                return recommendRepo.findBooksByKorBoolOrder(titleQuery.getKorToken(), size)
+                    .stream().map(BookDto::new).toList();
             }
 
             case KOR_MT -> {
-                return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size);
+                return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size)
+                    .stream().map(BookDto::new).toList();
             }
 
             case ENG_SG -> {
-                return recommendRepo.findBooksByEngBoolOrder(titleQuery.getEngToken(), size);
+                return recommendRepo.findBooksByEngBoolOrder(titleQuery.getEngToken(), size)
+                    .stream().map(BookDto::new).toList();
             }
             case ENG_MT -> {
-                return recommendRepo.findBooksByEngMtOrderFlexible(titleQuery.getEngToken(), size);
+                return recommendRepo.findBooksByEngMtOrderFlexible(titleQuery.getEngToken(), size)
+                    .stream().map(BookDto::new).toList();
             }
             case KOR_ENG -> {
-                return recommendRepo.findBooksByKorNaturalOrder(titleQuery.getEngKorToken(), size);
+                return recommendRepo.findBooksByKorNaturalOrder(titleQuery.getEngKorToken(), size)
+                    .stream().map(BookDto::new).toList();
             }
             case ENG_KOR_SG -> {
                 return recommendRepo.findBooksByEngKorBoolOrder(
                     titleQuery.getEngToken(),
                     titleQuery.getKorToken(),
-                    size);
+                    size).stream().map(BookDto::new).toList();
             }
 
             case ENG_KOR_MT -> {
                 return recommendRepo.findBooksByEngKorNaturalOrder(
                     titleQuery.getEngToken(),
                     titleQuery.getKorToken(),
-                    size);
+                    size).stream().map(BookDto::new).toList();
             }
         }
 

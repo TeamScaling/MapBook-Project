@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.json.JSONObject;
 
+/**
+ *  인기 대출 도서 LoanItem Entity에 대한 DTO
+ */
 @Getter
 @RequiredArgsConstructor
 @ToString

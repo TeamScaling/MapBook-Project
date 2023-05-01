@@ -9,6 +9,9 @@ import javax.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 인기 도서 테이블과 맵핑 된다.
+ */
 @Entity
 @Setter @Getter
 public class LoanItem extends TimeStamp {
