@@ -5,14 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
-import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
-import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
+import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
 import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +40,7 @@ class ApiQuerySenderTest {
         RestTemplate restTemplate = new RestTemplate();
 
         mockServer = MockRestServiceServer.bindTo(restTemplateForMock).build();
-        apiQuerySender = new ApiQuerySender(restTemplate,new CircuitBreaker());
+        apiQuerySender = new ApiQuerySender(restTemplate);
 
         libraryDto = new LibraryDto(141053);
 
@@ -59,7 +57,7 @@ class ApiQuerySenderTest {
 
         /* when */
 
-        apiQuerySender = new ApiQuerySender(restTemplateForMock,new CircuitBreaker());
+        apiQuerySender = new ApiQuerySender(restTemplateForMock);
 
         apiQuerySender.singleQueryJson(new MockApiConn(),target);
 
@@ -86,7 +84,7 @@ class ApiQuerySenderTest {
 
         MockApiConn mockBuilder = new MockApiConn();
 
-        apiQuerySender = new ApiQuerySender(new RestTemplate(factory),new CircuitBreaker());
+        apiQuerySender = new ApiQuerySender(new RestTemplate(factory));
 
 
         apiQuerySender.singleQueryJson(mockBuilder,target);
@@ -163,7 +161,19 @@ class ApiQuerySenderTest {
     @Test
     void is_Access_api() {
 
-        System.out.println(apiQuerySender.checkConnection("http://data4library.kr/api/bookExist"));
+        mockServer.expect(MockRestRequestMatchers.requestTo("http://mockServer.kr/api/bookExist?format=json"))
+            .andRespond(MockRestResponseCreators.withServerError());
+
+        MockApiConn.setApiUrl("http://mockServer.kr/api/bookExist");
+
+        /* when */
+
+        apiQuerySender = new ApiQuerySender(restTemplateForMock);
+        apiQuerySender.checkConnection(new MockApiConn().getApiStatus());
+
+
+
+        mockServer.verify();
 
     }
 }

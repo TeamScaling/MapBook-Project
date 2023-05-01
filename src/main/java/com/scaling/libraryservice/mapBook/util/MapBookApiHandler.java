@@ -2,6 +2,7 @@ package com.scaling.libraryservice.mapBook.util;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
@@ -54,7 +55,7 @@ public class MapBookApiHandler {
             = apiQuerySender.singleQueryJson(bExistConn, "9788089365210");
 
         if (apiQueryBinder.bindBookExist(connection) == null) {
-            status.closeAccess();
+            CircuitBreaker.closeObserver(status);
         } else {
             status.openAccess();
         }
@@ -103,16 +104,6 @@ public class MapBookApiHandler {
 
         return result;
 
-    }
-
-    private List<BExistConn> getBExistConns(List<LibraryDto> libraries) {
-        return libraries.stream()
-            .map(n -> new BExistConn(n.getLibNo())).toList();
-    }
-
-    public BExistConn getBExist(Integer libNo) {
-
-        return new BExistConn(libNo);
     }
 
 }

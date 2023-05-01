@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
-import com.scaling.libraryservice.mapBook.domain.ApiObservable;
+import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,9 +39,9 @@ public class CircuitBreakerAspect<T> {
             }
         }
 
-        ApiObservable apiObservable = (ApiObservable) oClazz.getConstructor().newInstance();
+        ApiObserver apiObserver = (ApiObserver) oClazz.getConstructor().newInstance();
 
-        if (!apiObservable.getApiStatus().apiAccessible() & substitute != null) {
+        if (!apiObserver.getApiStatus().apiAccessible() & substitute != null) {
             return substitute.invoke(joinPoint.getTarget(), joinPoint.getArgs());
         }
 

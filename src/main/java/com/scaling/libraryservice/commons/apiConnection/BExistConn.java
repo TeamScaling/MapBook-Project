@@ -1,11 +1,11 @@
 package com.scaling.libraryservice.commons.apiConnection;
 
-import com.scaling.libraryservice.mapBook.domain.ApiObservable;
+import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class BExistConn implements ConfigureUriBuilder, ApiObservable {
+public class BExistConn implements ConfigureUriBuilder, ApiObserver {
 
     private Integer libNo;
     private static final String API_URL = "http://data4library.kr/api/bookExist";
