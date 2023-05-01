@@ -5,6 +5,9 @@ import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * 도서관 책 보유 정보를 확인하는 API와 연결하는 클래스입니다.
+ */
 public class BExistConn implements ConfigureUriBuilder, ApiObserver {
 
     private Integer libNo;
@@ -23,6 +26,12 @@ public class BExistConn implements ConfigureUriBuilder, ApiObserver {
         this.libNo = libNo;
     }
 
+    /**
+     * 주어진 대상 도서에 대한 도서관 책 보유 정보 API URI를 구성합니다.
+     *
+     * @param target 확인하려는 도서의 ISBN
+     * @return 구성된 URI 정보를 담고 있는 {@link UriComponentsBuilder} 객체
+     */
     @Override
     public UriComponentsBuilder configUriBuilder(String target) {
 
@@ -40,6 +49,11 @@ public class BExistConn implements ConfigureUriBuilder, ApiObserver {
             .queryParam("libCode", String.valueOf(this.libNo));
     }
 
+    /**
+     * API의 상태를 반환합니다.
+     *
+     * @return API 상태 객체
+     */
     @Override
     public  ApiStatus getApiStatus() {
         return apiStatus;

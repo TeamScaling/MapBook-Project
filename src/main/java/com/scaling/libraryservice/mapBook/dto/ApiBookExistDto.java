@@ -5,7 +5,7 @@ import lombok.ToString;
 import org.json.JSONObject;
 
 /**
- *  OpenAPI (대출 가능 도서) 응답 데이터를 담는다.
+ *  OpenAPI (대출 가능 도서) 응답 데이터를 담는 클래스
  */
 @Getter @ToString
 public class ApiBookExistDto {

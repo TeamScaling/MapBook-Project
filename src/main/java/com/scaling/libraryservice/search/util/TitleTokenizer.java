@@ -7,12 +7,21 @@ import kr.co.shineware.nlp.komoran.model.Token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * 한글 제목을 토크화 하는 클래스입니다.
+ */
 @Component
 @RequiredArgsConstructor
 public class TitleTokenizer {
 
     private final Komoran komoran;
 
+    /**
+     * 주어진 한글 제목을 토큰화하여 명사만 추출합니다.
+     *
+     * @param target 토큰화하고자 하는 한글 제목
+     * @return 추출된 명사가 담긴 List
+     */
     public List<String> tokenize(String target){
 
         KomoranResult analyzeResultList = komoran.analyze(target);

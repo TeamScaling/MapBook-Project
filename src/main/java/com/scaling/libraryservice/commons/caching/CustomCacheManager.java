@@ -9,6 +9,12 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * {@link CustomCacheManager}는 여러 개의 캐시 인스턴스를 관리하고 캐시의 라이프사이클을 조절합니다.
+ * 이 클래스는 캐시 객체를 저장하고, 캐시에 데이터를 추가하거나 가져오는 기능을 제공합니다.
+ *
+ * @param <T> 캐시에서 저장할 데이터 유형
+ */
 @Slf4j @Component
 public class CustomCacheManager<T> {
 

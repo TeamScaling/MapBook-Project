@@ -13,7 +13,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
 /**
- * Api 장애 발생 시, 기존의 Api를 이용한 서비스 대신 대체 가능한 서비스로 대체하기 위한 AOP
+ * Api 장애 발생 시, 기존의 Api를 이용한 서비스 대신 대체 가능한 서비스로 대체하기 위한 사용자 정의 AOP 클래스 입니다.
  */
 
 @Aspect
@@ -22,13 +22,13 @@ import org.springframework.stereotype.Component;
 public class CircuitBreakerAspect {
 
     /**
-     * Annotation 방식으로 @Substitutable가 붙은 대상을 target으로 선정 한다.
+     * Annotation 방식으로 @Substitutable가 붙은 대상을 target으로 선정 합니다.
      */
     @Pointcut("@annotation(com.scaling.libraryservice.commons.circuitBreaker.Substitutable)")
     public void substitutablePointcut() {}
 
     /**
-     * 타겟이 되는 대상에 대해 API 연결 상태를 확인 후, 장애 땐 다른 서비스로 우회 한다.
+     * 타겟이 되는 대상에 대해 API 연결 상태를 확인 후, 장애 땐 다른 서비스로 우회 합니다.
      * @param joinPoint 기존에 정상적으로 실행되던 기존 객체의 메소드
      * @return API 연결 정상일 경우엔 기존의 서비스 결과 값 반환, 연결 장애일 경우엔 대체 서비스 결과 값 반환
      * @throws Throwable

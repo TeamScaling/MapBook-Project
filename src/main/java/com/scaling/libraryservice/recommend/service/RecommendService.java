@@ -20,6 +20,13 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * 검색어를 기반으로 도서 추천 서비스를 제공하는 클래스 입니다.
+ * 입력된 검색어를 분석하여 추천 알고리즘을 적용하고, 추천된 도서를 DB에서 조회합니다.
+ * 조회된 도서 제목은 불용어 제거를 거쳐 결과를 반환합니다.
+ *
+ * 추천된 도서 정보는 캐시를 사용하여 성능을 향상시킵니다.
+ */
 @Component
 @RequiredArgsConstructor
 public class RecommendService {
@@ -49,7 +56,8 @@ public class RecommendService {
     }
 
     /**
-     * 검색어를 가지고 그에 맞는 추천 도서 제목 목록을 반환 한다.
+     * 검색어를 입력받아 해당하는 추천 도서 제목 목록을 반환합니다.
+     * 결과는 불용어를 제거한 형태로 반환됩니다.
      *
      * @param query 추천 받고자 하는 검색어 문자열
      * @return 추천 도서 제목 문자열을 담고 있는 List
@@ -58,12 +66,11 @@ public class RecommendService {
     @CustomCacheable
     public List<String> getRecommendBook(String query) {
 
-        return pickSelectQuery(query, 5).stream().map(r -> getRelatedTitle(r.getTitle())).toList();
+        return pickSelectQuery(query, 5).stream().map(r -> TrimTitleResult(r.getTitle())).toList();
     }
 
     /**
-     * 추천 도서 기반이 되는 DB에 검색어에 따라 좋은 성능과 최적의 결과를 얻을 수 있는 쿼리를 선택 하고, 추천 도서 데이터를 반환 한다.
-     *
+     * 검색어를 분석하여 추천 도서를 조회할 때 사용할 최적의 쿼리를 선택하고, 추천 도서 데이터를 반환합니다.
      * @param query 추천 받고자 하는 검색어
      * @param size  추천 도서를 어느 범위까지 보여 줄지에 대한 값
      * @return 선택된 추천 도서 DTO들을 담은 List
@@ -116,7 +123,12 @@ public class RecommendService {
         return null;
     }
 
-    private String getRelatedTitle(String title) {
+    /** 도서 제목에서 불필요한 불용어를 제거하여 일정한 형태로 반환합니다.
+     *
+     * @param title 제거하고자 하는 도서 제목 문자열
+     * @return 불용어가 제거된 도서 제목 문자열
+     */
+    private String TrimTitleResult(String title) {
         String[] titleParts = title.split(":");
         if (titleParts.length > 1) {
             String titlePrefix = titleParts[0];

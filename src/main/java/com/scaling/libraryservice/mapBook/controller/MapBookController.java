@@ -32,7 +32,7 @@ public class MapBookController {
 
 
     /**
-     * 사용자의 요청에 맞는 대출 가능 도서관 마커 데이터를 model에 담아 view에 전달 한다.
+     * 사용자의 요청에 맞는 대출 가능 도서관 마커 데이터를 model에 담아 view에 전달 합니다
      *
      * @param model View에 전달 할 marker 데이터를 담는 Model 객체
      * @param reqMapBookDto 요청 받은 도서와 사용자의 위치 정보가 담겨 있는 Dto
@@ -55,7 +55,7 @@ public class MapBookController {
     }
 
     /**
-     * Circuit breaker 판단에 의해 필요시 getMapBooks method 대신 호출 된다.
+     * Circuit breaker 판단에 의해 필요시 getMapBooks method 대신 호출 합니다
      * @param model View에 전달 할 소장 도서관 마커 데이터를 담는 Model 객체
      * @param reqMapBookDto getMapBooks moethod에게 전달 받은 사용자 요청 데이터가 담긴 Dto
      * @return Model을 전달 받고 View를 구성 할 html 파일 이름

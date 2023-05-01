@@ -26,7 +26,7 @@ public class LibraryHasBook {
     private Long id;
 
     @Column(name = "ISBN")
-    private Double isbn13;
+    private String isbn13;
 
     @Column(name = "LOAN_CNT")
     private Integer loanCnt;

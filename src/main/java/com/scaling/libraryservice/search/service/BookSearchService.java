@@ -25,7 +25,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
+/**
+ * 도서 검색 기능을 제공하는 서비스 클래스입니다.
+ * 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -48,6 +51,15 @@ public class BookSearchService {
         cacheManager.registerCaching(bookCache, this.getClass());
     }
 
+    /**
+     * 입력된 검색어를 이용하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
+     *
+     * @param query    검색어
+     * @param page     검색 결과 페이지 번호
+     * @param size     페이지 당 반환할 도서 수
+     * @param target   검색 대상 (기본값: "title")
+     * @return 검색 결과를 담은 RespBooksDto 객체
+     */
     @Timer
     @CustomCacheable
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
@@ -64,6 +76,13 @@ public class BookSearchService {
             books.stream().map(BookDto::new).toList());
     }
 
+    /**
+     * 검색 대상(target)에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
+     *
+     * @param query    검색어
+     * @param pageable 페이지 관련 설정을 담은 Pageable 객체
+     * @return 검색 결과를 담은 Page<Book> 객체
+     */
     public Page<Book> pickSelectQuery(String query, Pageable pageable) {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
@@ -106,7 +125,14 @@ public class BookSearchService {
     }
 
 
-    // target에 따라 쿼리 선택하여 동적으로 변동
+    /**
+     * 검색 대상(target)에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
+     *
+     * @param query    검색어
+     * @param pageable 페이지 관련 설정을 담은 Pageable 객체
+     * @param target   검색 대상 (기본값: "title")
+     * @return 검색 결과를 담은 Page<Book> 객체
+     */
     private Page<Book> findBooksByTarget(String query, Pageable pageable, String target) {
         if (target.equals("author")) {
             return bookRepository.findBooksByAuthor(query, pageable);

@@ -76,7 +76,7 @@ public class LibraryFindService {
     }
 
     /**
-     * 주소 선택 방식의 사용자 요청일 경우 주변 도서관을 찾아서 반환 한다.
+     * 소장 여부와 상관 없이 주변 도서관을 찾아서 반환 한다.
      *
      * @param reqMapBookDto 위치 정보를 참고할 사용자 요청 Dto
      * @return 사용자 주변 도서관 정보 Dto를 담는 List
@@ -114,7 +114,7 @@ public class LibraryFindService {
     List<LibraryDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
 
         List<LibraryDto> result
-            = libraryHasBookRepo.findHasBookLibraries(Double.parseDouble(isbn13), areaCd)
+            = libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)
             .stream().map(l -> new LibraryDto(l, "Y")).toList();
 
         if (result.isEmpty()) {
