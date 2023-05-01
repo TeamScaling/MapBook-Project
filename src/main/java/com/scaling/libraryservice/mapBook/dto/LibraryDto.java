@@ -42,6 +42,7 @@ public class LibraryDto {
         this.oneAreaNm = library.getOneAreaNm();
         this.twoAreaNm = library.getTwoAreaNm();
         this.areaCd = library.getAreaCd();
+        this.hasBook = "N";
     }
 
     public LibraryDto(Library library,String hasBook) {
