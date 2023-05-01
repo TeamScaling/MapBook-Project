@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import com.scaling.libraryservice.mapBook.util.CircuitBreaker;
+import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 

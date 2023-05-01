@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.search.service;
 
-import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.search.dto.RecommendBookDto;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.recommend.dto.RecommendBookDto;
 import com.scaling.libraryservice.search.dto.RelationWords;
 import com.scaling.libraryservice.search.util.relate.RelationRule;
 import java.util.List;

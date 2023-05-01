@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.config;
 
-import com.scaling.libraryservice.search.util.recommend.RecommendRanRule;
+import com.scaling.libraryservice.recommend.util.RecommendRanRule;
 import com.scaling.libraryservice.search.util.relate.RelationTokenRule;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;

@@ -1,8 +1,7 @@
 package com.scaling.libraryservice.search.util.relate;
 
-import com.scaling.libraryservice.search.dto.RecommendBookDto;
+import com.scaling.libraryservice.recommend.dto.RecommendBookDto;
 import com.scaling.libraryservice.search.dto.RelationWords;
-import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.List;
 
 public interface RelationRule {

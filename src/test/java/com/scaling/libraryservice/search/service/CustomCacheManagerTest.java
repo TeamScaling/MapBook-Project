@@ -2,10 +2,10 @@ package com.scaling.libraryservice.search.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.caching.CacheKey;
-import com.scaling.libraryservice.caching.CustomCacheManager;
-import com.scaling.libraryservice.caching.Customer;
-import com.scaling.libraryservice.caching.NameCacheKey;
+import com.scaling.libraryservice.commons.caching.CacheKey;
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.caching.Customer;
+import com.scaling.libraryservice.commons.caching.NameCacheKey;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.concurrent.TimeUnit;

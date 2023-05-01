@@ -2,17 +2,17 @@ package com.scaling.libraryservice.mapBook.util;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.aop.Timer;
-import com.scaling.libraryservice.apiConnection.BExistConnection;
-import com.scaling.libraryservice.caching.CustomCacheable;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
-import com.scaling.libraryservice.caching.CacheKey;
-import com.scaling.libraryservice.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.caching.CacheKey;
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +47,8 @@ public class MapBookApiHandler {
 
     public void checkOpenApi() {
 
-        BExistConnection bExistConn = new BExistConnection();
-        ApiStatus status = BExistConnection.apiStatus;
+        BExistConn bExistConn = new BExistConn();
+        ApiStatus status = BExistConn.apiStatus;
 
         ResponseEntity<String> connection
             = apiQuerySender.singleQueryJson(bExistConn, "9788089365210");
@@ -67,29 +67,25 @@ public class MapBookApiHandler {
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(reqMapBookDto);
 
-        /*List<RespMapBookDto> cachingItem = customCacheManager.get(this.getClass(), reqMapBookDto);
+        int hasBookCnt = nearByLibraries.stream().filter(l -> l.getHasBook().equals("Y")).toList().size();
 
-        if (cachingItem != null) {
+        if(hasBookCnt >0){
+            List<BExistConn> bExistConns = nearByLibraries.stream()
+                .map(n -> new BExistConn(n.getLibNo())).toList();
 
-            return cachingItem;
-        }*/
+            List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
+                bExistConns,
+                reqMapBookDto.getIsbn(),
+                nearByLibraries.size());
 
-        List<BExistConnection> bExistConnections = nearByLibraries.stream()
-            .map(n -> new BExistConnection(n.getLibNo())).toList();
+            Map<Integer, ApiBookExistDto> bookExistMap
+                = apiQueryBinder.bindBookExistMap(responseEntities);
 
-        List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
-            bExistConnections,
-            reqMapBookDto.getIsbn(),
-            nearByLibraries.size());
+            return mappingLoanableLib(nearByLibraries,bookExistMap);
+        }else{
 
-        Map<Integer, ApiBookExistDto> bookExistMap
-            = apiQueryBinder.bindBookExistMap(responseEntities);
-
-        var result = mappingLoanableLib(nearByLibraries,bookExistMap);
-
-       /* customCacheManager.put(this.getClass(), reqMapBookDto, result);*/
-
-        return result;
+            return nearByLibraries.stream().map(RespMapBookDto::new).toList();
+        }
     }
 
     private List<RespMapBookDto> mappingLoanableLib(List<LibraryDto> nearByLibraries,
@@ -109,14 +105,14 @@ public class MapBookApiHandler {
 
     }
 
-    private List<BExistConnection> getBExistConns(List<LibraryDto> libraries) {
+    private List<BExistConn> getBExistConns(List<LibraryDto> libraries) {
         return libraries.stream()
-            .map(n -> new BExistConnection(n.getLibNo())).toList();
+            .map(n -> new BExistConn(n.getLibNo())).toList();
     }
 
-    public BExistConnection getBExist(Integer libNo) {
+    public BExistConn getBExist(Integer libNo) {
 
-        return new BExistConnection(libNo);
+        return new BExistConn(libNo);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.mapBook.util;
 
-import com.scaling.libraryservice.aop.Timer;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.mapBook.domain.ApiObservable;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import java.util.ArrayList;

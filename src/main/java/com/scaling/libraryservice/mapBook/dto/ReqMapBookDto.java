@@ -1,10 +1,9 @@
 package com.scaling.libraryservice.mapBook.dto;
 
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.caching.CacheKey;
+import com.scaling.libraryservice.commons.caching.CacheKey;
 import java.util.Objects;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
