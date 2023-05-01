@@ -3,7 +3,7 @@ package com.scaling.libraryservice;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
-import com.scaling.libraryservice.mapBook.domain.ApiObservable;
+import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
@@ -255,7 +255,7 @@ public class LearningTest {
         Class<?> oClazz = BExistConn.class;
 
         Field field = BExistConn.class.getDeclaredField("apiStatus");
-        ApiObservable apiStatus = (ApiObservable) oClazz.getConstructor().newInstance();
+        ApiObserver apiStatus = (ApiObserver) oClazz.getConstructor().newInstance();
 
         System.out.println(apiStatus.getApiStatus().getApiUri());
 

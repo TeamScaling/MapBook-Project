@@ -1,10 +1,10 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 
-@Slf4j
+@Slf4j @Getter
 public class ApiStatus {
 
     private final String apiUri;
@@ -13,8 +13,7 @@ public class ApiStatus {
     private DateTime closedTime;
     private DateTime openedTime;
     private DateTime recentClosedTime;
-
-    private final int DEFAULT_MAX_ERROR_CNT;
+    public final int DEFAULT_MAX_ERROR_CNT;
 
     public ApiStatus(String apiUri, int DEFAULT_MAX_ERROR_CNT) {
         this.apiUri = apiUri;
@@ -48,19 +47,13 @@ public class ApiStatus {
         openedTime = DateTime.now();
         recentClosedTime = closedTime;
         closedTime = null;
+        errorCnt = 0;
 
         log.info("[{}] is checked for Access at [{}] ",apiUri,openedTime);
     }
 
     public void upErrorCnt() {
-        if (apiAccessible) {
-            ++errorCnt;
-            if (errorCnt > DEFAULT_MAX_ERROR_CNT) {
-                CircuitBreaker.closeObserver(this);
-            }
-        } else {
-            log.info(" service for {} was closed at [{}]",apiUri,closedTime);
-        }
+        ++errorCnt;
     }
 
 }

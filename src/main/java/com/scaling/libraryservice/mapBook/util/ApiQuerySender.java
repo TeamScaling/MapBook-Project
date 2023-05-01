@@ -2,8 +2,9 @@ package com.scaling.libraryservice.mapBook.util;
 
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
-import com.scaling.libraryservice.mapBook.domain.ApiObservable;
+import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,17 +33,21 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
-    private final CircuitBreaker circuitBreaker;
 
-    public boolean checkConnection(String apiUrl) {
+    public static boolean checkConnection(ApiStatus apiStatus) {
 
-        ResponseEntity<String> resp = restTemplate.exchange(
-            apiUrl,
-            HttpMethod.OPTIONS,
-            HttpEntity.EMPTY,
-            String.class);
+        try{
+            ResponseEntity<String> resp = new RestTemplate().exchange(
+                apiStatus.getApiUri(),
+                HttpMethod.OPTIONS,
+                HttpEntity.EMPTY,
+                String.class);
+        }catch (RestClientException e){
+            log.error(e.toString());
+                return false;
+        }
 
-        return resp.getStatusCode().is2xxSuccessful();
+        return true;
     }
 
     @Timer
@@ -69,10 +74,10 @@ public class ApiQuerySender {
         } catch (RestClientException e) {
             log.error(e.toString());
 
-            if (ApiObservable.class.isAssignableFrom(configUriBuilder.getClass())) {
-                ApiObservable apiObserver = (ApiObservable) configUriBuilder;
+            if (ApiObserver.class.isAssignableFrom(configUriBuilder.getClass())) {
+                ApiObserver apiObserver = (ApiObserver) configUriBuilder;
 
-                circuitBreaker.receiveError(apiObserver, e);
+                CircuitBreaker.receiveError(apiObserver, e);
             }
 
         }

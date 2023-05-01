@@ -1,11 +1,11 @@
 package com.scaling.libraryservice.commons.apiConnection;
 
-import com.scaling.libraryservice.mapBook.domain.ApiObservable;
+import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import org.springframework.web.util.UriComponentsBuilder;
 
-public class LoanItemConn implements ApiObservable, ConfigureUriBuilder {
+public class LoanItemConn implements ApiObserver, ConfigureUriBuilder {
 
     private static final String API_URL = "http://data4library.kr/api/loanItemSrch";
 

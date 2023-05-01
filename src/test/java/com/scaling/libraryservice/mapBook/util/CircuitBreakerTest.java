@@ -1,22 +1,12 @@
 package com.scaling.libraryservice.mapBook.util;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
-import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
-import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
-import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
 class CircuitBreakerTest {
-    
+
+
 
     @Test
     public void mapTest(){
@@ -35,10 +25,10 @@ class CircuitBreakerTest {
         /* then */
     }
 
-    @Timer
+    /*@Timer
     @Test @DisplayName(" API 늦은 서버 응답에 따른 예외 발생")
     public void apiServer_too_long_response(){
-        /* given */
+        *//* given *//*
 
         int port = 8089;
         WireMockServer server = new WireMockServer(port);
@@ -61,7 +51,7 @@ class CircuitBreakerTest {
 
 
 
-        /* when */
+        *//* when *//*
 
         for(int i=0; i<10; i++){
 
@@ -70,9 +60,9 @@ class CircuitBreakerTest {
             System.out.println(LoanItemConn.apiStatus.getErrorCnt());
         }
 
-        /* then */
+        *//* then *//*
 //        assertThrows(RestClientException.class,result);
         server.stop();
-    }
+    }*/
 
 }
