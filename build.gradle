@@ -96,3 +96,8 @@ clean {
     delete file(generated)
 }
 
+// CICD : plain jar 파일 중복생성 방지
+jar {
+    enabled = false
+}
+
