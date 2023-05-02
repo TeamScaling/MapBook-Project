@@ -19,7 +19,6 @@
       <select name="target" aria-label="선택">
         <option value="title">도서명</option>
         <option value="author">저자</option>
-        <option value="publisher">출판사</option>
         <option value="all">전체</option>
       </select>
       <label>
@@ -84,21 +83,18 @@
       <tr>
         <th>번호</th>
         <th>도서 제목</th>
-        <th>제목<br>복사</th>
         <th>작가</th>
         <th>내용</th>
         <th>이미지</th>
         <th>대출 가능한 <br>주변 도서관</th>
+        <th>제목<br>복사</th>
       </tr>
       </thead>
       <tbody id="book-info-column">
       <tr th:each="book : ${searchResult.documents}">
-        <td th:text="${book.id}"></td>
+        <td th:text="${book.getId()}"></td>
         <td>
           <span th:text="${book.title}"></span>
-        </td>
-        <td>
-          <button class="copy-btn" th:data-title="${book.title}">복사</button>
         </td>
         <td th:text="${book.author}"></td>
         <td th:text="${book.content}"></td>
@@ -110,6 +106,9 @@
           <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()">
             내 주변<br>도서관
           </button>
+        </td>
+        <td>
+          <button class="copy-btn" th:data-title="${book.title}">복사</button>
         </td>
       </tr>
 
@@ -202,79 +201,79 @@
   /*]]>*/
 </script>
 <script th:inline="javascript">
-  $(document).ready(function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get('query');
+  $(document).ready(function() {
+    let urlParams = new URLSearchParams(window.location.search);
+    let query = urlParams.get('query');
     let currentPage = parseInt(urlParams.get('page') || 1);
-    // let totalPages = parseInt("[[${totalPages}]]");
+    console.log(currentPage);
+
+    // 페이지 링크 생성 및 할당
     let totalPages = 5;
     const url = "/books/search?query=" + query + "&page=";
 
-    function generatePageLinks() {
-      const pages = $(".pages");
+    function generatePageLinks(currentPage) {
+      let pages = $(".pages");
       pages.empty();
-
       // 페이지 링크 생성
-      let startPage = Math.max(currentPage - 2, 1);
+      totalPages = currentPage - 1 + 5
+      let startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
       let endPage = startPage + 4;
       if (endPage > totalPages) {
         endPage = totalPages;
-        startPage = Math.max(endPage - 4, 1);
       }
       for (let i = startPage; i <= endPage; i++) {
-        const pageLink = $("<a>").attr("href", url + i).addClass("page-link").text(i);
-        const pageItem = $("<li>").addClass("page-item").append(pageLink);
-        if (i === currentPage) {
+        let pageLink = $("<a>").attr("href", url + i).addClass("page-link").text(i);
+        let pageItem = $("<li>").addClass("page-item").append(pageLink);
+        if (i === currentPage || (currentPage >= startPage && currentPage <= endPage && i === currentPage)) {
           pageItem.addClass("current");
         }
         pages.append(pageItem);
       }
     }
-
-    // 페이지 링크 생성 및 할당
-    generatePageLinks();
+    generatePageLinks(currentPage);
 
     // 이전 페이지 버튼 클릭 시 이벤트 처리
-    $("#prevBtn").on("click", function () {
+    $("#prevBtn").on("click", function() {
       if (currentPage > 1) {
-        const prevPageUrl = url + (currentPage - 1);
-        window.location.href = prevPageUrl;
+        window.location.href = url + (currentPage - 1);
       }
     });
 
     // 다음 페이지 버튼 클릭 시 이벤트 처리
-    $("#nextBtn").on("click", function () {
+    $("#nextBtn").on("click", function() {
       const nextPage = currentPage + 1;
       if (nextPage <= totalPages) {
-        const nextPageUrl = url + nextPage;
-        window.location.href = nextPageUrl;
+        window.location.href = url + (currentPage + 1);
       } else {
-        totalPages += 5; // 5페이지 추가
         currentPage = nextPage; // 현재 페이지를 다음 페이지로 업데이트
-        generatePageLinks(); // 페이지 링크 다시 생성
+        generatePageLinks(nextPage); // 페이지 링크 다시 생성
+        window.location.href = url + nextPage;
       }
     });
 
-    // 페이지 버튼에 대한 current 클래스 추가 및 제거
     const pageLinks = $(".page-link");
-    pageLinks.each(function (index) {
-      if (index + 1 === currentPage) {
-        $(this).parent().addClass("current");
+    pageLinks.each(function(index) {
+      const pageItem = $(this).parent();
+      const pageNum = parseInt($(this).text());
+      if (pageNum === currentPage) {
+        pageItem.addClass("current");
       } else {
-        $(this).parent().removeClass("current");
+        pageItem.removeClass("current");
+      }
+      if (pageNum < startPage || pageNum > endPage) {
+        pageItem.hide();
+      } else {
+        pageItem.show();
       }
     });
   });
 
-  $(document).ready(function () {
-    $('.loan-check-btn').on('click', function () {
-      var isbn = $(this).attr('data-isbn');
-      var bigNumberIsbn = new BigNumber(isbn);
-      isbn = bigNumberIsbn.toFixed();
-      console.log(isbn);
-    });
+  $('.loan-check-btn').on('click', function() {
+    var isbn = $(this).attr('data-isbn');
+    var bigNumberIsbn = new BigNumber(isbn);
+    isbn = bigNumberIsbn.toFixed();
+    console.log(isbn);
   });
-
   document.addEventListener("DOMContentLoaded", function () {
     const loanCheckButtons = document.querySelectorAll(".loan-check-btn");
 
