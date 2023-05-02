@@ -59,6 +59,12 @@ public class CircuitBreaker {
             ,e.getMessage(),apiUri, errorCnt);
     }
 
+    /**
+     * 주어진 {@link ApiStatus}에 해당하는 API 서버를 CircuitBreaker에 의해 일시 중단한 후,
+     * 정기적으로 해당 API 서버의 가용성을 확인하여 다시 사용할 수 있는지 여부를 결정하는 메소드입니다.
+     *
+     * @param status 일시 중단할 API 서버의 상태 정보
+     */
     public static void closeObserver(ApiStatus status) {
 
         status.closeAccess();
