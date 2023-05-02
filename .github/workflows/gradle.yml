@@ -8,7 +8,7 @@ name: Library-CI
 on:
   push:
     branches: [main]
-  pull_request:
+  merge:
     branches: [dev]
 
   # 해당 옵션을 통해 사용자가 직접 Actions 탭에서 Workflow를 실행 가능
