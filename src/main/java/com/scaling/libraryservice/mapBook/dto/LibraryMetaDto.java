@@ -3,6 +3,9 @@ package com.scaling.libraryservice.mapBook.dto;
 import com.scaling.libraryservice.mapBook.entity.LibraryMeta;
 import lombok.Getter;
 
+/**
+ *  전국 도서관 통계 LibraryMeta Entity에 대한 DTO
+ */
 @Getter
 public class LibraryMetaDto {
 

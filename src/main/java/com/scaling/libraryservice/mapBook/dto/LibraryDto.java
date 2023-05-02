@@ -2,35 +2,35 @@ package com.scaling.libraryservice.mapBook.dto;
 
 import com.scaling.libraryservice.mapBook.entity.Library;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-// Library entity를 담는 dto
+/**
+ *  도서관 정보 Library Entity에 대한 DTO
+ */
 @Getter
-@Setter
 @ToString
 @Slf4j
 public class LibraryDto {
 
-    private String libNm;
+    private final String libNm;
 
-    private Integer libNo;
+    private final Integer libNo;
 
-    private Double libLon;
+    private final Double libLon;
 
-    private Double libLat;
+    private final Double libLat;
 
-    private String libArea;
+    private final String libArea;
 
-    private String libUrl;
+    private final String libUrl;
 
-    private String oneAreaNm;
+    private final String oneAreaNm;
 
-    private String twoAreaNm;
-    private Integer areaCd;
+    private final String twoAreaNm;
+    private final Integer areaCd;
 
-    private String hasBook;
+    private final String hasBook;
 
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();
@@ -56,10 +56,6 @@ public class LibraryDto {
         this.twoAreaNm = library.getTwoAreaNm();
         this.areaCd = library.getAreaCd();
         this.hasBook = hasBook;
-    }
-
-    public LibraryDto(Integer libNo) {
-        this.libNo = libNo;
     }
 
     public String getFullAreaNm() {

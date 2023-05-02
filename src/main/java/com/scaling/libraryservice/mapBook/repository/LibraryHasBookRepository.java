@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 public interface LibraryHasBookRepository extends JpaRepository<LibraryHasBook, Long> {
 
     @Query("select l.library from LibraryHasBook l where l.isbn13 = :isbn13 and l.areaCd = :areaCd")
-    List<Library> findHasBookLibraries(@Param("isbn13") Double isbn13,@Param("areaCd") int areaCd);
+    List<Library> findHasBookLibraries(@Param("isbn13") String isbn13,@Param("areaCd") int areaCd);
 
     @Query("select l.areaCd from LibraryHasBook l group by l.areaCd")
     List<Integer> findSupportedArea();

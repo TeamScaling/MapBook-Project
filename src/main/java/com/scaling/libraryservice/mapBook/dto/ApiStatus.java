@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 
+/**
+ *  OpenAPI에 대한 연결 상태 정보를 담는다. 연결에 문제가 있을 시, 에러 정보를 저장 한다.
+ */
 @Slf4j @Getter
 public class ApiStatus {
 

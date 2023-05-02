@@ -3,6 +3,9 @@ package com.scaling.libraryservice.recommend.cacheKey;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import java.util.Objects;
 
+/**
+ * 추천 도서 요청에 대한 결과를 캐싱하기 위한 Key
+ */
 public class RecCacheKey implements CacheKey {
 
     private final String query;

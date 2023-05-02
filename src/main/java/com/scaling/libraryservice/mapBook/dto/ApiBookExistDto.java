@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.ToString;
 import org.json.JSONObject;
 
-// OpenAPI의 대출 가능 여부 응답을 담는 객체.
+/**
+ *  OpenAPI (대출 가능 도서) 응답 데이터를 담는 클래스
+ */
 @Getter @ToString
 public class ApiBookExistDto {
 

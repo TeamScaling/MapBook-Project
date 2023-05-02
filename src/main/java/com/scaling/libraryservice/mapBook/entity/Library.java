@@ -7,6 +7,9 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ *  전국 도서관의 상세한 정보를 담고 있는 테이블과 맵핑 된다.
+ */
 @Entity
 @Table(name = "lib_info")
 @ToString @Getter

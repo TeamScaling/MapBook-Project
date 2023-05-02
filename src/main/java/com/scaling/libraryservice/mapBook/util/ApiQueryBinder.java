@@ -19,6 +19,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApiQueryBinder {
 
+    /**
+     *  Api 응답 데이터를
+     * @param apiResponse
+     * @return
+     * @throws OpenApiException
+     */
     @Timer //Http 응답 결과를 필요한 객체로 Mapping 하고, 도서관 코드를 key로 하는 Map으로 담는다.
     public Map<Integer, ApiBookExistDto> bindBookExistMap(
         List<ResponseEntity<String>> apiResponse) throws OpenApiException {

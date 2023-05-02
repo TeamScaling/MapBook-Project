@@ -18,12 +18,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * 검색어에 대한 분석을 수행하는 클래스입니다.
+ */
 @Slf4j @Component
 @RequiredArgsConstructor
 public class TitleAnalyzer {
 
     private final TitleTokenizer titleTokenizer;
 
+    /**
+     * 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
+     *
+     * @param query 분석할 검색어
+     * @return 분석된 검색어 정보를 담은 TitleQuery 객체
+     */
     public TitleQuery analyze(String query) {
 
         if (isEnglish(query)) {
@@ -42,7 +51,13 @@ public class TitleAnalyzer {
             return engKorResolve(query);
         }
     }
-
+    /**
+     * 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
+     *
+     * @param query 분석할 검색어
+     * @param isKor 단일 한글 제목 유무
+     * @return 분석된 검색어 정보를 담은 TitleQuery 객체
+     */
     private TitleQuery queryResolve(String query,boolean isKor) {
 
         if (query.split(" ").length == 1) {
@@ -70,6 +85,12 @@ public class TitleAnalyzer {
         }
     }
 
+    /**
+     * 영어와 한글 혼합 제목인 경우 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
+     *
+     * @param query 분석할 검색어
+     * @return 분석된 검색어 정보를 담은 TitleQuery 객체
+     */
     private TitleQuery engKorResolve(String query) {
 
         Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
@@ -119,16 +140,31 @@ public class TitleAnalyzer {
 
     }
 
+    /** 정규식을 이용하여 영어 제목인지 판별 합니다.
+     *
+     * @param input 판별하고자 하는 제목
+     * @return 영어 제목이면 true, 그 외에는 false;
+     */
     public static boolean isEnglish(String input) {
         String pattern = "^[a-zA-Z0-9\\.\\s]+$";
         return input.matches(pattern);
     }
 
+    /** 정규식을 이용하여 한글 제목인지 판별 합니다.
+     * 
+     * @param input 판별하고자 하는 제목
+     * @return 한글 제목이면 true, 그 외에는 false
+     */
     public static boolean isKorean(String input) {
         String pattern = "^[가-힣0-9\\.\\s]+$";
         return input.matches(pattern);
     }
 
+    /** 주어진 제목 문자열을 나눈 뒤 다른 문자를 더해 알맞게 변형 합니다.
+     *
+     * @param target 변형하고자 하는 제목 문자열
+     * @return 변형된 제목 문자열
+     */
     private String splitTarget(String target) {
         return Arrays.stream(target.split(" "))
             .map(name -> "+" + name)

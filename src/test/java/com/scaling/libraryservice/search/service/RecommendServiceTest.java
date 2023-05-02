@@ -17,7 +17,7 @@ class RecommendServiceTest {
         String title = "html5 css3";
         /* when */
 
-        var result= recommendService.pickSelectQuery(title);
+        var result= recommendService.pickSelectQuery(title,5);
         /* then */
 
 
@@ -30,7 +30,7 @@ class RecommendServiceTest {
         String title = "닥터 지바고";
         /* when */
 
-        var result= recommendService.pickSelectQuery(title);
+        var result= recommendService.pickSelectQuery(title,5);
         /* then */
 
 

@@ -12,7 +12,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@ComponentScan("com.scaling.libraryservice.mapBook.util")
 @EnableAspectJAutoProxy
 public class AppConfig {
 

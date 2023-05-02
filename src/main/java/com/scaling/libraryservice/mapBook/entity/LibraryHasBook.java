@@ -12,6 +12,9 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * 도서관 별 소장 하고 있는 도서 관련 테이블과 맵핑 된다.
+ */
 @Entity
 @Getter
 @Table(name = "lib_hasbook")
@@ -23,7 +26,7 @@ public class LibraryHasBook {
     private Long id;
 
     @Column(name = "ISBN")
-    private Double isbn13;
+    private String isbn13;
 
     @Column(name = "LOAN_CNT")
     private Integer loanCnt;

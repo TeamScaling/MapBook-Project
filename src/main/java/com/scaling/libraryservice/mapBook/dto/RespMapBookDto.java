@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * 대출 가능한 도서관 응답 데이터.
+ */
 @Getter @Setter
 @ToString
 public class RespMapBookDto {
