@@ -1,0 +1,83 @@
+# Repository의 Actions 탭에 나타날 Workflow 이름
+name: Library-CI
+
+# on: Workflow를 실행시키기 위한 Event 목록
+# 하단 코드에 따라 develop 브랜치에 Push 또는 Pull Request 이벤트가 발생한 경우에 Workflow가 실행
+# 브랜치 구분 없이 이벤트를 지정하고 싶을 경우에는 아래와 같이 작성 가능
+# on: [push, pull_request]
+on: 
+  push:
+    branches: [main]
+  pull_request:
+   branches: [dev]
+
+  # 해당 옵션을 통해 사용자가 직접 Actions 탭에서 Workflow를 실행 가능
+  workflow_dispatch:
+  
+env:
+  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+
+# 해당 Workflow의 하나 이상의 Job 목록입니다.
+jobs:
+  # Job 이름 - 'deploy'
+  deploy:
+    # Runner 실행 환경 정의
+    runs-on: ubuntu-latest
+
+    # 'deploy' Job 내의 step 목록
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+          
+      ## application.properties 파일 생성
+      - uses: actions/checkout@v3
+      - run: touch ./src/main/resources/application.properties
+      - run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.properties
+      - run: cat ./src/main/resources/application.properties
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        shell: bash
+
+
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
+        with:
+          arguments: build
+          
+      - name: Make zip file
+        run: zip -r ./$GITHUB_SHA.zip .
+        shell: bash  
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+          
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip
+      
+      - name: Code Deploy
+        run:
+          aws deploy create-deployment
+          --application-name final-codedeploy-app
+          --deployment-group-name final-codedeploy-deployment-group
+          --file-exists-behavior OVERWRITE
+          --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$GITHUB_SHA.zip
+          --region ap-northeast-2
