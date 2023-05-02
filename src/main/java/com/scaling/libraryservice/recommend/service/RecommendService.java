@@ -31,8 +31,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecommendService {
 
-    private final RecommendRule recommendRule;
-
     private final RecommendRepository recommendRepo;
 
     private final TitleAnalyzer titleAnalyzer;
@@ -50,10 +48,10 @@ public class RecommendService {
         cacheManager.registerCaching(bookCache, this.getClass());
     }
 
-    @Timer
+    /*@Timer
     public RespRecommend getRecommendBook2(RespBooksDto searchResult) {
         return recommendRule.recommendBooks(searchResult);
-    }
+    }*/
 
     /**
      * 검색어를 입력받아 해당하는 추천 도서 제목 목록을 반환합니다.

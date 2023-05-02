@@ -1,13 +1,44 @@
 package com.scaling.libraryservice.commons.caching;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.benmanes.caffeine.cache.Cache;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
+import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+import com.scaling.libraryservice.mapBook.service.LibraryFindService;
+import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.service.BookSearchService;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * {@link CustomCacheManager}는 여러 개의 캐시 인스턴스를 관리하고 캐시의 라이프사이클을 조절합니다.
@@ -16,18 +47,51 @@ import org.springframework.stereotype.Component;
  * @param <T> 캐시에서 저장할 데이터 유형
  */
 @Slf4j @Component
+@RequiredArgsConstructor
 public class CustomCacheManager<T> {
 
-    private final Map<Class<?>, Cache<CacheKey,T>> anonymousCache = new HashMap<>();
+    private Map<Class<?>, Cache<CacheKey,T>> anonymousCache = new HashMap<>();
+    private final Map<Class<?>,Class<? extends CacheKey>> personalKeyMap = new HashMap<>();
 
-    private final Map<Class<?>,Class<CacheKey>> personalKeyMap = new HashMap<>();
+    private final CacheBackupService<T> cacheBackupService;
+
+    @PreDestroy
+    public void onShutdown() {
+        String cacheBackupFilePath = "cache_backup2.ser";
+        cacheBackupService.saveCacheDataToFile(cacheBackupFilePath,anonymousCache);
+    }
+
+    @PostConstruct
+    public void onStartup() {
+
+        personalKeyMap.put(BookSearchService.class, BookCacheKey.class);
+        personalKeyMap.put(MapBookApiHandler.class, ReqMapBookDto.class);
+        personalKeyMap.put(LibraryFindService.class, HasBookCacheKey.class);
+
+        String cacheBackupFilePath = "cache_backup2.ser";
+
+        File cacheFile = new File(cacheBackupFilePath);
+
+        /*if(cacheFile.exists()){
+            log.info("load cache file");
+            anonymousCache = cacheBackupService.loadCacheDataFromFile(cacheBackupFilePath,personalKeyMap);
+        }else{
+            anonymousCache = new HashMap<>();
+        }*/
+    }
+
+
+
+    public Map<Class<?>, Cache<CacheKey,T>> getAnonymousCache(){
+        return anonymousCache;
+    }
 
     public Set<Class<?>> getCustomers(){
 
         return new HashSet<>(anonymousCache.keySet());
     }
 
-    public Class<CacheKey> findPersonalKey(Class<?> customer){
+    public Class<? extends CacheKey> findPersonalKey(Class<?> customer){
 
        return personalKeyMap.get(customer);
     }
@@ -62,7 +126,7 @@ public class CustomCacheManager<T> {
      * @param personalKey 아이템에 대한 개인 키
      * @param item 캐시에 추가할 아이템
      */
-    public void put(Class<?> customer, CacheKey personalKey,Object item){
+    public void put(Class<?> customer, CacheKey personalKey,T item){
 
         if(anonymousCache.containsKey(customer)){
             log.info("CacheManger put item for [{}]",customer);
@@ -119,6 +183,8 @@ public class CustomCacheManager<T> {
     public boolean isContainItem(Class<?> customer,CacheKey personalKey){
 
         if(isUsingCaching(customer)){
+            log.info("personalKey [{}] // {}",personalKey, personalKey.equals(new BookCacheKey("스프링",1)));
+
             return anonymousCache.get(customer).getIfPresent(personalKey) != null;
         }else{
 

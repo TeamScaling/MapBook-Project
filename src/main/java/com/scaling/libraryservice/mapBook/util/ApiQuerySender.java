@@ -18,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -56,6 +59,23 @@ public class ApiQuerySender {
 
         return resp.getStatusCode().is2xxSuccessful();
     }
+
+
+    public void sendPost(String jsonData, String url){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> request = new HttpEntity<>(jsonData, headers);
+        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            log.info("Cache data for [{}] backed up successfully",url);
+        } else {
+            log.error("Failed to back up cache data for [{}]", url);
+        }
+    }
+
 
 
     /**

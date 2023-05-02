@@ -7,6 +7,7 @@ import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.json.JSONObject;
 import org.springframework.lang.Nullable;
 
 /**
@@ -14,7 +15,7 @@ import org.springframework.lang.Nullable;
  * {@link CacheKey}를 구현하여, {@link CustomCacheManager}
  * 에서 캐싱 된 데이터를 찾기 위한 Key로 사용 될 수 있다.
  */
-@Getter @Setter @ToString
+@Getter @Setter
 public class ReqMapBookDto implements CacheKey {
 
     private String isbn;
@@ -33,12 +34,31 @@ public class ReqMapBookDto implements CacheKey {
     public ReqMapBookDto() {
     }
 
+    @Override
+    public String toString() {
+        return "ReqMapBookDto(" +
+            "isbn=" + isbn+
+            ", areaCd=" + areaCd +
+            ')';
+    }
+
     public ReqMapBookDto(String isbn, Double lat, Double lon, String oneArea, String twoArea) {
         this.isbn = isbn;
         this.lat = lat;
         this.lon = lon;
         this.oneArea = oneArea;
         this.twoArea = twoArea;
+    }
+
+
+
+    public ReqMapBookDto(JSONObject jsonObject){
+        this.isbn = jsonObject.getString("isbn");
+        this.lat = Double.valueOf(jsonObject.getString("lat"));
+        this.lon = Double.valueOf(jsonObject.getString("lon"));
+        this.oneArea = jsonObject.getString("oneArea");
+        this.twoArea = jsonObject.getString("twoArea");
+
     }
 
     public ReqMapBookDto(String isbn, @Nullable Integer areaCd) {

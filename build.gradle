@@ -48,6 +48,7 @@ dependencies {
     implementation 'edu.stanford.nlp:stanford-corenlp:4.2.2:models'
 
     implementation 'com.github.shin285:KOMORAN:3.3.4'
+    implementation 'com.google.code.gson:gson:2.8.9'
 
 
 

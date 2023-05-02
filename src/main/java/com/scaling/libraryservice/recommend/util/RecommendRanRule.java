@@ -9,10 +9,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Timer
-public class RecommendRanRule implements RecommendRule {
+/*@Timer
+public class RecommendRanRule implements RecommendRule {*/
 
-    @Override
+    /*@Override
     public RespRecommend recommendBooks(RespBooksDto searchResult) {
         List<BookDto> document = searchResult.getDocuments();
 
@@ -30,9 +30,9 @@ public class RecommendRanRule implements RecommendRule {
         return new RespRecommend(randomTop10);
 
 
-    }
+    }*/
 
-    // 상위 100권
+    /*// 상위 100권
     private List<RecommendBookDto> getTopRelatedBooks(List<BookDto> document, int limit) {
         return document.stream()
             .filter(bookDto -> bookDto.getTitle() != null)
@@ -40,10 +40,10 @@ public class RecommendRanRule implements RecommendRule {
             .distinct()
             .limit(limit)
             .collect(Collectors.toList());
-    }
+    }*/
 
 
-    // 랜덤으로 10권 선택
+    /*// 랜덤으로 10권 선택
     public List<RecommendBookDto> getRandomTop10RelatedBooks(List<RecommendBookDto> relatedBooks) {
         Collections.shuffle(relatedBooks);
         List<RecommendBookDto> relatedBookDtos = relatedBooks.stream()
@@ -53,4 +53,4 @@ public class RecommendRanRule implements RecommendRule {
     }
 
 
-}
+}*/

@@ -45,12 +45,15 @@ public class CustomCacheAspect<T> {
         Object[] arguments = joinPoint.getArgs();
         CacheKey cacheKey = generateCacheKey(clazz, arguments);
 
+        log.info("cacheKey : {}    //  class : {}",cacheKey,clazz);
+        log.info(cacheManager.isContainItem(clazz,cacheKey)+"");
+
         if (cacheManager.isContainItem(clazz, cacheKey)) {
             return cacheManager.get(clazz, cacheKey);
         }
 
         Object result = joinPoint.proceed();
-        cacheManager.put(clazz, cacheKey, result);
+        cacheManager.put(clazz, cacheKey, (T)result);
         return result;
 
     }
