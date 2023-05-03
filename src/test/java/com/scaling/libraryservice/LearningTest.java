@@ -1,10 +1,14 @@
 package com.scaling.libraryservice;
 
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+import com.scaling.libraryservice.mapBook.dto.TestingBookDto;
+import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
+import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
@@ -22,10 +26,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.joda.time.DateTime;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.client.RestTemplate;
 
 public class LearningTest {
 
@@ -111,7 +118,7 @@ public class LearningTest {
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
         // Input text
-        String text = "email에 꼭 필요한 알짜표현";
+        String text = "(UML과 GoF 디자인 패턴 핵심 10가지로 배우는) JAVA 객체 지향 디자인 패턴";
 
         // Annotate text
         Annotation document = new Annotation(text);
@@ -258,6 +265,24 @@ public class LearningTest {
         ApiObserver apiStatus = (ApiObserver) oClazz.getConstructor().newInstance();
 
         System.out.println(apiStatus.getApiStatus().getApiUri());
+
+    }
+
+    @Test
+    public void testing(){
+        /* given */
+        ApiQueryBinder apiQueryBinder = new ApiQueryBinder();
+        ApiQuerySender sender = new ApiQuerySender(new RestTemplate());
+        /* when */
+
+        var reulst = sender.singleQueryJson(new LoanItemConn(),String.valueOf(10));
+
+        /* then */
+
+        var result = apiQueryBinder.bindLoanItem(reulst);
+
+        JSONObject jsonObject = new JSONObject();
+        
 
     }
 

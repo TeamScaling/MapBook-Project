@@ -48,8 +48,28 @@ class TitleAnalyzerTest {
         System.out.println(reulst2);
 
 
+    }
 
+    @Test
+    public void token_kor(){
+        /* given */
 
+        TitleTokenizer tokenizer = new TitleTokenizer(new Komoran(DEFAULT_MODEL.FULL));
+
+        /* when */
+
+        String title = "내가 고양이를 데리고\n"
+            + "노는 것일까, 고양이가\n"
+            + "나를 데리고 노는 것일\n"
+            + "까? :내가 나를 쓴 최초\n"
+            + "의 철학자 몽테뉴의 12\n"
+            + "가지 고민들";
+
+        var result = tokenizer.tokenize(title);
+
+        /* then */
+
+        System.out.println(result);
     }
 
 }

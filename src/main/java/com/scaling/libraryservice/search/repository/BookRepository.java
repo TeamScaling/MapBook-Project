@@ -88,6 +88,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         if (books.getContent().isEmpty()) {
             books = findBooksByKorNatural(query, pageable);
         }
+
         return books;
     }
 
