@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
   <link type="text/css" th:href="@{/css/searchResult.css}" rel="stylesheet">
 
+
 </head>
 <body>
 <header>
@@ -58,7 +59,6 @@
         </span>
       </p>
     </div>
-
     &lt;!&ndash;  연관도서&ndash;&gt;
     <div class="related-box">
       &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
@@ -102,7 +102,7 @@
                src="../static/images/empty_img.png"/>
         </td>
         <td>
-          <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup()">
+          <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup_MapBook()">
             내 주변<br>도서관
           </button>
         </td>
@@ -187,6 +187,12 @@
     });
   });
 
+  function openPopup() {
+    const areaCd = document.getElementById('search-input').value;
+    const url = `/library/mapSearch?areaCd=${areaCd}`;
+    window.open(url, 'areaCdInfo', 'width=1200,height=800');
+    return false;
+  }
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
@@ -278,19 +284,44 @@
 
           const isbn2 = event.target.getAttribute("data-isbn");
           const isbn = BigInt(Number(isbn2));
-          openPopup(isbn.toString(), lat, lon);
-          console.log(isbn, lat, lon);
+          openPopup_MapBook(isbn.toString(), lat, lon);
+
         });
       });
     });
   });
 
-  function openPopup(isbn, lat, lon) {
 
-    const url = `/books/mapBook/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
-    window.open(url, 'areaCdInfo', 'width=1200,height=800');
+  function openPopup_MapBook(isbn, lat, lon) {
+
+    // 데이터 객체에 isbn, lat, lon 값을 추가
+    const data = {
+      isbn: isbn,
+      lat: lat,
+      lon: lon
+    };
+
+    $.ajax({
+      type: 'POST',
+      url: `/books/mapBook/search`,
+      contentType: "application/json",
+      data: JSON.stringify(data), // 수정된 data 객체를 JSON 형태로 변환하여 전송
+      success: function (response) {
+        // 새로운 팝업 창을 열고 응답을 받은 HTML로 내용을 채움
+        const popupWindow = window.open('', 'areaCdInfo', 'width=1200,height=800');
+        popupWindow.document.write(response);
+        popupWindow.document.close();
+      },
+      error(error) {
+        console.error(error);
+      }
+    });
+
     return false;
   }
+
+
+
 
   /*--------------------------------------------*/
 
