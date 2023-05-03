@@ -6,10 +6,7 @@ name: Library-CI
 # 브랜치 구분 없이 이벤트를 지정하고 싶을 경우에는 아래와 같이 작성 가능
 # on: [push, pull_request]
 on:
-  pull_request:
-    types:
-      -
-
+  push:
     branches: [dev]
 #  push:
 #    branches: [dev]
