@@ -10,7 +10,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
   <link type="text/css" th:href="@{/css/searchResult.css}" rel="stylesheet">
 
-
 </head>
 <body>
 <header>
@@ -188,12 +187,6 @@
     });
   });
 
-  function openPopup() {
-    const areaCd = document.getElementById('search-input').value;
-    const url = `/library/mapSearch?areaCd=${areaCd}`;
-    window.open(url, 'areaCdInfo', 'width=1200,height=800');
-    return false;
-  }
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
