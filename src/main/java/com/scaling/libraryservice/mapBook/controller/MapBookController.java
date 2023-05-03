@@ -15,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -38,9 +40,10 @@ public class MapBookController {
      * @param reqMapBookDto 요청 받은 도서와 사용자의 위치 정보가 담겨 있는 Dto
      * @return Model을 전달 받고 View를 구성 할 html 파일 이름
      */
-    @GetMapping("/books/mapBook/search")
+
+    @PostMapping("/books/mapBook/search")
     @Substitutable(origin = BExistConn.class, substitute = "getHasBookMarkers")
-    public String getMapBooks(ModelMap model, @ModelAttribute ReqMapBookDto reqMapBookDto) {
+    public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
         reqMapBookDto.updateAreaCd();
 
