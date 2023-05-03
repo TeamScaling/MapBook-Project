@@ -3,7 +3,7 @@ package com.scaling.libraryservice;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
+import com.scaling.libraryservice.mapBook.service.MapBookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +20,7 @@ class LibraryServiceApplicationTests {
     private ApiQuerySender apiQuerySender;
 
     @Autowired
-    private MapBookApiHandler mapBookApiHandler;
+    private MapBookService mapBookService;
     @Test
     void contextLoads() {
 
@@ -42,8 +42,8 @@ class LibraryServiceApplicationTests {
 
         /* then */
 
-        var result1 = mapBookApiHandler.matchMapBooks(library1,dto);
-        var result2 = mapBookApiHandler.matchMapBooks(library2,dto);
+        var result1 = mapBookService.matchMapBooks(library1,dto);
+        var result2 = mapBookService.matchMapBooks(library2,dto);
 
         boolean check = result1.size() <= result2.size();
 

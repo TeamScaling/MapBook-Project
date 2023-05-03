@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import com.scaling.libraryservice.commons.timer.Timer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -77,6 +78,7 @@ public class CustomCacheManager<T> {
      * @param personalKey 아이템에 대한 개인 키
      * @return 캐시에서 가져온 아이템
      */
+    @Timer
     public T get(Class<?> customer,CacheKey personalKey){
         log.info("CacheManger find item for [{}]",customer);
 

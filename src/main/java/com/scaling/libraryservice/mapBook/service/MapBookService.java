@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.util;
+package com.scaling.libraryservice.mapBook.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -13,6 +13,8 @@ import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
+import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
+import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class MapBookApiHandler {
+public class MapBookService {
 
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
@@ -38,7 +40,7 @@ public class MapBookApiHandler {
     public void init() {
 
         Cache<CacheKey, List<RespMapBookDto>> mapBookCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
+            .expireAfterWrite(6, TimeUnit.HOURS)
             .maximumSize(1000)
             .build();
 
