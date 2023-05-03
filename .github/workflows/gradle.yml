@@ -6,8 +6,11 @@ name: Library-CI
 # 브랜치 구분 없이 이벤트를 지정하고 싶을 경우에는 아래와 같이 작성 가능
 # on: [push, pull_request]
 on:
-  push:
-    branches: [feature/common_cicd]
+  pull_request:
+    types:
+      -
+
+    branches: [dev]
 #  push:
 #    branches: [dev]
 
