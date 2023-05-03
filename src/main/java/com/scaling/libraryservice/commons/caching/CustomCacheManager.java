@@ -1,28 +1,13 @@
 package com.scaling.libraryservice.commons.caching;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.github.benmanes.caffeine.cache.Cache;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
+import com.scaling.libraryservice.mapBook.util.MapBookService;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,13 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * {@link CustomCacheManager}는 여러 개의 캐시 인스턴스를 관리하고 캐시의 라이프사이클을 조절합니다.
@@ -65,7 +44,7 @@ public class CustomCacheManager<T> {
     public void onStartup() {
 
         personalKeyMap.put(BookSearchService.class, BookCacheKey.class);
-        personalKeyMap.put(MapBookApiHandler.class, ReqMapBookDto.class);
+        personalKeyMap.put(MapBookService.class, ReqMapBookDto.class);
         personalKeyMap.put(LibraryFindService.class, HasBookCacheKey.class);
 
         String cacheBackupFilePath = "cache_backup2.ser";

@@ -3,7 +3,7 @@ package com.scaling.libraryservice.commons.caching;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
+import com.scaling.libraryservice.mapBook.util.MapBookService;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
 import com.scaling.libraryservice.search.service.BookSearchService;
@@ -45,9 +45,6 @@ public class CustomCacheAspect<T> {
         Object[] arguments = joinPoint.getArgs();
         CacheKey cacheKey = generateCacheKey(clazz, arguments);
 
-        log.info("cacheKey : {}    //  class : {}",cacheKey,clazz);
-        log.info(cacheManager.isContainItem(clazz,cacheKey)+"");
-
         if (cacheManager.isContainItem(clazz, cacheKey)) {
             return cacheManager.get(clazz, cacheKey);
         }
@@ -75,7 +72,7 @@ public class CustomCacheAspect<T> {
             return new HasBookCacheKey(isbn13, areaCd);
         }
 
-        if (clazz == MapBookApiHandler.class){
+        if (clazz == MapBookService.class){
 
             return (ReqMapBookDto)arguments[1];
         }

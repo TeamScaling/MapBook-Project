@@ -2,6 +2,7 @@ package com.scaling.libraryservice.search.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
@@ -14,6 +15,7 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -40,13 +42,21 @@ public class BookSearchService {
     private final CustomCacheManager<RespBooksDto> cacheManager;
     private final TitleAnalyzer titleAnalyzer;
 
+    private final CacheBackupService<RespBooksDto> backupService;
+
     @PostConstruct
     private void init() {
 
-        Cache<CacheKey, RespBooksDto> bookCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .maximumSize(1000)
-            .build();
+        File file = new File("cache_backup2.ser");
+
+        Cache<CacheKey, RespBooksDto> bookCache = null;
+
+        if(file.exists()){
+            bookCache = backupService.convertForBook("cache_backup2.ser");
+        }else{
+
+            bookCache = Caffeine.newBuilder().build();
+        }
 
         cacheManager.registerCaching(bookCache, this.getClass());
     }

@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
+import com.scaling.libraryservice.mapBook.util.MapBookService;
 import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
 import com.scaling.libraryservice.recommend.service.RecommendService;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
@@ -19,8 +19,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +26,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
@@ -70,28 +67,28 @@ public class CacheBackupService<T> {
         }
     }
 
-    public Map<Class<?>, Cache<? extends CacheKey, ?>> loadCacheDataFromFile(String filePath,
+    public Map<Class<?>, Cache<CacheKey, ?>> loadCacheDataFromFile(String filePath,
         Map<Class<?>, Class<? extends CacheKey>> personalKeyMap) {
 
-        Map<Class<?>, Cache<? extends CacheKey, ?>> resultMap = new HashMap<>();
+        Map<Class<?>, Cache<CacheKey, ?>> resultMap = new HashMap<>();
 
         resultMap.put(BookSearchService.class,convertForBook(filePath));
         resultMap.put(RecommendService.class,convertForRec(filePath));
-        resultMap.put(MapBookApiHandler.class,convertForMapBook(filePath));
+        resultMap.put(MapBookService.class,convertForMapBook(filePath));
 
         return resultMap;
     }
 
-    public Cache<ReqMapBookDto, List<RespMapBookDto>> convertForMapBook(String filename) {
+    public Cache<CacheKey, List<RespMapBookDto>> convertForMapBook(String filename) {
 
-        Cache<ReqMapBookDto, List<RespMapBookDto>> mapBookApiHandlerItems = null;
+        Cache<CacheKey, List<RespMapBookDto>> mapBookApiHandlerItems = null;
 
         try (FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr)) {
 
             JSONObject respJsonObj = new JSONObject(reader.readLine());
 
-            var customer = respJsonObj.getJSONObject("MapBookApiHandler");
+            var customer = respJsonObj.getJSONObject("MapBookService");
 
             List<ReqMapBookDto> cacheKeyList = new ArrayList<>();
 
@@ -128,9 +125,9 @@ public class CacheBackupService<T> {
         return mapBookApiHandlerItems;
     }
 
-    public Cache<RecCacheKey, List<String>> convertForRec(String filename) {
+    public Cache<CacheKey, List<String>> convertForRec(String filename) {
 
-        Cache<RecCacheKey, List<String>> recommendItems = null;
+        Cache<CacheKey, List<String>> recommendItems = null;
 
         try (FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr);) {
@@ -166,7 +163,6 @@ public class CacheBackupService<T> {
                 recommendItems.put(rec, result);
             }
 
-            System.out.println(recommendItems.getIfPresent(new RecCacheKey("스프링")));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -175,9 +171,10 @@ public class CacheBackupService<T> {
         return recommendItems;
     }
 
-    public Cache<BookCacheKey,RespBooksDto> convertForBook(String filename){
 
-        Cache<BookCacheKey,RespBooksDto> cachedBooks;
+    public Cache<CacheKey,RespBooksDto> convertForBook(String filename){
+
+        Cache<CacheKey,RespBooksDto> cachedBooks;
 
         try(FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr)) {

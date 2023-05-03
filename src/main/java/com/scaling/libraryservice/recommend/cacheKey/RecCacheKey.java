@@ -13,8 +13,6 @@ public class RecCacheKey implements CacheKey {
 
     private final String query;
 
-    private final String regex = "RecCacheKey\\(query=(.+)\\)";
-
     public RecCacheKey(String query) {
         this.query = query;
     }

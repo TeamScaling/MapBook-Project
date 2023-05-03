@@ -44,7 +44,11 @@ public class RespMapBookDto {
 
     }
 
-    public RespMapBookDto(LibraryDto libraryDto) {
+    public RespMapBookDto(ReqMapBookDto reqMapBookDto,LibraryDto libraryDto) {
+
+        this.isbn13 = reqMapBookDto.getIsbn();
+        this.libCode = String.valueOf(libraryDto.getLibNo());
+        this.loanAvailable = "N";
 
         this.hasBook = libraryDto.getHasBook();
         this.libLo = libraryDto.getLibLon();

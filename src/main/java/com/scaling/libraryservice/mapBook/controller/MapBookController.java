@@ -6,7 +6,7 @@ import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
+import com.scaling.libraryservice.mapBook.util.MapBookService;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @Slf4j
 public class MapBookController {
 
-    private final MapBookApiHandler mapBookApiHandler;
+    private final MapBookService mapBookService;
 
     private final LibraryFindService libraryFindService;
 
     @PostConstruct
     public void init() {
-        mapBookApiHandler.checkOpenApi();
+        mapBookService.checkOpenApi();
     }
 
 
@@ -46,7 +46,7 @@ public class MapBookController {
 
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
 
-        List<RespMapBookDto> mapBooks = mapBookApiHandler.matchMapBooks(nearbyLibraries,
+        List<RespMapBookDto> mapBooks = mapBookService.matchMapBooks(nearbyLibraries,
             reqMapBookDto);
 
         model.put("mapBooks", mapBooks);
@@ -65,7 +65,7 @@ public class MapBookController {
 
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
 
-        List<RespMapBookDto> hasBookLibs = nearbyLibraries.stream().map(RespMapBookDto::new)
+        List<RespMapBookDto> hasBookLibs = nearbyLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l))
             .toList();
 
         model.put("hasBookLibs", hasBookLibs);

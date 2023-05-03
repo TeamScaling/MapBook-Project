@@ -2,6 +2,7 @@ package com.scaling.libraryservice.recommend.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
@@ -14,6 +15,7 @@ import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -37,15 +39,26 @@ public class RecommendService {
 
     private final CustomCacheManager<List<String>> cacheManager;
 
+    private final CacheBackupService<List<String>> cacheBackupService;
+
     @PostConstruct
     private void init() {
 
-        Cache<CacheKey, List<String>> bookCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .maximumSize(1000)
-            .build();
+        File file = new File("cache_backup2.ser");
 
-        cacheManager.registerCaching(bookCache, this.getClass());
+        Cache<CacheKey, List<String>> recCache = null;
+
+        if(file.exists()){
+            recCache = cacheBackupService.convertForRec("cache_backup2.ser");
+        }else{
+
+            recCache = Caffeine.newBuilder()
+                .expireAfterWrite(1, TimeUnit.HOURS)
+                .maximumSize(1000)
+                .build();
+        }
+
+        cacheManager.registerCaching(recCache, this.getClass());
     }
 
     /*@Timer

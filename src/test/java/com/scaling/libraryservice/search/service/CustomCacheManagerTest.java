@@ -7,27 +7,18 @@ import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.Customer;
 import com.scaling.libraryservice.commons.caching.NameCacheKey;
-import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import com.scaling.libraryservice.mapBook.util.MapBookApiHandler;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
-import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.entity.Book;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
