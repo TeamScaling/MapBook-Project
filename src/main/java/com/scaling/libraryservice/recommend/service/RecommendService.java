@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
  *
  * 추천된 도서 정보는 캐시를 사용하여 성능을 향상시킵니다.
  */
-@Component
+@Component @Slf4j
 @RequiredArgsConstructor
 public class RecommendService {
 
@@ -63,7 +64,6 @@ public class RecommendService {
      * @return 추천 도서 제목 문자열을 담고 있는 List
      */
     @Timer
-    @CustomCacheable
     public List<String> getRecommendBook(String query) {
 
         return pickSelectQuery(query, 5).stream().map(r -> TrimTitleResult(r.getTitle())).toList();
@@ -80,6 +80,8 @@ public class RecommendService {
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
         TitleType type = titleQuery.getTitleType();
+
+        log.info("Query is [{}] and tokens : [{}]",type.name(),titleQuery);
 
         switch (type) {
 
@@ -101,15 +103,9 @@ public class RecommendService {
                 return recommendRepo.findBooksByEngMtOrderFlexible(titleQuery.getEngToken(), size)
                     .stream().map(BookDto::new).toList();
             }
-            case KOR_ENG -> {
-                return recommendRepo.findBooksByKorNaturalOrder(titleQuery.getEngKorToken(), size)
+            case KOR_ENG, ENG_KOR_SG -> {
+                return recommendRepo.findBooksByEngKorBoolOrder(titleQuery.getEngToken(),titleQuery.getKorToken(), size)
                     .stream().map(BookDto::new).toList();
-            }
-            case ENG_KOR_SG -> {
-                return recommendRepo.findBooksByEngKorBoolOrder(
-                    titleQuery.getEngToken(),
-                    titleQuery.getKorToken(),
-                    size).stream().map(BookDto::new).toList();
             }
 
             case ENG_KOR_MT -> {

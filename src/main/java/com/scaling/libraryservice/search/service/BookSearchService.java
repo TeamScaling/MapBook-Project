@@ -61,8 +61,9 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체
      */
     @Timer
-    @CustomCacheable
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
+
+        log.info("-------------query : [{}]-------------------------------",query);
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
@@ -89,6 +90,8 @@ public class BookSearchService {
 
         TitleType type = titleQuery.getTitleType();
 
+        log.info("Query is [{}] and tokens : [{}]",type.name(),titleQuery);
+
         switch (type) {
 
             case KOR_SG -> {
@@ -103,14 +106,8 @@ public class BookSearchService {
             case ENG_MT -> {
                 return bookRepository.findBooksByEngMtFlexible(titleQuery.getEngToken(), pageable);
             }
-            case KOR_ENG -> {
-                return bookRepository.findBooksByKorNatural(titleQuery.getEngKorToken(), pageable);
-            }
-            case ENG_KOR_SG -> {
-                return bookRepository.findBooksByEngKorBool(
-                    titleQuery.getEngToken(),
-                    titleQuery.getKorToken(),
-                    pageable);
+            case KOR_ENG, ENG_KOR_SG -> {
+                return bookRepository.findBooksByEngKorBool(titleQuery.getEngToken(),titleQuery.getKorToken(), pageable);
             }
 
             case ENG_KOR_MT -> {

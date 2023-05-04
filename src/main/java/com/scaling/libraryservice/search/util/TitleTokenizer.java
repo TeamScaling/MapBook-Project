@@ -31,7 +31,8 @@ public class TitleTokenizer {
         List<String> nounList =
             tokenList.stream().filter(i ->  i.getPos().equals("NNP") | i.getPos().equals("NNG"))
                 .map(Token::getMorph).toList();
-        return nounList;
+
+        return nounList.stream().distinct().filter(non -> non.length()>1).toList();
     }
 
 }

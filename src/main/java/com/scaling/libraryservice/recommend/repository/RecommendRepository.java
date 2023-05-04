@@ -14,7 +14,6 @@ public interface RecommendRepository extends JpaRepository<Book, Long> {
         , nativeQuery = true)
     List<Book> findBooksByKorNaturalOrder(@Param("query") String query,
         @Param("size") Integer size);
-
     @Query(value = "select * from books "
         + "use index (idx_title_nm_space_based) "
         + "where match (TITLE_NM) against (:query in BOOLEAN MODE)"

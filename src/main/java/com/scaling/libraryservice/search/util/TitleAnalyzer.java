@@ -8,9 +8,11 @@ import static com.scaling.libraryservice.search.domain.TitleType.KOR_ENG;
 import static com.scaling.libraryservice.search.domain.TitleType.KOR_MT;
 import static com.scaling.libraryservice.search.domain.TitleType.KOR_SG;
 
+import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +23,8 @@ import org.springframework.stereotype.Component;
 /**
  * 검색어에 대한 분석을 수행하는 클래스입니다.
  */
-@Slf4j @Component
+@Slf4j
+@Component
 @RequiredArgsConstructor
 public class TitleAnalyzer {
 
@@ -33,7 +36,17 @@ public class TitleAnalyzer {
      * @param query 분석할 검색어
      * @return 분석된 검색어 정보를 담은 TitleQuery 객체
      */
+    @Timer
     public TitleQuery analyze(String query) {
+
+        if (query.contains(":")) {
+            int idx = query.indexOf(":");
+            query = query.substring(0, idx);
+        }
+
+        /*if(query.startsWith("(") & query.indexOf(")") != query.length()-1){
+            query = query.substring(query.indexOf(")")+1);
+        }*/
 
         if (isEnglish(query)) {
 
@@ -51,6 +64,7 @@ public class TitleAnalyzer {
             return engKorResolve(query);
         }
     }
+
     /**
      * 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
      *
@@ -58,29 +72,30 @@ public class TitleAnalyzer {
      * @param isKor 단일 한글 제목 유무
      * @return 분석된 검색어 정보를 담은 TitleQuery 객체
      */
-    private TitleQuery queryResolve(String query,boolean isKor) {
+    private TitleQuery queryResolve(String query, boolean isKor) {
 
         if (query.split(" ").length == 1) {
 
             if (isKor) {
                 log.info("Single Kor query : [{}]", query);
-                return new TitleQuery(KOR_SG,"",query,"") ;
+                return new TitleQuery(KOR_SG, "", query, "");
             } else {
                 log.info("Single Eng query : [{}]", query);
-                return new TitleQuery(ENG_SG,query,"","") ;
+                return new TitleQuery(ENG_SG, query, "", "");
             }
 
         } else {
 
             if (isKor) {
+
                 query = splitTarget(query);
                 log.info("Multi Kor query : [{}]", query);
 
-                return new TitleQuery(KOR_MT,"",query,"");
+                return new TitleQuery(KOR_MT, "", query, "");
             } else {
                 query = splitTarget(query);
                 log.info("Multi Eng query : [{}]", query);
-                return new TitleQuery(ENG_MT,query,"","");
+                return new TitleQuery(ENG_MT, query, "", "");
             }
         }
     }
@@ -95,7 +110,11 @@ public class TitleAnalyzer {
 
         Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
 
-        List<String> engTokens = titleMap.get("eng");
+        List<String> engTokens = titleMap.get("eng").stream()
+            .max(Comparator.comparing(String::length))
+            .stream()
+            .toList();
+
         List<String> korTokens = titleMap.get("kor");
 
         String korToken = String.join(" ", korTokens);
@@ -108,39 +127,48 @@ public class TitleAnalyzer {
         log.info("korToken : {}, length : {}", korToken, korToken.length());
         log.info("engToken : {}, length : {}", engToken, engToken.length());
 
+        List<String> nnKorTokens = new ArrayList<>();
+
+        // 한글 제목 내용을 명사 단위로만 검색 한다.
+        if (!korToken.isEmpty()) {
+            nnKorTokens = titleTokenizer.tokenize(korToken);
+
+            if (nnKorTokens.size() > 0) {
+                korToken = String.join(" ", nnKorTokens);
+            }
+        }
+
         if (korToken.length() >= engToken.length()) {
 
             log.info("korToken >= engToken");
+            korToken = splitTarget(korToken);
 
-            return new TitleQuery(KOR_ENG,"","",query);
+            if (engTokens.isEmpty()) {
+
+                return new TitleQuery(KOR_MT, "", korToken, "");
+            }
+
+            return new TitleQuery(KOR_ENG, engQueryBuilder.toString().trim(), korToken, "");
 
         } else {
 
-            List<String> nnKorTokens = new ArrayList<>();
-
-            // 한글 제목 내용을 명사 단위로만 검색 한다.
-            if (!korToken.isEmpty()) {
-                nnKorTokens = titleTokenizer.tokenize(korToken);
-                korToken = String.join(" ", nnKorTokens);
-            }
-
-            if(nnKorTokens.size() <=1){
+            if (nnKorTokens.size() <= 1) {
                 korToken = splitTarget(korToken);
 
                 log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
                     engToken);
 
+                return new TitleQuery(ENG_KOR_SG, engQueryBuilder.toString().trim(), korToken, "");
+            } else {
 
-                return new TitleQuery(ENG_KOR_SG,engQueryBuilder.toString().trim(),korToken,"");
-            }else{
-
-                return new TitleQuery(ENG_KOR_MT,engQueryBuilder.toString().trim(),korToken,"");
+                return new TitleQuery(ENG_KOR_MT, engQueryBuilder.toString().trim(), korToken, "");
             }
         }
 
     }
 
-    /** 정규식을 이용하여 영어 제목인지 판별 합니다.
+    /**
+     * 정규식을 이용하여 영어 제목인지 판별 합니다.
      *
      * @param input 판별하고자 하는 제목
      * @return 영어 제목이면 true, 그 외에는 false;
@@ -150,8 +178,9 @@ public class TitleAnalyzer {
         return input.matches(pattern);
     }
 
-    /** 정규식을 이용하여 한글 제목인지 판별 합니다.
-     * 
+    /**
+     * 정규식을 이용하여 한글 제목인지 판별 합니다.
+     *
      * @param input 판별하고자 하는 제목
      * @return 한글 제목이면 true, 그 외에는 false
      */
@@ -160,7 +189,8 @@ public class TitleAnalyzer {
         return input.matches(pattern);
     }
 
-    /** 주어진 제목 문자열을 나눈 뒤 다른 문자를 더해 알맞게 변형 합니다.
+    /**
+     * 주어진 제목 문자열을 나눈 뒤 다른 문자를 더해 알맞게 변형 합니다.
      *
      * @param target 변형하고자 하는 제목 문자열
      * @return 변형된 제목 문자열
