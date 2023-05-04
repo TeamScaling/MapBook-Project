@@ -10,11 +10,10 @@
   <b>Chrome 브라우저는 https 환경에서만 geolocation을 지원합니다.</b> 참고해주세요.
 </p>
 <div id="map" style="width:100%;height:350px;"></div>
-
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2c42f48eb37ceb1901cdfdc9c1dba0e9"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=23de3628a9711d265e146586efd8c0d9"></script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  var loanAbleData = /*[[${mapBooks}]]*/ [];
+  let loanAbleData = /*[[${mapBooks}]]*/ [];
   /*]]>*/
 
   // HTML5의 geolocation으로 사용할 수 있는지 확인합니다
@@ -145,10 +144,6 @@
 
   // 마커를 지도에 표시합니다.
   marker.setMap(map);
-
-
-
-
 
 </script>
 </body>
