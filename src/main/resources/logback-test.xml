@@ -5,18 +5,7 @@
         </encoder>
     </appender>
     <!-- File appender 설정 -->
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./logs/test_book_log.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>./logs/test_book_log-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>10MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
+
 
     <logger name="com.github.tomakehurst.wiremock" level="INFO">
         <appender-ref ref="STDOUT" />
@@ -24,6 +13,5 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
     </root>
 </configuration>
