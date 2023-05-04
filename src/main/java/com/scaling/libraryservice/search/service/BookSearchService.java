@@ -63,6 +63,8 @@ public class BookSearchService {
     @Timer
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
+        log.info("-------------query : [{}]-------------------------------",query);
+
         Pageable pageable = PageRequest.of(page - 1, size);
 
         Page<Book> books = pickSelectQuery(query, pageable);

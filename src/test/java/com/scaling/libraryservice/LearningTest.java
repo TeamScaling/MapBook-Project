@@ -1,5 +1,6 @@
 package com.scaling.libraryservice;
 
+import com.google.gson.Gson;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
@@ -16,6 +17,8 @@ import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,6 +30,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import javax.json.JsonObject;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.joda.time.DateTime;
@@ -275,13 +279,28 @@ public class LearningTest {
         ApiQuerySender sender = new ApiQuerySender(new RestTemplate());
         /* when */
 
-        var reulst = sender.singleQueryJson(new LoanItemConn(),String.valueOf(10));
+        var reulst = sender.singleQueryJson(new LoanItemConn(),String.valueOf(5000));
 
         /* then */
 
-        var result = apiQueryBinder.bindLoanItem(reulst);
+        var result = apiQueryBinder.bindLoanItem(reulst).stream().map(l -> new TestingBookDto(l.getBookName())).toList();
 
         JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("book",result);
+
+        Gson gson = new Gson();
+
+
+
+        String filePath = "test_book.ser";
+
+        try (FileWriter fw = new FileWriter(filePath)) {
+            fw.write(gson.toJson(result));
+
+        } catch (IOException e) {
+
+        }
         
 
     }

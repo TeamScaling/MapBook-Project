@@ -1,10 +1,15 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import lombok.ToString;
 import org.json.JSONObject;
 
+@ToString
 public class TestingBookDto {
 
     private String bookName;
+
+    public TestingBookDto() {
+    }
 
     public String getBookName() {
         return bookName;

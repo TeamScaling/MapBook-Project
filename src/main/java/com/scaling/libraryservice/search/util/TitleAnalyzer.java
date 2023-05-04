@@ -134,8 +134,6 @@ public class TitleAnalyzer {
         }
 
         if (korToken.length() >= engToken.length()) {
-            log.info("korToken @@@@@@@@@@@2"+korToken);
-            log.info("englishBuilder @@@@@@@@@@@2"+engQueryBuilder.toString());
 
             log.info("korToken >= engToken");
             korToken = splitTarget(korToken);
