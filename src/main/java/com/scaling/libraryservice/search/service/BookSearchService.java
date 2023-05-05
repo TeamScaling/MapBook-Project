@@ -7,6 +7,7 @@ import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
@@ -17,7 +18,10 @@ import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -73,8 +77,17 @@ public class BookSearchService {
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Book> books = null;
 
-        Page<Book> books = pickSelectQuery(query, pageable);
+        try {
+            books = CompletableFuture.supplyAsync(() -> pickSelectQuery(query, pageable))
+                .get(3, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Query execution exceeded 3 seconds. Returning an empty result.", e);
+            books = Page.empty(pageable);
+            asyncSearchBook(query,page,size);
+        }
+
 
         Objects.requireNonNull(books);
 
@@ -83,6 +96,24 @@ public class BookSearchService {
                 books.getTotalElements(), page, size),
             books.stream().map(BookDto::new).toList());
     }
+
+    public void asyncSearchBook(String query, int page,int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        log.info("[{}] async Search Book start.....",query);
+        var result = CompletableFuture.runAsync(() -> {
+            Page<Book> fetchedBooks = pickSelectQuery(query, pageable);
+            if (fetchedBooks != null && !fetchedBooks.isEmpty()) {
+                RespBooksDto respBooksDto = new RespBooksDto(
+                    new MetaDto(fetchedBooks.getTotalPages(),
+                        fetchedBooks.getTotalElements(), page, size),
+                    fetchedBooks.stream().map(BookDto::new).toList());
+
+                cacheManager.put(this.getClass(),new BookCacheKey(query,page),respBooksDto);
+                log.info("[{}] async Search task is Completed",query);
+            }
+        });
+    }
+
 
     /**
      * 검색 대상(target)에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환하는 메서드입니다.

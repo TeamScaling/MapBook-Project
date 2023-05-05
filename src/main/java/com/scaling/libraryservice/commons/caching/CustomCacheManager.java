@@ -3,6 +3,7 @@ package com.scaling.libraryservice.commons.caching;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class CustomCacheManager<T> {
     private final Map<Class<?>, Class<? extends CacheKey>> personalKeyMap = new HashMap<>();
     private final CacheBackupService<T> cacheBackupService;
 
-    private final Cache<BookCacheKey, T> slowSearchCache = Caffeine.newBuilder().build();
+    private final Cache<BookCacheKey, RespBooksDto> slowSearchCache = Caffeine.newBuilder().build();
 
     @PreDestroy
     public void onShutdown() {

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,9 +32,11 @@ public class CacheBackupService<T> {
 
     public final String COMMONS_BACK_UP_FILE_NAME = "cache_backup_common.json";
 
+    private final Gson gson = new Gson();
+
+    private final JsonObject jsonObject = new JsonObject();
+
     public void saveCommonCacheToFile(Map<Class<?>, Cache<CacheKey, T>> cacheMap) {
-        Gson gson = new Gson();
-        JsonObject jsonObject = new JsonObject();
 
         for (Map.Entry<Class<?>, Cache<CacheKey, T>> entry : cacheMap.entrySet()) {
             Class<?> clazz = entry.getKey();
@@ -54,8 +57,6 @@ public class CacheBackupService<T> {
         } catch (IOException e) {
             log.error("Failed to save cache data to file: {}", COMMONS_BACK_UP_FILE_NAME, e);
         }
-
-
     }
 
     public Cache<CacheKey, List<RespMapBookDto>> reloadMapBookCache(String filename,
