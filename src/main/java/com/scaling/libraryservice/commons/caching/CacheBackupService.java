@@ -3,26 +3,22 @@ package com.scaling.libraryservice.commons.caching;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.util.MapBookService;
 import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
-import com.scaling.libraryservice.recommend.service.RecommendService;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.service.BookSearchService;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -33,22 +29,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class CacheBackupService<T> {
 
-    private final Gson gson;
+    public final String COMMONS_BACK_UP_FILE_NAME = "cache_backup_common.json";
 
-    public CacheBackupService() {
-        gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .registerTypeAdapter(Class.class, new ClassTypeAdapter())
-            .create();
-    }
-
-    public void saveCacheDataToFile(String filePath, Map<Class<?>, Cache<CacheKey, T>> cacheMap) {
+    public void saveCommonCacheToFile(Map<Class<?>, Cache<CacheKey, T>> cacheMap) {
         Gson gson = new Gson();
         JsonObject jsonObject = new JsonObject();
 
         for (Map.Entry<Class<?>, Cache<CacheKey, T>> entry : cacheMap.entrySet()) {
             Class<?> clazz = entry.getKey();
-            Cache<CacheKey, T> cache = entry.getValue();
+            Cache<CacheKey, ?> cache = entry.getValue();
 
             JsonObject cacheData = new JsonObject();
 
@@ -59,27 +48,18 @@ public class CacheBackupService<T> {
             jsonObject.add(clazz.getSimpleName(), cacheData);
         }
 
-        try (FileWriter fw = new FileWriter(filePath)) {
+        try (FileWriter fw = new FileWriter(COMMONS_BACK_UP_FILE_NAME)) {
             fw.write(gson.toJson(jsonObject));
-            log.info("Cache data saved to file: {}", filePath);
+            log.info("Cache data saved to file: {}", COMMONS_BACK_UP_FILE_NAME);
         } catch (IOException e) {
-            log.error("Failed to save cache data to file: {}", filePath, e);
+            log.error("Failed to save cache data to file: {}", COMMONS_BACK_UP_FILE_NAME, e);
         }
+
+
     }
 
-    public Map<Class<?>, Cache<CacheKey, ?>> loadCacheDataFromFile(String filePath,
-        Map<Class<?>, Class<? extends CacheKey>> personalKeyMap) {
-
-        Map<Class<?>, Cache<CacheKey, ?>> resultMap = new HashMap<>();
-
-        resultMap.put(BookSearchService.class,convertForBook(filePath));
-        resultMap.put(RecommendService.class,convertForRec(filePath));
-        resultMap.put(MapBookService.class,convertForMapBook(filePath));
-
-        return resultMap;
-    }
-
-    public Cache<CacheKey, List<RespMapBookDto>> convertForMapBook(String filename) {
+    public Cache<CacheKey, List<RespMapBookDto>> reloadMapBookCache(String filename,
+        Cache<CacheKey, List<RespMapBookDto>> cache) {
 
         Cache<CacheKey, List<RespMapBookDto>> mapBookApiHandlerItems = null;
 
@@ -103,7 +83,7 @@ public class CacheBackupService<T> {
                 }
             }
 
-            mapBookApiHandlerItems = Caffeine.newBuilder().build();
+            mapBookApiHandlerItems = cache;
 
             for (ReqMapBookDto key : cacheKeyList) {
                 var reqMapBook = customer.getJSONArray(key.toString());
@@ -125,7 +105,7 @@ public class CacheBackupService<T> {
         return mapBookApiHandlerItems;
     }
 
-    public Cache<CacheKey, List<String>> convertForRec(String filename) {
+    public Cache<CacheKey, List<String>> reloadRecCache(String filename,Cache<CacheKey, List<String>> cache) {
 
         Cache<CacheKey, List<String>> recommendItems = null;
 
@@ -148,7 +128,7 @@ public class CacheBackupService<T> {
                 }
             }
 
-            recommendItems = Caffeine.newBuilder().build();
+            recommendItems = cache;
 
             for (RecCacheKey rec : cacheKeys) {
                 var recStrList = customer.getJSONArray(rec.toString());
@@ -172,11 +152,11 @@ public class CacheBackupService<T> {
     }
 
 
-    public Cache<CacheKey,RespBooksDto> convertForBook(String filename){
+    public Cache<CacheKey, RespBooksDto> reloadBookCache(String filename,Cache<CacheKey, RespBooksDto> cache) {
 
-        Cache<CacheKey,RespBooksDto> cachedBooks;
+        Cache<CacheKey, RespBooksDto> cachedBooks;
 
-        try(FileReader fr = new FileReader(filename);
+        try (FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr)) {
 
             JSONObject respJsonObj = new JSONObject(reader.readLine());
@@ -185,36 +165,34 @@ public class CacheBackupService<T> {
 
             List<BookCacheKey> bookCacheKeys = new ArrayList<>();
 
-
-
             for (String s : customer.keySet()) {
                 Pattern pattern = Pattern.compile("BookCacheKey\\(query=(.+),\\s+page=(\\d+)\\)");
 
                 Matcher matcher = pattern.matcher(s);
 
                 if (matcher.find()) {
-                    bookCacheKeys.add(new BookCacheKey(matcher.group(1),Integer.parseInt(matcher.group(2))));
+                    bookCacheKeys.add(
+                        new BookCacheKey(matcher.group(1), Integer.parseInt(matcher.group(2))));
                 }
             }
 
-            cachedBooks = Caffeine.newBuilder().build();
+            cachedBooks = cache;
 
-            for(BookCacheKey bKey : bookCacheKeys){
+            for (BookCacheKey bKey : bookCacheKeys) {
                 var recStrList = customer.getJSONObject(bKey.toString());
 
                 var documents = recStrList.getJSONArray("documents");
                 var meta = recStrList.getJSONObject("meta");
 
-
                 List<BookDto> bookList = new ArrayList<>();
 
-                for(int i=0; i<documents.length(); i++){
+                for (int i = 0; i < documents.length(); i++) {
 
                     BookDto bookDto = new BookDto(documents.getJSONObject(i));
                     bookList.add(bookDto);
                 }
 
-                cachedBooks.put(bKey,new RespBooksDto(new MetaDto(meta),bookList));
+                cachedBooks.put(bKey, new RespBooksDto(new MetaDto(meta), bookList));
             }
 
         } catch (IOException e) {
@@ -223,9 +201,6 @@ public class CacheBackupService<T> {
 
         return cachedBooks;
     }
-
-
-
 
 
 }

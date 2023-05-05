@@ -7,13 +7,10 @@ import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.recommend.dto.RespRecommend;
 import com.scaling.libraryservice.recommend.repository.RecommendRepository;
-import com.scaling.libraryservice.recommend.util.RecommendRule;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import java.io.File;
 import java.util.List;
@@ -44,27 +41,19 @@ public class RecommendService {
     @PostConstruct
     private void init() {
 
-        File file = new File("cache_backup2.ser");
+        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
 
-        Cache<CacheKey, List<String>> recCache = null;
+        Cache<CacheKey, List<String>> recCache = recCache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(1000)
+            .build();
 
         if(file.exists()){
-            recCache = cacheBackupService.convertForRec("cache_backup2.ser");
-        }else{
-
-            recCache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.HOURS)
-                .maximumSize(1000)
-                .build();
+            recCache = cacheBackupService.reloadRecCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME,recCache);
         }
 
         cacheManager.registerCaching(recCache, this.getClass());
     }
-
-    /*@Timer
-    public RespRecommend getRecommendBook2(RespBooksDto searchResult) {
-        return recommendRule.recommendBooks(searchResult);
-    }*/
 
     /**
      * 검색어를 입력받아 해당하는 추천 도서 제목 목록을 반환합니다.

@@ -40,18 +40,15 @@ public class MapBookService {
     @PostConstruct
     public void init() {
 
-        File file = new File("cache_backup2.ser");
+        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
 
-        Cache<CacheKey, List<RespMapBookDto>> mapBookCache = null;
+        Cache<CacheKey, List<RespMapBookDto>> mapBookCache = Caffeine.newBuilder()
+            .expireAfterWrite(1, TimeUnit.DAYS)
+            .maximumSize(1000)
+            .build();
 
         if(file.exists()){
-            mapBookCache = cacheBackupService.convertForMapBook("cache_backup2.ser");
-        }else{
-
-            mapBookCache = Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.HOURS)
-                .maximumSize(1000)
-                .build();
+            mapBookCache = cacheBackupService.reloadMapBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME,mapBookCache);
         }
 
         customCacheManager.registerCaching(mapBookCache, this.getClass());

@@ -28,8 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- * 도서 검색 기능을 제공하는 서비스 클래스입니다.
- * 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
+ * 도서 검색 기능을 제공하는 서비스 클래스입니다. 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
  */
 @Service
 @RequiredArgsConstructor
@@ -47,15 +46,14 @@ public class BookSearchService {
     @PostConstruct
     private void init() {
 
-        File file = new File("cache_backup2.ser");
+        File file = new File(backupService.COMMONS_BACK_UP_FILE_NAME);
 
-        Cache<CacheKey, RespBooksDto> bookCache = null;
+        Cache<CacheKey, RespBooksDto> bookCache = Caffeine.newBuilder()
+            .expireAfterAccess(1, TimeUnit.HOURS).build();
 
-        if(file.exists()){
-            bookCache = backupService.convertForBook("cache_backup2.ser");
-        }else{
-
-            bookCache = Caffeine.newBuilder().build();
+        if (file.exists()) {
+            bookCache = backupService.reloadBookCache(backupService.COMMONS_BACK_UP_FILE_NAME,
+                bookCache);
         }
 
         cacheManager.registerCaching(bookCache, this.getClass());
@@ -64,10 +62,10 @@ public class BookSearchService {
     /**
      * 입력된 검색어를 이용하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
      *
-     * @param query    검색어
-     * @param page     검색 결과 페이지 번호
-     * @param size     페이지 당 반환할 도서 수
-     * @param target   검색 대상 (기본값: "title")
+     * @param query  검색어
+     * @param page   검색 결과 페이지 번호
+     * @param size   페이지 당 반환할 도서 수
+     * @param target 검색 대상 (기본값: "title")
      * @return 검색 결과를 담은 RespBooksDto 객체
      */
     @Timer

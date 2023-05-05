@@ -52,7 +52,6 @@ public class CustomCacheAspect<T> {
         Object result = joinPoint.proceed();
         cacheManager.put(clazz, cacheKey, (T)result);
         return result;
-
     }
 
     /**
