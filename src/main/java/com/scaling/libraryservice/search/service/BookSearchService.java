@@ -73,6 +73,7 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체
      */
     @Timer
+    @CustomCacheable
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
         log.info("-------------query : [{}]-------------------------------",query);

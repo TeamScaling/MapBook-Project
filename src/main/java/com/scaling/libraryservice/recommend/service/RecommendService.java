@@ -64,6 +64,7 @@ public class RecommendService {
      * @return 추천 도서 제목 문자열을 담고 있는 List
      */
     @Timer
+    @CustomCacheable
     public List<String> getRecommendBook(String query) {
 
         return pickSelectQuery(query, 5).stream().map(r -> TrimTitleResult(r.getTitle())).toList();
