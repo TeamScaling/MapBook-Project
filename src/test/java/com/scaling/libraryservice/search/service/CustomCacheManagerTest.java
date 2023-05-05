@@ -2,18 +2,24 @@ package com.scaling.libraryservice.search.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.Customer;
 import com.scaling.libraryservice.commons.caching.NameCacheKey;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -28,7 +34,7 @@ class CustomCacheManagerTest {
 
     @PostConstruct
     public void init(){
-        customCacheManager = new CustomCacheManager();
+        customCacheManager = new CustomCacheManager(new CacheBackupService());
 
         Cache<CacheKey,Object> cache = Caffeine.newBuilder()
             .expireAfterWrite(600, TimeUnit.SECONDS)
@@ -43,8 +49,6 @@ class CustomCacheManagerTest {
     @Test
     public void load (){
         /* given */
-
-        CustomCacheManager customCacheManager = new CustomCacheManager();
 
 
         Customer customer = new Customer("조인준");
@@ -94,7 +98,6 @@ class CustomCacheManagerTest {
     @Test @DisplayName("캐싱 기능 해제")
     public void cache_remove_caching(){
         /* given */
-        CustomCacheManager customCacheManager = new CustomCacheManager();
 
         Cache<CacheKey,Object> cache = Caffeine.newBuilder()
             .expireAfterWrite(600, TimeUnit.SECONDS)
@@ -157,6 +160,36 @@ class CustomCacheManagerTest {
         boolean result2= customCacheManager.isUsingCaching(bookSearchService.getClass());
         /* then */
         assertFalse(result2);
+    }
+
+    @Test
+    public void load_file(){
+        /* given */
+
+        BookCacheKey bookCacheKey = new BookCacheKey("자바",1);
+
+        var booksDto = bookSearchService.searchBooks("자바",1,10,"title");
+
+        Cache<BookCacheKey,RespBooksDto> cache = Caffeine.newBuilder().build();
+
+        cache.put(bookCacheKey,booksDto);
+
+        String filename = "cache_books.ser";
+
+        /* then */
+
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ObjectOutputStream os = new ObjectOutputStream(bos);
+
+            os.writeObject(cache);
+
+            os.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

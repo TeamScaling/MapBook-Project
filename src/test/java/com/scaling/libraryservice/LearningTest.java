@@ -1,15 +1,24 @@
 package com.scaling.libraryservice;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
+import com.scaling.libraryservice.commons.caching.UserInfo;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
-import com.scaling.libraryservice.mapBook.dto.TestingBookDto;
-import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
+import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.dto.BookDto;
+import com.scaling.libraryservice.search.dto.MetaDto;
+import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
@@ -17,8 +26,16 @@ import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
-import java.io.FileWriter;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,14 +46,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
-import javax.json.JsonObject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.RestTemplate;
 
 public class LearningTest {
 
@@ -122,7 +138,7 @@ public class LearningTest {
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
         // Input text
-        String text = "(UML과 GoF 디자인 패턴 핵심 10가지로 배우는) JAVA 객체 지향 디자인 패턴";
+        String text = "email에 꼭 필요한 알짜표현";
 
         // Annotate text
         Annotation document = new Annotation(text);
@@ -273,37 +289,244 @@ public class LearningTest {
     }
 
     @Test
-    public void testing(){
+    public void test_json_backUp_load(){
         /* given */
-        ApiQueryBinder apiQueryBinder = new ApiQueryBinder();
-        ApiQuerySender sender = new ApiQuerySender(new RestTemplate());
-        /* when */
 
-        var reulst = sender.singleQueryJson(new LoanItemConn(),String.valueOf(5000));
-
-        /* then */
-
-        var result = apiQueryBinder.bindLoanItem(reulst).stream().map(l -> new TestingBookDto(l.getBookName())).toList();
-
-        JSONObject jsonObject = new JSONObject();
-
-        jsonObject.put("book",result);
+        String filePath = "cache_backup.ser";
+        File backupFile = new File(filePath);
 
         Gson gson = new Gson();
 
 
 
-        String filePath = "test_book.ser";
+        try (FileReader fileReader = new FileReader(backupFile);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);) {
 
-        try (FileWriter fw = new FileWriter(filePath)) {
-            fw.write(gson.toJson(result));
+            while (bufferedReader.ready()){
+                System.out.println(bufferedReader.readLine());
+            }
 
         } catch (IOException e) {
 
         }
-        
+
+        /* when */
+
+        /* then */
+    }
+
+    @Test
+    public void learning_serial(){
+        /* given */
+
+        UserInfo userInfo = new UserInfo("조인준",34,"1234");
+
+        String filename = "userInfo.ser";
+
+        /* when */
+
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            ObjectOutputStream os = new ObjectOutputStream(bos);
+
+            os.writeObject(userInfo);
+
+            os.close();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        /* then */
+    }
+
+    @Test
+    public void learning_deserial(){
+        /* given */
+        String filename = "userInfo.ser";
+
+        try {
+            FileInputStream fis = new FileInputStream(filename);
+            BufferedInputStream bis = new BufferedInputStream(fis);
+            ObjectInputStream ois = new ObjectInputStream(bis);
+
+            UserInfo userInfo = (UserInfo) ois.readObject();
+
+            System.out.println(userInfo);
+
+            ois.close();
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        /* when */
+
+        /* then */
+    }
+
+    @Test
+    public void load_json_backUp(){
+        /* given */
+        String filename = "cache_backup2.ser";
+
+        try {
+            FileReader fr = new FileReader(filename);
+            BufferedReader reader = new BufferedReader(fr);
+
+            JSONObject respJsonObj = new JSONObject(reader.readLine());
+
+            var customer = respJsonObj.getJSONObject("MapBookApiHandler");
+
+            List<ReqMapBookDto> reqMapBooks = new ArrayList<>();
+
+            for (String s : customer.keySet()) {
+                Pattern pattern = Pattern.compile("ReqMapBookDto\\(isbn=(.+),\\s+areaCd=(\\d+)\\)");
+
+                Matcher matcher = pattern.matcher(s);
+
+                if (matcher.find()) {
+                    reqMapBooks.add(new ReqMapBookDto(matcher.group(1),Integer.valueOf(matcher.group(2))));
+                }
+            }
+
+            Cache<ReqMapBookDto,List<RespMapBookDto>> mapBookApiHandlerItems = Caffeine.newBuilder().build();
+
+            for(ReqMapBookDto req : reqMapBooks){
+                var reqMapBook = customer.getJSONArray(req.toString());
+
+                List<RespMapBookDto> result = new ArrayList<>();
+
+                for(int i=0; i<reqMapBook.length(); i++){
+
+                    result.add(new RespMapBookDto(reqMapBook.getJSONObject(i)));
+                }
+
+                mapBookApiHandlerItems.put(req,result);
+            }
+
+            mapBookApiHandlerItems.getIfPresent(new ReqMapBookDto("9791188427000",26200)).forEach(System.out::println);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void load_json_backUp2(){
+        /* given */
+        String filename = "cache_backup2.ser";
+
+        try {
+            FileReader fr = new FileReader(filename);
+            BufferedReader reader = new BufferedReader(fr);
+
+            JSONObject respJsonObj = new JSONObject(reader.readLine());
+
+            var customer = respJsonObj.getJSONObject("RecommendService");
+
+            List<RecCacheKey> cacheKeys = new ArrayList<>();
+
+            for (String s : customer.keySet()) {
+                Pattern pattern = Pattern.compile("RecCacheKey\\(query=(.+)\\)");
+
+                Matcher matcher = pattern.matcher(s);
+
+                if (matcher.find()) {
+                    cacheKeys.add(new RecCacheKey(matcher.group(1)));
+                }
+            }
+
+            Cache<RecCacheKey,List<String>> recommendItems = Caffeine.newBuilder().build();
+
+            for(RecCacheKey rec : cacheKeys){
+                var recStrList = customer.getJSONArray(rec.toString());
+
+                List<String> result = new ArrayList<>();
+
+                for(int i=0; i<recStrList.length(); i++){
+
+                    result.add(recStrList.getString(i));
+                }
+
+                recommendItems.put(rec,result);
+            }
+
+            System.out.println(recommendItems.getIfPresent(new RecCacheKey("스프링")));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void load_json_backUp3(){
+        /* given */
+        String filename = "cache_backup2.ser";
+
+        try(FileReader fr = new FileReader(filename);
+            BufferedReader reader = new BufferedReader(fr)) {
+
+            JSONObject respJsonObj = new JSONObject(reader.readLine());
+
+            var customer = respJsonObj.getJSONObject("BookSearchService");
+
+            List<BookCacheKey> bookCacheKeys = new ArrayList<>();
+
+
+
+            for (String s : customer.keySet()) {
+                Pattern pattern = Pattern.compile("BookCacheKey\\(query=(.+),\\s+page=(\\d+)\\)");
+
+                Matcher matcher = pattern.matcher(s);
+
+                if (matcher.find()) {
+                    bookCacheKeys.add(new BookCacheKey(matcher.group(1),Integer.parseInt(matcher.group(2))));
+                }
+            }
+
+            Cache<BookCacheKey,RespBooksDto> cachedBooks = Caffeine.newBuilder().build();
+
+            for(BookCacheKey bKey : bookCacheKeys){
+                var recStrList = customer.getJSONObject(bKey.toString());
+
+                var documents = recStrList.getJSONArray("documents");
+                var meta = recStrList.getJSONObject("meta");
+
+
+                List<BookDto> bookList = new ArrayList<>();
+
+                for(int i=0; i<documents.length(); i++){
+
+                    BookDto bookDto = new BookDto(documents.getJSONObject(i));
+                    bookList.add(bookDto);
+                }
+
+                cachedBooks.put(bKey,new RespBooksDto(new MetaDto(meta),bookList));
+            }
+
+            System.out.println(cachedBooks.getIfPresent(new BookCacheKey("스프링",1)));
+
+            /*System.out.println(recommendItems.getIfPresent(new RecCacheKey("스프링")));*/
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
+
+    @Test
+    public void jsonBind() throws NoSuchFieldException, IllegalAccessException {
+        /* given */
+        var result = BookCacheKey.class.getDeclaredField("regrex");
+
+        result.setAccessible(true);
+        /* when */
+        System.out.println((String) result.get(null));
+        /* then */
+    }
+
 
 
 }

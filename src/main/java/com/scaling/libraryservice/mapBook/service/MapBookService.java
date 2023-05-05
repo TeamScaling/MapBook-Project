@@ -3,6 +3,7 @@ package com.scaling.libraryservice.mapBook.service;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
@@ -15,6 +16,7 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +37,21 @@ public class MapBookService {
     private final ApiQueryBinder apiQueryBinder;
 
     private final CustomCacheManager<List<RespMapBookDto>> customCacheManager;
+    private final CacheBackupService<List<RespMapBookDto>> cacheBackupService;
 
     @PostConstruct
     public void init() {
+
+        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
 
         Cache<CacheKey, List<RespMapBookDto>> mapBookCache = Caffeine.newBuilder()
             .expireAfterWrite(6, TimeUnit.HOURS)
             .maximumSize(1000)
             .build();
+
+        if(file.exists()){
+            mapBookCache = cacheBackupService.reloadMapBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME,mapBookCache);
+        }
 
         customCacheManager.registerCaching(mapBookCache, this.getClass());
     }
@@ -95,7 +104,7 @@ public class MapBookService {
             return mappingLoanableLib(nearByLibraries, bookExistMap);
         } else {
 
-            return nearByLibraries.stream().map(RespMapBookDto::new).toList();
+            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l)).toList();
         }
     }
 
@@ -106,6 +115,7 @@ public class MapBookService {
      * @param bookExistMap 도서관 코드를 key, 대출 가능 Api 응답 Dto를 value로 가지는 Map
      * @return 대출 가능한 주변 도서관 정보에 대한 Dto List
      */
+
     private List<RespMapBookDto> mappingLoanableLib(List<LibraryDto> nearByLibraries,
         Map<Integer, ApiBookExistDto> bookExistMap) {
         List<RespMapBookDto> result = new ArrayList<>();

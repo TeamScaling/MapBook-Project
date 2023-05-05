@@ -2,18 +2,17 @@ package com.scaling.libraryservice.recommend.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.recommend.dto.RespRecommend;
 import com.scaling.libraryservice.recommend.repository.RecommendRepository;
-import com.scaling.libraryservice.recommend.util.RecommendRule;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
@@ -32,28 +31,29 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecommendService {
 
-    private final RecommendRule recommendRule;
-
     private final RecommendRepository recommendRepo;
 
     private final TitleAnalyzer titleAnalyzer;
 
     private final CustomCacheManager<List<String>> cacheManager;
 
+    private final CacheBackupService<List<String>> cacheBackupService;
+
     @PostConstruct
     private void init() {
 
-        Cache<CacheKey, List<String>> bookCache = Caffeine.newBuilder()
+        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
+
+        Cache<CacheKey, List<String>> recCache = recCache = Caffeine.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .maximumSize(1000)
             .build();
 
-        cacheManager.registerCaching(bookCache, this.getClass());
-    }
+        if(file.exists()){
+            recCache = cacheBackupService.reloadRecCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME,recCache);
+        }
 
-    @Timer
-    public RespRecommend getRecommendBook2(RespBooksDto searchResult) {
-        return recommendRule.recommendBooks(searchResult);
+        cacheManager.registerCaching(recCache, this.getClass());
     }
 
     /**

@@ -3,10 +3,13 @@ package com.scaling.libraryservice.search.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import org.json.JSONObject;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString
 public class MetaDto {
 
     private long totalPages;
@@ -21,4 +24,11 @@ public class MetaDto {
         this.pageSize = pageSize;
     }
 
+    public MetaDto(JSONObject jsonObject) {
+        this.totalPages = jsonObject.getLong("totalPages");
+        this.totalElements = jsonObject.getLong("totalElements");
+        this.currentPage = jsonObject.getLong("currentPage");
+        this.pageSize = jsonObject.getLong("pageSize");
+
+    }
 }

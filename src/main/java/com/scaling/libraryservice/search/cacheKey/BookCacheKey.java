@@ -1,13 +1,16 @@
 package com.scaling.libraryservice.search.cacheKey;
 
 import com.scaling.libraryservice.commons.caching.CacheKey;
+import java.io.Serializable;
 import java.util.Objects;
+import lombok.ToString;
 
 /**
  * 검색된 도서 데이터를 캐싱하기 위한 키 클래스입니다.
  * 이 클래스는 캐싱 시 사용되는 고유한 키 값을 생성하고 관리합니다.
  */
-public class BookCacheKey implements CacheKey {
+@ToString
+public class BookCacheKey implements CacheKey{
 
     private final String query;
 

@@ -1,14 +1,14 @@
 package com.scaling.libraryservice;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
+import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class LibraryServiceApplicationTests {

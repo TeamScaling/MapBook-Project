@@ -1,11 +1,10 @@
 package com.scaling.libraryservice.config;
 
-import com.scaling.libraryservice.recommend.util.RecommendRanRule;
+
 import com.scaling.libraryservice.search.util.relate.RelationTokenRule;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -37,10 +36,5 @@ public class AppConfig {
         return new RelationTokenRule();
     }
 
-    @Bean
-    public RecommendRanRule recommendRanRule() {
-
-        return new RecommendRanRule();
-    }
 
 }

@@ -69,7 +69,7 @@ public class CustomCacheAspect<T> {
 
             log.info("This task is over 0.5s [{}] or related MapBookService then CacheManger put this item : [{}] ",taskTime,result);
 
-            cacheManager.put(clazz, cacheKey, result);
+            cacheManager.put(clazz, cacheKey, (T)result);
         }
 
         return result;

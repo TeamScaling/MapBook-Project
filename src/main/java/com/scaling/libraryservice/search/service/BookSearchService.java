@@ -2,10 +2,12 @@ package com.scaling.libraryservice.search.service;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
@@ -14,8 +16,12 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import java.io.File;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- * 도서 검색 기능을 제공하는 서비스 클래스입니다.
- * 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
+ * 도서 검색 기능을 제공하는 서비스 클래스입니다. 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
  */
 @Service
 @RequiredArgsConstructor
@@ -40,13 +45,20 @@ public class BookSearchService {
     private final CustomCacheManager<RespBooksDto> cacheManager;
     private final TitleAnalyzer titleAnalyzer;
 
+    private final CacheBackupService<RespBooksDto> backupService;
+
     @PostConstruct
     private void init() {
 
+        File file = new File(backupService.COMMONS_BACK_UP_FILE_NAME);
+
         Cache<CacheKey, RespBooksDto> bookCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .maximumSize(1000)
-            .build();
+            .expireAfterAccess(1, TimeUnit.HOURS).build();
+
+        if (file.exists()) {
+            bookCache = backupService.reloadBookCache(backupService.COMMONS_BACK_UP_FILE_NAME,
+                bookCache);
+        }
 
         cacheManager.registerCaching(bookCache, this.getClass());
     }
@@ -54,10 +66,10 @@ public class BookSearchService {
     /**
      * 입력된 검색어를 이용하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
      *
-     * @param query    검색어
-     * @param page     검색 결과 페이지 번호
-     * @param size     페이지 당 반환할 도서 수
-     * @param target   검색 대상 (기본값: "title")
+     * @param query  검색어
+     * @param page   검색 결과 페이지 번호
+     * @param size   페이지 당 반환할 도서 수
+     * @param target 검색 대상 (기본값: "title")
      * @return 검색 결과를 담은 RespBooksDto 객체
      */
     @Timer
@@ -66,8 +78,17 @@ public class BookSearchService {
         log.info("-------------query : [{}]-------------------------------",query);
 
         Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Book> books = null;
 
-        Page<Book> books = pickSelectQuery(query, pageable);
+        try {
+            books = CompletableFuture.supplyAsync(() -> pickSelectQuery(query, pageable))
+                .get(3, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Query execution exceeded 3 seconds. Returning an empty result.", e);
+            books = Page.empty(pageable);
+            asyncSearchBook(query,page,size);
+        }
+
 
         Objects.requireNonNull(books);
 
@@ -76,6 +97,24 @@ public class BookSearchService {
                 books.getTotalElements(), page, size),
             books.stream().map(BookDto::new).toList());
     }
+
+    public void asyncSearchBook(String query, int page,int size){
+        Pageable pageable = PageRequest.of(page - 1, size);
+        log.info("[{}] async Search Book start.....",query);
+        var result = CompletableFuture.runAsync(() -> {
+            Page<Book> fetchedBooks = pickSelectQuery(query, pageable);
+            if (fetchedBooks != null && !fetchedBooks.isEmpty()) {
+                RespBooksDto respBooksDto = new RespBooksDto(
+                    new MetaDto(fetchedBooks.getTotalPages(),
+                        fetchedBooks.getTotalElements(), page, size),
+                    fetchedBooks.stream().map(BookDto::new).toList());
+
+                cacheManager.put(this.getClass(),new BookCacheKey(query,page),respBooksDto);
+                log.info("[{}] async Search task is Completed",query);
+            }
+        });
+    }
+
 
     /**
      * 검색 대상(target)에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
