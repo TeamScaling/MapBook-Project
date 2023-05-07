@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
-import com.scaling.libraryservice.mapBook.dto.ApiStatus;
+import com.scaling.libraryservice.commons.apiConnection.ApiStatus;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import java.util.ArrayList;
 import java.util.List;

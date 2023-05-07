@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.mapBook.domain;
 
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
-import com.scaling.libraryservice.mapBook.dto.ApiStatus;
+import com.scaling.libraryservice.commons.apiConnection.ApiStatus;
 
 /**
  *  이 인터페이스 구현체는 ApiStatus를 멤버로 가지며, {@link CircuitBreaker}

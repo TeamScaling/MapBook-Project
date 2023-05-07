@@ -61,6 +61,7 @@ public class LibraryFindService {
      * @throws LocationException 사용자의 위치 정보가 대한민국 범위 밖일 경우
      */
     @Timer
+    @CustomCacheable
     public List<LibraryDto> getNearByLibraries(ReqMapBookDto reqMapBookDto)
         throws LocationException {
 
@@ -110,7 +111,7 @@ public class LibraryFindService {
      * @param areaCd 일정 규모로 묶은 지역에 대한 커스텀 코드
      * @return 도서 번호와 지역 코드를 통해 검색 된 도서 소장 도서관 정보 Dto를 담는 List
      */
-    @CustomCacheable
+
     List<LibraryDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
 
         List<LibraryDto> result

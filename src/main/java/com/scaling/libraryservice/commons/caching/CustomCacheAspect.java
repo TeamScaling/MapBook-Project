@@ -88,9 +88,8 @@ public class CustomCacheAspect<T> {
     private CacheKey generateCacheKey(Class<?> clazz, Object[] arguments) {
 
         if (clazz == LibraryFindService.class) {
-            String isbn13 = (String) arguments[0];
-            Integer areaCd = (Integer) arguments[1];
-            return new HasBookCacheKey(isbn13, areaCd);
+            ReqMapBookDto mapBookDto = (ReqMapBookDto) arguments[0];
+            return new HasBookCacheKey(mapBookDto.getIsbn(), mapBookDto.getAreaCd());
         }
 
         if (clazz == MapBookService.class) {

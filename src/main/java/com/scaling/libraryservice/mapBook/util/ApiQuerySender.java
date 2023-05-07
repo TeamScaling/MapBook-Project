@@ -4,7 +4,7 @@ import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
-import com.scaling.libraryservice.mapBook.dto.ApiStatus;
+import com.scaling.libraryservice.commons.apiConnection.ApiStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

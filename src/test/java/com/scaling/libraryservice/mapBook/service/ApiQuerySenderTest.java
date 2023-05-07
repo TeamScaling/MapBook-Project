@@ -168,10 +168,22 @@ class ApiQuerySenderTest {
 
         apiQuerySender = new ApiQuerySender(restTemplateForMock);
         apiQuerySender.checkConnection(new MockApiConn().getApiStatus());
-
-
-
+        
         mockServer.verify();
-
     }
+    
+    @Test @DisplayName("단일 요청 방식과 병렬 요청 방식 속도 차이")
+    public void compare_single_multi_query(){
+        /* given */
+        int libNo = 141053;
+        String isbn13 = "9788089365210";
+
+
+        apiQuerySender.singleQueryJson(new BExistConn(),isbn13);
+        
+        /* when */
+    
+        /* then */
+    }
+    
 }
