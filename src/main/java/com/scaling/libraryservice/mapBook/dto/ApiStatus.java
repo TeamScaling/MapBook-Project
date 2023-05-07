@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 public class ApiStatus {
 
     private final String apiUri;
-    private boolean apiAccessible;
+    private boolean apiAccessible = true;
     private int errorCnt;
     private DateTime closedTime;
     private DateTime openedTime;

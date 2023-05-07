@@ -39,14 +39,7 @@ public class TitleAnalyzer {
     @Timer
     public TitleQuery analyze(String query) {
 
-        if (query.contains(":")) {
-            int idx = query.indexOf(":");
-            query = query.substring(0, idx);
-        }
-
-        /*if(query.startsWith("(") & query.indexOf(")") != query.length()-1){
-            query = query.substring(query.indexOf(")")+1);
-        }*/
+        query = trimSubTitle(query);
 
         if (isEnglish(query)) {
 
@@ -63,6 +56,19 @@ public class TitleAnalyzer {
             log.info("korean & english title : [{}]", query);
             return engKorResolve(query);
         }
+    }
+
+    private String trimSubTitle(String query){
+        if (query.contains(":") ) {
+            int idx = query.indexOf(":");
+            String foreTitle = query.substring(0, idx);
+
+            if(foreTitle.split(" ").length >1){
+                query = foreTitle;
+            }
+        }
+
+        return query;
     }
 
     /**
@@ -108,7 +114,7 @@ public class TitleAnalyzer {
      */
     private TitleQuery engKorResolve(String query) {
 
-        Map<String, List<String>> titleMap = TitleDivider.divideTitle(query);
+        Map<String, List<String>> titleMap = TitleDivider.divideKorEng(query);
 
         List<String> engTokens = titleMap.get("eng").stream()
             .max(Comparator.comparing(String::length))
@@ -174,7 +180,7 @@ public class TitleAnalyzer {
      * @return 영어 제목이면 true, 그 외에는 false;
      */
     public static boolean isEnglish(String input) {
-        String pattern = "^[a-zA-Z0-9\\.\\s]+$";
+        String pattern = "^[a-zA-Z0-9\\.\\s:,;?!\\-()\\[\\]{}<>]+$";
         return input.matches(pattern);
     }
 
@@ -185,7 +191,7 @@ public class TitleAnalyzer {
      * @return 한글 제목이면 true, 그 외에는 false
      */
     public static boolean isKorean(String input) {
-        String pattern = "^[가-힣0-9\\.\\s]+$";
+        String pattern = "^[가-힣0-9\\.\\s:,;?!\\-()\\[\\]{}<>]+$";
         return input.matches(pattern);
     }
 

@@ -18,7 +18,7 @@ public class TitleDivider {
      * @return 영어와 한글로 분리된 검색어가 담긴 Map 객체 (키: "eng" - 영어, "kor" - 한글)
      */
     @Timer
-    public static Map<String, List<String>> divideTitle(String query) {
+    public static Map<String, List<String>> divideKorEng(String query) {
 
         char[] chars = query.toCharArray();
 

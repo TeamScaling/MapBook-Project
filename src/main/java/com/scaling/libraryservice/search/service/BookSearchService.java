@@ -76,7 +76,7 @@ public class BookSearchService {
     @CustomCacheable
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
-        log.info("-------------query : [{}]-------------------------------",query);
+        log.info("-------------query : [{}]-------------------------------", query);
 
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Book> books = null;
@@ -87,9 +87,8 @@ public class BookSearchService {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error("Query execution exceeded 3 seconds. Returning an empty result.", e);
             books = Page.empty(pageable);
-            asyncSearchBook(query,page,size);
+            asyncSearchBook(query, page, size);
         }
-
 
         Objects.requireNonNull(books);
 
@@ -99,9 +98,9 @@ public class BookSearchService {
             books.stream().map(BookDto::new).toList());
     }
 
-    public void asyncSearchBook(String query, int page,int size){
+    public void asyncSearchBook(String query, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        log.info("[{}] async Search Book start.....",query);
+        log.info("[{}] async Search Book start.....", query);
         var result = CompletableFuture.runAsync(() -> {
             Page<Book> fetchedBooks = pickSelectQuery(query, pageable);
             if (fetchedBooks != null && !fetchedBooks.isEmpty()) {
@@ -110,8 +109,8 @@ public class BookSearchService {
                         fetchedBooks.getTotalElements(), page, size),
                     fetchedBooks.stream().map(BookDto::new).toList());
 
-                cacheManager.put(this.getClass(),new BookCacheKey(query,page),respBooksDto);
-                log.info("[{}] async Search task is Completed",query);
+                cacheManager.put(this.getClass(), new BookCacheKey(query, page), respBooksDto);
+                log.info("[{}] async Search task is Completed", query);
             }
         });
     }
@@ -130,7 +129,7 @@ public class BookSearchService {
 
         TitleType type = titleQuery.getTitleType();
 
-        log.info("Query is [{}] and tokens : [{}]",type.name(),titleQuery);
+        log.info("Query is [{}] and tokens : [{}]", type.name(), titleQuery);
 
         switch (type) {
 
@@ -147,7 +146,8 @@ public class BookSearchService {
                 return bookRepository.findBooksByEngMtFlexible(titleQuery.getEngToken(), pageable);
             }
             case KOR_ENG, ENG_KOR_SG -> {
-                return bookRepository.findBooksByEngKorBool(titleQuery.getEngToken(),titleQuery.getKorToken(), pageable);
+                return bookRepository.findBooksByEngKorBool(titleQuery.getEngToken(),
+                    titleQuery.getKorToken(), pageable);
             }
 
             case ENG_KOR_MT -> {
