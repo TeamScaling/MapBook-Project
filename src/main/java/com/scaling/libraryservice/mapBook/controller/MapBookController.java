@@ -26,11 +26,6 @@ public class MapBookController {
 
     private final LibraryFindService libraryFindService;
 
-    @PostConstruct
-    public void init() {
-        mapBookService.checkOpenApi();
-    }
-
 
     /**
      * 사용자의 요청에 맞는 대출 가능 도서관 마커 데이터를 model에 담아 view에 전달 합니다

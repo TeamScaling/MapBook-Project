@@ -3,11 +3,7 @@ package com.scaling.libraryservice;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.caching.UserInfo;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
@@ -178,7 +174,7 @@ public class LearningTest {
     public void english_korean() {
         String text = "e-mail에 꼭 필요한 알짜표현";
 
-        var result = TitleDivider.divideTitle(text);
+        var result = TitleDivider.divideKorEng(text);
 
         System.out.println(result);
     }

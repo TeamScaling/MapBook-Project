@@ -64,7 +64,7 @@ public class CustomCacheAspect<T> {
 
         log.info("........."+taskTime);
 
-        if (taskTime >= 0.4 ||
+        if (taskTime > 1.0 ||
             clazz == MapBookService.class) {
 
             log.info("This task is over 0.5s [{}] or related MapBookService then CacheManger put this item : [{}] ",taskTime,result);

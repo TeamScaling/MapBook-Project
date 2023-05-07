@@ -7,10 +7,8 @@ import com.scaling.libraryservice.commons.caching.CacheBackupService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
-import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
-import com.scaling.libraryservice.mapBook.dto.ApiStatus;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
@@ -54,21 +52,6 @@ public class MapBookService {
         }
 
         customCacheManager.registerCaching(mapBookCache, this.getClass());
-    }
-
-    public void checkOpenApi() {
-
-        BExistConn bExistConn = new BExistConn();
-        ApiStatus status = BExistConn.apiStatus;
-
-        ResponseEntity<String> connection
-            = apiQuerySender.singleQueryJson(bExistConn, "9788089365210");
-
-        if (apiQueryBinder.bindBookExist(connection) == null) {
-            CircuitBreaker.closeObserver(status);
-        } else {
-            status.openAccess();
-        }
     }
 
     /**
