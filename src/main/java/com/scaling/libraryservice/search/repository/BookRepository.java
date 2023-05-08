@@ -45,7 +45,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         + "where match(TITLE_NM) against(:korToken IN BOOLEAN MODE)) "
         + "AS l where l.TITLE_NM like :engToken", nativeQuery = true,
         countQuery =
-            "select count(*) from (select * from (select SEQ_NO,ISBN_THIRTEEN_NO,TITLE_NM "
+            "select count(*) from (select * from (select id_no,ISBN_THIRTEEN_NO,TITLE_NM "
                 + "from books where match(TITLE_NM) against(:korToken IN BOOLEAN MODE)) as l\n"
                 + "where l.TITLE_NM like :engToken) as c")
     Page<Book> findBooksByEngKorBool(@Param("engToken") String engToken,
@@ -57,7 +57,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         + "where match(TITLE_NM) against(:korToken IN NATURAL LANGUAGE MODE)) "
         + "AS l where l.TITLE_NM like :engToken", nativeQuery = true,
         countQuery =
-            "select count(*) from (select * from (select SEQ_NO,ISBN_THIRTEEN_NO,TITLE_NM "
+            "select count(*) from (select * from (select id_no,ISBN_THIRTEEN_NO,TITLE_NM "
                 + "from books where match(TITLE_NM) against(:korToken IN NATURAL LANGUAGE MODE)) as l\n"
                 + "where l.TITLE_NM like :engToken) as c")
     Page<Book> findBooksByEngKorNatural(@Param("engToken") String engToken,

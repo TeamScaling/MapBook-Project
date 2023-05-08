@@ -99,10 +99,13 @@ public class BookSearchService {
     }
 
     public void asyncSearchBook(String query, int page, int size) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
         log.info("[{}] async Search Book start.....", query);
+
         var result = CompletableFuture.runAsync(() -> {
             Page<Book> fetchedBooks = pickSelectQuery(query, pageable);
+
             if (fetchedBooks != null && !fetchedBooks.isEmpty()) {
                 RespBooksDto respBooksDto = new RespBooksDto(
                     new MetaDto(fetchedBooks.getTotalPages(),
