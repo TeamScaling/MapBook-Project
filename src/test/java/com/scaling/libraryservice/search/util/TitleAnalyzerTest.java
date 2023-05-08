@@ -2,6 +2,7 @@ package com.scaling.libraryservice.search.util;
 
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -70,6 +71,30 @@ class TitleAnalyzerTest {
         /* then */
 
         System.out.println(result);
+    }
+
+    @Test
+    public void test_remove_keyWord(){
+        /* given */
+
+        String query = "28 : 정유정 장편소설 이야기 한국사";
+        String removeQuery = "28 : 정유정";
+
+        /* when */
+        var result = titleAnalyzer.removeKeyword(query);
+
+        /* then */
+
+        Assertions.assertEquals(result,removeQuery);
+    }
+
+    @Test
+    public void test_load(){
+        /* given */
+        var result = "아몬드손원평 장편소설".contains("아몬드:손원평 장편소설");
+        /* when */
+        System.out.println(result);
+        /* then */
     }
 
 }
