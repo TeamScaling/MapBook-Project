@@ -24,9 +24,7 @@ public class SearchRestController {
 
         var result = bookSearchService.searchBooks(testingBookDto.getBookName(),1,10,"title");
 
-        var result2 = result.getDocuments().stream().filter(r -> r.getTitle().equals(testingBookDto.getBookName())).findAny();
-
-        if(result2.isEmpty()){
+        if(result.getDocuments().isEmpty()){
             log.info("[Not Found]This book is Not Found");
             return ResponseEntity.notFound().build();
         }

@@ -11,7 +11,9 @@ public enum TitleType {
     ENG_SG,
 
     /** 한국어 다중 단어 검색어 유형 */
-    KOR_MT,
+    KOR_MT_UNDER_TWO,
+
+    KOR_MT_OVER_TWO,
 
     /** 영어 다중 단어 검색어 유형 */
     ENG_MT,

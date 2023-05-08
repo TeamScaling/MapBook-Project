@@ -32,6 +32,7 @@ public class CustomCacheManager<T> {
 
     private final Cache<BookCacheKey, RespBooksDto> slowSearchCache = Caffeine.newBuilder().build();
 
+
     @PreDestroy
     public void onShutdown() {
         cacheBackupService.saveCommonCacheToFile(commonsCache);

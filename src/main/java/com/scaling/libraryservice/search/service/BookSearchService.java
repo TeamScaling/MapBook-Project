@@ -133,18 +133,20 @@ public class BookSearchService {
 
         switch (type) {
 
-            case KOR_SG -> {
+            case KOR_SG, KOR_MT_OVER_TWO -> {
                 return bookRepository.findBooksByKorNatural(titleQuery.getKorToken(), pageable);
             }
             case ENG_SG -> {
                 return bookRepository.findBooksByEngBool(titleQuery.getEngToken(), pageable);
             }
-            case KOR_MT -> {
+            case KOR_MT_UNDER_TWO -> {
                 return bookRepository.findBooksByKorMtFlexible(titleQuery.getKorToken(), pageable);
             }
+
             case ENG_MT -> {
                 return bookRepository.findBooksByEngMtFlexible(titleQuery.getEngToken(), pageable);
             }
+
             case KOR_ENG, ENG_KOR_SG -> {
                 return bookRepository.findBooksByEngKorBool(titleQuery.getEngToken(),
                     titleQuery.getKorToken(), pageable);

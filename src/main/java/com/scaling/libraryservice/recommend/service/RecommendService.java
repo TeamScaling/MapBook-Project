@@ -86,12 +86,12 @@ public class RecommendService {
 
         switch (type) {
 
-            case KOR_SG -> {
+            case KOR_SG,KOR_MT_OVER_TWO -> {
                 return recommendRepo.findBooksByKorBoolOrder(titleQuery.getKorToken(), size)
                     .stream().map(BookDto::new).toList();
             }
 
-            case KOR_MT -> {
+            case KOR_MT_UNDER_TWO -> {
                 return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size)
                     .stream().map(BookDto::new).toList();
             }

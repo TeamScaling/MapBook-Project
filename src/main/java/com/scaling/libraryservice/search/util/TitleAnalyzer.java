@@ -5,7 +5,8 @@ import static com.scaling.libraryservice.search.domain.TitleType.ENG_KOR_SG;
 import static com.scaling.libraryservice.search.domain.TitleType.ENG_MT;
 import static com.scaling.libraryservice.search.domain.TitleType.ENG_SG;
 import static com.scaling.libraryservice.search.domain.TitleType.KOR_ENG;
-import static com.scaling.libraryservice.search.domain.TitleType.KOR_MT;
+import static com.scaling.libraryservice.search.domain.TitleType.KOR_MT_OVER_TWO;
+import static com.scaling.libraryservice.search.domain.TitleType.KOR_MT_UNDER_TWO;
 import static com.scaling.libraryservice.search.domain.TitleType.KOR_SG;
 
 import com.scaling.libraryservice.commons.timer.Timer;
@@ -38,8 +39,7 @@ public class TitleAnalyzer {
      */
     @Timer
     public TitleQuery analyze(String query) {
-
-        query = trimSubTitle(query);
+        query = removeKeyword(query);
 
         if (isEnglish(query)) {
 
@@ -64,11 +64,27 @@ public class TitleAnalyzer {
             String foreTitle = query.substring(0, idx);
 
             if(foreTitle.split(" ").length >1){
+                log.info("trim subTitle in [{}] then [{}]",query,foreTitle);
                 query = foreTitle;
             }
         }
 
         return query;
+    }
+
+    String removeKeyword(String query){
+
+        String[] keyWord = {"이야기","장편소설","한국사"};
+
+        if(query.split(" ").length >1){
+
+            for(String key : keyWord){
+                log.info("delete keyword [{}] in [{}]",key,query);
+                query = query.replaceAll(key,"");
+            }
+        }
+
+       return query.trim();
     }
 
     /**
@@ -94,10 +110,15 @@ public class TitleAnalyzer {
 
             if (isKor) {
 
+                if(query.split(" ").length >2){
+
+                    return new TitleQuery(KOR_MT_OVER_TWO,"",query,"");
+                }
+
                 query = splitTarget(query);
                 log.info("Multi Kor query : [{}]", query);
 
-                return new TitleQuery(KOR_MT, "", query, "");
+                return new TitleQuery(KOR_MT_UNDER_TWO, "", query, "");
             } else {
                 query = splitTarget(query);
                 log.info("Multi Eng query : [{}]", query);
@@ -151,7 +172,7 @@ public class TitleAnalyzer {
 
             if (engTokens.isEmpty()) {
 
-                return new TitleQuery(KOR_MT, "", korToken, "");
+                return new TitleQuery(KOR_MT_UNDER_TWO, "", korToken, "");
             }
 
             return new TitleQuery(KOR_ENG, engQueryBuilder.toString().trim(), korToken, "");

@@ -17,8 +17,8 @@ import lombok.Setter;
 public class LogParserExecutor {
 
     public static void main(String[] args) {
-        String inputNm = "logs/test_book_log0506.log"; // 로그 파일 이름을 입력합니다.
-        String outputNm = "logs/test_book_ver1_cache_duration.json";
+        String inputNm = "test_book.json"; // 로그 파일 이름을 입력합니다.
+        String outputNm = "test_book_result.json";
 
         executeParse(inputNm, outputNm);
     }
