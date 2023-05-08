@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <title>검색 결과 - 책있나?</title>
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="shortcut icon" href="../../static/images/mapbook.png">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <link type="text/css" th:href="@{/css/searchResult.css}" rel="stylesheet">
-
 
 </head>
 <body>
@@ -18,8 +18,8 @@
     <form id="search-form" action="/books/search">
       <select name="target" aria-label="선택">
         <option value="title">도서명</option>
-        <option value="author">저자</option>
-        <option value="all">전체</option>
+<!--        <option value="author">저자</option>-->
+<!--        <option value="all">전체</option>-->
       </select>
       <label>
         <input id="query-input" type="text" name="query" placeholder="검색어를 입력하세요">
@@ -43,37 +43,6 @@
     <p> ---검색중----</p>
   </div>
 
-  <!--  홈버튼-->
-
-  <!--  &lt;!&ndash;  추천도서&ndash;&gt;
-    <div class="recommend-box">
-      &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
-      <p>
-        추천도서 :
-        <span th:if="${recommends.getRecommendBooks().isEmpty()}">
-          추천 도서가 없습니다.
-        </span>
-        <span th:each="book, iter : ${recommends.getRecommendBooks()}">
-          <span th:text="${book.title}"></span>
-          <span th:if="${!iter.isLast()}">, </span>
-        </span>
-      </p>
-    </div>
-
-    &lt;!&ndash;  연관도서&ndash;&gt;
-    <div class="related-box">
-      &lt;!&ndash; search/searchResult 템플릿 &ndash;&gt;
-      <p>
-        연관검색어 :
-        <span th:if="${relationWords == null}">
-          검색 결과가 없습니다.
-        </span>
-        <span th:each="token, status : ${relationWords?.tokens}">
-          <span th:text="${token}"></span>
-          <span th:if="${!status.last}">, </span>
-        </span>
-      </p>
-    </div>-->
 </header>
 
 <main>
@@ -81,7 +50,7 @@
     <table>
       <thead>
       <tr>
-        <th>번호</th>
+        <th>ISBN</th>
         <th>도서 제목</th>
         <th>작가</th>
         <th>내용</th>
@@ -92,15 +61,14 @@
       </thead>
       <tbody id="book-info-column">
       <tr th:each="book : ${searchResult.documents}">
-        <td th:text="${book.getId()}"></td>
+        <td th:text="${book.getIsbn()}"></td>
         <td>
           <span th:text="${book.title}"></span>
         </td>
         <td th:text="${book.author}"></td>
         <td th:text="${book.content}"></td>
         <td>
-          <img class="book-image" th:src="${book.bookImg}" alt="준비중"
-               src="../static/images/empty_img.png"/>
+          <img class="book-image" th:src="${book.bookImg}" alt="준비중" src="../../static/images/empty.jpeg"/>
         </td>
         <td>
           <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup_MapBook()">
@@ -115,32 +83,25 @@
       </tbody>
     </table>
 
-    <div class="alert alert-success" role="alert"
-         style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
+    <div class="alert alert-success" role="alert" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
       도서 제목이 클립보드에 복사되었습니다.
     </div>
-
   </div>
 </main>
 <footer>
   <div class="pagination">
     <button id="prevBtn">Prev</button>
-    <!--    <a href="#" id="prevBtn" class="page-link prev" aria-label="Previous">-->
     <span aria-hidden="true">&laquo;</span>
     <span class="sr-only">Previous</span>
-    <!--    </a>-->
     <ul class="pages">
     </ul>
     <button id="nextBtn">Next</button>
-    <!--    <a href="#" id="nextBtn" class="page-link next" aria-label="Next">-->
     <span aria-hidden="true">&raquo;</span>
     <span class="sr-only">Next</span>
-    <!--    </a>-->
   </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
+<script th:inline="javascript">
 
   const form = document.getElementById('search-form');
   const queryInput = document.getElementById('query-input');
@@ -149,28 +110,34 @@
     if (queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 두글자 이상 입력해주세요.');
+    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30){
+      event.preventDefault(); // 검색을 실행하지 않음
+      alert('검색어를 30글자 이하로 입력해주세요.');
     }
   });
 
   queryInput.addEventListener('keypress', function (event) {
     if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
-      alert('검색어를 두글자 이상 입력해주세요.');
+      alert('검색어를 2글자 이상 입력해주세요.');
+    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30){
+      event.preventDefault(); // 검색을 실행하지 않음
+      alert('검색어를 30글자 이하로 입력해주세요.');
     }
   });
 
   const query = new URLSearchParams(window.location.search).get('query');
   document.getElementById('query').textContent = query;
 
-  var copyBtns = document.querySelectorAll('.copy-btn');
-  var alertBox = document.querySelector('.alert');
+  let copyBtns = document.querySelectorAll('.copy-btn');
+  let alertBox = document.querySelector('.alert');
   copyBtns.forEach(function (btn) {
     btn.addEventListener('click', function (event) {
       // 이벤트 버블링 방지
       event.stopPropagation();
 
       // 클립보드에 복사할 텍스트 가져오기
-      var text = event.target.dataset.title;
+      let text = event.target.dataset.title;
 
       // 클립보드에 복사
       navigator.clipboard.writeText(text)
@@ -195,17 +162,21 @@
     return false;
   }
 </script>
+
 <script th:inline="javascript">
   /*<![CDATA[*/
   let searchResultData = /*[[${searchResult}]]*/ [];
   /*]]>*/
 </script>
+
 <script th:inline="javascript">
   $(document).ready(function() {
     let urlParams = new URLSearchParams(window.location.search);
+    let startPage;
+    let endPage;
+
     let query = urlParams.get('query');
     let currentPage = parseInt(urlParams.get('page') || 1);
-    console.log(currentPage);
 
     // 페이지 링크 생성 및 할당
     let totalPages = 5;
@@ -269,8 +240,8 @@
   });
 
   $('.loan-check-btn').on('click', function() {
-    var isbn = $(this).attr('data-isbn');
-    var bigNumberIsbn = new BigNumber(isbn);
+    let isbn = $(this).attr('data-isbn');
+    let bigNumberIsbn = new BigNumber(isbn);
     isbn = bigNumberIsbn.toFixed();
     console.log(isbn);
   });
@@ -321,9 +292,6 @@
     return false;
   }
 
-
-
-
   /*--------------------------------------------*/
 
   /*function addHTML(itemDto) {
@@ -350,7 +318,6 @@
   }*/
 
   function getRecommend() {
-
     // 현재 페이지 URL에서 'query' 파라미터 값 가져오기
     const urlParams = new URLSearchParams(window.location.search);
     const query = urlParams.get('query');
@@ -360,12 +327,11 @@
     }
 
     $.ajax({
-      type: 'Post',
+      type: 'POST',
       url: `/books/recommend`,
       contentType: "application/json",
       data: JSON.stringify({query}), // query 파라미터를 data 객체에 추가
       success: function (response) {
-
         $('#recommend-box').empty();
         for (let i = 0; i < response.length; i++) {
           let bookNm = response[i];
