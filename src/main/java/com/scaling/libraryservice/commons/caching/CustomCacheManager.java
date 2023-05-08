@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.search.service.BookSearchService;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class CustomCacheManager<T> {
 
     @PreDestroy
     public void onShutdown() {
+        log.info("Cache size is {}",commonsCache.get(BookSearchService.class).asMap().size());
         cacheBackupService.saveCommonCacheToFile(commonsCache);
     }
 
