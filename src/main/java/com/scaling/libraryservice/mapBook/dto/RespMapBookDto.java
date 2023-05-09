@@ -22,7 +22,6 @@ public class RespMapBookDto {
     private String libArea;
     private String libUrl;
     private Integer areaCd;
-
     private Boolean available;
 
     public RespMapBookDto(ApiBookExistDto dto, LibraryDto libraryDto) {
@@ -43,11 +42,11 @@ public class RespMapBookDto {
 
     }
 
-    public RespMapBookDto(ReqMapBookDto reqMapBookDto,LibraryDto libraryDto) {
+    public RespMapBookDto(ReqMapBookDto reqMapBookDto,LibraryDto libraryDto,String loanAvailable) {
 
         this.isbn13 = reqMapBookDto.getIsbn();
         this.libCode = String.valueOf(libraryDto.getLibNo());
-        this.loanAvailable = "N";
+        this.loanAvailable = loanAvailable;
 
         this.hasBook = libraryDto.getHasBook();
         this.libLo = libraryDto.getLibLon();
