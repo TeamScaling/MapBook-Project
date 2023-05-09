@@ -32,7 +32,7 @@ public class LibraryDto {
 
     private final String hasBook;
 
-    private Boolean isSupportedArea;
+    private boolean isSupportedArea;
 
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();

@@ -19,6 +19,9 @@ class LibraryFindServiceTest {
     @Autowired
     private LibraryFindService libraryFindService;
 
+    @Autowired
+    private MapBookService mapBookService;
+
     @BeforeEach
     void setUp() {
     }
@@ -111,6 +114,23 @@ class LibraryFindServiceTest {
         /* then */
 
         System.out.println(result1);
+    }
+
+    @Test @DisplayName("요청 받은 위/경도로 지역 코드 추출2 [안산 지역]")
+    public void update_areadCd(){
+        /* given */
+        String isbn13 = "9791163032212";
+        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069,null,null);
+
+        /* when */
+        reqMapBookDto.updateAreaCd();
+        /* then */
+
+        var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);
+
+        var result = mapBookService.matchMapBooks(libraries,reqMapBookDto);
+
+        System.out.println(result);
     }
 
 }

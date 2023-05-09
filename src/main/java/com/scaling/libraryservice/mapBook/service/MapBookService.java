@@ -16,7 +16,6 @@ import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,7 +70,7 @@ public class MapBookService {
         Objects.requireNonNull(reqMapBookDto);
 
 
-        boolean isSupportedArea = nearByLibraries.get(0).getIsSupportedArea();
+        boolean isSupportedArea = nearByLibraries.get(0).isSupportedArea();
 
         List<BExistConn> bExistConns = null;
 
@@ -83,21 +82,15 @@ public class MapBookService {
             bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
         }
 
+        List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
+            bExistConns,
+            reqMapBookDto.getIsbn(),
+            nearByLibraries.size());
 
-        if(bExistConns.isEmpty()){
-            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l,"N")).toList();
-        }else{
+        Map<Integer, ApiBookExistDto> bookExistMap
+            = apiQueryBinder.bindBookExistMap(responseEntities);
 
-            List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
-                bExistConns,
-                reqMapBookDto.getIsbn(),
-                nearByLibraries.size());
-
-            Map<Integer, ApiBookExistDto> bookExistMap
-                = apiQueryBinder.bindBookExistMap(responseEntities);
-
-            return mappingLoanableLib(nearByLibraries, bookExistMap);
-        }
+        return mappingLoanableLib(nearByLibraries, bookExistMap);
 
     }
 
