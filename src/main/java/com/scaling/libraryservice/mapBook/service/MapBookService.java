@@ -69,26 +69,29 @@ public class MapBookService {
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(reqMapBookDto);
 
-        int hasBookCnt = nearByLibraries.stream().filter(l -> l.getHasBook().equals("Y")).toList()
-            .size();
 
-        if (hasBookCnt > 0) {
-            List<BExistConn> bExistConns = nearByLibraries.stream()
+        boolean isSupportedArea = nearByLibraries.get(0).getIsSupportedArea();
+
+        List<BExistConn> bExistConns = null;
+
+        if(isSupportedArea){
+            bExistConns = nearByLibraries.stream().filter(n -> n.getHasBook().equals("Y"))
                 .map(n -> new BExistConn(n.getLibNo())).toList();
 
-            List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
-                bExistConns,
-                reqMapBookDto.getIsbn(),
-                nearByLibraries.size());
 
-            Map<Integer, ApiBookExistDto> bookExistMap
-                = apiQueryBinder.bindBookExistMap(responseEntities);
-
-            return mappingLoanableLib(nearByLibraries, bookExistMap);
-        } else {
-
-            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l)).toList();
+        }else{
+            bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
         }
+
+        List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
+            bExistConns,
+            reqMapBookDto.getIsbn(),
+            nearByLibraries.size());
+
+        Map<Integer, ApiBookExistDto> bookExistMap
+            = apiQueryBinder.bindBookExistMap(responseEntities);
+
+        return mappingLoanableLib(nearByLibraries, bookExistMap);
     }
 
     /**
