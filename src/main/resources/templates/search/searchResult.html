@@ -93,7 +93,7 @@
     <button id="prevBtn">Prev</button>
     <span aria-hidden="true">&laquo;</span>
     <span class="sr-only">Previous</span>
-    <ul class="pages">
+    <ul id="pages" class="pages">
     </ul>
     <button id="nextBtn">Next</button>
     <span aria-hidden="true">&raquo;</span>
@@ -172,27 +172,35 @@
 <script th:inline="javascript">
   $(document).ready(function() {
     let urlParams = new URLSearchParams(window.location.search);
-    let startPage;
+    let size = [[${size}]];
+
     let endPage;
+    if( size % 10 === 0 ){
+      endPage = size / 10
+    } else {
+      endPage = Math.ceil( size / 10 );
+    }
+    let startPage;
 
     let query = urlParams.get('query');
     let currentPage = parseInt(urlParams.get('page') || 1);
 
     // 페이지 링크 생성 및 할당
-    let totalPages = 5;
+    let totalPages;
     const url = "/books/search?query=" + query + "&page=";
 
     function generatePageLinks(currentPage) {
       let pages = $(".pages");
       pages.empty();
-      // 페이지 링크 생성
-      totalPages = currentPage - 1 + 5
+
+      totalPages = currentPage + 4;
       let startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
-      let endPage = startPage + 4;
-      if (endPage > totalPages) {
-        endPage = totalPages;
+
+      if( endPage > 5 ) {
+        totalPages = startPage + 4;
       }
-      for (let i = startPage; i <= endPage; i++) {
+
+      for (let i = startPage; i <= totalPages; i++) {
         let pageLink = $("<a>").attr("href", url + i).addClass("page-link").text(i);
         let pageItem = $("<li>").addClass("page-item").append(pageLink);
         if (i === currentPage || (currentPage >= startPage && currentPage <= endPage && i === currentPage)) {
@@ -204,16 +212,22 @@
     generatePageLinks(currentPage);
 
     // 이전 페이지 버튼 클릭 시 이벤트 처리
-    $("#prevBtn").on("click", function() {
-      if (currentPage > 1) {
+    $("#prevBtn").on("click", function(event) {
+      if (currentPage === 1){
+        alert("현재 페이지는 1페이지입니다. 이전 페이지는 없습니다.")
+        event.preventDefault();
+      } else if (currentPage > 1) {
         window.location.href = url + (currentPage - 1);
       }
     });
 
     // 다음 페이지 버튼 클릭 시 이벤트 처리
-    $("#nextBtn").on("click", function() {
+    $("#nextBtn").on("click", function(event) {
       const nextPage = currentPage + 1;
-      if (nextPage <= totalPages) {
+      if (currentPage === endPage){
+        alert("현재 페이지는 마지막 페이지입니다. 다음 페이지는 없습니다.")
+        event.preventDefault();
+      } else if (nextPage <= totalPages) {
         window.location.href = url + (currentPage + 1);
       } else {
         currentPage = nextPage; // 현재 페이지를 다음 페이지로 업데이트
@@ -291,31 +305,6 @@
 
     return false;
   }
-
-  /*--------------------------------------------*/
-
-  /*function addHTML(itemDto) {
-    /!**
-     * class="search-itemDto" 인 녀석에서
-     * image, title, lprice, addProduct 활용하기
-     * 참고) onclick='addProduct(${JSON.stringify(itemDto)})'
-     *!/
-    return `<div class="search-itemDto">
-        <div class="search-itemDto-left">
-            <img src="${itemDto.image}" alt="">
-        </div>
-        <div class="search-itemDto-center">
-            <div>${itemDto.title}</div>
-            <div class="price">
-                ${numberWithCommas(itemDto.lprice)}
-                <span class="unit">원</span>
-            </div>
-        </div>
-        <div class="search-itemDto-right">
-            <img src="../images/icon-save.png" alt="" onclick='addProduct(${JSON.stringify(itemDto)})'>
-        </div>
-    </div>`
-  }*/
 
   function getRecommend() {
     // 현재 페이지 URL에서 'query' 파라미터 값 가져오기
