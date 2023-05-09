@@ -6,6 +6,7 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,6 +49,21 @@ class LibraryServiceApplicationTests {
         boolean check = result1.size() <= result2.size();
 
         assertEquals(check,true);
+    }
+
+    @Test @DisplayName("요청 받은 위/경도로 지역 코드 추출2 [안산 지역]")
+    public void update_areadCd(){
+        /* given */
+        String isbn13 = "9791163032212";
+        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069,null,null);
+
+        /* when */
+        reqMapBookDto.updateAreaCd();
+        /* then */
+
+        var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);
+
+        libraries.forEach(System.out::println);
     }
 
 }

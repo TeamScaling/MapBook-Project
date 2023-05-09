@@ -116,13 +116,13 @@ public class LibraryFindService {
 
         List<LibraryDto> result
             = libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)
-            .stream().map(l -> new LibraryDto(l, "Y")).toList();
+            .stream().map(l -> new LibraryDto(l, "Y",true)).toList();
 
         if (result.isEmpty()) {
             log.info(areaCd + " 이 지역의 도서관 중 소장 하는 도서관 없음");
 
             return libraries.stream().filter(l -> Objects.equals(l.getAreaCd(), areaCd))
-                .map(l -> new LibraryDto(l, "N"))
+                .map(l -> new LibraryDto(l, "N",true))
                 .toList();
         }
 
