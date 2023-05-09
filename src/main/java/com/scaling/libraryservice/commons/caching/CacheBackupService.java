@@ -19,12 +19,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CacheBackupService<T> {
 
     public final String COMMONS_BACK_UP_FILE_NAME = "cache_backup_common.json";
@@ -32,6 +36,8 @@ public class CacheBackupService<T> {
     private final Gson gson = new Gson();
 
     private final JsonObject jsonObject = new JsonObject();
+
+    private final ApplicationContext applicationContext;
 
     public void saveCommonCacheToFile(Map<Class<?>, Cache<CacheKey, T>> cacheMap) {
 
@@ -56,10 +62,10 @@ public class CacheBackupService<T> {
         }
     }
 
-    public Cache<CacheKey, List<RespMapBookDto>> reloadMapBookCache(String filename,
-        Cache<CacheKey, List<RespMapBookDto>> cache) {
+    public Cache<CacheKey, List<RespMapBookDto>> reloadMapBookCache(String filename) {
 
-        Cache<CacheKey, List<RespMapBookDto>> mapBookApiHandlerItems = null;
+        Cache<CacheKey, List<RespMapBookDto>> mapBookApiHandlerItems = applicationContext.getBean(
+            "mapBookCache", Cache.class);
 
         try (FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr)) {
@@ -81,8 +87,6 @@ public class CacheBackupService<T> {
                 }
             }
 
-            mapBookApiHandlerItems = cache;
-
             for (ReqMapBookDto key : cacheKeyList) {
                 var reqMapBook = customer.getJSONArray(key.toString());
 
@@ -103,9 +107,10 @@ public class CacheBackupService<T> {
         return mapBookApiHandlerItems;
     }
 
-    public Cache<CacheKey, List<String>> reloadRecCache(String filename,Cache<CacheKey, List<String>> cache) {
+    public Cache<CacheKey, List<String>> reloadRecCache(String filename) {
 
-        Cache<CacheKey, List<String>> recommendItems = null;
+        Cache<CacheKey, List<String>> recommendItems =
+            applicationContext.getBean("recCache", Cache.class);
 
         try (FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr);) {
@@ -126,8 +131,6 @@ public class CacheBackupService<T> {
                 }
             }
 
-            recommendItems = cache;
-
             for (RecCacheKey rec : cacheKeys) {
                 var recStrList = customer.getJSONArray(rec.toString());
 
@@ -142,7 +145,7 @@ public class CacheBackupService<T> {
             }
 
 
-        } catch (IOException e) {
+        } catch (IOException | JSONException e) {
             throw new RuntimeException(e);
         }
 
@@ -150,9 +153,10 @@ public class CacheBackupService<T> {
     }
 
 
-    public Cache<CacheKey, RespBooksDto> reloadBookCache(String filename,Cache<CacheKey, RespBooksDto> cache) {
+    public Cache<CacheKey, RespBooksDto> reloadBookCache(String filename) {
 
-        Cache<CacheKey, RespBooksDto> cachedBooks;
+        Cache<CacheKey, RespBooksDto> cachedBooks = applicationContext.getBean("bookCache",
+            Cache.class);
 
         try (FileReader fr = new FileReader(filename);
             BufferedReader reader = new BufferedReader(fr)) {
@@ -173,8 +177,6 @@ public class CacheBackupService<T> {
                         new BookCacheKey(matcher.group(1), Integer.parseInt(matcher.group(2))));
                 }
             }
-
-            cachedBooks = cache;
 
             for (BookCacheKey bKey : bookCacheKeys) {
                 var recStrList = customer.getJSONObject(bKey.toString());

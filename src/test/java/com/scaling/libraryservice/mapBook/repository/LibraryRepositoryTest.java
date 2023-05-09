@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.mapBook.repository;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -10,18 +11,24 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-class LibraryHasBookRepositoryTest {
+class LibraryRepositoryTest {
 
     @Autowired
-    private LibraryHasBookRepository libraryHasBookRepo;
-
+    private LibraryRepository libraryRepository;
 
     @Test
-    public void load(){
+    @DisplayName("areaCd로 도서관 정보 찾기")
+    public void find_All_By_AREA_CD(){
         /* given */
-//        System.out.println(libraryHasBookRepo.findSupportedArea().get(0));
+        Integer areaCd = 7000;
+
         /* when */
 
+        var libs = libraryRepository.findAllByAreaCd(areaCd);
+
         /* then */
+
+        System.out.println(libs);
     }
+
 }

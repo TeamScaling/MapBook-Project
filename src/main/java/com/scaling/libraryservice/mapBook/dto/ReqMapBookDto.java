@@ -1,12 +1,10 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.commons.caching.CacheKey;
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.json.JSONObject;
 import org.springframework.lang.Nullable;
 
@@ -21,15 +19,10 @@ public class ReqMapBookDto implements CacheKey {
     private String isbn;
     private Double lat;
     private Double lon;
-    private String oneArea;
-    private String twoArea;
-    @Nullable
-    private Integer areaCd;
+    private int areaCd;
 
-    public boolean isAddressRequest(){
+    private boolean isSupportedArea;
 
-        return oneArea != null & twoArea != null;
-    }
 
     public ReqMapBookDto() {
     }
@@ -42,12 +35,10 @@ public class ReqMapBookDto implements CacheKey {
             ')';
     }
 
-    public ReqMapBookDto(String isbn, Double lat, Double lon, String oneArea, String twoArea) {
+    public ReqMapBookDto(String isbn, Double lat, Double lon) {
         this.isbn = isbn;
         this.lat = lat;
         this.lon = lon;
-        this.oneArea = oneArea;
-        this.twoArea = twoArea;
     }
 
 
@@ -56,9 +47,6 @@ public class ReqMapBookDto implements CacheKey {
         this.isbn = jsonObject.getString("isbn");
         this.lat = Double.valueOf(jsonObject.getString("lat"));
         this.lon = Double.valueOf(jsonObject.getString("lon"));
-        this.oneArea = jsonObject.getString("oneArea");
-        this.twoArea = jsonObject.getString("twoArea");
-
     }
 
     public ReqMapBookDto(String isbn, @Nullable Integer areaCd) {
@@ -90,11 +78,9 @@ public class ReqMapBookDto implements CacheKey {
         return Objects.hash(isbn, areaCd);
     }
 
-    /**
-     *  사용자 요청에서 위/경도 데이터를 지역코드로 변환 한다.
-     */
-    public void updateAreaCd(){
 
-        this.areaCd = LibraryFindService.outPutAreaCd(this);
+    public void updateAreaCd(Integer areaCd){
+
+        this.areaCd = areaCd;
     }
 }

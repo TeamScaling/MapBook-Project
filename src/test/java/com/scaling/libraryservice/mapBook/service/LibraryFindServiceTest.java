@@ -30,7 +30,7 @@ class LibraryFindServiceTest {
     public void find_libraries_with_coordinate(){
         /* given */
 
-        var dto = new ReqMapBookDto("9788089365210",34.802858, 126.702513,null,null);
+        var dto = new ReqMapBookDto("9788089365210",34.802858, 126.702513);
 
         /* when */
 
@@ -41,24 +41,11 @@ class LibraryFindServiceTest {
         assertNotEquals(0,result.size());
     }
 
-    @Test @DisplayName("직접 주소 선택으로 주변 도서관 검색")
-    public void find_libraries_with_address(){
-        /* given */
-        var dto = new ReqMapBookDto("9788089365210",0.0,0.0,"경기도","성남시");
-
-        /* when */
-
-        var result = libraryFindService.getNearByLibraries(dto);
-
-        /* then */
-        /*result.forEach(System.out::println);*/
-        assertNotEquals(0,result.size());
-    }
 
     @Test @DisplayName("잘못된 위/경도로 주변 도서관 검색")
     public void find_libraries_error(){
         /* given */
-        var dto = new ReqMapBookDto("9788089365210",38.74273402531946, 127.3437713197453,null,null);
+        var dto = new ReqMapBookDto("9788089365210",38.74273402531946, 127.3437713197453);
 
         /* when */
 
@@ -75,7 +62,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.getNearByAllLibraries(areaCd);
+        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
 
         /* then */
 
@@ -89,7 +76,7 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        Executable e = () -> libraryFindService.getNearByAllLibraries(areaCd);
+        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
 
         /* then */
 
@@ -103,12 +90,12 @@ class LibraryFindServiceTest {
         String isbn13 = "9791163032212";
         Integer areaCd = 26200;
 
-        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699,null,null);
+        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699);
 
         System.out.println(Double.parseDouble(isbn13));
         /* when */
 
-        var result1= libraryFindService.getNearByHasBookLibraries(isbn13,areaCd);
+        var result1= libraryFindService.getNearByHasBookLibraries(dto);
         var result2 = libraryFindService.getNearByLibraries(dto);
 
         /* then */
@@ -120,15 +107,13 @@ class LibraryFindServiceTest {
     public void update_areadCd(){
         /* given */
         String isbn13 = "9791163032212";
-        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069,null,null);
+        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069);
 
         /* when */
-        reqMapBookDto.updateAreaCd();
+        libraryFindService.outPutAreaCd(reqMapBookDto);
         /* then */
 
         var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);
-
-//        var result = mapBookService.matchMapBooks(libraries,reqMapBookDto);
 
         System.out.println(libraries);
     }

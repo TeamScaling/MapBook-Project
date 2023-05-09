@@ -19,6 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,9 +33,11 @@ class CustomCacheManagerTest {
 
     private BookCacheKey bookCacheKey;
 
+    private ApplicationContext ac;
+
     @PostConstruct
     public void init(){
-        customCacheManager = new CustomCacheManager(new CacheBackupService());
+        customCacheManager = new CustomCacheManager(new CacheBackupService(ac));
 
         Cache<CacheKey,Object> cache = Caffeine.newBuilder()
             .expireAfterWrite(600, TimeUnit.SECONDS)
@@ -46,7 +49,7 @@ class CustomCacheManagerTest {
 
     }
 
-    @Test
+    @Test @DisplayName("간단한 키를 이용한 기본적인 캐싱 테스트")
     public void load (){
         /* given */
 

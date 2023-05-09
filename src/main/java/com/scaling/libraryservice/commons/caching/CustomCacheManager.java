@@ -1,16 +1,15 @@
 package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
-import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.service.BookSearchService;
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +26,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomCacheManager<T> {
 
-    private Map<Class<?>, Cache<CacheKey, T>> commonsCache = new HashMap<>();
+    private final Map<Class<?>, Cache<CacheKey, T>> commonsCache = new HashMap<>();
     private final Map<Class<?>, Class<? extends CacheKey>> personalKeyMap = new HashMap<>();
     private final CacheBackupService<T> cacheBackupService;
-
-    private final Cache<BookCacheKey, RespBooksDto> slowSearchCache = Caffeine.newBuilder().build();
-
 
     @PreDestroy
     public void onShutdown() {
@@ -40,24 +36,19 @@ public class CustomCacheManager<T> {
         cacheBackupService.saveCommonCacheToFile(commonsCache);
     }
 
-    public Map<Class<?>, Cache<CacheKey, T>> getCommonsCache() {
-        return commonsCache;
+    @PostConstruct
+    public void reloadCacheData(){
+
+        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
+
+        if(file.exists()){
+            cacheBackupService.reloadRecCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
+            cacheBackupService.reloadBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
+            cacheBackupService.reloadMapBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
+        }
     }
 
-    public Set<Class<?>> getCustomers() {
 
-        return new HashSet<>(commonsCache.keySet());
-    }
-
-    public Class<? extends CacheKey> findPersonalKey(Class<?> customer) {
-
-        return personalKeyMap.get(customer);
-    }
-
-    public Set<Entry<Class<?>, Cache<CacheKey, T>>> getEntrySet() {
-
-        return commonsCache.entrySet();
-    }
 
     /**
      * 캐시를 등록하여 캐시 관리 시스템에 추가합니다.
@@ -71,11 +62,6 @@ public class CustomCacheManager<T> {
 
     }
 
-    public void registerPersonalKey(Class<?> customer, Class<CacheKey> cacheKey) {
-
-        personalKeyMap.put(customer, cacheKey);
-
-    }
 
     /**
      * 주어진 클래스와 개인 키에 해당하는 아이템을 캐시에 추가합니다.

@@ -1,11 +1,6 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.caching.CacheBackupService;
-import com.scaling.libraryservice.commons.caching.CacheKey;
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
@@ -14,13 +9,10 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,25 +26,6 @@ public class MapBookService {
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
 
-    private final CustomCacheManager<List<RespMapBookDto>> customCacheManager;
-    private final CacheBackupService<List<RespMapBookDto>> cacheBackupService;
-
-    @PostConstruct
-    public void init() {
-
-        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
-
-        Cache<CacheKey, List<RespMapBookDto>> mapBookCache = Caffeine.newBuilder()
-            .expireAfterWrite(6, TimeUnit.HOURS)
-            .maximumSize(1000)
-            .build();
-
-        if(file.exists()){
-            mapBookCache = cacheBackupService.reloadMapBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME,mapBookCache);
-        }
-
-        customCacheManager.registerCaching(mapBookCache, this.getClass());
-    }
 
     /**
      * 사용자가 원하는 도서와 사용자 주변의 도서관을 조합하여 대출 가능한 도서관들의 정보를 반환 한다.
@@ -62,29 +35,27 @@ public class MapBookService {
      * @return 대출 가능한 도서관 정보를 담은 응답 Dto를 List 형태로 반환 한다.
      */
     @Timer
-    @CustomCacheable
+    @CustomCacheable(cacheName = "mapBookCache")
     public List<RespMapBookDto> matchMapBooks(List<LibraryDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) {
 
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(reqMapBookDto);
 
-
-        boolean isSupportedArea = nearByLibraries.get(0).isSupportedArea();
-
         List<BExistConn> bExistConns = null;
 
-        if(isSupportedArea){
-            bExistConns = nearByLibraries.stream().filter(n -> n.getHasBook().equals("Y"))
+        if(reqMapBookDto.isSupportedArea()){
+            bExistConns = nearByLibraries.stream().filter(l -> l.getHasBook().equals("Y"))
                 .map(n -> new BExistConn(n.getLibNo())).toList();
+
+            if(bExistConns.isEmpty()){
+                return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l,"N")).toList();
+            }
 
         }else{
             bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
         }
 
-        if(bExistConns.isEmpty()){
-            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l,"N")).toList();
-        }
 
         List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
             bExistConns,

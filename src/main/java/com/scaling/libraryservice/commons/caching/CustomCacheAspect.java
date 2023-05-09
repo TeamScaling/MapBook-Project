@@ -1,19 +1,21 @@
 package com.scaling.libraryservice.commons.caching;
 
-import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
+import com.github.benmanes.caffeine.cache.Cache;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
-import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
-import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
-import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.recommend.service.RecommendService;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.service.BookSearchService;
+import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -30,9 +32,12 @@ public class CustomCacheAspect<T> {
 
     private final CustomCacheManager<T> cacheManager;
 
+    private final ApplicationContext applicationContext;
+
     @Pointcut("@annotation(com.scaling.libraryservice.commons.caching.CustomCacheable)")
     public void customCacheablePointcut() {
     }
+
 
     /**
      * CustomCacheable 어노테이션이 적용된 메서드에 Around 어드바이스를 적용합니다. 캐싱된 데이터가 존재하면 캐시에서 결과를 반환하고, 그렇지 않으면
@@ -46,11 +51,18 @@ public class CustomCacheAspect<T> {
     public Object cacheAround(ProceedingJoinPoint joinPoint) throws Throwable {
 
         Class<?> clazz = joinPoint.getTarget().getClass();
-        Object[] arguments = joinPoint.getArgs();
-        CacheKey cacheKey = generateCacheKey(clazz, arguments);
+        CacheKey cacheKey = generateCacheKey(clazz, joinPoint.getArgs());
 
-        if (cacheManager.isContainItem(clazz, cacheKey)) {
-            return cacheManager.get(clazz, cacheKey);
+        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        CustomCacheable annotation = method.getAnnotation(CustomCacheable.class);
+
+        if (!cacheManager.isUsingCaching(clazz)) {
+            cacheManager.registerCaching(
+                applicationContext.getBean(annotation.cacheName(), Cache.class), clazz);
+        } else {
+            if (cacheManager.isContainItem(clazz, cacheKey)) {
+                return cacheManager.get(clazz, cacheKey);
+            }
         }
 
         StopWatch stopWatch = new StopWatch();
@@ -60,16 +72,18 @@ public class CustomCacheAspect<T> {
 
         stopWatch.stop();
 
-        double taskTime= stopWatch.getTotalTimeSeconds();
+        double taskTime = stopWatch.getTotalTimeSeconds();
 
-        log.info("........."+taskTime);
+        log.info("........." + taskTime);
 
         if (taskTime > 1.0 ||
             clazz == MapBookService.class) {
 
-            log.info("This task is over 0.5s [{}] or related MapBookService then CacheManger put this item",taskTime);
+            log.info(
+                "This task is over 0.5s [{}] or related MapBookService then CacheManger put this item",
+                taskTime);
 
-            cacheManager.put(clazz, cacheKey, (T)result);
+            cacheManager.put(clazz, cacheKey, (T) result);
         }
 
         return result;
@@ -86,11 +100,6 @@ public class CustomCacheAspect<T> {
      * @throws UnsupportedOperationException 적절한 CacheKey 구현을 찾지 못한 경우 던져 진다.
      */
     private CacheKey generateCacheKey(Class<?> clazz, Object[] arguments) {
-
-        if (clazz == LibraryFindService.class) {
-            ReqMapBookDto mapBookDto = (ReqMapBookDto) arguments[0];
-            return new HasBookCacheKey(mapBookDto.getIsbn(), mapBookDto.getAreaCd());
-        }
 
         if (clazz == MapBookService.class) {
 

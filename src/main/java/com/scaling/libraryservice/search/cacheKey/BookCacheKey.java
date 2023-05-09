@@ -1,7 +1,6 @@
 package com.scaling.libraryservice.search.cacheKey;
 
 import com.scaling.libraryservice.commons.caching.CacheKey;
-import java.io.Serializable;
 import java.util.Objects;
 import lombok.ToString;
 
