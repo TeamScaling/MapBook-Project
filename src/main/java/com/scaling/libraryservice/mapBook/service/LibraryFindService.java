@@ -114,6 +114,8 @@ public class LibraryFindService {
 
     List<LibraryDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
 
+        log.info("This is supported Area");
+
         List<LibraryDto> result
             = libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)
             .stream().map(l -> new LibraryDto(l, "Y",true)).toList();

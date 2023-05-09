@@ -82,6 +82,10 @@ public class MapBookService {
             bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
         }
 
+        if(bExistConns.isEmpty()){
+            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l,"N")).toList();
+        }
+
         List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
             bExistConns,
             reqMapBookDto.getIsbn(),
