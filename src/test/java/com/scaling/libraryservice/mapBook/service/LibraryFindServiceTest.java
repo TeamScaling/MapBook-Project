@@ -128,9 +128,9 @@ class LibraryFindServiceTest {
 
         var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);
 
-        var result = mapBookService.matchMapBooks(libraries,reqMapBookDto);
+//        var result = mapBookService.matchMapBooks(libraries,reqMapBookDto);
 
-        System.out.println(result);
+        System.out.println(libraries);
     }
 
 }
