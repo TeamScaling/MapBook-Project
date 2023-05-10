@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.search.service;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,7 +16,7 @@ class BookSearchServiceTest {
     }
 
 
-    @Test
+    @Test @DisplayName("영어 제목 도서 검색")
     public void only_eng_title(){
         /* given */
 

@@ -24,15 +24,11 @@ public class LibraryDto {
     private final String libArea;
 
     private final String libUrl;
-
-    private final String oneAreaNm;
-
-    private final String twoAreaNm;
     private final Integer areaCd;
 
-    private final String hasBook;
+    private String hasBook = "N";
 
-    private boolean isSupportedArea;
+    private boolean isSupportedArea = false;
 
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();
@@ -41,10 +37,7 @@ public class LibraryDto {
         this.libLat = library.getLibLat();
         this.libArea = library.getLibArea();
         this.libUrl = library.getLibUrl();
-        this.oneAreaNm = library.getOneAreaNm();
-        this.twoAreaNm = library.getTwoAreaNm();
         this.areaCd = library.getAreaCd();
-        this.hasBook = "N";
     }
 
     public LibraryDto(Library library,String hasBook) {
@@ -54,8 +47,6 @@ public class LibraryDto {
         this.libLat = library.getLibLat();
         this.libArea = library.getLibArea();
         this.libUrl = library.getLibUrl();
-        this.oneAreaNm = library.getOneAreaNm();
-        this.twoAreaNm = library.getTwoAreaNm();
         this.areaCd = library.getAreaCd();
         this.hasBook = hasBook;
     }
@@ -67,15 +58,9 @@ public class LibraryDto {
         this.libLat = library.getLibLat();
         this.libArea = library.getLibArea();
         this.libUrl = library.getLibUrl();
-        this.oneAreaNm = library.getOneAreaNm();
-        this.twoAreaNm = library.getTwoAreaNm();
         this.areaCd = library.getAreaCd();
         this.hasBook = hasBook;
         this.isSupportedArea = isSupportedArea;
     }
 
-    public String getFullAreaNm() {
-
-        return this.oneAreaNm + " " + this.twoAreaNm;
-    }
 }

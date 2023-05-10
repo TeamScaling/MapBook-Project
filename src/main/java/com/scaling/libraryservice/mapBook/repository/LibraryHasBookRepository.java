@@ -12,7 +12,5 @@ public interface LibraryHasBookRepository extends JpaRepository<LibraryHasBook, 
     @Query("select l.library from LibraryHasBook l where l.isbn13 = :isbn13 and l.areaCd = :areaCd")
     List<Library> findHasBookLibraries(@Param("isbn13") String isbn13,@Param("areaCd") int areaCd);
 
-    @Query("select l.areaCd from LibraryHasBook l group by l.areaCd")
-    List<Integer> findSupportedArea();
 
 }

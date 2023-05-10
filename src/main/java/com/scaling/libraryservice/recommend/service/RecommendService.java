@@ -1,10 +1,5 @@
 package com.scaling.libraryservice.recommend.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.commons.caching.CacheBackupService;
-import com.scaling.libraryservice.commons.caching.CacheKey;
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.recommend.repository.RecommendRepository;
@@ -12,10 +7,7 @@ import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
-import java.io.File;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,27 +27,6 @@ public class RecommendService {
 
     private final TitleAnalyzer titleAnalyzer;
 
-    private final CustomCacheManager<List<String>> cacheManager;
-
-    private final CacheBackupService<List<String>> cacheBackupService;
-
-    @PostConstruct
-    private void init() {
-
-        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
-
-        Cache<CacheKey, List<String>> recCache = recCache = Caffeine.newBuilder()
-            .expireAfterWrite(1, TimeUnit.HOURS)
-            .maximumSize(1000)
-            .build();
-
-        if(file.exists()){
-            recCache = cacheBackupService.reloadRecCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME,recCache);
-        }
-
-        cacheManager.registerCaching(recCache, this.getClass());
-    }
-
     /**
      * 검색어를 입력받아 해당하는 추천 도서 제목 목록을 반환합니다.
      * 결과는 불용어를 제거한 형태로 반환됩니다.
@@ -64,7 +35,7 @@ public class RecommendService {
      * @return 추천 도서 제목 문자열을 담고 있는 List
      */
     @Timer
-    @CustomCacheable
+    @CustomCacheable(cacheName = "recCache")
     public List<String> getRecommendBook(String query) {
 
         return pickSelectQuery(query, 5).stream().map(r -> TrimTitleResult(r.getTitle())).toList();

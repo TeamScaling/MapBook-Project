@@ -1,12 +1,8 @@
 package com.scaling.libraryservice.search.service;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.commons.caching.CacheBackupService;
-import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.domain.TitleQuery;
 import com.scaling.libraryservice.search.domain.TitleType;
@@ -16,13 +12,11 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
-import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,24 +39,6 @@ public class BookSearchService {
     private final CustomCacheManager<RespBooksDto> cacheManager;
     private final TitleAnalyzer titleAnalyzer;
 
-    private final CacheBackupService<RespBooksDto> backupService;
-
-    @PostConstruct
-    private void init() {
-
-        File file = new File(backupService.COMMONS_BACK_UP_FILE_NAME);
-
-        Cache<CacheKey, RespBooksDto> bookCache = Caffeine.newBuilder()
-            .expireAfterAccess(1, TimeUnit.HOURS).build();
-
-        if (file.exists()) {
-            bookCache = backupService.reloadBookCache(backupService.COMMONS_BACK_UP_FILE_NAME,
-                bookCache);
-        }
-
-        cacheManager.registerCaching(bookCache, this.getClass());
-    }
-
     /**
      * 입력된 검색어를 이용하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
      *
@@ -73,7 +49,7 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체
      */
     @Timer
-    @CustomCacheable
+    @CustomCacheable(cacheName = "bookCache")
     public RespBooksDto searchBooks(String query, int page, int size, String target) {
 
         log.info("-------------query : [{}]-------------------------------", query);

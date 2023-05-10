@@ -1,6 +1,7 @@
 package com.scaling.libraryservice;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 
 @SpringBootTest
 class LibraryServiceApplicationTests {
@@ -19,9 +21,12 @@ class LibraryServiceApplicationTests {
 
     @Autowired
     private ApiQuerySender apiQuerySender;
-
     @Autowired
     private MapBookService mapBookService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
     @Test
     void contextLoads() {
 
@@ -34,12 +39,12 @@ class LibraryServiceApplicationTests {
         String isbn13 = "9791163032212";
         Integer areaCd = 26200;
 
-        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699,null,null);
+        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699);
 
         /* when */
 
         var library1= libraryFindService.getNearByLibraries(dto);
-        var library2 = libraryFindService.getNearByAllLibraries(dto.getAreaCd());
+        var library2 = libraryFindService.getNearByLibraries(dto.getAreaCd());
 
         /* then */
 
@@ -55,15 +60,44 @@ class LibraryServiceApplicationTests {
     public void update_areadCd(){
         /* given */
         String isbn13 = "9791163032212";
-        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069,null,null);
+        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069);
 
         /* when */
-        reqMapBookDto.updateAreaCd();
+        libraryFindService.outPutAreaCd(reqMapBookDto);
         /* then */
 
         var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);
 
         libraries.forEach(System.out::println);
+    }
+
+    @Test @DisplayName("appConfig에 등록된 libraryCache bean load")
+    public void library_cache_bean_load(){
+        /* given */
+
+        String beanNm1 = "libraryCache";
+        String beanNm2 = "mapBookCache";
+
+        /* when */
+
+        var libBean = applicationContext.getBean(beanNm1);
+        var mapBookBean = applicationContext.getBean(beanNm2);
+
+        /* then */
+
+        assertNotNull(libBean);
+        assertNotNull(mapBookBean);
+
+    }
+
+    @Test
+    public void find_all_class_annotation(){
+        /* given */
+
+
+        /* when */
+
+        /* then */
     }
 
 }

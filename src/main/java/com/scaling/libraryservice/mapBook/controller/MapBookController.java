@@ -8,7 +8,6 @@ import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -39,7 +38,7 @@ public class MapBookController {
     @Substitutable(origin = BExistConn.class, substitute = "getHasBookMarkers")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
-        reqMapBookDto.updateAreaCd();
+        libraryFindService.outPutAreaCd(reqMapBookDto);
 
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
 
