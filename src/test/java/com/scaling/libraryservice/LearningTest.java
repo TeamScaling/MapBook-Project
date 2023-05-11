@@ -114,8 +114,8 @@ public class LearningTest {
     public void caffeine_cache() {
         /* given */
 
-        ReqMapBookDto dto = new ReqMapBookDto("12345", 37.3, 124.4, null, null);
-        ReqMapBookDto dto2 = new ReqMapBookDto("12345", 37.3, 124.4, null, null);
+        ReqMapBookDto dto = new ReqMapBookDto("12345", 37.3, 124.4);
+        ReqMapBookDto dto2 = new ReqMapBookDto("12345", 37.3, 124.4);
 
 
         /* when */

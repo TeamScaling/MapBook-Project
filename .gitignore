@@ -60,3 +60,14 @@ out/
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/src/main/resources/templates/400BadRequest.html
+/src/main/resources/application.yml
+/cache_books.ser
+/src/main/generated/com/scaling/libraryservice/search/entity/QBook.java
+/src/main/generated/com/scaling/libraryservice/mapBook/entity/QHsAreaCd.java
+/src/main/generated/com/scaling/libraryservice/mapBook/entity/QLibrary.java
+/src/main/generated/com/scaling/libraryservice/mapBook/entity/QLibraryHasBook.java
+/src/main/generated/com/scaling/libraryservice/mapBook/entity/QLibraryMeta.java
+/src/main/generated/com/scaling/libraryservice/mapBook/entity/QLoanItem.java
+/src/main/generated/com/scaling/libraryservice/mapBook/entity/QTimeStamp.java
+/userInfo.ser
