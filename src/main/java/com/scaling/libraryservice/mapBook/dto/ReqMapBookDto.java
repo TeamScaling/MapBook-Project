@@ -56,8 +56,9 @@ public class ReqMapBookDto implements CacheKey {
 
     public boolean isValidCoordinate(){
 
-        return this.lat > 33.173360 & this.lat < 38.319297
-            & this.lon > 126.559157 & this.lon <127.225938;
+        return this.lat > 33.11 & this.lat < 38.61
+            & this.lon > 124.60 & this.lon < 131.87;
+
     }
 
     @Override
@@ -69,8 +70,7 @@ public class ReqMapBookDto implements CacheKey {
             return false;
         }
         ReqMapBookDto that = (ReqMapBookDto) o;
-        return Objects.equals(isbn, that.isbn) && Objects.equals(areaCd,
-            that.areaCd);
+        return Objects.equals(isbn, that.isbn) && Objects.equals(areaCd, that.areaCd);
     }
 
     @Override
