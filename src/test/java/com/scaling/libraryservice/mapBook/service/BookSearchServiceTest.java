@@ -3,6 +3,7 @@ package com.scaling.libraryservice.mapBook.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
@@ -53,7 +54,7 @@ class BookSearchServiceTest {
         int size = 10;
 
         /* when */
-        RespBooksDto books = bookSearchService.searchBooks(query, page, size,"title");
+        RespBooksDto books = bookSearchService.searchBooks(new BookCacheKey(query,page), size,"title");
 
         /* then */
         //Assertions 로 검색결과가 있는지 확인

@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
+import com.scaling.libraryservice.recommend.cacheKey.RecommendCacheKey;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CacheBackupService<T> {
+public class CacheBackupService<C, K, I> {
 
     public final String COMMONS_BACK_UP_FILE_NAME = "cache_backup_common.json";
 
@@ -39,11 +39,11 @@ public class CacheBackupService<T> {
 
     private final ApplicationContext applicationContext;
 
-    public void saveCommonCacheToFile(Map<Class<?>, Cache<CacheKey, T>> cacheMap) {
+    public void saveCommonCacheToFile(Map<C, Cache<CacheKey<K,I>, I>> cacheMap) {
 
-        for (Map.Entry<Class<?>, Cache<CacheKey, T>> entry : cacheMap.entrySet()) {
-            Class<?> clazz = entry.getKey();
-            Cache<CacheKey, ?> cache = entry.getValue();
+        for (Map.Entry<C, Cache<CacheKey<K,I>, I>> entry : cacheMap.entrySet()) {
+            C clazz = entry.getKey();
+            Cache<CacheKey<K,I>, ?> cache = entry.getValue();
 
             JsonObject cacheData = new JsonObject();
 
@@ -51,7 +51,7 @@ public class CacheBackupService<T> {
                 cacheData.add(key.toString(), gson.toJsonTree(value));
             });
 
-            jsonObject.add(clazz.getSimpleName(), cacheData);
+            jsonObject.add(clazz.toString(), cacheData);
         }
 
         try (FileWriter fw = new FileWriter(COMMONS_BACK_UP_FILE_NAME)) {
@@ -62,9 +62,9 @@ public class CacheBackupService<T> {
         }
     }
 
-    public Cache<CacheKey, List<RespMapBookDto>> reloadMapBookCache(String filename) {
+    public Cache<CacheKey<K,I>, List<RespMapBookDto>> reloadMapBookCache(String filename) {
 
-        Cache<CacheKey, List<RespMapBookDto>> mapBookApiHandlerItems = applicationContext.getBean(
+        Cache<CacheKey<K,I>, List<RespMapBookDto>> mapBookApiHandlerItems = applicationContext.getBean(
             "mapBookCache", Cache.class);
 
         try (FileReader fr = new FileReader(filename);
@@ -97,7 +97,7 @@ public class CacheBackupService<T> {
                     cachedResult.add(new RespMapBookDto(reqMapBook.getJSONObject(i)));
                 }
 
-                mapBookApiHandlerItems.put(key, cachedResult);
+                mapBookApiHandlerItems.put((CacheKey<K, I>) key, cachedResult);
             }
 
 
@@ -119,7 +119,7 @@ public class CacheBackupService<T> {
 
             var customer = respJsonObj.getJSONObject("RecommendService");
 
-            List<RecCacheKey> cacheKeys = new ArrayList<>();
+            List<RecommendCacheKey> cacheKeys = new ArrayList<>();
 
             for (String s : customer.keySet()) {
                 Pattern pattern = Pattern.compile("RecCacheKey\\(query=(.+)\\)");
@@ -127,11 +127,11 @@ public class CacheBackupService<T> {
                 Matcher matcher = pattern.matcher(s);
 
                 if (matcher.find()) {
-                    cacheKeys.add(new RecCacheKey(matcher.group(1)));
+                    cacheKeys.add(new RecommendCacheKey(matcher.group(1)));
                 }
             }
 
-            for (RecCacheKey rec : cacheKeys) {
+            for (RecommendCacheKey rec : cacheKeys) {
                 var recStrList = customer.getJSONArray(rec.toString());
 
                 List<String> result = new ArrayList<>();

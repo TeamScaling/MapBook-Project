@@ -1,8 +1,12 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
 import org.json.JSONObject;
@@ -14,7 +18,7 @@ import org.springframework.lang.Nullable;
  * 에서 캐싱 된 데이터를 찾기 위한 Key로 사용 될 수 있다.
  */
 @Getter @Setter
-public class ReqMapBookDto implements CacheKey {
+public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDto>> {
 
     private String isbn;
     private Double lat;
@@ -25,6 +29,14 @@ public class ReqMapBookDto implements CacheKey {
 
 
     public ReqMapBookDto() {
+    }
+
+    @Override
+    public Cache<ReqMapBookDto, List<RespMapBookDto>> configureCache() {
+        return Caffeine.newBuilder()
+            .expireAfterWrite(6, TimeUnit.HOURS)
+            .maximumSize(1000)
+            .build();
     }
 
     @Override

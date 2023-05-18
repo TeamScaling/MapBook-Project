@@ -8,12 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.cache.CacheProperties.Redis;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 class CustomCacheManagerTest {
+
+    private CustomCacheManager customCacheManager;
+    private BookCacheKey bookCacheKey;
+
+    @BeforeEach
+    public void setUp(){
+        customCacheManager = new CustomCacheManager<>(null);
+        bookCacheKey = new BookCacheKey("자바",1);
+    }
 
     @Test @DisplayName("캐쉬 데이터가 사용되어 지면 유효기간이 갱신 된다.")
     public void load() throws InterruptedException {
@@ -86,4 +96,39 @@ class CustomCacheManagerTest {
         /* then */
     }
 
+    @Test
+    void onShutdown() {
+    }
+
+    @Test
+    void reloadCacheData() {
+    }
+
+    @Test
+    void registerCaching() {
+    }
+
+    @Test
+    void put() {
+    }
+
+    @Test
+    void get() {
+    }
+
+    @Test
+    void removeCaching() {
+    }
+
+    @Test
+    void isUsingCaching() {
+    }
+
+    @Test
+    void isContainItem() {
+    }
+
+    @Test
+    void generateCacheKey() {
+    }
 }

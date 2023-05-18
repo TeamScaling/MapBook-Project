@@ -10,7 +10,7 @@ import com.scaling.libraryservice.mapBook.controller.MapBookController;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.recommend.cacheKey.RecCacheKey;
+import com.scaling.libraryservice.recommend.cacheKey.RecommendCacheKey;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
@@ -18,10 +18,6 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
-import edu.stanford.nlp.ling.CoreAnnotations;
-import edu.stanford.nlp.pipeline.Annotation;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import edu.stanford.nlp.util.CoreMap;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -35,18 +31,17 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
-import org.joda.time.DateTime;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
@@ -89,7 +84,7 @@ public class LearningTest {
         try {
             for(int i=0; i<3; i++){
                 Thread.sleep(5000);
-                System.out.println("hello "+ DateTime.now());
+                System.out.println("hello "+ LocalDateTime.now());
             }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -123,42 +118,6 @@ public class LearningTest {
         System.out.println(dto.equals(dto2));
 
         /* then */
-    }
-
-    @Test
-    public void lnp() {
-
-        // Setup Stanford CoreNLP pipeline
-        Properties props = new Properties();
-        props.setProperty("annotators", "tokenize, ssplit, pos");
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
-
-        // Input text
-        String text = "email에 꼭 필요한 알짜표현";
-
-        // Annotate text
-        Annotation document = new Annotation(text);
-        pipeline.annotate(document);
-
-        Map<String, List<String>> result = new HashMap<>();
-
-
-        // Extract tokens
-        List<CoreMap> sentences = document.get(CoreAnnotations.SentencesAnnotation.class);
-        for (CoreMap sentence : sentences) {
-            for (CoreMap token : sentence.get(CoreAnnotations.TokensAnnotation.class)) {
-                String word = token.get(CoreAnnotations.TextAnnotation.class);
-
-                if(TitleAnalyzer.isEnglish(word)){
-                    System.out.println("eng : "+word);
-                }else if(TitleAnalyzer.isKorean(word)){
-                    System.out.println("kor : "+word);
-                }
-
-            }
-        }
-
-
     }
 
     @Test
@@ -296,7 +255,7 @@ public class LearningTest {
 
 
         try (FileReader fileReader = new FileReader(backupFile);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);) {
+            BufferedReader bufferedReader = new BufferedReader(fileReader)) {
 
             while (bufferedReader.ready()){
                 System.out.println(bufferedReader.readLine());
@@ -422,7 +381,7 @@ public class LearningTest {
 
             var customer = respJsonObj.getJSONObject("RecommendService");
 
-            List<RecCacheKey> cacheKeys = new ArrayList<>();
+            List<RecommendCacheKey> cacheKeys = new ArrayList<>();
 
             for (String s : customer.keySet()) {
                 Pattern pattern = Pattern.compile("RecCacheKey\\(query=(.+)\\)");
@@ -430,13 +389,13 @@ public class LearningTest {
                 Matcher matcher = pattern.matcher(s);
 
                 if (matcher.find()) {
-                    cacheKeys.add(new RecCacheKey(matcher.group(1)));
+                    cacheKeys.add(new RecommendCacheKey(matcher.group(1)));
                 }
             }
 
-            Cache<RecCacheKey,List<String>> recommendItems = Caffeine.newBuilder().build();
+            Cache<RecommendCacheKey,List<String>> recommendItems = Caffeine.newBuilder().build();
 
-            for(RecCacheKey rec : cacheKeys){
+            for(RecommendCacheKey rec : cacheKeys){
                 var recStrList = customer.getJSONArray(rec.toString());
 
                 List<String> result = new ArrayList<>();
@@ -449,7 +408,7 @@ public class LearningTest {
                 recommendItems.put(rec,result);
             }
 
-            System.out.println(recommendItems.getIfPresent(new RecCacheKey("스프링")));
+            System.out.println(recommendItems.getIfPresent(new RecommendCacheKey("스프링")));
 
         } catch (IOException e) {
             throw new RuntimeException(e);

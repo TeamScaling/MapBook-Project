@@ -35,7 +35,7 @@ public class MapBookService {
      * @return 대출 가능한 도서관 정보를 담은 응답 Dto를 List 형태로 반환 한다.
      */
     @Timer
-    @CustomCacheable(cacheName = "mapBookCache")
+    @CustomCacheable
     public List<RespMapBookDto> matchMapBooks(List<LibraryDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) {
 
@@ -44,18 +44,18 @@ public class MapBookService {
 
         List<BExistConn> bExistConns = null;
 
-        if(reqMapBookDto.isSupportedArea()){
+        if (reqMapBookDto.isSupportedArea()) {
             bExistConns = nearByLibraries.stream().filter(l -> l.getHasBook().equals("Y"))
                 .map(n -> new BExistConn(n.getLibNo())).toList();
 
-            if(bExistConns.isEmpty()){
-                return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto,l,"N")).toList();
+            if (bExistConns.isEmpty()) {
+                return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto, l, "N"))
+                    .toList();
             }
 
-        }else{
+        } else {
             bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
         }
-
 
         List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
             bExistConns,
@@ -73,7 +73,7 @@ public class MapBookService {
      * 대출 가능 Api 응답을 주변 도서관 정보와 연결 하여 대출 가능한 주변 도서관 정보를 담은 List를 반환 한다.
      *
      * @param nearByLibraries 사용자 주변 도서관 정보를 담은 Dto
-     * @param bookExistMap 도서관 코드를 key, 대출 가능 Api 응답 Dto를 value로 가지는 Map
+     * @param bookExistMap    도서관 코드를 key, 대출 가능 Api 응답 Dto를 value로 가지는 Map
      * @return 대출 가능한 주변 도서관 정보에 대한 Dto List
      */
 

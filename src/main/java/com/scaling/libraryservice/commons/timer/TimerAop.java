@@ -31,7 +31,6 @@ public class TimerAop {
         // double 범위 초과로 인한 지수 표현 방지
         String totalTime = String.format("%.6f",stopWatch.getTotalTimeSeconds());
 
-
         log.info("[{}s] in [{}]",totalTime,joinPointNm);
 
         return result;

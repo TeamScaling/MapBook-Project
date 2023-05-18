@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.recommend.controller;
 
+import com.scaling.libraryservice.recommend.cacheKey.RecommendCacheKey;
 import com.scaling.libraryservice.recommend.dto.ReqRecommendDto;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.recommend.service.RecommendService;
@@ -24,15 +26,6 @@ public class RecommendRestController {
 
     private final RecommendService recommendService;
 
-    // 도서 검색
-    @GetMapping(value = "/books/test")
-    public ResponseEntity<RespBooksDto> searchBooks(@RequestParam("query") String query,
-        @RequestParam("page") int page, @RequestParam("size") int size,
-        @RequestParam("target") String target) {
-
-        return ResponseEntity.ok(searchService.searchBooks(query, page, size, target));
-    }
-
     /** 추천 도서 데이터를 얻기 위해 요청 된 검색어를 가지고 추천 도서 데이터를 JSON 형식으로 응답 한다.
      *
      * @param recommendDto 요청 검색어 query를 하나 담고 있는 사용자 요청 Dto
@@ -41,7 +34,7 @@ public class RecommendRestController {
     @PostMapping("/books/recommend")
     public ResponseEntity<List<String>> getRecommends(@RequestBody ReqRecommendDto recommendDto){
 
-        return ResponseEntity.ok(recommendService.getRecommendBook(recommendDto.getQuery()));
+        return ResponseEntity.ok(recommendService.getRecommendBook(new RecommendCacheKey(recommendDto.getQuery())));
     }
 
 }
