@@ -38,8 +38,6 @@ public class MapBookController {
     @Substitutable(origin = BExistConn.class, substitute = "getHasBookMarkers")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
-        libraryFindService.outPutAreaCd(reqMapBookDto);
-
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
 
         List<RespMapBookDto> mapBooks = mapBookService.matchMapBooks(nearbyLibraries,

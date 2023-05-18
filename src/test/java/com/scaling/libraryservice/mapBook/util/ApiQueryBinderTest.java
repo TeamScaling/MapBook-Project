@@ -18,7 +18,7 @@ class ApiQueryBinderTest {
     @Test
     public void load() throws IOException {
         /* given */
-        var response = apiQuerySender.singleQueryJson(new BExistConn(),"9788952211989");
+        var response = apiQuerySender.sendSingleQuery(new BExistConn(),"9788952211989");
         /* when */
         System.out.println(response);
         /* then */

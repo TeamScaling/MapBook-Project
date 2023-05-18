@@ -40,6 +40,8 @@ public class LibraryFindService {
 
         Objects.requireNonNull(reqMapBookDto);
 
+        outPutAreaCd(reqMapBookDto);
+
         return isSupportedArea(reqMapBookDto) ?
             getNearByHasBookLibraries(reqMapBookDto) :
             getNearByLibraries(reqMapBookDto.getAreaCd());
@@ -86,7 +88,6 @@ public class LibraryFindService {
      * 주변 대출 가능 도서관 찾기 요청 Dto에 담긴 위치 정보를 지역 코드로 변환 한다.
      *
      * @param reqMapBookDto 위치 정보를 참고할 사용자 요청 Dto
-     * @return 위치 정보에 의해 변환 된 커스텀 지역 코드
      * @throws LocationException 사용자 요청에 담긴 위치 정보가 유효하지 않을 경우.
      */
     public void outPutAreaCd(ReqMapBookDto reqMapBookDto) throws LocationException {
@@ -134,7 +135,7 @@ public class LibraryFindService {
 
         boolean isSupported = hasBookAreaRepo.findById(reqMapBookDto.getAreaCd()).isPresent();
 
-        reqMapBookDto.setSupportedArea(true);
+        if(isSupported) reqMapBookDto.setSupportedArea(true);
 
         return isSupported;
     }

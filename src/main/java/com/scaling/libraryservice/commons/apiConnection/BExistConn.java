@@ -47,7 +47,8 @@ public class BExistConn implements ConfigureUriBuilder, ApiObserver {
         return UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("authKey", DEFAULT_AUTH_KEY)
             .queryParam("isbn13", target)
-            .queryParam("libCode", String.valueOf(this.libNo));
+            .queryParam("libCode", String.valueOf(this.libNo))
+            .queryParam("format", "json");
     }
 
     /**

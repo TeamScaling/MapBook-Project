@@ -57,7 +57,7 @@ public class MapBookService {
         }
 
 
-        List<ResponseEntity<String>> responseEntities = apiQuerySender.multiQuery(
+        List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
             bExistConns,
             reqMapBookDto.getIsbn(),
             nearByLibraries.size());

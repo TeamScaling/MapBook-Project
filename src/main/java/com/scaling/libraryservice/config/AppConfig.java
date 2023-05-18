@@ -6,7 +6,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.util.relate.RelationTokenRule;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
@@ -36,11 +35,6 @@ public class AppConfig {
     public Komoran komoran() {
 
         return new Komoran(DEFAULT_MODEL.FULL);
-    }
-    @Bean
-    public RelationTokenRule relationTokenRule() {
-
-        return new RelationTokenRule();
     }
 
 //    @Bean
