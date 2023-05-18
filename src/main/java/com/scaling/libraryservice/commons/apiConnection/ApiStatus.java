@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.commons.apiConnection;
 
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
 
 /**
  *  OpenAPI에 대한 연결 상태 정보를 담는다. 연결에 문제가 있을 시, 에러 정보를 저장 한다.
@@ -13,9 +13,9 @@ public class ApiStatus {
     private final String apiUri;
     private boolean apiAccessible = true;
     private int errorCnt;
-    private DateTime closedTime;
-    private DateTime openedTime;
-    private DateTime recentClosedTime;
+    private LocalDateTime closedTime;
+    private LocalDateTime openedTime;
+    private LocalDateTime recentClosedTime;
     public final int DEFAULT_MAX_ERROR_CNT;
 
     public ApiStatus(String apiUri, int DEFAULT_MAX_ERROR_CNT) {
@@ -31,7 +31,7 @@ public class ApiStatus {
         return errorCnt;
     }
 
-    public DateTime getClosedTime() {
+    public LocalDateTime getClosedTime() {
         return closedTime;
     }
 
@@ -41,13 +41,13 @@ public class ApiStatus {
 
     public void closeAccess() {
         apiAccessible = false;
-        closedTime = DateTime.now();
+        closedTime = LocalDateTime.now();
         log.info("[{}] is not accessible at [{}] ",apiUri,openedTime);
     }
 
     public void openAccess() {
         apiAccessible = true;
-        openedTime = DateTime.now();
+        openedTime = LocalDateTime.now();
         recentClosedTime = closedTime;
         closedTime = null;
         errorCnt = 0;
