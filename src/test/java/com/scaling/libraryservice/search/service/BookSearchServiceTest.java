@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.search.service;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
 import org.assertj.core.api.Assertions;
@@ -19,8 +20,6 @@ class BookSearchServiceTest {
     @Autowired
     private BookSearchService bookSearchService;
 
-    @Autowired
-    private CustomCacheManager<RespBooksDto> cacheManager;
 
     @Test
     public void load(){
@@ -36,7 +35,7 @@ class BookSearchServiceTest {
         int size = 10;
         String target = "title";
 
-        RespBooksDto result = bookSearchService.searchBooks(title, page, size, target);
+        RespBooksDto result = bookSearchService.searchBooks(new BookCacheKey(title,page), size, target);
 
         Assertions.assertThat(result.getDocuments().get(0).getTitle().contains(title));
 

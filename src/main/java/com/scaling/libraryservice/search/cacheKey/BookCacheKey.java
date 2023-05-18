@@ -1,7 +1,11 @@
 package com.scaling.libraryservice.search.cacheKey;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
+import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.ToString;
 
 /**
@@ -9,10 +13,9 @@ import lombok.ToString;
  * 이 클래스는 캐싱 시 사용되는 고유한 키 값을 생성하고 관리합니다.
  */
 @ToString
-public class BookCacheKey implements CacheKey{
+public class BookCacheKey implements CacheKey<BookCacheKey,RespBooksDto>{
 
     private final String query;
-
     private final int page;
 
     public String getQuery() {
@@ -26,6 +29,11 @@ public class BookCacheKey implements CacheKey{
     public BookCacheKey(String query, int page) {
         this.query = query;
         this.page = page;
+    }
+
+    @Override
+    public Cache<BookCacheKey, RespBooksDto> configureCache() {
+        return Caffeine.newBuilder().expireAfterWrite(1,TimeUnit.DAYS).build();
     }
 
     @Override

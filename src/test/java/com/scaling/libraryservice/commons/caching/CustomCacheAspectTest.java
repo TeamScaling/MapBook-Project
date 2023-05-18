@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 class CustomCacheAspectTest {
 
-    private CustomCacheAspect<?> customCacheAspect;
 
     @Test
     public void registerAround(){

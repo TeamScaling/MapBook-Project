@@ -1,11 +1,9 @@
 package com.scaling.libraryservice.search.controller;
 
-import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.dto.TestingBookDto;
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +20,7 @@ public class SearchRestController {
     @GetMapping("/books/search/test")
     public ResponseEntity<RespBooksDto> restSearchBook(@RequestBody TestingBookDto testingBookDto){
 
-        var result = bookSearchService.searchBooks(testingBookDto.getBookName(),1,10,"title");
+        var result = bookSearchService.searchBooks(new BookCacheKey(testingBookDto.getBookName(),1),10,"");
 
         if(result.getDocuments().isEmpty()){
             log.info("[Not Found]This book is Not Found");

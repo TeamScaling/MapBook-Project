@@ -36,21 +36,24 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final BookRepository bookRepository;
-    private final CustomCacheManager<RespBooksDto> cacheManager;
+    private final CustomCacheManager<BookSearchService,BookCacheKey,RespBooksDto> cacheManager;
     private final TitleAnalyzer titleAnalyzer;
 
     /**
-     * 입력된 검색어를 이용하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
+     * 검색어를 이용하여 도서를 검색하고 그 결과를 반환하는 메서드입니다. 이 메서드는 페이지당 도서 수와 검색 대상을 파라미터로 받습니다.
+     * 만약 검색이 3초 이상 소요될 경우, 비동기적으로 검색을 수행하고 빈 결과를 즉시 반환합니다.
      *
-     * @param query  검색어
-     * @param page   검색 결과 페이지 번호
-     * @param size   페이지 당 반환할 도서 수
+     * @param bookCacheKey 검색어와 페이지 번호를 포함하는 캐시 키 객체
+     * @param size 페이지당 반환할 도서 수
      * @param target 검색 대상 (기본값: "title")
-     * @return 검색 결과를 담은 RespBooksDto 객체
+     * @return 검색 결과를 담은 RespBooksDto 객체. 만약 검색이 3초를 초과하면 빈 결과가 반환됩니다.
      */
     @Timer
-    @CustomCacheable(cacheName = "bookCache")
-    public RespBooksDto searchBooks(String query, int page, int size, String target) {
+    @CustomCacheable
+    public RespBooksDto searchBooks(BookCacheKey bookCacheKey,int size,String target) {
+
+        String query = bookCacheKey.getQuery();
+        int page = bookCacheKey.getPage();
 
         log.info("-------------query : [{}]-------------------------------", query);
 
@@ -88,7 +91,7 @@ public class BookSearchService {
                         fetchedBooks.getTotalElements(), page, size),
                     fetchedBooks.stream().map(BookDto::new).toList());
 
-                cacheManager.put(this.getClass(), new BookCacheKey(query, page), respBooksDto);
+                cacheManager.put(this, new BookCacheKey(query, page), respBooksDto);
                 log.info("[{}] async Search task is Completed", query);
             }
         });

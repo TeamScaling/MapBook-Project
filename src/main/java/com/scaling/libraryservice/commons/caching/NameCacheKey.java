@@ -1,16 +1,22 @@
 package com.scaling.libraryservice.commons.caching;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import java.util.Objects;
 
-public class NameCacheKey implements CacheKey{
+public class NameCacheKey implements CacheKey<NameCacheKey,UserInfo>{
 
-    private String name;
+    private final String name;
 
-    private int age;
+    private final int age;
 
     public NameCacheKey(String name, int age) {
         this.name = name;
         this.age = age;
+    }
+
+    @Override
+    public Cache<? extends CacheKey<NameCacheKey, UserInfo>, UserInfo> configureCache() {
+        return null;
     }
 
     @Override

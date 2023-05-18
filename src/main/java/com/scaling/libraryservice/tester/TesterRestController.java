@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.tester;
 
+import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class TesterRestController {
         @RequestParam(value = "target", defaultValue = "title") String target, ModelMap model) {
 
         if (!query.isEmpty()) {
-            RespBooksDto searchResult = searchService.searchBooks(query,page,size,target);
+            RespBooksDto searchResult = searchService.searchBooks(new BookCacheKey(query,page),size,target);
 
         }
         //fixme : query가 empty일 때, 사용자가 공백 검색을 못하게 alert를 띄운다.
