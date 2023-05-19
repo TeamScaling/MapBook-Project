@@ -2,11 +2,13 @@ package com.scaling.libraryservice.mapBook.service;
 
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
+import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ public class MapBookService {
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder apiQueryBinder;
 
-
     /**
      * 사용자가 원하는 도서와 사용자 주변의 도서관을 조합하여 대출 가능한 도서관들의 정보를 반환 한다.
      *
@@ -37,7 +38,7 @@ public class MapBookService {
     @Timer
     @CustomCacheable
     public List<RespMapBookDto> matchMapBooks(List<LibraryDto> nearByLibraries,
-        ReqMapBookDto reqMapBookDto) {
+        ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         Objects.requireNonNull(nearByLibraries);
         Objects.requireNonNull(reqMapBookDto);
@@ -57,10 +58,9 @@ public class MapBookService {
             bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
         }
 
-        List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
-            bExistConns,
-            reqMapBookDto.getIsbn(),
-            nearByLibraries.size());
+        List<ResponseEntity<String>> responseEntities =
+            apiQuerySender.sendMultiQuery(bExistConns, reqMapBookDto.getIsbn(),
+                nearByLibraries.size());
 
         Map<Integer, ApiBookExistDto> bookExistMap
             = apiQueryBinder.bindBookExistMap(responseEntities);

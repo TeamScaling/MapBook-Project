@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.commons.apiConnection;
 
+import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import lombok.RequiredArgsConstructor;

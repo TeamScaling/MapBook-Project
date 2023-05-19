@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.commons.apiConnection;
 
+import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import lombok.ToString;
@@ -11,7 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @ToString
 public class BExistConn implements ConfigureUriBuilder, ApiObserver {
 
-    private Integer libNo;
+    private final Integer libNo;
     private static final String API_URL = "http://data4library.kr/api/bookExist";
     private static final String DEFAULT_AUTH_KEY = "0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72";
     public static final ApiStatus apiStatus = new ApiStatus(API_URL,10);
@@ -21,6 +22,7 @@ public class BExistConn implements ConfigureUriBuilder, ApiObserver {
     private final String DEFAULT_ISBN_CHECKING = "9788089365210";
 
     public BExistConn() {
+        libNo = DEFAULT_LIB_CHECKING_NO;
     }
 
     public BExistConn(Integer libNo) {
@@ -35,10 +37,6 @@ public class BExistConn implements ConfigureUriBuilder, ApiObserver {
      */
     @Override
     public UriComponentsBuilder configUriBuilder(String target) {
-
-        if(libNo == null){
-            this.libNo = DEFAULT_LIB_CHECKING_NO;
-        }
 
         if(target == null){
             target = DEFAULT_ISBN_CHECKING;

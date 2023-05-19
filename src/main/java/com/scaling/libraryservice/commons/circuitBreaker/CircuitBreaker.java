@@ -1,8 +1,10 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import com.scaling.libraryservice.commons.apiConnection.ApiStatus;
+import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
+import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * {@link CircuitBreaker}는 API 호출에 대한 오류를 관리하고 불안정한 API 서버를 격리합니다. 이 클래스는 API 서버의 상태를 모니터링하고, 연속된 오류
@@ -32,41 +33,61 @@ public class CircuitBreaker {
 
     private final ApiQuerySender apiQuerySender;
 
-    public boolean checkIsAvailable(ApiStatus apiStatus) {
+    /**
+     * {@link ApiObserver} 인스턴스의 API 액세스 상태를 확인하는 메소드입니다. {@link ApiObserver}가 현재 접근 가능한 API를 가리키고 있는지
+     * 반환합니다.
+     *
+     * @param apiObserver API 액세스 상태를 확인할 {@link ApiObserver} 인스턴스
+     * @return {@link ApiObserver}가 가리키는 API가 접근 가능한 경우 true, 그렇지 않은 경우 false를 반환
+     */
+    public boolean isClosed(ApiObserver apiObserver){
+        return apiObserver.getApiStatus().apiAccessible();
+    }
 
-        var response = apiQuerySender.sendSingleQuery(
-            target -> UriComponentsBuilder.fromHttpUrl(apiStatus.getApiUri()), "");
+    /**
+     * 주어진 {@link ApiStatus}에 해당하는 API 서버의 복원 가능성을 확인하는 메소드입니다. 이 메소드는 API 서버가 다시 접근 가능한 상태인지
+     * 테스트하는 쿼리를 전송하고 그 결과를 반환합니다.
+     *
+     * @param apiStatus 복원 가능성을 확인할 API 서버의 상태 정보
+     * @return API 서버가 다시 접근 가능한 상태라면 true, 그렇지 않은 경우 false를 반환
+     */
+    public boolean checkRestoration(ApiStatus apiStatus) {
+        log.info("check restoration of Api [{}] at [{}]",apiStatus.getApiUri(), LocalDateTime.now());
+        apiStatus.upTryCnt();
 
-        return response.getStatusCode().is2xxSuccessful();
+        try{
+            var response = apiQuerySender.sendSingleQuery(new BExistConn(), "");
+        }catch (OpenApiException e){
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * API 오류가 발생했을 때, 관련 {@link ApiObserver}를 처리하고 오류 횟수를 증가시키는 메소드입니다. 연속된 오류 발생 시
      * {@link CircuitBreaker}를 사용하여 API 서버에 대한 액세스를 일시 중단합니다.
      *
-     * @param obj 발생한 오류를 처리할 {@link ApiObserver} 인스턴스
+     * @param observer 발생한 오류를 처리할 {@link ApiObserver} 인스턴스
      */
-    public synchronized void receiveError(Object obj) {
+    public synchronized void receiveError(ApiObserver observer) {
 
-        Objects.requireNonNull(obj);
+        Objects.requireNonNull(observer);
 
-        if(obj instanceof ApiObserver observer){
+        ApiStatus status = observer.getApiStatus();
 
-            ApiStatus status = observer.getApiStatus();
-
-            if (!observingConnections.contains(observer)) {
-                observingConnections.add(observer);
-            }
-
-            status.upErrorCnt();
-
-            if (status.getErrorCnt() > status.DEFAULT_MAX_ERROR_CNT) {
-                closeObserver(status);
-            }
-
-            log.error("Api Error - request api url : [{}] , current error cnt : [{}]"
-                , status.getApiUri(), status.getErrorCnt());
+        if (!observingConnections.contains(observer)) {
+            observingConnections.add(observer);
         }
+
+        status.upErrorCnt();
+
+        if (status.getErrorCnt() > status.DEFAULT_MAX_ERROR_CNT) {
+            closeObserver(status);
+        }
+
+        log.error("Api Error - request api url : [{}] , current error cnt : [{}]"
+            , status.getApiUri(), status.getErrorCnt());
 
     }
 
@@ -83,7 +104,7 @@ public class CircuitBreaker {
             status.getClosedTime());
 
         Runnable checkAvailabilityTask = () -> {
-            if (checkIsAvailable(status)) {
+            if (checkRestoration(status)) {
                 scheduledTasks.get(status).cancel(false);
                 scheduledTasks.remove(status);
                 status.openAccess();
@@ -91,7 +112,9 @@ public class CircuitBreaker {
         };
 
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(checkAvailabilityTask, 1,
-            1, TimeUnit.HOURS);
+            60*10*3, TimeUnit.SECONDS);
+
+
         scheduledTasks.put(status, scheduledFuture);
     }
 

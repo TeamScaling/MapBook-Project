@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.mapBook.util;
 
-import com.scaling.libraryservice.commons.circuitBreaker.MonitorApi;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -56,20 +56,30 @@ public class ApiQuerySender {
      * @param configUriBuilder Api에 대한 요청 param 값들을 담고 있는 객체
      * @param target           Api에 요청 하고자 하는 데이터 식별 값
      * @return Api 응답 데이터를 담는 ResponseEntity
+     * @throws OpenApiException API와의 연결에 문제가 있을 경우.
      */
-    @Timer @MonitorApi
+    @Timer
     public ResponseEntity<String> sendSingleQuery(ConfigureUriBuilder configUriBuilder,
-        String target) throws RestClientException {
+        String target) throws OpenApiException {
 
         Objects.requireNonNull(configUriBuilder);
 
         UriComponentsBuilder uriBuilder = configUriBuilder.configUriBuilder(target);
 
-        return restTemplate.exchange(
-            uriBuilder.toUriString(),
-            HttpMethod.GET,
-            HttpEntity.EMPTY,
-            String.class);
+        ResponseEntity<String> response = null;
+
+        try{
+            response = restTemplate.exchange(
+                uriBuilder.toUriString(),
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                String.class);
+        }catch (Exception e){
+            throw new OpenApiException("api 문제");
+        }
+
+
+        return response;
     }
 
     /**
@@ -79,10 +89,11 @@ public class ApiQuerySender {
      * @param target      Api에 요청 하고자 하는 데이터 식별 값
      * @param nThreads    병렬 처리를 수행할 쓰레드 갯수
      * @return Api 응답 데이터 ResponseEntity들을 담은 List
+     * @throws OpenApiException API와의 연결에 문제가 있을 경우.
      */
     @Timer
     public List<ResponseEntity<String>> sendMultiQuery(List<? extends ConfigureUriBuilder> uriBuilders,
-        String target, int nThreads) {
+        String target, int nThreads) throws OpenApiException {
 
         Objects.requireNonNull(uriBuilders);
 
@@ -109,7 +120,7 @@ public class ApiQuerySender {
 
         } catch (InterruptedException | ExecutionException e) {
             log.error(e.toString());
-
+            throw new OpenApiException("api 문제 발생");
         } finally {
             service.shutdown();
         }

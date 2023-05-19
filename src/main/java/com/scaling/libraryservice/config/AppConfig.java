@@ -18,8 +18,8 @@ public class AppConfig {
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 
-        factory.setConnectTimeout(1000);
-        factory.setReadTimeout(2000);
+        factory.setConnectTimeout(2000);
+        factory.setReadTimeout(3000);
 
         return new RestTemplate(factory);
     }

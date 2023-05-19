@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.apiConnection.ApiStatus;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
@@ -180,7 +179,7 @@ class CircuitBreakerTest {
         /* when */
 
         boolean available
-            = circuitBreaker.checkIsAvailable(new ApiStatus(apiUri,5));
+            = circuitBreaker.checkRestoration(new ApiStatus(apiUri,5));
 
         /* then */
         assertTrue(available);
