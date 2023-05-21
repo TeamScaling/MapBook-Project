@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.apiConnection;
+package com.scaling.libraryservice.commons.circuitBreaker;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -13,6 +13,8 @@ public class ApiStatus {
     private final String apiUri;
     private boolean apiAccessible = true;
     private int errorCnt;
+    private long tryCnt = 1;
+
     private LocalDateTime closedTime;
     private LocalDateTime openedTime;
     private LocalDateTime recentClosedTime;
@@ -39,13 +41,13 @@ public class ApiStatus {
         return apiAccessible;
     }
 
-    public void closeAccess() {
+    void closeAccess() {
         apiAccessible = false;
         closedTime = LocalDateTime.now();
         log.info("[{}] is not accessible at [{}] ",apiUri,openedTime);
     }
 
-    public void openAccess() {
+    void openAccess() {
         apiAccessible = true;
         openedTime = LocalDateTime.now();
         recentClosedTime = closedTime;
@@ -55,8 +57,11 @@ public class ApiStatus {
         log.info("[{}] is checked for Access at [{}] ",apiUri,openedTime);
     }
 
-    public void upErrorCnt() {
+    void upErrorCnt() {
         ++errorCnt;
     }
 
+    void upTryCnt() {
+        ++tryCnt;
+    }
 }

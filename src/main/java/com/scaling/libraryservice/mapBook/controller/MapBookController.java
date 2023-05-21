@@ -1,10 +1,11 @@
 package com.scaling.libraryservice.mapBook.controller;
 
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.circuitBreaker.Substitutable;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
+import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
 import java.util.List;
@@ -35,7 +36,7 @@ public class MapBookController {
      */
 
     @PostMapping("/books/mapBook/search")
-    @Substitutable(origin = BExistConn.class, substitute = "getHasBookMarkers")
+    @ApiMonitoring(api = BExistConn.class, substitute = "getHasBookMarkers")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);

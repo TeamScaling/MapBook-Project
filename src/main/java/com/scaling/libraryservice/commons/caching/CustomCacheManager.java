@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class CustomCacheManager<C, K, I> {
     private final Map<C, Cache<CacheKey<K,I>, I>> commonsCache = new HashMap<>();
     private final CacheBackupService<C, K, I> cacheBackupService;
 
-    //    @PreDestroy
+    @PreDestroy
     public void onShutdown() {
         cacheBackupService.saveCommonCacheToFile(commonsCache);
     }

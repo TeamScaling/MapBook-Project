@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.apiConnection.ApiStatus;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.commons.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
 import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
