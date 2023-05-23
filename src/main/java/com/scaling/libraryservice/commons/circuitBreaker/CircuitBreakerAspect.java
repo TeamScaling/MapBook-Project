@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import com.scaling.libraryservice.mapBook.controller.MapBookController;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.lang.reflect.Method;
@@ -45,23 +44,13 @@ public class CircuitBreakerAspect {
         ApiMonitoring annotation = method.getAnnotation(ApiMonitoring.class);
 
         Class<? extends ApiObserver> observerClass = annotation.api();
-        String substituteNm = annotation.substitute();
 
         ApiObserver apiObserver = observerClass.getConstructor().newInstance();
 
-        Method substitute = null;
-
-        for (Method m : joinPoint.getClass().getDeclaredMethods()){
-            if(m.getName().contains(substituteNm)){
-                substitute = m;
-            }
-        }
-
-        if(substitute == null){
-            throw new IllegalArgumentException();
-        }
+        Method substitute = getSubstituteMethod(joinPoint);
 
         if (!circuitBreaker.isClosed(apiObserver)) {
+
             return substitute.invoke(joinPoint.getTarget(), joinPoint.getArgs());
         }
 
@@ -73,7 +62,31 @@ public class CircuitBreakerAspect {
             circuitBreaker.receiveError(apiObserver);
             return substitute.invoke(joinPoint.getTarget(), joinPoint.getArgs());
         }
+
         return result;
+    }
+
+    public Method getSubstituteMethod(ProceedingJoinPoint joinPoint){
+
+        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        ApiMonitoring annotation = method.getAnnotation(ApiMonitoring.class);
+
+        String substituteNm = annotation.substitute();
+
+        Method substitute = null;
+
+        for (Method m : joinPoint.getTarget().getClass().getDeclaredMethods()){
+            if(m.getName().contains(substituteNm)){
+                substitute = m;
+            }
+        }
+
+        if(substitute == null){
+            throw new IllegalArgumentException();
+        }
+
+        return substitute;
+
     }
 
 
