@@ -68,7 +68,7 @@
         <td th:text="${book.author}"></td>
         <td th:text="${book.content}"></td>
         <td>
-          <img class="book-image" th:src="${book.bookImg}" alt="준비중" src="../../static/images/empty.jpeg"/>
+          <img class="book-image" th:attr="src=${!book.bookImg.isEmpty() ? book.bookImg : 'https://someone-be-bucket.s3.ap-northeast-2.amazonaws.com/mapbook+logo.png'}" alt="준비중"/>
         </td>
         <td>
           <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup_MapBook()">

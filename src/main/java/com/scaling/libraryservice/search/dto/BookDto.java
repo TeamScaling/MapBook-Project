@@ -36,12 +36,6 @@ public class BookDto {
         this.author = book.getAuthor();
         this.isbn = book.getIsbn();
         this.bookImg =book.getBookImg();
-
-        if (book.getBookImg().isEmpty()) {
-            this.bookImg = "[내용 없음]";
-        } else {
-            this.bookImg = book.getBookImg();
-        }
     }
 
     public BookDto(BookDto bookDto) {
