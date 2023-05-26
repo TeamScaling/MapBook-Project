@@ -7,6 +7,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 public interface ConfigureUriBuilder {
 
-    UriComponentsBuilder configUriBuilder(String target);
+    UriComponentsBuilder configUriBuilder();
 
 }

@@ -1,9 +1,9 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
 /**
@@ -56,7 +57,7 @@ public class CircuitBreaker {
         apiStatus.upTryCnt();
 
         try{
-            var response = apiQuerySender.sendSingleQuery(new BExistConn(), "");
+            var response = apiQuerySender.sendSingleQuery(new BExistConn(),  HttpEntity.EMPTY);
         }catch (OpenApiException e){
             return false;
         }

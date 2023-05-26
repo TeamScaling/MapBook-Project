@@ -1,11 +1,10 @@
 package com.scaling.libraryservice.mapBook.controller;
 
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
 import java.util.List;

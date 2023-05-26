@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

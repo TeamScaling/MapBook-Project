@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.MockApiConn;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -99,7 +100,8 @@ class CircuitBreakerTest {
 
         System.out.println(uri1);
 
-        var reuslt = apiQuerySender.sendSingleQuery(target -> UriComponentsBuilder.fromUri(uri1),"1234");
+        var reuslt = apiQuerySender.sendSingleQuery(() -> UriComponentsBuilder.fromUri(uri1),
+            HttpEntity.EMPTY);
 
         System.out.println(reuslt);
         /* then */
@@ -198,7 +200,7 @@ class CircuitBreakerTest {
         /* when */
 
         mockServer.start();
-        Executable e = () -> apiQuerySender.sendSingleQuery(mockApiConn,"");
+        Executable e = () -> apiQuerySender.sendSingleQuery(mockApiConn,HttpEntity.EMPTY);
 
         /* then */
 

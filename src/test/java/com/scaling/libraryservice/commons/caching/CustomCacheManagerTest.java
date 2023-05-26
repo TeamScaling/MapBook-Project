@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import java.util.HashMap;
 import java.util.Map;

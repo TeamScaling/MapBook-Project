@@ -6,10 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.apiConnection.LoanItemConn;
-import com.scaling.libraryservice.commons.apiConnection.MockApiConn;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.LoanItemConn;
+import com.scaling.libraryservice.commons.api.apiConnection.MockApiConn;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
 import java.util.ArrayList;
@@ -20,12 +21,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest
 class ApiQuerySenderTest {
+
     @Autowired
     private ApiQuerySender apiQuerySender;
     private WireMockServer mockServer;
@@ -52,7 +55,7 @@ class ApiQuerySenderTest {
 
         /* when */
 
-        var result = apiQuerySender.sendSingleQuery(mockApiConn, target);
+        var result = apiQuerySender.sendSingleQuery(mockApiConn, HttpEntity.EMPTY);
 
         /* then */
         assertEquals(200, result.getStatusCode().value());
@@ -79,11 +82,11 @@ class ApiQuerySenderTest {
         /* when */
         mockServer.start();
 
-        Executable e = () -> apiQuerySender.sendSingleQuery(mockApiConn, target);
+        Executable e = () -> apiQuerySender.sendSingleQuery(mockApiConn, HttpEntity.EMPTY);
         mockServer.stop();
         /* then */
 
-        assertThrows(RestClientException.class,e);
+        assertThrows(RestClientException.class, e);
     }
 
     @Test
@@ -96,8 +99,9 @@ class ApiQuerySenderTest {
 
         //when
         var result
-            = apiQuerySender.sendSingleQuery(new BExistConn(), isbn13);
-        Executable executable = () -> apiQuerySender.sendSingleQuery(new BExistConn(), isbn13);
+            = apiQuerySender.sendSingleQuery(new BExistConn(libNo,isbn13), HttpEntity.EMPTY);
+        Executable executable = () -> apiQuerySender.sendSingleQuery(new BExistConn(),
+            HttpEntity.EMPTY);
 
         //then
 
@@ -113,8 +117,8 @@ class ApiQuerySenderTest {
 
         //when
 
-        Executable executable = () -> apiQuerySender.sendSingleQuery(new LoanItemConn(),
-            pageSize + "");
+        Executable executable = () -> apiQuerySender.sendSingleQuery(new LoanItemConn(pageSize),
+            HttpEntity.EMPTY);
 
         //then
 
@@ -126,12 +130,12 @@ class ApiQuerySenderTest {
         /* given */
         int libNo = 141053;
         String isbn13 = "9788089365210";
-        ApiStatus mockStatus = new ApiStatus(uri,10);
-        MockApiConn mockApiConn = new MockApiConn(uri,mockStatus);
+        ApiStatus mockStatus = new ApiStatus(uri, 10);
+        MockApiConn mockApiConn = new MockApiConn(uri, mockStatus);
 
         List<ConfigureUriBuilder> uriBuilders = new ArrayList<>();
 
-        for(int i=0; i<10; i++){
+        for (int i = 0; i < 10; i++) {
             uriBuilders.add(mockApiConn);
         }
 
@@ -142,11 +146,11 @@ class ApiQuerySenderTest {
 
         /* when */
         mockServer.start();
-        var result = apiQuerySender.sendMultiQuery(uriBuilders,isbn13,10);
+        var result = apiQuerySender.sendMultiQuery(uriBuilders, 10, HttpEntity.EMPTY);
         mockServer.stop();
         /* then */
 
-        assertEquals(10,result.size());
+        assertEquals(10, result.size());
     }
 
 }

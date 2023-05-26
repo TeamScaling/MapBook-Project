@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.apiConnection;
+package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
@@ -15,7 +15,7 @@ public class MockApiConn implements ConfigureUriBuilder, ApiObserver {
 
 
     @Override
-    public UriComponentsBuilder configUriBuilder(String target) {
+    public UriComponentsBuilder configUriBuilder() {
         return UriComponentsBuilder.fromHttpUrl(apiUrl);
     }
 
