@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

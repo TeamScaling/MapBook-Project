@@ -3,7 +3,7 @@ package com.scaling.libraryservice;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.caching.UserInfo;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
@@ -53,6 +53,7 @@ public class LearningTest {
     @Test
     public void reflection(){
         /* given */
+
 
         /* when */
         var result = HasBookCacheKey.class.getDeclaredFields();

@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.apiConnection;
+package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
@@ -13,6 +13,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class BExistConn implements ConfigureUriBuilder, ApiObserver {
 
     private final Integer libNo;
+
+    private final String isbn13;
     private static final String API_URL = "http://data4library.kr/api/bookExist";
     private static final String DEFAULT_AUTH_KEY = "0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72";
     public static final ApiStatus apiStatus = new ApiStatus(API_URL,10);
@@ -23,28 +25,26 @@ public class BExistConn implements ConfigureUriBuilder, ApiObserver {
 
     public BExistConn() {
         libNo = DEFAULT_LIB_CHECKING_NO;
+        this.isbn13 = DEFAULT_ISBN_CHECKING;
     }
 
-    public BExistConn(Integer libNo) {
+    public BExistConn(Integer libNo, String isbn13) {
         this.libNo = libNo;
+        this.isbn13 = isbn13;
     }
 
     /**
      * 주어진 대상 도서에 대한 도서관 책 보유 정보 API URI를 구성합니다.
      *
-     * @param target 확인하려는 도서의 ISBN
      * @return 구성된 URI 정보를 담고 있는 {@link UriComponentsBuilder} 객체
      */
     @Override
-    public UriComponentsBuilder configUriBuilder(String target) {
+    public UriComponentsBuilder configUriBuilder() {
 
-        if(target == null){
-            target = DEFAULT_ISBN_CHECKING;
-        }
 
         return UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("authKey", DEFAULT_AUTH_KEY)
-            .queryParam("isbn13", target)
+            .queryParam("isbn13", isbn13)
             .queryParam("libCode", String.valueOf(this.libNo))
             .queryParam("format", "json");
     }

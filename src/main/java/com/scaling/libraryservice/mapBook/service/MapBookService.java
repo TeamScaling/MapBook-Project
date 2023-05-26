@@ -1,22 +1,22 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import com.scaling.libraryservice.commons.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
-import com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
-import com.scaling.libraryservice.mapBook.util.ApiQueryBinder;
-import com.scaling.libraryservice.mapBook.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +47,7 @@ public class MapBookService {
 
         if (reqMapBookDto.isSupportedArea()) {
             bExistConns = nearByLibraries.stream().filter(l -> l.getHasBook().equals("Y"))
-                .map(n -> new BExistConn(n.getLibNo())).toList();
+                .map(n -> new BExistConn(n.getLibNo(),reqMapBookDto.getIsbn())).toList();
 
             if (bExistConns.isEmpty()) {
                 return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto, l, "N"))
@@ -55,12 +55,11 @@ public class MapBookService {
             }
 
         } else {
-            bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo())).toList();
+            bExistConns = nearByLibraries.stream().map(n -> new BExistConn(n.getLibNo(),reqMapBookDto.getIsbn())).toList();
         }
 
         List<ResponseEntity<String>> responseEntities =
-            apiQuerySender.sendMultiQuery(bExistConns, reqMapBookDto.getIsbn(),
-                nearByLibraries.size());
+            apiQuerySender.sendMultiQuery(bExistConns, nearByLibraries.size(), HttpEntity.EMPTY);
 
         Map<Integer, ApiBookExistDto> bookExistMap
             = apiQueryBinder.bindBookExistMap(responseEntities);

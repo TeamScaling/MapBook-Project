@@ -1,6 +1,7 @@
-package com.scaling.libraryservice.mapBook.util;
+package com.scaling.libraryservice.commons.api.util;
 
 import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.dto.LoanItemDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
@@ -20,12 +21,13 @@ import org.springframework.stereotype.Component;
 public class ApiQueryBinder {
 
     /**
-     *  Api 응답 데이터를
-     * @param apiResponse
-     * @return
-     * @throws OpenApiException
+     * API 응답 데이터를 Map 객체로 변환합니다. Map의 키는 도서관 코드이며, 값은 해당 도서관의 도서 존재 유무를 나타내는 DTO입니다.
+     *
+     * @param apiResponse API 응답 데이터 리스트
+     * @return 도서관 코드를 키로 하는 도서 존재 유무 정보 Map
+     * @throws OpenApiException API 응답을 처리하는 도중 에러가 발생하면 예외를 던집니다.
      */
-    @Timer //Http 응답 결과를 필요한 객체로 Mapping 하고, 도서관 코드를 key로 하는 Map으로 담는다.
+    @Timer
     public Map<Integer, ApiBookExistDto> bindBookExistMap(
         List<ResponseEntity<String>> apiResponse) throws OpenApiException {
 
@@ -42,6 +44,13 @@ public class ApiQueryBinder {
         return respOpenApiDtoMap;
     }
 
+    /**
+     * API 응답 데이터를 ApiBookExistDto로 변환합니다.
+     *
+     * @param apiResponse API 응답 데이터
+     * @return 변환된 ApiBookExistDto 객체
+     * @throws OpenApiException API 응답을 처리하는 도중 에러가 발생하면 예외를 던집니다.
+     */
     public ApiBookExistDto bindBookExist(ResponseEntity<String> apiResponse)
         throws OpenApiException {
 
@@ -56,6 +65,37 @@ public class ApiQueryBinder {
             respJsonObj.getJSONObject("result"));
     }
 
+    /**
+     * API 응답 데이터를 BookApiDto로 변환합니다.
+     *
+     * @param apiResponse API 응답 데이터
+     * @return 변환된 BookApiDto 객체
+     * @throws OpenApiException API 응답을 처리하는 도중 에러가 발생하면 예외를 던집니다.
+     */
+    public BookApiDto bindBookApi(ResponseEntity<String> apiResponse)
+        throws OpenApiException {
+
+        if (apiResponse == null){
+            return null;
+        }
+
+        JSONArray jsonArray =
+            new JSONObject(apiResponse.getBody()).getJSONArray("documents");
+
+        if(jsonArray.length() != 0){
+            return new BookApiDto(jsonArray.getJSONObject(0));
+        }else{
+            return new BookApiDto();
+        }
+    }
+
+    /**
+     * API 응답 데이터를 LoanItemDto 리스트로 변환합니다.
+     *
+     * @param responseEntity API 응답 데이터
+     * @return 변환된 LoanItemDto 리스트
+     * @throws OpenApiException API 응답을 처리하는 도중 에러가 발생하면 예외를 던집니다.
+     */
     public List<LoanItemDto> bindLoanItem(ResponseEntity<String> responseEntity)
         throws OpenApiException {
 
@@ -70,6 +110,13 @@ public class ApiQueryBinder {
         return result;
     }
 
+    /**
+     * API 응답 데이터를 JSONObject로 변환합니다.
+     *
+     * @param responseEntity API 응답 데이터
+     * @return 변환된 JSONObject
+     * @throws OpenApiException API 응답을 처리하는 도중 에러가 발생하면 예외를 던집니다.
+     */
     private JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity)
         throws OpenApiException {
 
