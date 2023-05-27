@@ -324,7 +324,7 @@
         $('#recommend-box').empty();
         for (let i = 0; i < response.length; i++) {
           let bookNm = response[i];
-          $('#recommend-box').append(`(${i+1}) ${bookNm}  `);
+          $('#recommend-box').append(`(${i+1}) ${bookNm}<br>`);
         }
         console.log(response);
       },
