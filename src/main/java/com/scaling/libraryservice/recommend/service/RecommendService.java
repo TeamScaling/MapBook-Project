@@ -39,7 +39,7 @@ public class RecommendService {
     public List<String> getRecommendBook(RecommendCacheKey recommendCacheKey) {
 
         return pickSelectQuery(recommendCacheKey.getQuery(), 5).stream()
-            .map(r -> TrimResult(r.getTitle())).toList();
+            .map(r -> TrimResult(r.getTitle())).distinct().toList();
     }
 
     /**
