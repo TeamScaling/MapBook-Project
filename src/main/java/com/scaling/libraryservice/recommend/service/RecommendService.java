@@ -39,7 +39,7 @@ public class RecommendService {
     public List<String> getRecommendBook(RecommendCacheKey recommendCacheKey) {
 
         return pickSelectQuery(recommendCacheKey.getQuery(), 5).stream()
-            .map(r -> TrimTitleResult(r.getTitle())).toList();
+            .map(r -> TrimResult(r.getTitle())).toList();
     }
 
     /**
@@ -59,38 +59,33 @@ public class RecommendService {
 
         switch (type) {
 
-            case KOR_SG, KOR_MT_OVER_TWO -> {
+            case KOR_SG, KOR_MT_OVER_TWO:
                 return recommendRepo.findBooksByKorBoolOrder(titleQuery.getKorToken(), size)
                     .stream().map(BookDto::new).toList();
-            }
 
-            case KOR_MT_UNDER_TWO -> {
+            case KOR_MT_UNDER_TWO:
                 return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size)
                     .stream().map(BookDto::new).toList();
-            }
 
-            case ENG_SG -> {
+            case ENG_SG:
                 return recommendRepo.findBooksByEngBoolOrder(titleQuery.getEngToken(), size)
                     .stream().map(BookDto::new).toList();
-            }
-            case ENG_MT -> {
+
+            case ENG_MT:
                 return recommendRepo.findBooksByEngMtOrderFlexible(titleQuery.getEngToken(), size)
                     .stream().map(BookDto::new).toList();
-            }
-            case KOR_ENG, ENG_KOR_SG -> {
+
+            case KOR_ENG, ENG_KOR_SG:
                 return recommendRepo.findBooksByEngKorBoolOrder(titleQuery.getEngToken(),
                         titleQuery.getKorToken(), size)
                     .stream().map(BookDto::new).toList();
-            }
 
-            case ENG_KOR_MT -> {
+            case ENG_KOR_MT:
                 return recommendRepo.findBooksByEngKorNaturalOrder(
                     titleQuery.getEngToken(),
                     titleQuery.getKorToken(),
                     size).stream().map(BookDto::new).toList();
-            }
         }
-
         return null;
     }
 
@@ -112,6 +107,12 @@ public class RecommendService {
         }
         return removeParentheses(removeDash(title)).trim();
     }
+
+    public String TrimResult(String title) {
+        String[] splitTitle = title.split("=");
+        return splitTitle[0];
+    }
+
 
     private String removeParentheses(String text) {
         return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
