@@ -60,13 +60,18 @@ public class BookSearchService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Book> books = null;
 
+        TitleQuery titleQuery = titleAnalyzer.analyze(query);
+
+        log.info("Query is [{}] and tokens : [{}]", titleQuery.getTitleType().name(), titleQuery);
+
         try {
-            books = CompletableFuture.supplyAsync(() -> pickSelectQuery(query, pageable))
+            books = CompletableFuture.supplyAsync(() -> pickSelectQuery(titleQuery, pageable))
                 .get(3, TimeUnit.SECONDS);
+
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error("Query execution exceeded 3 seconds. Returning an empty result.", e);
             books = Page.empty(pageable);
-            asyncSearchBook(query, page, size);
+            asyncSearchBook(query, page, size,titleQuery);
         }
 
         Objects.requireNonNull(books);
@@ -77,13 +82,13 @@ public class BookSearchService {
             books.stream().map(BookDto::new).toList());
     }
 
-    public void asyncSearchBook(String query, int page, int size) {
+    public void asyncSearchBook(String query, int page, int size,TitleQuery titleQuery) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
         log.info("[{}] async Search Book start.....", query);
 
         var result = CompletableFuture.runAsync(() -> {
-            Page<Book> fetchedBooks = pickSelectQuery(query, pageable);
+            Page<Book> fetchedBooks = pickSelectQuery(titleQuery, pageable);
 
             if (fetchedBooks != null && !fetchedBooks.isEmpty()) {
                 RespBooksDto respBooksDto = new RespBooksDto(
@@ -101,17 +106,13 @@ public class BookSearchService {
     /**
      * 검색 대상(target)에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
      *
-     * @param query    검색어
+     * @param titleQuery  검색 쿼리를 분석한 결과를 담고 있는 TitleQuery 객체
      * @param pageable 페이지 관련 설정을 담은 Pageable 객체
      * @return 검색 결과를 담은 Page<Book> 객체
      */
-    public Page<Book> pickSelectQuery(String query, Pageable pageable) {
-
-        TitleQuery titleQuery = titleAnalyzer.analyze(query);
+    public Page<Book> pickSelectQuery(TitleQuery titleQuery, Pageable pageable) {
 
         TitleType type = titleQuery.getTitleType();
-
-        log.info("Query is [{}] and tokens : [{}]", type.name(), titleQuery);
 
         switch (type) {
 

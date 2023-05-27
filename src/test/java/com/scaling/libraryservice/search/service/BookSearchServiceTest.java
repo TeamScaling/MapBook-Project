@@ -1,9 +1,13 @@
 package com.scaling.libraryservice.search.service;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.entity.Book;
+import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +23,9 @@ class BookSearchServiceTest {
 
     @Autowired
     private BookSearchService bookSearchService;
+
+    @Autowired
+    private TitleAnalyzer titleAnalyzer;
 
 
     @Test
@@ -37,7 +44,7 @@ class BookSearchServiceTest {
 
         RespBooksDto result = bookSearchService.searchBooks(new BookCacheKey(title,page), size, target);
 
-        Assertions.assertThat(result.getDocuments().get(0).getTitle().contains(title));
+        assertTrue(result.getDocuments().get(0).getTitle().contains(title));
 
     }
 
@@ -49,9 +56,13 @@ class BookSearchServiceTest {
         String title = "자바";
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Book> result = bookSearchService.pickSelectQuery(title, pageable);
+        var titleQuery= titleAnalyzer.analyze(title);
+
+        Page<Book> result = bookSearchService.pickSelectQuery(titleQuery, pageable);
 
         System.out.println("결과: " + result.getContent().get(0).getTitle().contains(title));
+
+        assertTrue(result.getContent().get(0).getTitle().contains(title));
 
     }
 
@@ -62,9 +73,11 @@ class BookSearchServiceTest {
         String title = "그리스 로마 신화";
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Book> result = bookSearchService.pickSelectQuery(title, pageable);
+        var titleQuery= titleAnalyzer.analyze(title);
 
-        Assertions.assertThat(result.getContent().get(0).getTitle().contains(title));
+        Page<Book> result = bookSearchService.pickSelectQuery(titleQuery, pageable);
+
+        assertTrue(result.getContent().get(0).getTitle().contains(title));
 
     }
 
@@ -75,9 +88,11 @@ class BookSearchServiceTest {
         String title = "java";
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Book> result = bookSearchService.pickSelectQuery(title, pageable);
+        var titleQuery= titleAnalyzer.analyze(title);
 
-        Assertions.assertThat(result.getContent().get(0).getTitle().contains(title));
+        Page<Book> result = bookSearchService.pickSelectQuery(titleQuery, pageable);
+
+        assertTrue(result.getContent().get(0).getTitle().contains(title));
 
     }
 
@@ -88,9 +103,11 @@ class BookSearchServiceTest {
         String title = "자바의 정석";
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Book> result = bookSearchService.pickSelectQuery(title, pageable);
+        var titleQuery= titleAnalyzer.analyze(title);
 
-        Assertions.assertThat(result.getContent().get(0).getTitle().contains(title));
+        Page<Book> result = bookSearchService.pickSelectQuery(titleQuery, pageable);
+
+        assertTrue(result.getContent().get(0).getTitle().contains(title));
 
     }
 
@@ -101,9 +118,11 @@ class BookSearchServiceTest {
         String title = "spring boot";
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Book> result = bookSearchService.pickSelectQuery(title, pageable);
+        var titleQuery= titleAnalyzer.analyze(title);
 
-        Assertions.assertThat(result.getContent().get(0).getTitle().contains(title));
+        Page<Book> result = bookSearchService.pickSelectQuery(titleQuery, pageable);
+
+        assertTrue(result.getContent().get(0).getTitle().contains(title));
 
     }
 
@@ -114,9 +133,11 @@ class BookSearchServiceTest {
         String title = "java 정석";
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<Book> result = bookSearchService.pickSelectQuery(title, pageable);
+        var titleQuery= titleAnalyzer.analyze(title);
 
-        Assertions.assertThat(result.getContent().get(0).getTitle().contains(title));
+        Page<Book> result = bookSearchService.pickSelectQuery(titleQuery, pageable);
+
+        assertTrue(result.getContent().get(0).getTitle().contains(title));
 
     }
 

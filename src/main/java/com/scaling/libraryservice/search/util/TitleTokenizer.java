@@ -26,10 +26,10 @@ public class TitleTokenizer {
 
         KomoranResult analyzeResultList = komoran.analyze(target);
 
-        List<Token> tokenList = analyzeResultList.getTokenList();
+        List<Token> tokens = analyzeResultList.getTokenList();
 
         List<String> nounList =
-            tokenList.stream().filter(i ->  i.getPos().equals("NNP") | i.getPos().equals("NNG"))
+            tokens.stream().filter(i ->  i.getPos().equals("NNP") | i.getPos().equals("NNG"))
                 .map(Token::getMorph).toList();
 
         return nounList.stream().distinct().filter(non -> non.length()>1).toList();
