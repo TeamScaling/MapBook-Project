@@ -11,7 +11,6 @@ import static com.scaling.libraryservice.search.domain.TitleType.KOR_SG;
 
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.domain.TitleQuery;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -58,74 +57,59 @@ public class TitleAnalyzer {
         }
     }
 
-    private String trimSubTitle(String query){
-        if (query.contains(":") ) {
-            int idx = query.indexOf(":");
-            String foreTitle = query.substring(0, idx);
+    //consider : 쿼리를 변형 하는 작업이 과연 분석기의 역할에 합당 할까?
+    String removeKeyword(String query) {
 
-            if(foreTitle.split(" ").length >1){
-                log.info("trim subTitle in [{}] then [{}]",query,foreTitle);
-                query = foreTitle;
+        String[] keyWord = {"이야기", "장편소설", "한국사"};
+
+        if (query.split(" ").length > 1) {
+
+            for (String key : keyWord) {
+                log.info("delete keyword [{}] in [{}]", key, query);
+                query = query.replaceAll(key, "");
             }
         }
 
-        return query;
+        return query.trim();
     }
 
-    String removeKeyword(String query){
-
-        String[] keyWord = {"이야기","장편소설","한국사"};
-
-        if(query.split(" ").length >1){
-
-            for(String key : keyWord){
-                log.info("delete keyword [{}] in [{}]",key,query);
-                query = query.replaceAll(key,"");
-            }
-        }
-
-       return query.trim();
-    }
-
-    /**
-     * 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
-     *
-     * @param query 분석할 검색어
-     * @param isKor 단일 한글 제목 유무
-     * @return 분석된 검색어 정보를 담은 TitleQuery 객체
-     */
     private TitleQuery queryResolve(String query, boolean isKor) {
+        int queryWordCount = query.split(" ").length;
 
-        if (query.split(" ").length == 1) {
-
-            if (isKor) {
-                log.info("Single Kor query : [{}]", query);
-                return new TitleQuery(KOR_SG, "", query, "");
-            } else {
-                log.info("Single Eng query : [{}]", query);
-                return new TitleQuery(ENG_SG, query, "", "");
-            }
-
-        } else {
-
-            if (isKor) {
-
-                if(query.split(" ").length >2){
-
-                    return new TitleQuery(KOR_MT_OVER_TWO,"",query,"");
-                }
-
-                query = splitTarget(query);
-                log.info("Multi Kor query : [{}]", query);
-
-                return new TitleQuery(KOR_MT_UNDER_TWO, "", query, "");
-            } else {
-                query = splitTarget(query);
-                log.info("Multi Eng query : [{}]", query);
-                return new TitleQuery(ENG_MT, query, "", "");
-            }
+        if (queryWordCount == 1) {
+            return resolveSingleQuery(query, isKor);
         }
+
+        if (isKor) {
+            return resolveMultiKorQuery(query, queryWordCount);
+        }
+
+        return resolveMultiEngQuery(query);
     }
+
+    private TitleQuery resolveSingleQuery(String query, boolean isKor) {
+        return isKor
+            ? TitleQuery.builder().titleType(KOR_SG).korToken(query).build()
+            : TitleQuery.builder().titleType(ENG_SG).engToken(query).build();
+    }
+
+    private TitleQuery resolveMultiKorQuery(String query, int queryWordCount) {
+        if (queryWordCount > 2) {
+
+            return TitleQuery.builder().titleType(KOR_MT_OVER_TWO).korToken(query).build();
+        }
+
+        query = splitTarget(query);
+        return TitleQuery.builder().titleType(KOR_MT_UNDER_TWO).korToken(query).build();
+
+    }
+
+    private TitleQuery resolveMultiEngQuery(String query) {
+        query = splitTarget(query);
+
+        return TitleQuery.builder().titleType(ENG_MT).engToken(query).build();
+    }
+
 
     /**
      * 영어와 한글 혼합 제목인 경우 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
@@ -134,65 +118,59 @@ public class TitleAnalyzer {
      * @return 분석된 검색어 정보를 담은 TitleQuery 객체
      */
     private TitleQuery engKorResolve(String query) {
-
         Map<String, List<String>> titleMap = TitleDivider.divideKorEng(query);
 
-        List<String> engTokens = titleMap.get("eng").stream()
-            .max(Comparator.comparing(String::length))
-            .stream()
-            .toList();
+        String korToken = getKorToken(titleMap);
+        String engToken = getEngToken(titleMap);
 
+        if (korToken.length() >= engToken.length()) {
+            return resolveKorLongerCase(korToken, engToken);
+        } else {
+            return resolveEngLongerCase(korToken, engToken);
+        }
+    }
+
+    private String getKorToken(Map<String, List<String>> titleMap) {
         List<String> korTokens = titleMap.get("kor");
-
         String korToken = String.join(" ", korTokens);
-        String engToken = String.join(" ", engTokens);
-
-        StringBuilder engQueryBuilder = new StringBuilder();
-
-        engTokens.forEach(t -> engQueryBuilder.append("%").append(t).append("% "));
-
-        log.info("korToken : {}, length : {}", korToken, korToken.length());
-        log.info("engToken : {}, length : {}", engToken, engToken.length());
-
-        List<String> nnKorTokens = new ArrayList<>();
-
-        // 한글 제목 내용을 명사 단위로만 검색 한다.
         if (!korToken.isEmpty()) {
-            nnKorTokens = titleTokenizer.tokenize(korToken);
-
-            if (nnKorTokens.size() > 0) {
+            List<String> nnKorTokens = titleTokenizer.tokenize(korToken);
+            if (!nnKorTokens.isEmpty()) {
                 korToken = String.join(" ", nnKorTokens);
             }
         }
+        return korToken;
+    }
 
-        if (korToken.length() >= engToken.length()) {
+    private String getEngToken(Map<String, List<String>> titleMap) {
+        return titleMap.get("eng").stream()
+            .max(Comparator.comparing(String::length))
+            .map(t -> "%" + t + "% ")
+            .orElse("");
+    }
 
-            log.info("korToken >= engToken");
-            korToken = splitTarget(korToken);
+    private TitleQuery resolveKorLongerCase(String korToken, String engToken) {
+        korToken = splitTarget(korToken);
 
-            if (engTokens.isEmpty()) {
+        if (engToken.isEmpty()) {
 
-                return new TitleQuery(KOR_MT_UNDER_TWO, "", korToken, "");
-            }
-
-            return new TitleQuery(KOR_ENG, engQueryBuilder.toString().trim(), korToken, "");
-
-        } else {
-
-            if (nnKorTokens.size() <= 1) {
-                korToken = splitTarget(korToken);
-
-                log.info("[korToken < engToken] korToken : {} // engToken : {}", korToken,
-                    engToken);
-
-                return new TitleQuery(ENG_KOR_SG, engQueryBuilder.toString().trim(), korToken, "");
-            } else {
-
-                return new TitleQuery(ENG_KOR_MT, engQueryBuilder.toString().trim(), korToken, "");
-            }
+            return TitleQuery.builder().titleType(KOR_MT_UNDER_TWO).korToken(korToken).build();
         }
 
+        return TitleQuery.builder().titleType(KOR_ENG).engToken(engToken).korToken(korToken).build();
     }
+
+    private TitleQuery resolveEngLongerCase(String korToken, String engToken) {
+        if (korToken.split(" ").length <= 1) {
+            korToken = splitTarget(korToken);
+
+            return TitleQuery.builder().titleType(ENG_KOR_SG).engToken(engToken).korToken(korToken).build();
+        } else {
+
+            return TitleQuery.builder().titleType(ENG_KOR_MT).engToken(engToken).korToken(korToken).build();
+        }
+    }
+
 
     /**
      * 정규식을 이용하여 영어 제목인지 판별 합니다.

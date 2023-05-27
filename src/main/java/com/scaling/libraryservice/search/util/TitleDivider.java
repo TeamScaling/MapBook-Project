@@ -19,74 +19,52 @@ public class TitleDivider {
      */
     @Timer
     public static Map<String, List<String>> divideKorEng(String query) {
-
         char[] chars = query.toCharArray();
 
-        StringBuilder engBuffer = new StringBuilder();
-        StringBuilder korBuffer = new StringBuilder();
+        StringBuilder engBuilder = new StringBuilder();
+        StringBuilder korBuilder = new StringBuilder();
 
         List<String> eng = new ArrayList<>();
         List<String> kor = new ArrayList<>();
 
-        boolean engFirst = true;
-        boolean korFirst = true;
-
         for (char c : chars) {
-
-            if (c <= 122 & c >= 46) {
-                if (!korBuffer.isEmpty()) {
-                    kor.add(korBuffer.toString());
-                    korBuffer.setLength(0);
-
-                    engFirst = true;
+            if (c >= 'A' && c <= 'z') {
+                if (korBuilder.length() > 0) {
+                    kor.add(korBuilder.toString());
+                    korBuilder.setLength(0);
                 }
-
-                if (c == ' ' & engFirst) {
-
-                } else {
-                    if (c >= 46) {
-                        engBuffer.append(c);
-                        engFirst = false;
-                    }
-
+                engBuilder.append(c);
+            } else if (c >= '가' && c <= '힣') {
+                if (engBuilder.length() > 0) {
+                    eng.add(engBuilder.toString());
+                    engBuilder.setLength(0);
                 }
-
-            } else {
-
-                if (!engBuffer.isEmpty()) {
-
-                    eng.add(engBuffer.toString());
-                    engBuffer.setLength(0);
-
-                    korFirst = true;
+                korBuilder.append(c);
+            } else if (c == ' ') {
+                if (engBuilder.length() > 0) {
+                    eng.add(engBuilder.toString());
+                    engBuilder.setLength(0);
                 }
-
-                if (c == ' ' & !korFirst) {
-                    korBuffer.append(c);
-                } else {
-                    if (c > 47) {
-                        korBuffer.append(c);
-                        korFirst = false;
-                    }
+                if (korBuilder.length() > 0) {
+                    kor.add(korBuilder.toString());
+                    korBuilder.setLength(0);
                 }
-
             }
         }
 
-        if (!engBuffer.isEmpty()) {
-            eng.add(engBuffer.toString());
+        if (engBuilder.length() > 0) {
+            eng.add(engBuilder.toString());
         }
-
-        if (!korBuffer.isEmpty()) {
-            kor.add(korBuffer.toString());
+        if (korBuilder.length() > 0) {
+            kor.add(korBuilder.toString());
         }
 
         Map<String, List<String>> result = new HashMap<>();
-
         result.put("eng", eng);
         result.put("kor", kor);
 
         return result;
     }
+
 
 }
