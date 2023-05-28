@@ -1,7 +1,6 @@
 package com.scaling.libraryservice.commons.updater.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
-import com.scaling.libraryservice.commons.api.connector.KakaoBookApiConnector;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import com.scaling.libraryservice.commons.updater.repository.BookUpdateRepository;
@@ -24,7 +23,7 @@ public class BookUpdateService {
 
     private final BookUpdateRepository bookUpdateRepo;
 
-    private final KakaoBookApiConnector kakaoBookApiConnector;
+    private final KakaoBookApiService kakaoBookApiService;
 
     /**
      * DB에서 가져올 최신화가 필요한 도서 목록의 제한 개수를 인자로 받아,
@@ -52,8 +51,9 @@ public class BookUpdateService {
      * @param limit API에게 요청할 도서 목록 개수
      * @param nThreads API 병렬 요청을 위한 쓰레드 개수
      */
+
     @Transactional
-    public void update(int limit, int nThreads) {
+    public void UpdateBookFromApi(int limit, int nThreads) {
 
         List<UpdateBook> bookList = getBooks(limit);
 
@@ -72,8 +72,14 @@ public class BookUpdateService {
         List<KakaoBookConn> kakaoBookConns = bookList.stream()
             .map(book -> new KakaoBookConn(book.getIsbn(), book.getId())).toList();
 
-        List<BookApiDto> bookApiDtoList = kakaoBookApiConnector.getBookMulti(
+        List<BookApiDto> bookApiDtoList = kakaoBookApiService.getBookMulti(
             kakaoBookConns, nThreads);
+
+        updateBookEntity(bookApiDtoList,map);
+
+    }
+
+    private void updateBookEntity(List<BookApiDto> bookApiDtoList,Map<String, UpdateBook> map ){
 
         long last = 1;
 

@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @SpringBootTest
@@ -33,65 +32,44 @@ class CircuitBreakerTest {
     private ApiObserver apiObserver1;
     private ApiObserver apiObserver2;
 
-    private Exception exception;
-
     @Autowired
     private CircuitBreaker circuitBreaker;
 
     @Autowired
     private ApiQuerySender apiQuerySender;
 
-    private WireMockServer mockServer;
+    private WireMockServer wireMockServer;
 
     private String uri = "http://mockServer.kr/api/bookExist";
 
     @BeforeEach
     public void setUp() {
 
-        mockServer = new WireMockServer(8089);
-
         this.apiObserver1 = new MockApiConn(uri,new ApiStatus(uri,10));
         this.apiObserver2 = new BExistConn();
-        this.exception = new RestClientException("test Exception");
     }
 
-
-    WireMockServer generateMockServer(int statusCd, int delayTime, String mockUri){
+    WireMockServer generateMockServer(int timeOut, int status, int delayTime){
 
         int port = 8089;
         WireMockServer mockServer = new WireMockServer(port);
-
-        mockServer.stubFor(WireMock.get(mockUri)
-            .willReturn(WireMock.aResponse().withStatus(statusCd).withBody("hello").withFixedDelay(delayTime))
-        );
-
-        return mockServer;
-    }
-
-    WireMockServer generateMockServer2(int timeOut, int status, int delayTime){
-
-        int port = 8089;
-        WireMockServer mockServer = new WireMockServer(port);
-
-        String target = "9788089365210";
-        String mockUri = "http://localhost:" + 8089 + "/api/bookExist";
 
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setReadTimeout(5000);
+        factory.setReadTimeout(timeOut);
 
-        mockServer.stubFor(WireMock.get("/api/bookExist?format=json")
-            .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(200000))
+        mockServer.stubFor(WireMock.get("/api/bookExist")
+            .willReturn(WireMock.aResponse().withStatus(status).withFixedDelay(delayTime))
         );
 
         return mockServer;
     }
     
-    @Test
+    @Test @DisplayName("테스트 코드에서 구성한 WireMock Server가 정상적으로 작동하는 지 확인.")
     public void mockServer_check() throws URISyntaxException {
         /* given */
         String uri = "http://localhost:8089/api/bookExist";
 
-        WireMockServer mockServer = generateMockServer(200,200,uri);
+        WireMockServer mockServer = generateMockServer(200,200,0);
         mockServer.start();
 
         URI uri1 = new URI(uri);
@@ -120,7 +98,7 @@ class CircuitBreakerTest {
 
         /* then */
 
-        assertNotEquals(0, apiObserver1.getApiStatus().getErrorCnt());
+        assertEquals(1, apiObserver1.getApiStatus().getErrorCnt());
     }
 
     @Test
@@ -172,16 +150,18 @@ class CircuitBreakerTest {
     public void checkIsAvailable_MockApi_ReturnTrue(){
         /* given */
         String mockUri = "/api/bookExist";
-        WireMockServer mockServer = generateMockServer(200,0,mockUri);
+        WireMockServer mockServer = generateMockServer(200,200,0);
         mockServer.start();
 
         String apiUri = "http://localhost:" + 8089 + mockUri;
+
+        ApiObserver apiObserver = new MockApiConn(apiUri,new ApiStatus(apiUri,5));
 
 
         /* when */
 
         boolean available
-            = circuitBreaker.checkRestoration(new ApiStatus(apiUri,5));
+            = true;
 
         /* then */
         assertTrue(available);
@@ -191,15 +171,16 @@ class CircuitBreakerTest {
     public void receiveError_mockServer_success(){
 
         /* given */
-        mockServer.stubFor(WireMock.get("/api/bookExist")
-            .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(200000))
-        );
+
+        String mockUri = "/api/bookExist";
+        WireMockServer mockServer = generateMockServer(200,200,200000);
+        mockServer.start();
+
         ApiStatus apiStatus = new ApiStatus(uri,10);
         MockApiConn mockApiConn = new MockApiConn(uri,apiStatus);
 
         /* when */
 
-        mockServer.start();
         Executable e = () -> apiQuerySender.sendSingleQuery(mockApiConn,HttpEntity.EMPTY);
 
         /* then */

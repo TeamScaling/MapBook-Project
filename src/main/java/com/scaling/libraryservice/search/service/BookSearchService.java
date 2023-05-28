@@ -62,8 +62,6 @@ public class BookSearchService {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
-        log.info("Query is [{}] and tokens : [{}]", titleQuery.getTitleType().name(), titleQuery);
-
         try {
             books = CompletableFuture.supplyAsync(() -> pickSelectQuery(titleQuery, pageable))
                 .get(3, TimeUnit.SECONDS);
@@ -144,25 +142,6 @@ public class BookSearchService {
         }
 
         return null;
-    }
-
-
-    /**
-     * 검색 대상(target)에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환하는 메서드입니다.
-     *
-     * @param query    검색어
-     * @param pageable 페이지 관련 설정을 담은 Pageable 객체
-     * @param target   검색 대상 (기본값: "title")
-     * @return 검색 결과를 담은 Page<Book> 객체
-     */
-    private Page<Book> findBooksByTarget(String query, Pageable pageable, String target) {
-        if (target.equals("author")) {
-            return bookRepository.findBooksByAuthor(query, pageable);
-        } else if (target.equals("title")) {
-            return bookRepository.findBooksByKorMtFlexible(query, pageable);
-        } else {
-            return null; //api 추가될 것 고려하여 일단 Null로 넣어놓음
-        }
     }
 
 }

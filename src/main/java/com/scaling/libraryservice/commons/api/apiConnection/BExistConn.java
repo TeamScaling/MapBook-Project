@@ -2,7 +2,7 @@ package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import lombok.ToString;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -10,14 +10,14 @@ import org.springframework.web.util.UriComponentsBuilder;
  * 도서관 책 보유 정보를 확인하는 API와 연결하는 클래스입니다.
  */
 @ToString
-public class BExistConn implements ConfigureUriBuilder, ApiObserver {
+public class BExistConn implements ApiConnection, ApiObserver {
 
     private final Integer libNo;
 
     private final String isbn13;
     private static final String API_URL = "http://data4library.kr/api/bookExist";
     private static final String DEFAULT_AUTH_KEY = "0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72";
-    public static final ApiStatus apiStatus = new ApiStatus(API_URL,10);
+    private static final ApiStatus apiStatus = new ApiStatus(API_URL,10);
 
     private final Integer DEFAULT_LIB_CHECKING_NO = 141258;
 
