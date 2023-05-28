@@ -12,17 +12,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Slf4j @RequiredArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 public class SearchRestController {
 
     private final BookSearchService bookSearchService;
 
     @GetMapping("/books/search/test")
-    public ResponseEntity<RespBooksDto> restSearchBook(@RequestBody TestingBookDto testingBookDto){
+    public ResponseEntity<RespBooksDto> restSearchBook(@RequestBody TestingBookDto testingBookDto) {
 
-        var result = bookSearchService.searchBooks(new BookCacheKey(testingBookDto.getBookName(),1),10,"");
+        RespBooksDto result = bookSearchService.searchBooks(
+            new BookCacheKey(testingBookDto.getBookName(), 1), 10,"");
 
-        if(result.getDocuments().isEmpty()){
+        if (result.getDocuments().isEmpty()) {
             log.info("[Not Found]This book is Not Found");
             return ResponseEntity.notFound().build();
         }

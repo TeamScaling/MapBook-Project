@@ -5,9 +5,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- *  OpenAPI에 대한 연결 상태 정보를 담는다. 연결에 문제가 있을 시, 에러 정보를 저장 한다.
+ * OpenAPI에 대한 연결 상태 정보를 담는다. 연결에 문제가 있을 시, 에러 정보를 저장 한다.
  */
-@Slf4j @Getter
+@Slf4j
+@Getter
 public class ApiStatus {
 
     private final String apiUri;
@@ -44,7 +45,7 @@ public class ApiStatus {
     void closeAccess() {
         apiAccessible = false;
         closedTime = LocalDateTime.now();
-        log.info("[{}] is not accessible at [{}] ",apiUri,openedTime);
+        log.info("[{}] is not accessible at [{}] ", apiUri, openedTime);
     }
 
     void openAccess() {
@@ -54,11 +55,12 @@ public class ApiStatus {
         closedTime = null;
         errorCnt = 0;
 
-        log.info("[{}] is checked for Access at [{}] ",apiUri,openedTime);
+        log.info("[{}] is checked for Access at [{}] ", apiUri, openedTime);
     }
 
-    void upErrorCnt() {
-        ++errorCnt;
+    boolean upErrorCnt() {
+
+        return ++errorCnt > DEFAULT_MAX_ERROR_CNT;
     }
 
     void upTryCnt() {

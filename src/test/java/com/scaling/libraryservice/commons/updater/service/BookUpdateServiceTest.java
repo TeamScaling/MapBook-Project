@@ -29,7 +29,7 @@ class BookUpdateServiceTest {
 
         /* when */
 
-        bookUpdateService.update(100,10);
+        bookUpdateService.UpdateBookFromApi(100,10);
 
         /* then */
 
@@ -47,6 +47,6 @@ class BookUpdateServiceTest {
     @Test @DisplayName("도서 업데이트 메소드 실행. 테스트 메소드가 아닌 실행을 위한 메소드")
     public void execute_update(){
 
-        bookUpdateService.update(5000,100);
+        bookUpdateService.UpdateBookFromApi(10000,100);
     }
 }

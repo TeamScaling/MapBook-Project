@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.util;
+package com.scaling.libraryservice.commons.api.util;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -6,13 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.api.apiConnection.LoanItemConn;
 import com.scaling.libraryservice.commons.api.apiConnection.MockApiConn;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -133,7 +132,7 @@ class ApiQuerySenderTest {
         ApiStatus mockStatus = new ApiStatus(uri, 10);
         MockApiConn mockApiConn = new MockApiConn(uri, mockStatus);
 
-        List<ConfigureUriBuilder> uriBuilders = new ArrayList<>();
+        List<ApiConnection> uriBuilders = new ArrayList<>();
 
         for (int i = 0; i < 10; i++) {
             uriBuilders.add(mockApiConn);

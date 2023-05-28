@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.caching;
+package com.scaling.libraryservice.commons.caching.mock;
 
 public class Customer {
     private String name;

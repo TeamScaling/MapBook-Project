@@ -2,13 +2,13 @@ package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * 인기 대출 도서 검색 API와 연결하는 클래스입니다.
  */
-public class LoanItemConn implements ApiObserver, ConfigureUriBuilder {
+public class LoanItemConn implements ApiObserver, ApiConnection {
 
     private static final String API_URL = "http://data4library.kr/api/loanItemSrch";
 
