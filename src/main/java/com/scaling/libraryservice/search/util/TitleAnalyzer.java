@@ -40,21 +40,23 @@ public class TitleAnalyzer {
     public TitleQuery analyze(String query) {
         query = removeKeyword(query);
 
+        TitleQuery titleQuery;
+
         if (isEnglish(query)) {
 
-            log.info("english title : [{}]", query);
-
-            return queryResolve(query, false);
+            titleQuery = queryResolve(query, false);
 
         } else if (isKorean(query)) {
 
-            log.info("korean title : [{}]", query);
-
-            return queryResolve(query, true);
+            titleQuery = queryResolve(query, true);
         } else {
-            log.info("korean & english title : [{}]", query);
-            return engKorResolve(query);
+
+            titleQuery = engKorResolve(query);
         }
+
+        log.info("Query is [{}] and tokens : [{}]", titleQuery.getTitleType().name(), titleQuery);
+
+        return titleQuery;
     }
 
     //consider : 쿼리를 변형 하는 작업이 과연 분석기의 역할에 합당 할까?

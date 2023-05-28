@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.caching;
+package com.scaling.libraryservice.commons.caching.mock;
 
 import java.io.Serializable;
 import lombok.ToString;

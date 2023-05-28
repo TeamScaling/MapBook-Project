@@ -1,11 +1,11 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import lombok.Getter;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Getter
-public class KakaoBookConn implements ConfigureUriBuilder {
+public class KakaoBookConn implements ApiConnection {
 
     private Long id;
     private static final String API_URL = "https://dapi.kakao.com/v3/search/book";

@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.api.util;
 
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.mapBook.domain.ConfigureUriBuilder;
+import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,9 +29,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  * 특히, 병렬 처리가 필요한 경우에는 sendMultiQuery 메소드를 활용하여 여러 요청을 동시에 처리할 수 있습니다.
  * RestTemplate을 이용하여 HTTP 요청을 보내고, ResponseEntity를 통해 API 응답을 받습니다.
  */
-@Component
+
 @Slf4j
-@Setter
 @Getter
 @RequiredArgsConstructor
 public class ApiQuerySender {
@@ -64,7 +61,7 @@ public class ApiQuerySender {
      */
     @Timer
     public ResponseEntity<String> sendSingleQuery(
-        ConfigureUriBuilder configUriBuilder, HttpEntity<?> httpEntity) throws OpenApiException {
+        ApiConnection configUriBuilder, HttpEntity<?> httpEntity) throws OpenApiException {
 
         Objects.requireNonNull(configUriBuilder);
 
@@ -95,7 +92,7 @@ public class ApiQuerySender {
      */
     @Timer
     public List<ResponseEntity<String>> sendMultiQuery(
-        List<? extends ConfigureUriBuilder> uriBuilders, int nThreads, HttpEntity<?> httpEntity)
+        List<? extends ApiConnection> uriBuilders, int nThreads, HttpEntity<?> httpEntity)
         throws OpenApiException {
 
         Objects.requireNonNull(uriBuilders);
@@ -104,7 +101,7 @@ public class ApiQuerySender {
 
         List<Callable<ResponseEntity<String>>> tasks = new ArrayList<>();
 
-        for (ConfigureUriBuilder b : uriBuilders) {
+        for (ApiConnection b : uriBuilders) {
 
             tasks.add(() -> sendSingleQuery(b, httpEntity));
         }
