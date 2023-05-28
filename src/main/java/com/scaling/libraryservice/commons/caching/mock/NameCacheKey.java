@@ -1,9 +1,10 @@
-package com.scaling.libraryservice.commons.caching;
+package com.scaling.libraryservice.commons.caching.mock;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import com.scaling.libraryservice.commons.caching.CacheKey;
 import java.util.Objects;
 
-public class NameCacheKey implements CacheKey<NameCacheKey,UserInfo>{
+public class NameCacheKey implements CacheKey<NameCacheKey,UserInfo> {
 
     private final String name;
 

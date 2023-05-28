@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.caching.UserInfo;
+import com.scaling.libraryservice.commons.caching.mock.UserInfo;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
