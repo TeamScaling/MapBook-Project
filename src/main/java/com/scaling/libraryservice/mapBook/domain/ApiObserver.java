@@ -11,5 +11,4 @@ public interface ApiObserver {
 
     ApiStatus getApiStatus();
 
-
 }

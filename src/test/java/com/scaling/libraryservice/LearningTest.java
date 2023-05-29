@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.Gson;
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.caching.mock.UserInfo;
 import com.scaling.libraryservice.mapBook.cacheKey.HasBookCacheKey;
 import com.scaling.libraryservice.mapBook.controller.MapBookController;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
@@ -18,16 +17,10 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleDivider;
 import com.scaling.libraryservice.search.util.TitleTokenizer;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,7 +37,10 @@ import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 public class LearningTest {
 
 
@@ -271,56 +267,6 @@ public class LearningTest {
         /* then */
     }
 
-    @Test
-    public void learning_serial(){
-        /* given */
-
-        UserInfo userInfo = new UserInfo("조인준",34,"1234");
-
-        String filename = "userInfo.ser";
-
-        /* when */
-
-        try {
-            FileOutputStream fos = new FileOutputStream(filename);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            ObjectOutputStream os = new ObjectOutputStream(bos);
-
-            os.writeObject(userInfo);
-
-            os.close();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        /* then */
-    }
-
-    @Test
-    public void learning_deserial(){
-        /* given */
-        String filename = "userInfo.ser";
-
-        try {
-            FileInputStream fis = new FileInputStream(filename);
-            BufferedInputStream bis = new BufferedInputStream(fis);
-            ObjectInputStream ois = new ObjectInputStream(bis);
-
-            UserInfo userInfo = (UserInfo) ois.readObject();
-
-            System.out.println(userInfo);
-
-            ois.close();
-
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        /* when */
-
-        /* then */
-    }
 
     @Test
     public void load_json_backUp(){

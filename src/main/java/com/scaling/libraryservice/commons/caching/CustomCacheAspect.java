@@ -24,14 +24,16 @@ public class CustomCacheAspect<C, K, I> {
 
     private final CustomCacheManager<C, K, I> cacheManager;
 
+    private final StopWatch stopWatch;
+
     @Pointcut("@annotation(com.scaling.libraryservice.commons.caching.CustomCacheable)")
-    public void customCacheablePointcut() {
+    private void customCacheablePointcut() {
     }
 
 
     /**
-     * "CustomCacheable" 어노테이션을 사용하는 메서드를 위한 어드바이스입니다. 캐시에 해당 데이터가 존재하면
-     * 캐시로부터 그 값을 반환하고, 그렇지 않은 경우 메서드를 실행하고 그 결과를 캐시에 저장합니다.
+     * "CustomCacheable" 어노테이션을 사용하는 메서드를 위한 어드바이스입니다. 캐시에 해당 데이터가 존재하면 캐시로부터 그 값을 반환하고, 그렇지 않은 경우
+     * 메서드를 실행하고 그 결과를 캐시에 저장합니다.
      *
      * @param joinPoint 프록시된 메서드에 대한 정보를 제공하는 객체
      * @return 캐시로부터 가져온 결과 또는 실제 메서드 실행의 결과
@@ -45,14 +47,20 @@ public class CustomCacheAspect<C, K, I> {
         CacheKey<K, I> cacheKey = cacheManager.generateCacheKey(joinPoint.getArgs());
 
         if (!cacheManager.isUsingCaching(customer)) {
-            cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(), customer);
+
+            cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(),
+                customer);
         } else {
             if (cacheManager.isContainItem(customer, cacheKey)) {
                 return cacheManager.get(customer, cacheKey);
             }
         }
 
-        StopWatch stopWatch = new StopWatch();
+        return patchCacheManager(joinPoint,customer,cacheKey);
+    }
+
+    public I patchCacheManager(ProceedingJoinPoint joinPoint, C customer, CacheKey<K, I> cacheKey)
+        throws Throwable {
         stopWatch.start();
 
         I result = (I) joinPoint.proceed();
@@ -67,7 +75,7 @@ public class CustomCacheAspect<C, K, I> {
             customer instanceof MapBookService) {
 
             log.info(
-                "This task is over 0.5s [{}] or related MapBookService then CacheManger put this item",
+                "This task is over 1.0s [{}] or related MapBookService then CacheManger put this item",
                 taskTime);
 
             cacheManager.put(customer, cacheKey, result);
@@ -75,5 +83,6 @@ public class CustomCacheAspect<C, K, I> {
 
         return result;
     }
+
 
 }

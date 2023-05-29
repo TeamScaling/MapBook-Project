@@ -18,76 +18,61 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-@Slf4j @RequiredArgsConstructor
+@Slf4j
+@RequiredArgsConstructor
 public class CircuitBreakerAspect {
 
     private final CircuitBreaker circuitBreaker;
+
+    private final CircuitBreakerSupport support;
 
     /**
      * Annotation 방식으로 @Substitutable가 붙은 대상을 target으로 선정 합니다.
      */
     @Pointcut("@annotation(com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring)")
-    public void apiMonitoringPointcut() {}
+    public void apiMonitoringPointcut() {
+    }
 
     /**
      * 타겟이 되는 대상에 대해 API 연결 상태를 확인 후, 장애 땐 다른 서비스로 우회 합니다.
+     *
      * @param joinPoint 기존에 정상적으로 실행되던 기존 객체의 메소드
      * @return API 연결 정상일 경우엔 기존의 서비스 결과 값 반환, 연결 장애일 경우엔 대체 서비스 결과 값 반환
      * @throws Throwable
-     *
      */
     @Around("apiMonitoringPointcut()")
-    public Object apiMonitoringAround(ProceedingJoinPoint joinPoint)
+    public Object
+    apiMonitoringAround(ProceedingJoinPoint joinPoint)
         throws Throwable {
 
-        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        ApiMonitoring annotation = method.getAnnotation(ApiMonitoring.class);
+        ApiMonitoring apiMonitoring = ((MethodSignature) joinPoint.getSignature()).getMethod()
+            .getAnnotation(ApiMonitoring.class);
 
-        Class<? extends ApiObserver> observerClass = annotation.api();
+        Method[] methods = joinPoint.getClass().getMethods();
 
-        ApiObserver apiObserver = observerClass.getConstructor().newInstance();
+        ApiObserver apiObserver = support.extractObserver(apiMonitoring);
 
-        Method substitute = getSubstituteMethod(joinPoint);
+        Method fallBackMethod = support.extractSubstituteMethod(apiMonitoring, methods);
 
-        if (!circuitBreaker.isClosed(apiObserver)) {
 
-            return substitute.invoke(joinPoint.getTarget(), joinPoint.getArgs());
-        }
+        if (!circuitBreaker.isApiAccessible(apiObserver)) {
 
-        Object result = null;
+            return fallBackMethod.invoke(joinPoint.getTarget(), joinPoint.getArgs());
+        } else {
 
-        try{
-            result = joinPoint.proceed();
-        }catch (OpenApiException e){
-            circuitBreaker.receiveError(apiObserver);
-            return substitute.invoke(joinPoint.getTarget(), joinPoint.getArgs());
-        }
+            Object result = null;
 
-        return result;
-    }
-
-    public Method getSubstituteMethod(ProceedingJoinPoint joinPoint){
-
-        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-        ApiMonitoring annotation = method.getAnnotation(ApiMonitoring.class);
-
-        String substituteNm = annotation.substitute();
-
-        Method substitute = null;
-
-        for (Method m : joinPoint.getTarget().getClass().getDeclaredMethods()){
-            if(m.getName().contains(substituteNm)){
-                substitute = m;
+            try {
+                result = joinPoint.proceed();
+            } catch (OpenApiException e) {
+                circuitBreaker.receiveError(apiObserver);
+                return fallBackMethod.invoke(joinPoint.getTarget(), joinPoint.getArgs());
             }
+
+            return result;
         }
-
-        if(substitute == null){
-            throw new IllegalArgumentException();
-        }
-
-        return substitute;
-
     }
+
 
 
 }

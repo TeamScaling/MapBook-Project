@@ -8,7 +8,8 @@ import org.json.JSONObject;
 
 @Getter
 @Setter @ToString
-public class RespBooksDto {
+public class
+RespBooksDto {
 
     private MetaDto meta;
     private List<BookDto> documents;

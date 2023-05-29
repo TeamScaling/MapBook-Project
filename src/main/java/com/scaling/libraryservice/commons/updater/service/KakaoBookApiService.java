@@ -4,7 +4,7 @@ import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
-import com.scaling.libraryservice.mapBook.domain.ApiConnection;
+import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;

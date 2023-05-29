@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.domain;
+package com.scaling.libraryservice.commons.api.apiConnection;
 
 import org.springframework.web.util.UriComponentsBuilder;
 

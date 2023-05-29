@@ -2,10 +2,8 @@ package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.scaling.libraryservice.commons.timer.Timer;
-import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,25 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomCacheManager<C, K, I> {
 
-    private final Map<C, Cache<CacheKey<K,I>, I>> commonsCache = new HashMap<>();
-    private final CacheBackupService<C, K, I> cacheBackupService;
-
-//    @PreDestroy
-    public void onShutdown() {
-        cacheBackupService.saveCommonCacheToFile(commonsCache);
-    }
-
-    @PostConstruct
-    public void reloadCacheData() {
-
-        File file = new File(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
-
-        if (file.exists()) {
-            cacheBackupService.reloadRecCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
-            cacheBackupService.reloadBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
-            cacheBackupService.reloadMapBookCache(cacheBackupService.COMMONS_BACK_UP_FILE_NAME);
-        }
-    }
+    private final Map<C, Cache<CacheKey<K,I>, I>> commonsCache = new ConcurrentHashMap<>();
 
 
     /**
