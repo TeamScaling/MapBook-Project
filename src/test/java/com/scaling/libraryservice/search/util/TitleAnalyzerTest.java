@@ -13,7 +13,7 @@ class TitleAnalyzerTest {
     @BeforeEach
     public void init(){
 
-        titleAnalyzer = new TitleAnalyzer(new TitleTokenizer(new Komoran(DEFAULT_MODEL.FULL)));
+        titleAnalyzer = new TitleAnalyzer(new KomoranTokenizer(new Komoran(DEFAULT_MODEL.FULL)));
     }
 
     @Test
@@ -55,7 +55,7 @@ class TitleAnalyzerTest {
     public void token_kor(){
         /* given */
 
-        TitleTokenizer tokenizer = new TitleTokenizer(new Komoran(DEFAULT_MODEL.FULL));
+        KomoranTokenizer tokenizer = new KomoranTokenizer(new Komoran(DEFAULT_MODEL.FULL));
 
         /* when */
 

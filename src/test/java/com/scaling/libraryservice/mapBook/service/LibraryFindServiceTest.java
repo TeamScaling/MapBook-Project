@@ -1,121 +1,151 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
+import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
-import com.scaling.libraryservice.mapBook.exception.LocationException;
+import com.scaling.libraryservice.mapBook.entity.HsAreaCd;
+import com.scaling.libraryservice.mapBook.entity.Library;
+import com.scaling.libraryservice.mapBook.repository.HasBookAreaRepository;
+import com.scaling.libraryservice.mapBook.repository.LibraryHasBookRepository;
+import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class LibraryFindServiceTest {
 
-    @Autowired
+    @InjectMocks
     private LibraryFindService libraryFindService;
 
-    @Autowired
-    private MapBookService mapBookService;
+    @Mock
+    private LibraryHasBookRepository libraryHasBookRepo;
+
+    @Mock
+    private HasBookAreaRepository hasBookAreaRepo;
+
+    @Mock
+    private LibraryRepository libraryRepo;
 
     @BeforeEach
     void setUp() {
     }
 
-    @Test @DisplayName("위도/경도 데이터만으로 주변 도서관을 검색")
-    public void find_libraries_with_coordinate(){
+    @Test @DisplayName("소장 서비스 지역일 때 소장하고 있는 도서관 목록을 반환 할 수 있다")
+    public void getNearByLibraries_SupportedArea(){
         /* given */
 
-        var dto = new ReqMapBookDto("9788089365210",34.802858, 126.702513);
+        String isbn13 = "9788089365210";
+        int areaCd = 26000;
+
+        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,34.802858, 126.702513);
+        reqMapBookDto.setSupportedArea(true);
+        reqMapBookDto.updateAreaCd(areaCd);
+
+        Library library1 = Library.builder().libNm("1").areaCd(areaCd).build();
+        Library library2 = Library.builder().libNm("2").areaCd(areaCd).build();
+
+        List<Library> libraries = List.of(library1, library2);
+
+        Optional<HsAreaCd> optional = Optional.of(new HsAreaCd());
+
+        when(hasBookAreaRepo.findById(26000)).thenReturn(optional);
+        when(libraryHasBookRepo.findHasBookLibraries(isbn13, 26000)).thenReturn(libraries);
 
         /* when */
 
-        var result = libraryFindService.getNearByLibraries(dto);
+        var result = libraryFindService.getNearByLibraries(reqMapBookDto);
 
         /* then */
-        result.forEach(System.out::println);
-        assertNotEquals(0,result.size());
+        assertEquals(2,result.size());
+        assertTrue(result.stream().allMatch(LibraryDto::hasBook));
+        assertTrue(result.stream().allMatch(LibraryDto::isSupportedArea));
+    }
+
+    @Test @DisplayName("소장 서비스 지역이 아닐 때 주변 도서관 목록을 반환 할 수 있다")
+    public void getNearByLibraries_Not_SupportedArea(){
+        /* given */
+
+        String isbn13 = "9788089365210";
+        int areaCd = 26000;
+
+        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,34.802858, 126.702513);
+        reqMapBookDto.setSupportedArea(false);
+        reqMapBookDto.updateAreaCd(areaCd);
+
+        Library library1 = Library.builder().libNm("1").areaCd(areaCd).build();
+        Library library2 = Library.builder().libNm("2").areaCd(areaCd).build();
+
+        List<Library> libraries = List.of(library1, library2);
+
+        Optional<HsAreaCd> optional = Optional.empty();
+
+        when(hasBookAreaRepo.findById(26000)).thenReturn(optional);
+        when(libraryRepo.findAllByAreaCd(areaCd)).thenReturn(libraries);
+
+        /* when */
+
+        var result = libraryFindService.getNearByLibraries(reqMapBookDto);
+
+        /* then */
+        assertEquals(2,result.size());
+        assertFalse(result.stream().allMatch(LibraryDto::hasBook));
+        assertFalse(result.stream().allMatch(LibraryDto::isSupportedArea));
     }
 
 
-    @Test @DisplayName("잘못된 위/경도로 주변 도서관 검색")
-    public void find_libraries_error(){
+    @Test
+    void getNearByHasBookLibraries_when_hasBookLibraries_true() {
         /* given */
-        var dto = new ReqMapBookDto("9788089365210",38.74273402531946, 127.3437713197453);
+
+        ReqMapBookDto reqMapBookDto = ReqMapBookDto.builder().isbn("1234").areaCd(123).build();
+
+        Library library1 = Library.builder().libNm("1").build();
+        Library library2 = Library.builder().libNm("2").build();
+
+        List<Library> libraries = List.of(library1, library2);
+
+        when(libraryHasBookRepo.findHasBookLibraries("1234",123)).thenReturn(libraries);
+
 
         /* when */
-
-        Executable e = () -> libraryFindService.getNearByLibraries(dto);
-
-        /* then */
-        assertThrows(LocationException.class,e);
-    }
-
-    @Test @DisplayName("커스텀으로 만든 지역 코드로 도서관 찾기")
-    public void find_libraries_by_areaCd(){
-        /* given */
-        int areaCd = 27500;
-
-        /* when */
-
-        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
+        var result = libraryFindService.getNearByHasBookLibraries(reqMapBookDto);
 
         /* then */
 
-        assertDoesNotThrow(e);
-    }
-
-    @Test @DisplayName("커스텀으로 만든 지역 코드로 도서관 찾기 에러 발생")
-    public void find_libraries_by_areaCd_error(){
-        /* given */
-        int areaCd = 1;
-
-        /* when */
-
-        Executable e = () -> libraryFindService.getNearByLibraries(areaCd);
-
-        /* then */
-
-        assertThrows(LocationException.class,e);
+        assertEquals(result.size(),2);
+        assertTrue(result.stream().allMatch(LibraryDto::hasBook));
     }
 
     @Test
-    public void evaluate_hasBook_verse_basic(){
+    void getNearByHasBookLibraries_when_hasBookLibraries_false() {
         /* given */
 
-        String isbn13 = "9791163032212";
-        Integer areaCd = 26200;
+        ReqMapBookDto reqMapBookDto = ReqMapBookDto.builder().isbn("1234").areaCd(123).build();
 
-        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699);
+        Library library1 = Library.builder().libNm("1").build();
+        Library library2 = Library.builder().libNm("2").build();
 
-        System.out.println(Double.parseDouble(isbn13));
-        /* when */
+        List<Library> libraries = List.of(library1, library2);
 
-        var result1= libraryFindService.getNearByHasBookLibraries(dto);
-        var result2 = libraryFindService.getNearByLibraries(dto);
-
-        /* then */
-
-        System.out.println(result1);
-    }
-
-    @Test @DisplayName("요청 받은 위/경도로 지역 코드 추출2 [안산 지역]")
-    public void update_areadCd(){
-        /* given */
-        String isbn13 = "9791163032212";
-        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069);
+        when(libraryHasBookRepo.findHasBookLibraries("1234",123)).thenReturn(Collections.emptyList());
 
         /* when */
-        libraryFindService.outPutAreaCd(reqMapBookDto);
+        var result = libraryFindService.getNearByHasBookLibraries(reqMapBookDto);
+
         /* then */
-
-        var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);
-
-        System.out.println(libraries);
+        assertEquals(result.size(),0);
     }
 
 }

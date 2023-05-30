@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.service.MapBookService;
-import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
+import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,16 +27,16 @@ import org.springframework.util.StopWatch;
 class CustomCacheAspectTest {
 
     @InjectMocks
-    private CustomCacheAspect<BookSearchService, BookCacheKey, RespBooksDto> cacheAspect;
+    private CustomCacheAspect<ReqBookDto, RespBooksDto> cacheAspect;
 
     @InjectMocks
-    private CustomCacheAspect<MapBookService, ReqMapBookDto, RespMapBookDto> cacheAspect2;
+    private CustomCacheAspect<ReqMapBookDto, RespMapBookDto> cacheAspect2;
 
     @Mock
-    private CustomCacheManager<BookSearchService, BookCacheKey, RespBooksDto> cacheManager;
+    private CustomCacheManager<ReqBookDto, RespBooksDto> cacheManager;
 
     @Mock
-    private CustomCacheManager<MapBookService, ReqMapBookDto, RespMapBookDto> cacheManager2;
+    private CustomCacheManager<ReqMapBookDto, RespMapBookDto> cacheManager2;
 
     @Mock
     private ProceedingJoinPoint joinPoint;
@@ -45,12 +45,12 @@ class CustomCacheAspectTest {
     private BookSearchService bookSearchService;
 
     @Mock
-    private MapBookService mapBookService;
+    private MapBookMatcher mapBookMatcher;
 
     @Mock
     private StopWatch stopWatch;
     @Mock
-    private CacheKey<BookCacheKey, RespBooksDto> bookCacheKey;
+    private CacheKey<ReqBookDto, RespBooksDto> bookCacheKey;
     @Mock
     private RespBooksDto respBooksDto;
 
@@ -60,8 +60,8 @@ class CustomCacheAspectTest {
 
     @BeforeEach
     public void setUp(){
-        cacheAspect = new CustomCacheAspect<>(cacheManager,stopWatch);
-        cacheAspect2 = new CustomCacheAspect<>(cacheManager2,stopWatch);
+        cacheAspect = new CustomCacheAspect<>(cacheManager);
+        cacheAspect2 = new CustomCacheAspect<>(cacheManager2);
     }
 
     @Test @DisplayName("캐싱 되지 않은 상태")
@@ -70,7 +70,7 @@ class CustomCacheAspectTest {
 
         when(joinPoint.getTarget()).thenReturn(bookSearchService);
         when(cacheManager.generateCacheKey(any())).thenReturn(bookCacheKey);
-        when(cacheManager.isUsingCaching(bookSearchService)).thenReturn(false);
+        when(cacheManager.isUsingCaching(bookSearchService.getClass())).thenReturn(false);
         when(joinPoint.proceed()).thenReturn(respBooksDto);
 
         /* when */
@@ -90,7 +90,7 @@ class CustomCacheAspectTest {
 
         /* when */
 
-        var result = cacheAspect2.patchCacheManager(joinPoint,mapBookService,mapBookCacheKey);
+        var result = cacheAspect2.patchCacheManager(joinPoint, mapBookMatcher.getClass(),mapBookCacheKey);
 
         /* then */
 
@@ -104,7 +104,7 @@ class CustomCacheAspectTest {
         when(stopWatch.getTotalTimeSeconds()).thenReturn(2d);
         /* when */
 
-        cacheAspect.patchCacheManager(joinPoint,bookSearchService,bookCacheKey);
+        cacheAspect.patchCacheManager(joinPoint,bookSearchService.getClass(),bookCacheKey);
 
         /* then */
 
@@ -116,7 +116,7 @@ class CustomCacheAspectTest {
 
         when(joinPoint.getTarget()).thenReturn(bookSearchService);
         when(cacheManager.generateCacheKey(any())).thenReturn(bookCacheKey);
-        when(cacheManager.isUsingCaching(bookSearchService)).thenReturn(false);
+        when(cacheManager.isUsingCaching(bookSearchService.getClass())).thenReturn(false);
 
         /* when */
         var result = cacheAspect.cacheAround(joinPoint);
@@ -132,7 +132,7 @@ class CustomCacheAspectTest {
 
         when(joinPoint.getTarget()).thenReturn(bookSearchService);
         when(cacheManager.generateCacheKey(any())).thenReturn(bookCacheKey);
-        when(cacheManager.isUsingCaching(bookSearchService)).thenReturn(true);
+        when(cacheManager.isUsingCaching(bookSearchService.getClass())).thenReturn(true);
         when(cacheManager.isContainItem(any(), any())).thenReturn(true);
 
         /* when */

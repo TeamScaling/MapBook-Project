@@ -48,7 +48,7 @@ public class CircuitBreakerAspect {
         ApiMonitoring apiMonitoring = ((MethodSignature) joinPoint.getSignature()).getMethod()
             .getAnnotation(ApiMonitoring.class);
 
-        Method[] methods = joinPoint.getClass().getMethods();
+        Method[] methods = joinPoint.getTarget().getClass().getDeclaredMethods();
 
         ApiObserver apiObserver = support.extractObserver(apiMonitoring);
 

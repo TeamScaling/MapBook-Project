@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
@@ -36,21 +36,21 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(MockitoExtension.class)
 class CustomCacheManagerTest {
 
-    private CustomCacheManager<BookSearchService, BookCacheKey, RespBooksDto> cacheManager;
+    private CustomCacheManager<ReqBookDto, RespBooksDto> cacheManager;
 
     @Mock
     private BookSearchService bookSearchService;
 
-    private CacheKey<BookCacheKey, RespBooksDto> bookCacheKey;
+    private CacheKey<ReqBookDto, RespBooksDto> bookCacheKey;
 
     private RespBooksDto respBooksDto;
 
-    private Cache<CacheKey<BookCacheKey,RespBooksDto>, RespBooksDto> cache;
+    private Cache<CacheKey<ReqBookDto,RespBooksDto>, RespBooksDto> cache;
 
     @BeforeEach
     public void setUp() {
         cacheManager = new CustomCacheManager<>();
-        bookCacheKey = new BookCacheKey("자바", 1);
+        bookCacheKey = new ReqBookDto("자바", 1,10);
         respBooksDto = new RespBooksDto(new MetaDto(),new ArrayList<>());
         cache = Caffeine.newBuilder().build();
     }
@@ -121,7 +121,7 @@ class CustomCacheManagerTest {
 
         /* when */
 
-        Executable e = () -> cacheManager.registerCaching(cache, bookSearchService);
+        Executable e = () -> cacheManager.registerCaching(cache, BookSearchService.class);
 
         /* then */
 
@@ -132,18 +132,18 @@ class CustomCacheManagerTest {
     @Test
     void put() {
 
-        CacheKey<BookCacheKey, RespBooksDto> bookCacheKey = new BookCacheKey("자바", 1);
+        CacheKey<ReqBookDto, RespBooksDto> bookCacheKey = new ReqBookDto("자바", 1,10);
     }
 
     @Test
     void get() {
         /* given */
-        cacheManager.registerCaching(cache,bookSearchService);
-        cacheManager.put(bookSearchService,bookCacheKey,respBooksDto);
+        cacheManager.registerCaching(cache,BookSearchService.class);
+        cacheManager.put(BookSearchService.class,bookCacheKey,respBooksDto);
 
         /* when */
 
-        var result = cacheManager.get(bookSearchService,bookCacheKey);
+        var result = cacheManager.get(BookSearchService.class,bookCacheKey);
 
         /* then */
         assertEquals(result,respBooksDto);
@@ -152,18 +152,18 @@ class CustomCacheManagerTest {
     @Test @DisplayName("다른 캐싱키로 각기 다른 데이터를 구분 할 수 있다.")
     void distinguish_cacheKey() {
         /* given */
-        cacheManager.registerCaching(cache,bookSearchService);
-        cacheManager.put(bookSearchService,bookCacheKey,respBooksDto);
+        cacheManager.registerCaching(cache,BookSearchService.class);
+        cacheManager.put(BookSearchService.class,bookCacheKey,respBooksDto);
 
-        BookCacheKey bookCacheKey1 = new BookCacheKey("스프링",1);
+        ReqBookDto reqBookDto1 = new ReqBookDto("스프링",1,10);
         RespBooksDto respBooksDto1 = new RespBooksDto(new MetaDto(),new ArrayList<>());
 
-        cacheManager.put(bookSearchService,bookCacheKey1,respBooksDto1);
+        cacheManager.put(BookSearchService.class, reqBookDto1,respBooksDto1);
 
         /* when */
 
-        var result = cacheManager.get(bookSearchService,bookCacheKey);
-        var result1 = cacheManager.get(bookSearchService,bookCacheKey1);
+        var result = cacheManager.get(BookSearchService.class,bookCacheKey);
+        var result1 = cacheManager.get(BookSearchService.class, reqBookDto1);
 
         /* then */
         assertNotEquals(result,result1);
@@ -172,11 +172,11 @@ class CustomCacheManagerTest {
     @Test
     void removeCaching_success() {
         /* given */
-        cacheManager.registerCaching(cache, bookSearchService);
+        cacheManager.registerCaching(cache, BookSearchService.class);
 
         /* when */
-        cacheManager.removeCaching(bookSearchService);
-        var result = cacheManager.isUsingCaching(bookSearchService);
+        cacheManager.removeCaching(BookSearchService.class);
+        var result = cacheManager.isUsingCaching(BookSearchService.class);
 
         /* then */
 
@@ -188,7 +188,7 @@ class CustomCacheManagerTest {
         /* given */
 
         /* when */
-        Executable e = () -> cacheManager.removeCaching(bookSearchService);
+        Executable e = () -> cacheManager.removeCaching(BookSearchService.class);
 
         /* then */
 
@@ -199,10 +199,10 @@ class CustomCacheManagerTest {
     void isUsingCaching() {
         /* given */
 
-        cacheManager.registerCaching(cache, bookSearchService);
+        cacheManager.registerCaching(cache, BookSearchService.class);
         /* when */
 
-        var result = cacheManager.isUsingCaching(bookSearchService);
+        var result = cacheManager.isUsingCaching(BookSearchService.class);
 
         /* then */
 
@@ -213,11 +213,11 @@ class CustomCacheManagerTest {
     void isContainItem_true() {
         /* given */
 
-        cacheManager.registerCaching(cache, bookSearchService);
-        cacheManager.put(bookSearchService,bookCacheKey,respBooksDto);
+        cacheManager.registerCaching(cache, BookSearchService.class);
+        cacheManager.put(BookSearchService.class,bookCacheKey,respBooksDto);
         /* when */
 
-        var result = cacheManager.isContainItem(bookSearchService,bookCacheKey);
+        var result = cacheManager.isContainItem(BookSearchService.class,bookCacheKey);
 
         /* then */
 
@@ -228,11 +228,11 @@ class CustomCacheManagerTest {
     void isContainItem_false() {
         /* given */
 
-        cacheManager.registerCaching(cache, bookSearchService);
+        cacheManager.registerCaching(cache, BookSearchService.class);
 
         /* when */
 
-        var result = cacheManager.isContainItem(bookSearchService,bookCacheKey);
+        var result = cacheManager.isContainItem(BookSearchService.class,bookCacheKey);
 
         /* then */
 
@@ -245,7 +245,7 @@ class CustomCacheManagerTest {
 
         /* when */
 
-        Executable e = () -> cacheManager.isContainItem(bookSearchService,bookCacheKey);
+        Executable e = () -> cacheManager.isContainItem(BookSearchService.class,bookCacheKey);
 
         /* then */
 
@@ -255,7 +255,7 @@ class CustomCacheManagerTest {
     @Test @DisplayName("제공 받은 매개 변수 배열에서 CacheKey 타입을 찾아서 반환 할 수 있다.")
     void generateCacheKey_super_success() {
         /* given */
-        CacheKey<BookCacheKey, RespBooksDto> bookCacheKey = new BookCacheKey("자바", 1);
+        CacheKey<ReqBookDto, RespBooksDto> bookCacheKey = new ReqBookDto("자바", 1,10);
         String query = "제목";
         int page = 1;
 
@@ -273,11 +273,11 @@ class CustomCacheManagerTest {
     @Test @DisplayName("상위 타입 CacheKey 뿐만 아니라 하위 타입 매개 변수로도 반환 가능 하다.")
     void generateCacheKey_sub_success() {
         /* given */
-        BookCacheKey bookCacheKey = new BookCacheKey("자바", 1);
+        ReqBookDto reqBookDto = new ReqBookDto("자바", 1,10);
         String query = "제목";
         int page = 1;
 
-        Object[] args = new Object[]{query,page,bookCacheKey};
+        Object[] args = new Object[]{query,page, reqBookDto};
 
         /* when */
 

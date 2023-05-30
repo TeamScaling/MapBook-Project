@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -13,6 +15,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "lib_info")
 @ToString @Getter
+@Builder @AllArgsConstructor
 public class Library {
 
     @Id @Column(name = "LBRRY_NO")
@@ -41,6 +44,10 @@ public class Library {
 
     @Column(name = "AREA_CD")
     private Integer areaCd;
+
+    public Library() {
+
+    }
 
     public String getTwoAreaNm(){
 

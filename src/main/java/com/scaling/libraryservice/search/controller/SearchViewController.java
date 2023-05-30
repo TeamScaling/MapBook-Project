@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.search.controller;
 
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class SearchViewController {
         @RequestParam(value = "target", defaultValue = "title") String target, ModelMap model) {
 
         if (!query.isEmpty()) {
-            RespBooksDto searchResult = searchService.searchBooks(new BookCacheKey(query,page),size,target);
+            RespBooksDto searchResult = searchService.searchBooks(new ReqBookDto(query,page,size),3);
 
             model.put("searchResult", searchResult);
             model.put("totalPages", searchResult.getMeta().getTotalPages());

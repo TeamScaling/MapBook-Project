@@ -61,7 +61,7 @@ class CircuitBreakerAspectTest {
     }
 
 
-    @Test
+    @Test @DisplayName("API 장애 상태 일때, 대체 메소드로 전환 할 수 있다.")
     public void apiMonitoringAround2() throws Throwable {
         /* given */
 
@@ -81,7 +81,7 @@ class CircuitBreakerAspectTest {
         assertNotNull(result);
     }
 
-    @Test
+    @Test @DisplayName("API 연결이 정상이므로 본래 메소드가 호출 된다.")
     public void apiMonitoringAround_apiAccessAble() throws Throwable {
         /* given */
 

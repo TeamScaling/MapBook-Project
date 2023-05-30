@@ -2,12 +2,13 @@ package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
+import lombok.Getter;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * 도서관 책 보유 정보를 확인하는 API와 연결하는 클래스입니다.
  */
-
+@Getter
 public class BExistConn implements ApiConnection, ApiObserver {
 
     private Integer libNo;
@@ -20,7 +21,8 @@ public class BExistConn implements ApiConnection, ApiObserver {
     private BExistConn() {
     }
 
-    public BExistConn(Integer libNo, String isbn13) {
+    public
+    BExistConn(Integer libNo, String isbn13) {
         this.libNo = libNo;
         this.isbn13 = isbn13;
     }

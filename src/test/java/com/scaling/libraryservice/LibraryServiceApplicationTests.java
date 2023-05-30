@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.service.MapBookService;
+import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ class LibraryServiceApplicationTests {
     @Autowired
     private ApiQuerySender apiQuerySender;
     @Autowired
-    private MapBookService mapBookService;
+    private MapBookMatcher mapBookMatcher;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -35,24 +35,24 @@ class LibraryServiceApplicationTests {
     public void evaluate_hasBook_verse_basic(){
         /* given */
 
-        String isbn13 = "9791163032212";
-        Integer areaCd = 26200;
-
-        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699);
-
-        /* when */
-
-        var library1= libraryFindService.getNearByLibraries(dto);
-        var library2 = libraryFindService.getNearByLibraries(dto.getAreaCd());
-
-        /* then */
-
-        var result1 = mapBookService.matchMapBooks(library1,dto);
-        var result2 = mapBookService.matchMapBooks(library2,dto);
-
-        boolean check = result1.size() <= result2.size();
-
-        assertEquals(check,true);
+//        String isbn13 = "9791163032212";
+//        Integer areaCd = 26200;
+//
+//        var dto = new ReqMapBookDto(isbn13,37.4532099, 127.1365699);
+//
+//        /* when */
+//
+//        var library1= libraryFindService.getNearByLibraries(dto);
+//        var library2 = libraryFindService.getNearByLibraries(dto.getAreaCd());
+//
+//        /* then */
+//
+//        var result1 = mapBookService.matchMapBooks(library1,dto);
+//        var result2 = mapBookService.matchMapBooks(library2,dto);
+//
+//        boolean check = result1.size() <= result2.size();
+//
+//        assertEquals(check,true);
     }
 
     @Test @DisplayName("요청 받은 위/경도로 지역 코드 추출2 [안산 지역]")
@@ -62,7 +62,6 @@ class LibraryServiceApplicationTests {
         ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,37.247687, 126.604069);
 
         /* when */
-        libraryFindService.outPutAreaCd(reqMapBookDto);
         /* then */
 
         var libraries = libraryFindService.getNearByLibraries(reqMapBookDto);

@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.scaling.libraryservice.mapBook.service.MapBookService;
+import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -9,7 +9,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 /**
  * 사용자 정의 캐싱 어스펙트로, CustomCacheable 어노테이션이 적용된 메서드의 결과를 캐싱합니다. 캐싱된 데이터는 CustomCacheManager를 통해
@@ -20,11 +19,9 @@ import org.springframework.util.StopWatch;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CustomCacheAspect<C, K, I> {
+public class CustomCacheAspect<K, I> {
 
-    private final CustomCacheManager<C, K, I> cacheManager;
-
-    private final StopWatch stopWatch;
+    private final CustomCacheManager<K, I> cacheManager;
 
     @Pointcut("@annotation(com.scaling.libraryservice.commons.caching.CustomCacheable)")
     private void customCacheablePointcut() {
@@ -43,7 +40,7 @@ public class CustomCacheAspect<C, K, I> {
     @SuppressWarnings("unchecked")
     public I cacheAround(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        C customer = (C) joinPoint.getTarget();
+        Class<?> customer = joinPoint.getTarget().getClass();
         CacheKey<K, I> cacheKey = cacheManager.generateCacheKey(joinPoint.getArgs());
 
         if (!cacheManager.isUsingCaching(customer)) {
@@ -52,6 +49,7 @@ public class CustomCacheAspect<C, K, I> {
                 customer);
         } else {
             if (cacheManager.isContainItem(customer, cacheKey)) {
+                log.info("Cache Manager find this item ");
                 return cacheManager.get(customer, cacheKey);
             }
         }
@@ -59,24 +57,15 @@ public class CustomCacheAspect<C, K, I> {
         return patchCacheManager(joinPoint,customer,cacheKey);
     }
 
-    public I patchCacheManager(ProceedingJoinPoint joinPoint, C customer, CacheKey<K, I> cacheKey)
+    public I patchCacheManager(ProceedingJoinPoint joinPoint, Class<?> customer, CacheKey<K, I> cacheKey)
         throws Throwable {
-        stopWatch.start();
 
-        I result = (I) joinPoint.proceed();
+        I result = (I)joinPoint.proceed();
 
-        stopWatch.stop();
-
-        double taskTime = stopWatch.getTotalTimeSeconds();
-
-        log.info("........." + taskTime);
-
-        if (taskTime > 1.0 ||
-            customer instanceof MapBookService) {
+        if (customer.equals(MapBookMatcher.class)) {
 
             log.info(
-                "This task is over 1.0s [{}] or related MapBookService then CacheManger put this item",
-                taskTime);
+                "This task is related MapBookService then CacheManger put this item");
 
             cacheManager.put(customer, cacheKey, result);
         }

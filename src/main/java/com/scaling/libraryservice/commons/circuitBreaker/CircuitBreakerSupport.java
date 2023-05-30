@@ -3,9 +3,11 @@ package com.scaling.libraryservice.commons.circuitBreaker;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class CircuitBreakerSupport {
 
     public ApiObserver extractObserver(ApiMonitoring apiMonitoring) throws Throwable {

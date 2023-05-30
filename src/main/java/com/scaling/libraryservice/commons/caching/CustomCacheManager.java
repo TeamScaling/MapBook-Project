@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CustomCacheManager<C, K, I> {
+public class CustomCacheManager<K, I> {
 
-    private final Map<C, Cache<CacheKey<K,I>, I>> commonsCache = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Cache<CacheKey<K,I>, I>> commonsCache = new ConcurrentHashMap<>();
 
 
     /**
@@ -28,7 +28,7 @@ public class CustomCacheManager<C, K, I> {
      * @param cache    등록할 캐시 인스턴스
      * @param customer 캐시를 사용하는 클래스 정보
      */
-    public void registerCaching(Cache<CacheKey<K,I>, I> cache, C customer) {
+    public void registerCaching(Cache<CacheKey<K,I>, I> cache, Class<?> customer) {
         log.info("[{}] is registered in caching System", customer);
         commonsCache.put(customer, cache);
 
@@ -42,7 +42,7 @@ public class CustomCacheManager<C, K, I> {
      * @param personalKey 아이템에 대한 개인 키
      * @param item        캐시에 추가할 아이템
      */
-    public void put(C customer, CacheKey<K,I> personalKey, I item) {
+    public void put(Class<?> customer, CacheKey<K,I> personalKey, I item) {
 
         if (commonsCache.containsKey(customer)) {
             log.info("CacheManger put item for [{}]", customer);
@@ -58,7 +58,7 @@ public class CustomCacheManager<C, K, I> {
      * @return 캐시에서 가져온 아이템
      */
     @Timer
-    public I get(C customer, CacheKey<K,I> personalKey) {
+    public I get(Class<?> customer, CacheKey<K,I> personalKey) {
         log.info("CacheManger find item for [{}]", customer);
 
         return commonsCache.get(customer).getIfPresent(personalKey);
@@ -69,7 +69,7 @@ public class CustomCacheManager<C, K, I> {
      *
      * @param customer 제거할 캐시의 클래스 정보
      */
-    public void removeCaching(C customer) {
+    public void removeCaching(Class<?> customer) {
 
         if (commonsCache.containsKey(customer)) {
             commonsCache.remove(customer);
@@ -85,7 +85,7 @@ public class CustomCacheManager<C, K, I> {
      * @param customer 확인할 클래스 정보
      * @return 캐시를 사용 중이면 true, 그렇지 않으면 false
      */
-    public boolean isUsingCaching(C customer) {
+    public boolean isUsingCaching(Class<?> customer) {
 
         return commonsCache.containsKey(customer);
     }
@@ -97,7 +97,7 @@ public class CustomCacheManager<C, K, I> {
      * @param personalKey 아이템에 대한 개인 키
      * @return 아이템이 캐시에 포함되어 있으면 true, 그렇지 않으면 false
      */
-    public boolean isContainItem(C customer, CacheKey<K,I> personalKey) {
+    public boolean isContainItem(Class<?> customer, CacheKey<K,I> personalKey) {
 
         if (isUsingCaching(customer)) {
 

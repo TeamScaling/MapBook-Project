@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Setter @ToString
@@ -17,6 +18,11 @@ RespBooksDto {
     public RespBooksDto(MetaDto metaDto, List<BookDto> documents) {
         this.meta = metaDto;
         this.documents = documents;
+    }
+
+    public RespBooksDto(MetaDto metaDto, Page<BookDto> booksPage) {
+        this.meta = metaDto;
+        this.documents = booksPage.stream().map(BookDto::new).toList();
     }
 
     public RespBooksDto(JSONObject jsonObject){

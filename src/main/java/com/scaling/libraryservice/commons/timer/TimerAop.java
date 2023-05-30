@@ -14,14 +14,15 @@ import org.springframework.util.StopWatch;
 @Component @RequiredArgsConstructor
 public class TimerAop {
 
-    private final StopWatch stopWatch;
-
     @Pointcut("@annotation(com.scaling.libraryservice.commons.timer.Timer)")//Timer 어노테이션이 붙은 메서드에만 적용
     private void enableTimer() {
     }
 
     @Around("enableTimer()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable { //메서드 실행시 걸린시간 측정
+
+        StopWatch stopWatch = new StopWatch();
+
         stopWatch.start();
 
         Object result = joinPoint.proceed(); //메서드가 실행되는 부분

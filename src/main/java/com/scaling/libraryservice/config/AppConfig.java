@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.config;
 
 
+import com.scaling.libraryservice.commons.api.service.BExistProvider;
+import com.scaling.libraryservice.commons.api.service.DataProvider;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.api.util.binding.BindingStrategy;
@@ -12,7 +14,6 @@ import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.commons.updater.service.KakaoBookApiService;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
-import com.scaling.libraryservice.mapBook.service.MapBookService;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -21,6 +22,7 @@ import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.StopWatch;
 import org.springframework.web.client.RestTemplate;
@@ -29,7 +31,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableAspectJAutoProxy
 public class AppConfig {
 
-    @Bean
+    @Bean @Scope("prototype")
     public StopWatch stopWatch() {
         return new StopWatch();
     }
@@ -107,11 +109,11 @@ public class AppConfig {
     }
 
     @Bean
-    public MapBookService mapBookService() {
+    public DataProvider<ApiBookExistDto> dataProvider(){
 
         ApiQueryBinder<ApiBookExistDto> binder = new ApiQueryBinder<>(bookExistBinding());
 
-        return new MapBookService(apiQuerySenderTimeOut(), binder);
+        return new BExistProvider(apiQuerySender(),binder);
     }
 
 

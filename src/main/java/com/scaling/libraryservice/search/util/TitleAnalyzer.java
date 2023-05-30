@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TitleAnalyzer {
 
-    private final TitleTokenizer titleTokenizer;
+    private final TitleTokenizer tokenizer;
 
     /**
      * 주어진 검색어를 분석하여 TitleQuery 객체를 반환합니다.
@@ -136,7 +136,7 @@ public class TitleAnalyzer {
         List<String> korTokens = titleMap.get("kor");
         String korToken = String.join(" ", korTokens);
         if (!korToken.isEmpty()) {
-            List<String> nnKorTokens = titleTokenizer.tokenize(korToken);
+            List<String> nnKorTokens = tokenizer.tokenize(korToken);
             if (!nnKorTokens.isEmpty()) {
                 korToken = String.join(" ", nnKorTokens);
             }
