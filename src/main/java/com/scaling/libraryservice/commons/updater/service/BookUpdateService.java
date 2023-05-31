@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.commons.updater.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
+import com.scaling.libraryservice.commons.api.service.DataProvider;
+import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import com.scaling.libraryservice.commons.updater.repository.BookUpdateRepository;
@@ -23,7 +25,7 @@ public class BookUpdateService {
 
     private final BookUpdateRepository bookUpdateRepo;
 
-    private final KakaoBookApiService kakaoBookApiService;
+    private final DataProvider<BookApiDto> kakaoBookProvider;
 
     @Transactional
     public void UpdateBookFromApi(int limit, int nThreads) {
@@ -42,7 +44,7 @@ public class BookUpdateService {
         List<KakaoBookConn> kakaoBookConns = bookList.stream()
             .map(KakaoBookConn::new).toList();
 
-        List<BookApiDto> bookApiDtoList = kakaoBookApiService.getBookMulti(
+        List<BookApiDto> bookApiDtoList = kakaoBookProvider.provideDataList(
             kakaoBookConns, nThreads);
 
         updateBookEntity(bookApiDtoList, bookMap);

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
+import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import com.scaling.libraryservice.commons.updater.repository.BookUpdateRepository;
@@ -26,7 +27,7 @@ class BookUpdateServiceTest {
     private BookUpdateRepository bookUpdateRepo;
 
     @Mock
-    private KakaoBookApiService kakaoBookApiService;
+    private KakaoBookProvider kakaoBookProvider;
 
     @Test @DisplayName("도서 업데이트 메소드 실행 성공")
     public void test_update(){
@@ -45,7 +46,7 @@ class BookUpdateServiceTest {
         List<BookApiDto> apiBooks = List.of(bookApiDto1,bookApiDto2,bookApiDto3);
 
         when(bookUpdateRepo.findBooksWithLimit(anyInt())).thenReturn(nonUpdateBooks);
-        when(kakaoBookApiService.getBookMulti(any(),anyInt())).thenReturn(apiBooks);
+        when(kakaoBookProvider.provideDataList(any(),anyInt())).thenReturn(apiBooks);
 
 
         /* when */

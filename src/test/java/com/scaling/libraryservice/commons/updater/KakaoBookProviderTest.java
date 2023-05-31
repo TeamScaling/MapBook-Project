@@ -2,28 +2,30 @@ package com.scaling.libraryservice.commons.updater;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.scaling.libraryservice.commons.api.util.binding.KakaoBookBinding;
-import com.scaling.libraryservice.commons.updater.service.KakaoBookApiService;
+import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
+import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
-import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
-import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-class KakaoBookApiServiceTest {
+@SpringBootTest
+class KakaoBookProviderTest {
 
-    private KakaoBookApiService kakaoBookApiService;
+    @Autowired
+    private KakaoBookProvider kakaoBookProvider;
 
-    @BeforeEach
-    public void setUp() {
-        this.kakaoBookApiService = new KakaoBookApiService(new ApiQuerySender(new RestTemplate()),
-            new ApiQueryBinder<>(new KakaoBookBinding()));
-    }
+    private AuthKeyLoader authKeyLoader;
+
+//    @BeforeEach
+//    public void setUp() {
+//        this.kakaoBookProvider = new KakaoBookProvider(new ApiQuerySender(new RestTemplate()),
+//            new ApiQueryBinder<>(new KakaoBookBinding()),authKeyLoader);
+//    }
 
     @Test
     @DisplayName("getBookMulti 메소드를 통해 BookApiDto list를 반환 받는 데 성공")
@@ -43,7 +45,7 @@ class KakaoBookApiServiceTest {
 
         /* when */
 
-        var result = kakaoBookApiService.getBookMulti(conns, 5);
+        var result = kakaoBookProvider.provideDataList(conns, 5);
         /* then */
 
         assertEquals(5, result.size());

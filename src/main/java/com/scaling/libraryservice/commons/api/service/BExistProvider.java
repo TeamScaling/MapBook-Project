@@ -1,10 +1,14 @@
 package com.scaling.libraryservice.commons.api.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
+import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
+import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.OpenApi;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +19,20 @@ public class BExistProvider implements DataProvider<ApiBookExistDto>{
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder<ApiBookExistDto> apiQueryBinder;
 
-    @Override
-    public ApiBookExistDto provide(ApiConnection apiConnection) {
+    private final AuthKeyLoader authKeyLoader;
 
-        ResponseEntity<String> resp
-            = apiQuerySender.sendSingleQuery(apiConnection,HttpEntity.EMPTY);
-
-        return apiQueryBinder.bind(resp);
+    @PostConstruct
+    public void loadAuthKey(){
+        String apiAuthKey = authKeyLoader.loadAuthKey(OpenApi.DATA4_Lib).getAuthKey();
+        BExistConn.setApiAuthKey(apiAuthKey);
     }
 
     @Override
-    public List<ApiBookExistDto> provideDataList(List<? extends ApiConnection> connections) {
-        List<ResponseEntity<String>> responseEntities =
-            apiQuerySender.sendMultiQuery(connections, 10, HttpEntity.EMPTY);
+    public List<ApiBookExistDto> provideDataList(List<? extends ApiConnection> connections,int nThreads) {
 
-        return responseEntities.stream().map(apiQueryBinder::bind).toList();
+        List<ResponseEntity<String>> responseEntities =
+            apiQuerySender.sendMultiQuery(connections, nThreads, HttpEntity.EMPTY);
+
+        return apiQueryBinder.bindList(responseEntities);
     }
 }

@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.domain;
+package com.scaling.libraryservice.commons.circuitBreaker;
 
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;

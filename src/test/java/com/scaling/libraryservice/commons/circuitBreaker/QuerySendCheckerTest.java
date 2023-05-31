@@ -6,7 +6,6 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

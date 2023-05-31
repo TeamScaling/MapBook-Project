@@ -1,8 +1,11 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -15,10 +18,14 @@ public class BExistConn implements ApiConnection, ApiObserver {
 
     private String isbn13;
     private static final String API_URL = "http://data4library.kr/api/bookExist";
-    private static final String DEFAULT_AUTH_KEY = "0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72";
+    private static String API_AUTH_KEY;
     private static final ApiStatus apiStatus = new ApiStatus(API_URL, 10);
 
     private BExistConn() {
+    }
+
+    public static void setApiAuthKey(String apiAuthKey) {
+        API_AUTH_KEY = apiAuthKey;
     }
 
     public
@@ -36,7 +43,7 @@ public class BExistConn implements ApiConnection, ApiObserver {
     public UriComponentsBuilder configUriBuilder() {
 
         return UriComponentsBuilder.fromHttpUrl(API_URL)
-            .queryParam("authKey", DEFAULT_AUTH_KEY)
+            .queryParam("authKey", API_AUTH_KEY)
             .queryParam("isbn13", isbn13)
             .queryParam("libCode", String.valueOf(this.libNo))
             .queryParam("format", "json");

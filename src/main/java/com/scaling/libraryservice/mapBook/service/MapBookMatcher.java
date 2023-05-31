@@ -41,7 +41,7 @@ public class MapBookMatcher implements ApiRelatedService {
                 .toList();
         }
 
-        List<ApiBookExistDto> apiResults = dataProvider.provideDataList(bExistConns);
+        List<ApiBookExistDto> apiResults = dataProvider.provideDataList(bExistConns,10);
 
         return mappingLoanableLib(nearByLibraries, apiResults);
     }

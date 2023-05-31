@@ -1,6 +1,10 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class KakaoBookConn implements ApiConnection {
@@ -8,7 +12,7 @@ public class KakaoBookConn implements ApiConnection {
     private final Long id;
     private static final String API_URL = "https://dapi.kakao.com/v3/search/book";
 
-    private static final String DEFAULT_AUTH_KEY = "KakaoAK e3354f2e73c173cb2d0420123c89c961";
+    private static String API_AUTH_KEY;
 
     private final String target;
     public KakaoBookConn(String target,Long id) {
@@ -26,5 +30,15 @@ public class KakaoBookConn implements ApiConnection {
 
         return UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("query", target);
+    }
+    public HttpEntity<String> getHttpEntity(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", API_AUTH_KEY);
+
+        return new HttpEntity<>("",headers);
+    }
+
+    public static void setApiAuthKey(String apiAuthKey) {
+        API_AUTH_KEY = apiAuthKey;
     }
 }

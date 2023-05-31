@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.dto;
 
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import org.junit.jupiter.api.Test;

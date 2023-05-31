@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.config;
 
 
+import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
 import com.scaling.libraryservice.commons.api.service.BExistProvider;
-import com.scaling.libraryservice.commons.api.service.DataProvider;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.api.util.binding.BindingStrategy;
@@ -12,7 +12,7 @@ import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.QuerySendChecker;
 import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
-import com.scaling.libraryservice.commons.updater.service.KakaoBookApiService;
+import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -101,19 +101,19 @@ public class AppConfig {
     }
 
     @Bean
-    public KakaoBookApiService kakaoBookApiService() {
+    public KakaoBookProvider kakaoBookProvider(AuthKeyLoader loader) {
 
         ApiQueryBinder<BookApiDto> binder = new ApiQueryBinder<>(kakaoBinding());
 
-        return new KakaoBookApiService(apiQuerySender(), binder);
+        return new KakaoBookProvider(apiQuerySender(), binder,loader);
     }
 
     @Bean
-    public DataProvider<ApiBookExistDto> dataProvider(){
+    public BExistProvider bExistProvider(AuthKeyLoader loader){
 
         ApiQueryBinder<ApiBookExistDto> binder = new ApiQueryBinder<>(bookExistBinding());
 
-        return new BExistProvider(apiQuerySender(),binder);
+        return new BExistProvider(apiQuerySender(),binder,loader);
     }
 
 
