@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.scaling.libraryservice.commons.api.util.binding.KakaoBookBinding;
 import com.scaling.libraryservice.commons.updater.service.KakaoBookApiService;
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
-import com.scaling.libraryservice.mapBook.domain.ApiConnection;
+import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import java.util.ArrayList;
@@ -29,19 +29,16 @@ class KakaoBookApiServiceTest {
     @DisplayName("getBookMulti 메소드를 통해 BookApiDto list를 반환 받는 데 성공")
     public void test_getBookMulti() {
         /* given */
-        String target = "9791170522553";
-        String target2 = "9788954699051";
-        String target3 = "9791198060532";
-        String target4 = "9788955479904";
-        String target5 = "9791169811248";
+
+        List<String> targetList = List.of("9791170522553", "9788954699051", "9791198060532",
+            "9788955479904", "9791169811248");
 
         List<ApiConnection> conns = new ArrayList<>();
 
-        conns.add(new KakaoBookConn(target));
-        conns.add(new KakaoBookConn(target2));
-        conns.add(new KakaoBookConn(target3));
-        conns.add(new KakaoBookConn(target4));
-        conns.add(new KakaoBookConn(target5));
+        for(int i=0; i<targetList.size(); i++){
+
+            conns.add(new KakaoBookConn(targetList.get(i), (long) i));
+        }
 
 
         /* when */

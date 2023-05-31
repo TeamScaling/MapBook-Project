@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.commons.timer;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -10,7 +11,7 @@ import org.springframework.util.StopWatch;
 
 @Slf4j
 @Aspect
-@Component
+@Component @RequiredArgsConstructor
 public class TimerAop {
 
     @Pointcut("@annotation(com.scaling.libraryservice.commons.timer.Timer)")//Timer 어노테이션이 붙은 메서드에만 적용
@@ -19,7 +20,9 @@ public class TimerAop {
 
     @Around("enableTimer()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable { //메서드 실행시 걸린시간 측정
+
         StopWatch stopWatch = new StopWatch();
+
         stopWatch.start();
 
         Object result = joinPoint.proceed(); //메서드가 실행되는 부분

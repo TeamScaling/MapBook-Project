@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.mapBook.dto;
 
 import com.scaling.libraryservice.mapBook.entity.Library;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Getter
 @ToString
-@Slf4j
+@Slf4j @Builder
+@AllArgsConstructor
 public class LibraryDto {
 
     private final String libNm;
@@ -29,6 +32,7 @@ public class LibraryDto {
     private String hasBook = "N";
 
     private boolean isSupportedArea = false;
+
 
     public LibraryDto(Library library) {
         this.libNm = library.getLibNm();
@@ -61,6 +65,10 @@ public class LibraryDto {
         this.areaCd = library.getAreaCd();
         this.hasBook = hasBook;
         this.isSupportedArea = isSupportedArea;
+    }
+
+    public boolean hasBook(){
+        return hasBook.equals("Y");
     }
 
 }

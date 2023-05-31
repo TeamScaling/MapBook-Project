@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.entity.Book;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,6 +10,7 @@ import org.json.JSONObject;
 
 @Getter
 @Setter @ToString
+@Builder @AllArgsConstructor
 public class BookDto {
 
     private final Long id;

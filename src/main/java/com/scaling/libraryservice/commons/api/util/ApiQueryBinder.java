@@ -12,7 +12,6 @@ public class ApiQueryBinder<T> {
 
     private final BindingStrategy<T> bindingStrategy;
 
-
     public T bind(ResponseEntity<String> apiResponse) throws OpenApiException {
         return bindingStrategy.bind(apiResponse);
     }

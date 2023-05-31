@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.search.controller;
 
 import com.scaling.libraryservice.mapBook.dto.TestingBookDto;
-import com.scaling.libraryservice.search.cacheKey.BookCacheKey;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class SearchRestController {
     public ResponseEntity<RespBooksDto> restSearchBook(@RequestBody TestingBookDto testingBookDto) {
 
         RespBooksDto result = bookSearchService.searchBooks(
-            new BookCacheKey(testingBookDto.getBookName(), 1), 10,"");
+            new ReqBookDto(testingBookDto.getBookName(), 1,10),3);
 
         if (result.getDocuments().isEmpty()) {
             log.info("[Not Found]This book is Not Found");

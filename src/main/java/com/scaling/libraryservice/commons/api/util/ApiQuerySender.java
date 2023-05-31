@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.api.util;
 
+import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,14 +11,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -31,26 +27,10 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 
 @Slf4j
-@Getter
 @RequiredArgsConstructor
 public class ApiQuerySender {
 
     private final RestTemplate restTemplate;
-
-    public void sendPost(String jsonData, String url) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> request = new HttpEntity<>(jsonData, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            log.info("Cache data for [{}] backed up successfully", url);
-        } else {
-            log.error("Failed to back up cache data for [{}]", url);
-        }
-    }
 
     /**
      * 대상 Api에 요청을 보내 원하는 응답 데이터를 받는다.

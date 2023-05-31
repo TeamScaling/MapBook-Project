@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.search.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.scaling.libraryservice.search.util.TitleQuery;
+import com.scaling.libraryservice.search.util.TitleType;
 import org.junit.jupiter.api.Test;
 
 class TitleQueryTest {

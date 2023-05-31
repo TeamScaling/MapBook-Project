@@ -1,5 +1,7 @@
 package com.scaling.libraryservice.mapBook.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.json.JSONObject;
@@ -8,6 +10,8 @@ import org.json.JSONObject;
  *  OpenAPI (대출 가능 도서) 응답 데이터를 담는 클래스
  */
 @Getter @ToString
+@Builder @AllArgsConstructor
+
 public class ApiBookExistDto {
 
     private final String isbn13;
@@ -26,4 +30,8 @@ public class ApiBookExistDto {
         this.loanAvailable = result.getString("loanAvailable");
     }
 
+    public boolean isLoanAble(){
+
+        return loanAvailable.equals("Y");
+    }
 }
