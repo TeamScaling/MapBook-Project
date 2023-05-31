@@ -2,7 +2,6 @@ package com.scaling.libraryservice.commons.circuitBreaker;
 
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

@@ -20,7 +20,7 @@ class LoanItemConnTest {
 
         String targetUri =
             "http://data4library.kr/api/loanItemSrch?"
-                + "authKey=0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72"
+                + "authKey"
                 + "&pageSize="+pageSize
                 + "&format=json";
 

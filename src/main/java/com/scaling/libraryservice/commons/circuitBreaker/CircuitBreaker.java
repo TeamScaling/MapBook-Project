@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

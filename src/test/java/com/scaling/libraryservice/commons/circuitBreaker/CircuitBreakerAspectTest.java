@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.lang.reflect.Method;
 import org.aspectj.lang.ProceedingJoinPoint;

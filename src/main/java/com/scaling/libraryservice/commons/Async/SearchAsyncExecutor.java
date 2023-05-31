@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.commons.Async;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.reporter.SlowTaskReporter;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Component;
 public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookDto>{
 
     private final CustomCacheManager<ReqBookDto,RespBooksDto> cacheManager;
+
+    private final SlowTaskReporter slowTaskReporter;
 
     @Override
     public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto,int timeout) {
@@ -49,6 +52,8 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookD
                 new MetaDto(fetchedBooks, reqBookDto), fetchedBooks);
 
             cacheManager.put(BookSearchService.class,reqBookDto,respBooksDto);
+
+            slowTaskReporter.report(reqBookDto.getQuery());
 
             log.info("[{}] async Search task is Completed", reqBookDto.getQuery());
         });

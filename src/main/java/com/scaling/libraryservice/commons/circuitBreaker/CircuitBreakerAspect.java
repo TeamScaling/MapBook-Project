@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.lang.reflect.Method;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +40,7 @@ public class CircuitBreakerAspect {
      * @throws Throwable
      */
     @Around("apiMonitoringPointcut()")
-    public Object
-    apiMonitoringAround(ProceedingJoinPoint joinPoint)
+    public Object apiMonitoringAround(ProceedingJoinPoint joinPoint)
         throws Throwable {
 
         ApiMonitoring apiMonitoring = ((MethodSignature) joinPoint.getSignature()).getMethod()
@@ -66,6 +64,7 @@ public class CircuitBreakerAspect {
                 result = joinPoint.proceed();
             } catch (OpenApiException e) {
                 circuitBreaker.receiveError(apiObserver);
+                fallBackMethod.setAccessible(true);
                 return fallBackMethod.invoke(joinPoint.getTarget(), joinPoint.getArgs());
             }
 

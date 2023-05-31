@@ -5,8 +5,6 @@ import java.util.List;
 
 public interface DataProvider<T> {
 
-    T provide(ApiConnection apiConnection);
-
-    List<T> provideDataList(List<? extends ApiConnection> connections);
+    List<T> provideDataList(List<? extends ApiConnection> connections,int nThreads);
 
 }

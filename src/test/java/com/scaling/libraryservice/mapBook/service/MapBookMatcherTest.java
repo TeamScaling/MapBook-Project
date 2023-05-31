@@ -86,7 +86,7 @@ class MapBookMatcherTest {
         List<ApiBookExistDto> bookExists = List.of(apiBookExistDto1, apiBookExistDto2);
 
         when(bExistConns.isEmpty()).thenReturn(false);
-        when(dataProvider.provideDataList(bExistConns)).thenReturn(bookExists);
+        when(dataProvider.provideDataList(bExistConns,10)).thenReturn(bookExists);
 
         /* when */
 

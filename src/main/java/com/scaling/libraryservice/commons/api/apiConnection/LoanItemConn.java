@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
-import com.scaling.libraryservice.mapBook.domain.ApiObserver;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
@@ -9,7 +9,7 @@ public class LoanItemConn implements ApiObserver, ApiConnection {
 
     private static final String API_URL = "http://data4library.kr/api/loanItemSrch";
 
-    private static final String DEFAULT_AUTH_KEY = "0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72";
+    private static String DEFAULT_AUTH_KEY;
     private static final ApiStatus apiStatus = new ApiStatus(API_URL,5);
     private int pageSize;
 
@@ -45,5 +45,7 @@ public class LoanItemConn implements ApiObserver, ApiConnection {
     public ApiStatus getApiStatus() {
         return apiStatus;
     }
+
+
 
 }

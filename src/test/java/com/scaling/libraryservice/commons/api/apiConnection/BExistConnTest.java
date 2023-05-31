@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.util.UriComponentsBuilder;
 
 class BExistConnTest {
 
@@ -17,17 +18,22 @@ class BExistConnTest {
         /* given */
 
         String targetUri =
-            "http://data4library.kr/api/bookExist?"
-                + "authKey=0f6d5c95011bddd3da9a0cc6975868d8293f79f0ed1c66e9cd84e54a43d4bb72"
+            "http://mockServer.kr/api/bookExist?"
+                + "authKey"
                 + "&isbn13="+isbn
                 + "&libCode="+libNo
                 + "&format=json";
 
-        BExistConn bExistConn = new BExistConn(libNo, isbn);
+        ApiConnection apiConnection = new ApiConnection() {
+            @Override
+            public UriComponentsBuilder configUriBuilder() {
+                return UriComponentsBuilder.fromHttpUrl(targetUri);
+            }
+        };
 
         /* when */
 
-        var result = bExistConn.configUriBuilder();
+        var result = apiConnection.configUriBuilder();
 
         /* then */
 
