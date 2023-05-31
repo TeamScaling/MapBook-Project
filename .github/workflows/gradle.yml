@@ -59,6 +59,9 @@ jobs:
         with:
           arguments: assemble
 
+      - name: Run tests with Gradle
+        run: ./gradlew test
+
       - name: Make zip file
         run: zip -r ./$GITHUB_SHA.zip .
         shell: bash
