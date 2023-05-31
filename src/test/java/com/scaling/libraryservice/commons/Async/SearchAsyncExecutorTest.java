@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.reporter.SlowTaskReporter;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
@@ -40,7 +41,6 @@ class SearchAsyncExecutorTest {
 
     @Mock
     private ReqBookDto reqBookDto;
-
 
     @Test
     @DisplayName("3초 미만의 작업을 비동기를 사용하지 않고도 반환 한다.")

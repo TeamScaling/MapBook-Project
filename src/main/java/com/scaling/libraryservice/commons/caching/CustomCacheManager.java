@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -116,7 +117,7 @@ public class CustomCacheManager<K, I> {
      * @return 생성된 CacheKey 객체
      * @throws UnsupportedOperationException 적절한 CacheKey 구현을 찾지 못한 경우 던져 진다.
      */
-     CacheKey<K,I> generateCacheKey(Object[] arguments) throws UnsupportedOperationException {
+     CacheKey<K,I> generateCacheKey(@NonNull Object[] arguments) throws UnsupportedOperationException {
 
         for(Object obj : arguments){
 

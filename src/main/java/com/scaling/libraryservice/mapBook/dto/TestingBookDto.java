@@ -2,6 +2,7 @@ package com.scaling.libraryservice.mapBook.dto;
 
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 @ToString
 public class TestingBookDto {
@@ -19,7 +20,7 @@ public class TestingBookDto {
         this.bookName = bookName;
     }
 
-    public TestingBookDto(JSONObject obj) {
+    public TestingBookDto(@NonNull JSONObject obj) {
 
         this.bookName = obj.getString("bookname");
     }

@@ -5,6 +5,7 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class UserLibraryGeocoder implements LocationResolver {
      * @throws LocationException 사용자 요청에 담긴 위치 정보가 유효하지 않을 경우.
      */
     @Override
-    public void resolve(ReqMapBookDto reqMapBookDto) throws LocationException {
+    public void resolve(@NonNull ReqMapBookDto reqMapBookDto) throws LocationException {
         if (!reqMapBookDto.isValidCoordinate()) {
             throw new LocationException("잘못된 위치 정보");
         }

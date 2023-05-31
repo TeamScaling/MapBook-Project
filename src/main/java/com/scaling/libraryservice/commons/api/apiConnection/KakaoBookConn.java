@@ -4,6 +4,7 @@ import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -20,7 +21,7 @@ public class KakaoBookConn implements ApiConnection {
         this.target = target;
     }
 
-    public KakaoBookConn(UpdateBook updateBook) {
+    public KakaoBookConn(@NonNull UpdateBook updateBook) {
         this.id = updateBook.getId();
         this.target = updateBook.getIsbn();
     }

@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,7 +80,7 @@ public class BookUpdateService {
 
 
 
-    private Map<String, UpdateBook> generateBookMap(List<UpdateBook> bookList){
+    private Map<String, UpdateBook> generateBookMap(@NonNull List<UpdateBook> bookList){
 
         Map<String, UpdateBook> bookMap = new HashMap<>();
         bookList.forEach(b -> bookMap.put(b.getIsbn(),b));
@@ -85,7 +88,7 @@ public class BookUpdateService {
         return bookMap;
     }
 
-    private void updateBookEntity(List<BookApiDto> bookApiDtoList,Map<String, UpdateBook> map ){
+    private void updateBookEntity(@NonNull List<BookApiDto> bookApiDtoList,Map<String, UpdateBook> map ){
 
         long last = 1;
 

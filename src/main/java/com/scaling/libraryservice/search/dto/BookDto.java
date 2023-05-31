@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 @Getter
 @Setter @ToString
@@ -26,7 +27,7 @@ public class BookDto {
     private String bookImg;
 
 
-    public BookDto(Book book) {
+    public BookDto(@NonNull Book book) {
 
         this.id = book.getId();
         this.title = book.getTitle();
@@ -41,7 +42,7 @@ public class BookDto {
         this.bookImg =book.getBookImg();
     }
 
-    public BookDto(BookDto bookDto) {
+    public BookDto(@NonNull BookDto bookDto) {
         this.id = bookDto.getId();
         this.title = bookDto.getTitle();
         this.content = bookDto.getContent();
@@ -50,7 +51,7 @@ public class BookDto {
         this.bookImg = bookDto.getBookImg();
     }
 
-    public BookDto(JSONObject json) {
+    public BookDto(@NonNull JSONObject json) {
         this.id = json.getLong("id");
         this.title = json.getString("title");
         this.content = json.getString("content");

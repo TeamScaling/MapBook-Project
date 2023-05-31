@@ -8,6 +8,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 
 /**
  * {@link CircuitBreaker}는 API 호출에 대한 오류를 관리하고 불안정한 API 서버를 격리합니다. 이 클래스는 API 서버의 상태를 모니터링하고, 연속된 오류
@@ -30,7 +31,7 @@ public class CircuitBreaker {
      * @param apiObserver API 액세스 상태를 확인할 {@link ApiObserver} 인스턴스
      * @return {@link ApiObserver}가 가리키는 API가 접근 가능한 경우 true, 그렇지 않은 경우 false를 반환
      */
-    boolean isApiAccessible(ApiObserver apiObserver) {
+    boolean isApiAccessible(@NonNull ApiObserver apiObserver) {
         return apiObserver.getApiStatus().apiAccessible();
     }
 

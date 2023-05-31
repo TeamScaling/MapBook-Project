@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 /**
  *  인기 대출 도서 LoanItem Entity에 대한 DTO
@@ -26,7 +27,7 @@ public class LoanItemDto {
     private String classNo;
 
 
-    public LoanItemDto(JSONObject obj) {
+    public LoanItemDto(@NonNull JSONObject obj) {
 
         this.no = obj.getInt("no");
         this.ranking = Integer.parseInt(obj.getString("ranking"));

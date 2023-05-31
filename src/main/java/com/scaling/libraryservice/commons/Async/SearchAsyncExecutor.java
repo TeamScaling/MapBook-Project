@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -36,13 +37,14 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookD
 
         }catch (TimeoutException | InterruptedException | ExecutionException e) {
             log.error("Query execution exceeded 3 seconds. Returning an empty result.");
+            slowTaskReporter.report(reqBookDto.getQuery());
             asyncSearchBook(supplier,reqBookDto);
         }
 
         return booksPage;
     }
 
-    void asyncSearchBook(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto) {
+    void asyncSearchBook(Supplier<Page<BookDto>> supplier, @NonNull ReqBookDto reqBookDto) {
 
         log.info("[{}] async Search Book start.....", reqBookDto.getQuery());
         CompletableFuture.runAsync(() -> {
@@ -52,8 +54,6 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookD
                 new MetaDto(fetchedBooks, reqBookDto), fetchedBooks);
 
             cacheManager.put(BookSearchService.class,reqBookDto,respBooksDto);
-
-            slowTaskReporter.report(reqBookDto.getQuery());
 
             log.info("[{}] async Search task is Completed", reqBookDto.getQuery());
         });

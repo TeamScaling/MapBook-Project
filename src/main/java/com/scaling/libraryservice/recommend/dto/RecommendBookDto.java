@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.NonNull;
 
 @Getter
 @Setter
@@ -60,11 +61,11 @@ public class RecommendBookDto {
         return removeParentheses(removeDash(this.title)).trim();
     }
 
-    private String removeParentheses(String text) {
+    private String removeParentheses(@NonNull String text) {
         return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
     }
 
-    private String removeDash(String text) {
+    private String removeDash(@NonNull String text) {
         return text.replaceAll("-.*$", "").trim();
     }
 

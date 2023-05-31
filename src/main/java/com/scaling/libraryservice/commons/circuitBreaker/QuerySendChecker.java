@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -30,7 +31,7 @@ public class QuerySendChecker implements RestorationChecker{
      * @param observer 복원 가능성을 확인할 API 서버와의 연결 구성 요소를 갖는 {@link ApiObserver} 인스턴스
      * @return API 서버가 다시 접근 가능한 상태라면 true, 그렇지 않은 경우 false를 반환합니다.
      */
-    public boolean isRestoration(ApiObserver observer) {
+    public boolean isRestoration(@NonNull ApiObserver observer) {
 
         String uri = observer.getApiStatus().getApiUri();
 

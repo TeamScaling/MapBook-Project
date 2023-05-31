@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 /**
  *  OpenAPI (대출 가능 도서) 응답 데이터를 담는 클래스
@@ -22,7 +23,7 @@ public class ApiBookExistDto {
 
     private final String loanAvailable;
 
-    public ApiBookExistDto(JSONObject req, JSONObject result) {
+    public ApiBookExistDto(@NonNull JSONObject req,@NonNull JSONObject result) {
 
         this.isbn13 = req.getString("isbn13");
         this.libCode = req.getString("libCode");

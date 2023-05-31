@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class EnumBookFinder implements BookFinder {
      * @return 검색 결과를 담은 Page<Book> 객체
      */
 
-    private Page<Book> selectBooksEntity(TitleQuery titleQuery, Pageable pageable) {
+    private Page<Book> selectBooksEntity(@NonNull TitleQuery titleQuery, Pageable pageable) {
 
         TitleType type = titleQuery.getTitleType();
 
@@ -82,7 +83,7 @@ public class EnumBookFinder implements BookFinder {
      * @param size  추천 도서를 어느 범위까지 보여 줄지에 대한 값
      * @return 선택된 추천 도서 DTO들을 담은 List
      */
-    private List<Book> selectRecBooksEntity(TitleQuery titleQuery, int size) {
+    private List<Book> selectRecBooksEntity(@NonNull TitleQuery titleQuery, int size) {
         TitleType type = titleQuery.getTitleType();
 
         log.info("Query is [{}] and tokens : [{}]", type.name(), titleQuery);

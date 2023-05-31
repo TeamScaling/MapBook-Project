@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 
 @Setter
 @Getter
@@ -26,14 +27,14 @@ public class MetaDto {
         this.pageSize = pageSize;
     }
 
-    public MetaDto(Page<BookDto> books, ReqBookDto reqBookDto) {
+    public MetaDto(@NonNull Page<BookDto> books,@NonNull ReqBookDto reqBookDto) {
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
     }
 
-    public MetaDto(JSONObject jsonObject) {
+    public MetaDto(@NonNull JSONObject jsonObject) {
         this.totalPages = jsonObject.getLong("totalPages");
         this.totalElements = jsonObject.getLong("totalElements");
         this.currentPage = jsonObject.getLong("currentPage");

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 /**
  * 사용자 주변 도서관 중 대출 가능 도서관을 찾기 위한 Http 요청 DTO이다. {@link CacheKey}를 구현하여, {@link CustomCacheManager}
@@ -54,7 +55,7 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
     }
 
 
-    public ReqMapBookDto(JSONObject jsonObject) {
+    public ReqMapBookDto(@NonNull JSONObject jsonObject) {
         this.isbn = jsonObject.getString("isbn");
         this.lat = Double.valueOf(jsonObject.getString("lat"));
         this.lon = Double.valueOf(jsonObject.getString("lon"));

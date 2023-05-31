@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -56,7 +57,7 @@ public class TitleAnalyzer {
     }
 
 
-    private TitleQuery queryResolve(String query, boolean isKor) {
+    private TitleQuery queryResolve(@NonNull String query, boolean isKor) {
         int queryWordCount = query.split(" ").length;
 
         if (queryWordCount == 1) {
@@ -114,7 +115,7 @@ public class TitleAnalyzer {
         }
     }
 
-    private String getKorToken(Map<String, List<String>> titleMap) {
+    private String getKorToken(@NonNull Map<String, List<String>> titleMap) {
         List<String> korTokens = titleMap.get("kor");
         String korToken = String.join(" ", korTokens);
 
@@ -128,7 +129,7 @@ public class TitleAnalyzer {
         return korToken;
     }
 
-    private String getEngToken(Map<String, List<String>> titleMap) {
+    private String getEngToken(@NonNull Map<String, List<String>> titleMap) {
         return titleMap.get("eng").stream()
             .max(Comparator.comparing(String::length))
             .map(t -> "%" + t + "% ")
@@ -143,7 +144,7 @@ public class TitleAnalyzer {
      * @param input 판별하고자 하는 제목
      * @return 영어 제목이면 true, 그 외에는 false;
      */
-    private boolean isEnglish(String input) {
+    private boolean isEnglish(@NonNull String input) {
         String pattern = "^[a-zA-Z0-9\\.\\s:,;?!\\-()\\[\\]{}<>=]+$";
         return input.matches(pattern);
     }
@@ -154,7 +155,7 @@ public class TitleAnalyzer {
      * @param input 판별하고자 하는 제목
      * @return 한글 제목이면 true, 그 외에는 false
      */
-    private boolean isKorean(String input) {
+    private boolean isKorean(@NonNull String input) {
         String pattern = "^[가-힣0-9\\.\\s:,;?!\\-()\\[\\]{}<>=]+$";
         return input.matches(pattern);
     }

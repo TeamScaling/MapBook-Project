@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -33,7 +34,7 @@ public class MapBookMatcher implements ApiRelatedService {
      */
     @Timer
     @CustomCacheable
-    public List<RespMapBookDto> matchMapBooks(List<BExistConn> bExistConns,
+    public List<RespMapBookDto> matchMapBooks(@NonNull List<BExistConn> bExistConns,
         List<LibraryDto> nearByLibraries, ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         if (bExistConns.isEmpty()) {

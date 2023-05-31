@@ -6,13 +6,14 @@ import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class BExistConnGenerator {
 
-    public List<BExistConn> generateNecessaryConns(List<LibraryDto> nearByLibraries,
+    public List<BExistConn> generateNecessaryConns(@NonNull List<LibraryDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) {
 
         if(nearByLibraries.isEmpty()){

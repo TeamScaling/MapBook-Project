@@ -10,6 +10,7 @@ import com.scaling.libraryservice.search.util.TitleTrimmer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -34,7 +35,7 @@ public class RecommendService {
      */
     @Timer
     @CustomCacheable
-    public List<String> getRecommendBook(ReqRecommendDto reqRecommendDto) {
+    public List<String> getRecommendBook(@NonNull ReqRecommendDto reqRecommendDto) {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(reqRecommendDto.getQuery());
 
