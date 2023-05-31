@@ -4,13 +4,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 @Entity
 @Getter
 @Table(name = "out_data_book")
-@ToString
+@ToString @Builder @AllArgsConstructor
 public class UpdateBook {
 
     @Id
@@ -37,6 +39,10 @@ public class UpdateBook {
 
     @Column(name = "publisher_nm")
     private String publisher;
+
+    public UpdateBook() {
+
+    }
 
     public void setTitle(String title) {
         this.title = title;

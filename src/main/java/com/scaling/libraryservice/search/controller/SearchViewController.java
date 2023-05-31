@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.search.controller;
 
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import lombok.RequiredArgsConstructor;

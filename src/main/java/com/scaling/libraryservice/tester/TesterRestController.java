@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.tester;
 
-import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import lombok.RequiredArgsConstructor;

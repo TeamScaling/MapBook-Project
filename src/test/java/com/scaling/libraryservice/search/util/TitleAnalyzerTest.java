@@ -1,9 +1,14 @@
 package com.scaling.libraryservice.search.util;
 
+import static com.scaling.libraryservice.search.util.TitleType.ENG_KOR_MT;
+import static com.scaling.libraryservice.search.util.TitleType.ENG_KOR_SG;
+import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_OVER_TWO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class TitleAnalyzerTest {
@@ -11,13 +16,14 @@ class TitleAnalyzerTest {
     private TitleAnalyzer titleAnalyzer;
 
     @BeforeEach
-    public void init(){
+    public void setUp() {
 
         titleAnalyzer = new TitleAnalyzer(new KomoranTokenizer(new Komoran(DEFAULT_MODEL.FULL)));
     }
 
     @Test
-    public void load(){
+    @DisplayName("영어+한글 제목을 판별 할 수 있다")
+    public void analyze() {
         /* given */
 
         String title = "Boot Spring Boot! - 한 권으로 정리하는 스프링 부트 A to Z";
@@ -28,73 +34,168 @@ class TitleAnalyzerTest {
 
         /* then */
 
-        System.out.println(result);
+        assertEquals(ENG_KOR_MT, result.getTitleType());
     }
 
     @Test
-    public void is_duplicate_instance(){
+    @DisplayName("영어 제목(명사 2개 이상)을 판별 할 수 있다")
+    public void analyze2() {
         /* given */
 
-        String title = "Boot Spring Boot! - 한 권으로 정리하는 스프링 부트 A to Z";
-        String title2 = "통계적 품질관리";
+        String title = "Boot Spring Boot";
 
         /* when */
 
         var result = titleAnalyzer.analyze(title);
-        var reulst2 = titleAnalyzer.analyze(title2);
 
         /* then */
 
-        System.out.println(result);
-        System.out.println(reulst2);
-
-
+        assertEquals(TitleType.ENG_MT, result.getTitleType());
     }
 
     @Test
-    public void token_kor(){
+    @DisplayName("영어 제목(명사 1개)을 판별 할 수 있다")
+    public void analyze3() {
         /* given */
 
-        KomoranTokenizer tokenizer = new KomoranTokenizer(new Komoran(DEFAULT_MODEL.FULL));
+        String title = "Boot";
 
         /* when */
 
-        String title = "내가 고양이를 데리고\n"
-            + "노는 것일까, 고양이가\n"
-            + "나를 데리고 노는 것일\n"
-            + "까? :내가 나를 쓴 최초\n"
-            + "의 철학자 몽테뉴의 12\n"
-            + "가지 고민들";
-
-        var result = tokenizer.tokenize(title);
+        var result = titleAnalyzer.analyze(title);
 
         /* then */
 
-        System.out.println(result);
+        assertEquals(TitleType.ENG_SG, result.getTitleType());
     }
 
     @Test
-    public void test_remove_keyWord(){
+    @DisplayName("한글 제목(명사 1개)을 판별 할 수 있다")
+    public void analyze4() {
         /* given */
 
-        String query = "28 : 정유정 장편소설 이야기 한국사";
-        String removeQuery = "28 : 정유정";
+        String title = "스프링";
 
         /* when */
-        var result = titleAnalyzer.removeKeyword(query);
+
+        var result = titleAnalyzer.analyze(title);
 
         /* then */
 
-        Assertions.assertEquals(result,removeQuery);
+        assertEquals(TitleType.KOR_SG, result.getTitleType());
     }
 
     @Test
-    public void test_load(){
+    @DisplayName("한글 제목(명사 2개)을 판별 할 수 있다")
+    public void analyze5() {
         /* given */
-        var result = "아몬드손원평 장편소설".contains("아몬드:손원평 장편소설");
+
+        String title = "스프링 부트";
+
         /* when */
-        System.out.println(result);
+
+        var result = titleAnalyzer.analyze(title);
+
         /* then */
+
+        assertEquals(TitleType.KOR_MT_UNDER_TWO, result.getTitleType());
     }
+
+    @Test
+    @DisplayName("한글 제목(명사 3개 이상)을 판별 할 수 있다")
+    public void analyze6() {
+        /* given */
+
+        String title = "스프링 부트 입문";
+
+        /* when */
+
+        var result = titleAnalyzer.analyze(title);
+
+        /* then */
+
+        assertEquals(TitleType.KOR_MT_OVER_TWO, result.getTitleType());
+    }
+
+    @Test
+    @DisplayName("영+한 제목에서 한글이 더 긴 경우를 판별 할 수 있다")
+    public void analyze7() {
+        /* given */
+
+        String title = "spring 스프링 입문 초보";
+
+        /* when */
+
+        var result = titleAnalyzer.analyze(title);
+
+        /* then */
+        assertEquals(ENG_KOR_MT, result.getTitleType());
+    }
+
+    @Test
+    @DisplayName("영+한 제목에서 영어가 더 긴 경우를 판별 할 수 있다")
+    public void analyze8() {
+        /* given */
+
+        String title = "spring javajava 스프링 초보";
+
+        /* when */
+
+        var result = titleAnalyzer.analyze(title);
+
+        /* then */
+        System.out.println(result);
+        assertEquals(ENG_KOR_MT, result.getTitleType());
+    }
+
+    @DisplayName("= 가 들어간 한글 제목을 판별 할 수 있다. ")
+    @Test
+    public void analyze9() {
+        /* given */
+
+        String title = "죽은 왕녀를 위한 파반느 =박민규 장편소설";
+
+        /* when */
+
+        var result = titleAnalyzer.analyze(title);
+
+        /* then */
+        System.out.println(result);
+        assertEquals(KOR_MT_OVER_TWO, result.getTitleType());
+    }
+
+    @DisplayName(": 가 들어간 한글 제목을 판별 할 수 있다. ")
+    @Test
+    public void analyze10() {
+        /* given */
+
+        String title = "죽은 왕녀를 위한 파반느 :박민규 장편소설";
+
+        /* when */
+
+        var result = titleAnalyzer.analyze(title);
+
+        /* then */
+        System.out.println(result);
+        assertEquals(KOR_MT_OVER_TWO, result.getTitleType());
+    }
+
+    @DisplayName("영어가 더 긴 영+한 제목에서 ")
+    @Test
+    public void analyze11() {
+        /* given */
+
+        String title = "springBoot 스프링";
+
+        /* when */
+
+        var result = titleAnalyzer.analyze(title);
+
+        /* then */
+        System.out.println(result);
+        assertEquals(ENG_KOR_SG, result.getTitleType());
+    }
+
+
 
 }

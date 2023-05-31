@@ -9,8 +9,7 @@ import org.springframework.data.domain.Page;
 
 @Getter
 @Setter @ToString
-public class
-RespBooksDto {
+public class RespBooksDto {
 
     private MetaDto meta;
     private List<BookDto> documents;

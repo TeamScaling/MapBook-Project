@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.recommend.controller;
 
-import com.scaling.libraryservice.recommend.cacheKey.RecommendCacheKey;
 import com.scaling.libraryservice.recommend.dto.ReqRecommendDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.recommend.service.RecommendService;
@@ -30,7 +29,7 @@ public class RecommendRestController {
     @PostMapping("/books/recommend")
     public ResponseEntity<List<String>> getRecommends(@RequestBody ReqRecommendDto recommendDto){
 
-        return ResponseEntity.ok(recommendService.getRecommendBook(new RecommendCacheKey(recommendDto.getQuery())));
+        return ResponseEntity.ok(recommendService.getRecommendBook(recommendDto));
     }
 
 }

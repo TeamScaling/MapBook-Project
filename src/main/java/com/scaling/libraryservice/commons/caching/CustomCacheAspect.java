@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
+import com.scaling.libraryservice.mapBook.service.ApiRelatedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 /**
  * 사용자 정의 캐싱 어스펙트로, CustomCacheable 어노테이션이 적용된 메서드의 결과를 캐싱합니다. 캐싱된 데이터는 CustomCacheManager를 통해
@@ -59,13 +60,16 @@ public class CustomCacheAspect<K, I> {
 
     public I patchCacheManager(ProceedingJoinPoint joinPoint, Class<?> customer, CacheKey<K, I> cacheKey)
         throws Throwable {
+        StopWatch stopWatch = new StopWatch();
 
+        stopWatch.start();
         I result = (I)joinPoint.proceed();
+        stopWatch.stop();
 
-        if (customer.equals(MapBookMatcher.class)) {
+        if (stopWatch.getTotalTimeSeconds() > 2.0 | ApiRelatedService.class.isAssignableFrom(customer)) {
 
             log.info(
-                "This task is related MapBookService then CacheManger put this item");
+                "This task is related ApiRelatedService then CacheManger put this item");
 
             cacheManager.put(customer, cacheKey, result);
         }

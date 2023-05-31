@@ -9,8 +9,9 @@ import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
+import com.scaling.libraryservice.mapBook.service.ApiRelatedService;
 import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
-import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -101,13 +102,11 @@ class CustomCacheAspectTest {
     void patchCacheManager_overTime() throws Throwable {
         /* given */
         when(joinPoint.proceed()).thenReturn(respBooksDto);
-        when(stopWatch.getTotalTimeSeconds()).thenReturn(2d);
         /* when */
 
-        cacheAspect.patchCacheManager(joinPoint,bookSearchService.getClass(),bookCacheKey);
+        cacheAspect.patchCacheManager(joinPoint, MapBookMatcher.class,bookCacheKey);
 
         /* then */
-
         verify(cacheManager,times(1)).put(any(),any(),any());
     }
     @Test @DisplayName("해당 target이 캐싱 서비스가 등록 되지 않았을 때 캐싱 서비스 등록이 정상")

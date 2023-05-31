@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
+import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class KakaoBookConn implements ApiConnection {
@@ -13,6 +14,11 @@ public class KakaoBookConn implements ApiConnection {
     public KakaoBookConn(String target,Long id) {
         this.id = id;
         this.target = target;
+    }
+
+    public KakaoBookConn(UpdateBook updateBook) {
+        this.id = updateBook.getId();
+        this.target = updateBook.getIsbn();
     }
 
     @Override

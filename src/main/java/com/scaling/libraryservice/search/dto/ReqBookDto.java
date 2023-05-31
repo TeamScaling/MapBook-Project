@@ -1,9 +1,8 @@
-package com.scaling.libraryservice.search.cacheKey;
+package com.scaling.libraryservice.search.dto;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
-import com.scaling.libraryservice.search.dto.RespBooksDto;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
@@ -19,8 +18,6 @@ public class ReqBookDto implements CacheKey<ReqBookDto,RespBooksDto>{
     private final String query;
     private final int page;
     private final int size;
-
-
 
     public ReqBookDto(String query, int page,int size) {
         this.query = query;

@@ -1,8 +1,8 @@
 package com.scaling.libraryservice.search.service;
 
 import com.scaling.libraryservice.recommend.repository.RecommendRepository;
-import com.scaling.libraryservice.search.domain.TitleQuery;
-import com.scaling.libraryservice.search.domain.TitleType;
+import com.scaling.libraryservice.search.util.TitleQuery;
+import com.scaling.libraryservice.search.util.TitleType;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepository;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component @Slf4j
-public class EnumBookFinder implements BookFinder<BookDto> {
+public class EnumBookFinder implements BookFinder {
     private final BookRepository bookRepository;
     private final RecommendRepository recommendRepo;
 
@@ -82,7 +82,7 @@ public class EnumBookFinder implements BookFinder<BookDto> {
      * @param size  추천 도서를 어느 범위까지 보여 줄지에 대한 값
      * @return 선택된 추천 도서 DTO들을 담은 List
      */
-    public List<Book> selectRecBooksEntity(TitleQuery titleQuery, int size) {
+    private List<Book> selectRecBooksEntity(TitleQuery titleQuery, int size) {
         TitleType type = titleQuery.getTitleType();
 
         log.info("Query is [{}] and tokens : [{}]", type.name(), titleQuery);
@@ -91,16 +91,16 @@ public class EnumBookFinder implements BookFinder<BookDto> {
 
             case KOR_SG, KOR_MT_OVER_TWO -> {
                 return recommendRepo.findBooksByKorBoolOrder(titleQuery.getKorToken(), size);
+            }
 
+            case ENG_SG -> {
+                return recommendRepo.findBooksByEngBoolOrder(titleQuery.getEngToken(), size);
             }
 
             case KOR_MT_UNDER_TWO -> {
                 return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size);
             }
 
-            case ENG_SG -> {
-                return recommendRepo.findBooksByEngBoolOrder(titleQuery.getEngToken(), size);
-            }
             case ENG_MT -> {
                 return recommendRepo.findBooksByEngMtOrderFlexible(titleQuery.getEngToken(), size);
             }
@@ -115,6 +115,7 @@ public class EnumBookFinder implements BookFinder<BookDto> {
                     titleQuery.getKorToken(),
                     size);
             }
+
             default -> throw new IllegalArgumentException("Invalid title type: " + type);
         }
     }

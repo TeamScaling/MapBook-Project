@@ -1,9 +1,9 @@
 package com.scaling.libraryservice.commons.Async;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import java.util.concurrent.CompletableFuture;
@@ -39,23 +39,18 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookD
         return booksPage;
     }
 
-    private void asyncSearchBook(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto) {
+    void asyncSearchBook(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto) {
 
         log.info("[{}] async Search Book start.....", reqBookDto.getQuery());
         CompletableFuture.runAsync(() -> {
             Page<BookDto> fetchedBooks = supplier.get();
 
-            RespBooksDto item = constructRespBooksDto(fetchedBooks,reqBookDto);
+            RespBooksDto respBooksDto = new RespBooksDto(
+                new MetaDto(fetchedBooks, reqBookDto), fetchedBooks);
 
-            cacheManager.put(BookSearchService.class,reqBookDto,item);
+            cacheManager.put(BookSearchService.class,reqBookDto,respBooksDto);
 
             log.info("[{}] async Search task is Completed", reqBookDto.getQuery());
         });
-    }
-
-
-    private RespBooksDto constructRespBooksDto(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto){
-        return new RespBooksDto(
-            new MetaDto(fetchedBooks, reqBookDto), fetchedBooks);
     }
 }

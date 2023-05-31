@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.search.domain;
+package com.scaling.libraryservice.search.util;
 
 import lombok.Builder;
 import lombok.Getter;

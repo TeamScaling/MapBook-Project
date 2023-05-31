@@ -3,8 +3,8 @@ package com.scaling.libraryservice.search.service;
 import com.scaling.libraryservice.commons.Async.AsyncExecutor;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
-import com.scaling.libraryservice.search.domain.TitleQuery;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
+import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder<BookDto> bookFinder;
+    private final BookFinder bookFinder;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     /**

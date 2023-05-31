@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.search.dto;
 
-import com.scaling.libraryservice.search.cacheKey.ReqBookDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

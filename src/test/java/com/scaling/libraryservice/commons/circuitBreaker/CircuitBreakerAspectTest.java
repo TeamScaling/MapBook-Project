@@ -108,6 +108,7 @@ class CircuitBreakerAspectTest {
         /* given */
 
         when(joinPoint.getSignature()).thenReturn(signature);
+        when(joinPoint.getTarget()).thenReturn(this);
         when(signature.getMethod()).thenReturn(originMethod);
         when(support.extractObserver(any())).thenReturn(apiObserver);
         when(support.extractSubstituteMethod(any(),any())).thenReturn(substituteMethod);
