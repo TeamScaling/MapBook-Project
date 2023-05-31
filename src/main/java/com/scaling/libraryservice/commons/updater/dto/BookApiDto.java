@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 
 @ToString
@@ -25,7 +26,7 @@ public class BookApiDto {
 
     private String title;
 
-    public BookApiDto(JSONObject jsonObj){
+    public BookApiDto(@NonNull JSONObject jsonObj){
         this.isbn = jsonObj.getString("isbn").split(" ")[1];
         this.authors = jsonObj.getJSONArray("authors").join(",");
         this.publisher = jsonObj.getString("publisher");

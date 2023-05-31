@@ -2,11 +2,12 @@ package com.scaling.libraryservice.search.util;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import org.springframework.lang.NonNull;
 
 
 public class TitleTrimmer {
 
-    public static String removeKeyword(String query) {
+    public static String removeKeyword(@NonNull String query) {
 
         String[] keyWord = {"이야기", "장편소설", "한국사"};
 
@@ -27,7 +28,7 @@ public class TitleTrimmer {
      * @param target 변형하고자 하는 제목 문자열
      * @return 변형된 제목 문자열
      */
-    public static String splitAddPlus(String target) {
+    public static String splitAddPlus(@NonNull String target) {
         return Arrays.stream(target.split(" "))
             .map(name -> "+" + name)
             .collect(Collectors.joining(" "));
@@ -39,7 +40,7 @@ public class TitleTrimmer {
      * @param title 제거하고자 하는 도서 제목 문자열
      * @return 불용어가 제거된 도서 제목 문자열
      */
-    public static String TrimTitleResult(String title) {
+    public static String TrimTitleResult(@NonNull String title) {
         String[] titleParts = title.split(":");
         if (titleParts.length > 1) {
             String titlePrefix = titleParts[0];
@@ -52,11 +53,11 @@ public class TitleTrimmer {
         return removeParentheses(removeDash(title)).trim();
     }
 
-    private static String removeParentheses(String text) {
+    private static String removeParentheses(@NonNull String text) {
         return text.replaceAll("\\(.*?\\)|=.*$", "").trim();
     }
 
-    private static String removeDash(String text) {
+    private static String removeDash(@NonNull String text) {
         return text.replaceAll("-.*$", "").trim();
     }
 

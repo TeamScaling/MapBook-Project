@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
+import org.springframework.lang.NonNull;
 
 /**
  * 대출 가능한 도서관 응답 데이터.
@@ -24,7 +25,7 @@ public class RespMapBookDto {
     private Integer areaCd;
     private Boolean available;
 
-    public RespMapBookDto(ApiBookExistDto dto, LibraryDto libraryDto) {
+    public RespMapBookDto(@NonNull ApiBookExistDto dto, @NonNull LibraryDto libraryDto) {
 
         this.isbn13 = dto.getIsbn13();
         this.libCode = dto.getLibCode();
@@ -42,7 +43,7 @@ public class RespMapBookDto {
 
     }
 
-    public RespMapBookDto(ReqMapBookDto reqMapBookDto,LibraryDto libraryDto,String loanAvailable) {
+    public RespMapBookDto(@NonNull ReqMapBookDto reqMapBookDto,@NonNull LibraryDto libraryDto,String loanAvailable) {
 
         this.isbn13 = reqMapBookDto.getIsbn();
         this.libCode = String.valueOf(libraryDto.getLibNo());
@@ -59,7 +60,7 @@ public class RespMapBookDto {
         this.available = false;
     }
 
-    public RespMapBookDto(JSONObject jsonObject){
+    public RespMapBookDto(@NonNull JSONObject jsonObject){
 
         this.isbn13 = jsonObject.getString("isbn13");
         this.libCode = jsonObject.getString("libCode");

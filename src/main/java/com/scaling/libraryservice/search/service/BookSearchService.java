@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,7 +39,7 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체. 만약 검색이 3초를 초과하면 빈 결과가 반환됩니다.
      */
     @CustomCacheable
-    public RespBooksDto searchBooks(ReqBookDto reqBookDto, int timeout) {
+    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout) {
 
         String query = reqBookDto.getQuery();
         int page = reqBookDto.getPage();

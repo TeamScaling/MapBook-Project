@@ -31,11 +31,6 @@ import org.springframework.web.client.RestTemplate;
 @EnableAspectJAutoProxy
 public class AppConfig {
 
-    @Bean @Scope("prototype")
-    public StopWatch stopWatch() {
-        return new StopWatch();
-    }
-
     @Bean
     public CircuitBreaker circuitBreaker(RestorationChecker restorationChecker) {
 

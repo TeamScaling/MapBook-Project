@@ -8,6 +8,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
@@ -39,7 +40,7 @@ public class CustomCacheAspect<K, I> {
      */
     @Around("customCacheablePointcut()")
     @SuppressWarnings("unchecked")
-    public I cacheAround(ProceedingJoinPoint joinPoint) throws Throwable {
+    public I cacheAround(@NonNull ProceedingJoinPoint joinPoint) throws Throwable {
 
         Class<?> customer = joinPoint.getTarget().getClass();
         CacheKey<K, I> cacheKey = cacheManager.generateCacheKey(joinPoint.getArgs());

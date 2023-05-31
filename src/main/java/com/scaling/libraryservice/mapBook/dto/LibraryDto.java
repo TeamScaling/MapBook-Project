@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 
 /**
  *  도서관 정보 Library Entity에 대한 DTO
@@ -34,7 +35,7 @@ public class LibraryDto {
     private boolean isSupportedArea = false;
 
 
-    public LibraryDto(Library library) {
+    public LibraryDto(@NonNull Library library) {
         this.libNm = library.getLibNm();
         this.libNo = library.getLibNo();
         this.libLon = library.getLibLon();
@@ -44,7 +45,7 @@ public class LibraryDto {
         this.areaCd = library.getAreaCd();
     }
 
-    public LibraryDto(Library library,String hasBook) {
+    public LibraryDto(@NonNull Library library,String hasBook) {
         this.libNm = library.getLibNm();
         this.libNo = library.getLibNo();
         this.libLon = library.getLibLon();

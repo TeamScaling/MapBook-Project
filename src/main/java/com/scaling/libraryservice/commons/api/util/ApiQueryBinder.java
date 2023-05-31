@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class ApiQueryBinder<T> {
         return bindingStrategy.bind(apiResponse);
     }
 
-    public List<T> bindList(List<ResponseEntity<String>> apiResponses) throws OpenApiException {
+    public List<T> bindList(@NonNull List<ResponseEntity<String>> apiResponses) throws OpenApiException {
         return apiResponses.stream().map(this::bind).toList();
     }
 

@@ -12,6 +12,7 @@ import com.scaling.libraryservice.mapBook.service.location.LocationResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -42,7 +43,7 @@ public class MapBookController {
 
     @PostMapping("/books/mapBook/search")
     @ApiMonitoring(api = BExistConn.class, substitute = "fallBackMethodHasBook")
-    public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
+    public String getMapBooks(@NonNull ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
         locationResolver.resolve(reqMapBookDto);
 
@@ -66,7 +67,7 @@ public class MapBookController {
      * @param reqMapBookDto getMapBooks moethod에게 전달 받은 사용자 요청 데이터가 담긴 Dto
      * @return Model을 전달 받고 View를 구성 할 html 파일 이름
      */
-    public String fallBackMethodHasBook(ModelMap model,
+    public String fallBackMethodHasBook(@NonNull ModelMap model,
         @ModelAttribute ReqMapBookDto reqMapBookDto) {
 
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
