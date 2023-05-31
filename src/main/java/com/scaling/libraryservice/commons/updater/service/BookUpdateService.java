@@ -25,6 +25,29 @@ public class BookUpdateService {
 
     private final KakaoBookApiService kakaoBookApiService;
 
+    @Transactional
+    public void UpdateBookFromApi(int limit, int nThreads) {
+
+        List<UpdateBook> bookList = getBooks(limit);
+
+        if (bookList.isEmpty()) {
+            return;
+        }
+
+
+        log.info("Book Updater is starting from [{}]", bookList.get(0).getId());
+
+        Map<String, UpdateBook> bookMap = generateBookMap(bookList);
+
+        List<KakaoBookConn> kakaoBookConns = bookList.stream()
+            .map(KakaoBookConn::new).toList();
+
+        List<BookApiDto> bookApiDtoList = kakaoBookApiService.getBookMulti(
+            kakaoBookConns, nThreads);
+
+        updateBookEntity(bookApiDtoList, bookMap);
+    }
+
     /**
      * DB에서 가져올 최신화가 필요한 도서 목록의 제한 개수를 인자로 받아,
      * 해당 도서 목록을 가져옵니다.
@@ -48,35 +71,16 @@ public class BookUpdateService {
     /**
      * 외부 API로부터 도서 상세 정보 데이터를 받아와, DB의 도서 데이터를 최신화합니다.
      * 외부 API에서 해당 도서 정보를 제공하지 않는 도서는 DB에서 삭제 처리됩니다.
-     * @param limit API에게 요청할 도서 목록 개수
-     * @param nThreads API 병렬 요청을 위한 쓰레드 개수
      */
 
-    @Transactional
-    public void UpdateBookFromApi(int limit, int nThreads) {
 
-        List<UpdateBook> bookList = getBooks(limit);
 
-        if (bookList.isEmpty()) {
-            return;
-        }
+    private Map<String, UpdateBook> generateBookMap(List<UpdateBook> bookList){
 
-        log.info("Book Updater is starting from [{}]", bookList.get(0).getId());
+        Map<String, UpdateBook> bookMap = new HashMap<>();
+        bookList.forEach(b -> bookMap.put(b.getIsbn(),b));
 
-        Map<String, UpdateBook> map = new HashMap<>();
-
-        for (UpdateBook book : bookList) {
-            map.put(book.getIsbn(), book);
-        }
-
-        List<KakaoBookConn> kakaoBookConns = bookList.stream()
-            .map(book -> new KakaoBookConn(book.getIsbn(), book.getId())).toList();
-
-        List<BookApiDto> bookApiDtoList = kakaoBookApiService.getBookMulti(
-            kakaoBookConns, nThreads);
-
-        updateBookEntity(bookApiDtoList,map);
-
+        return bookMap;
     }
 
     private void updateBookEntity(List<BookApiDto> bookApiDtoList,Map<String, UpdateBook> map ){
@@ -86,7 +90,6 @@ public class BookUpdateService {
         for (BookApiDto dto : bookApiDtoList) {
 
             UpdateBook updateBook = map.get(dto.getIsbn());
-
             if (updateBook != null) {
                 updateBook.setTitle(dto.getTitle());
                 updateBook.setAuthor(dto.getAuthors());

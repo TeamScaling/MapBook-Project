@@ -1,12 +1,14 @@
 package com.scaling.libraryservice.commons.updater.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
 
-@Setter @Getter
+
 @ToString
+@Getter @Builder @AllArgsConstructor
 public class BookApiDto {
 
     private String isbn;

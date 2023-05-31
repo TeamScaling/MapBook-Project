@@ -2,12 +2,9 @@ package com.scaling.libraryservice.commons.api.util.binding;
 
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
-@Slf4j
 public class BookExistBinding extends Data4LibraryBinding implements
     BindingStrategy<ApiBookExistDto> {
 

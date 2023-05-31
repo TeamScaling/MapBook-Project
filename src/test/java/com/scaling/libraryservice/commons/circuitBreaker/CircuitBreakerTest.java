@@ -1,90 +1,102 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.api.apiConnection.MockApiConn;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
-import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CircuitBreakerTest {
 
+    @InjectMocks
+    private CircuitBreaker circuitBreaker;
+    private WireMockServer mockServer;
+    @Mock
+    private ScheduledExecutorService scheduler;
+    @Mock
+    private RestorationChecker checker;
+
+    @Mock
+    private ScheduledFuture<?> scheduledFuture;
+
+    @Mock
+    private Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private ApiObserver apiObserver1;
     private ApiObserver apiObserver2;
+    private final String mockUri1 = "http://mockServer.kr/api/bookExist";
 
-    @Autowired
-    private CircuitBreaker circuitBreaker;
-
-    @Autowired
-    private ApiQuerySender apiQuerySender;
-
-    private WireMockServer wireMockServer;
-
-    private String uri = "http://mockServer.kr/api/bookExist";
+    private final String mockUri2 = "http://mockServer.kr/api/loanItem";
 
     @BeforeEach
     public void setUp() {
+        this.apiObserver1 = setApiObserver();
+        this.apiObserver2 = setApiObserver();
 
-        this.apiObserver1 = new MockApiConn(uri,new ApiStatus(uri,10));
-        this.apiObserver2 = new BExistConn();
+        mockServer = new WireMockServer(8089);
+
+        mockServer.stubFor(
+            WireMock.get("/api/bookExist").willReturn(WireMock.ok()));
+
+        circuitBreaker = new CircuitBreaker(new ArrayList<>(), scheduler, scheduledTasks, checker);
     }
 
-    WireMockServer generateMockServer(int timeOut, int status, int delayTime){
+    public ApiObserver setApiObserver() {
 
-        int port = 8089;
-        WireMockServer mockServer = new WireMockServer(port);
+        ApiStatus apiStatus = new ApiStatus(mockUri1, 10);
 
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-        factory.setReadTimeout(timeOut);
+        return new ApiObserver() {
+            @Override
+            public ApiStatus getApiStatus() {
+                return apiStatus;
+            }
+        };
+    }
+
+    void setMockServerDelay() {
 
         mockServer.stubFor(WireMock.get("/api/bookExist")
-            .willReturn(WireMock.aResponse().withStatus(status).withFixedDelay(delayTime))
+            .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(3000))
         );
-
-        return mockServer;
     }
-    
-    @Test @DisplayName("테스트 코드에서 구성한 WireMock Server가 정상적으로 작동하는 지 확인.")
-    public void mockServer_check() throws URISyntaxException {
+
+    @Test
+    void isClosed() {
         /* given */
-        String uri = "http://localhost:8089/api/bookExist";
-
-        WireMockServer mockServer = generateMockServer(200,200,0);
-        mockServer.start();
-
-        URI uri1 = new URI(uri);
+        int errorCnt = 20;
 
         /* when */
 
-        System.out.println(uri1);
-
-        var reuslt = apiQuerySender.sendSingleQuery(() -> UriComponentsBuilder.fromUri(uri1),
-            HttpEntity.EMPTY);
-
-        System.out.println(reuslt);
+        for (int i = 0; i < errorCnt; i++) {
+            circuitBreaker.receiveError(apiObserver1);
+        }
         /* then */
-    }
 
+        assertFalse(circuitBreaker.isApiAccessible(apiObserver1));
+    }
 
 
     @Test
@@ -92,23 +104,29 @@ class CircuitBreakerTest {
     public void receiveError() {
         /* given */
 
+        int errorCnt = 10;
+
         /* when */
 
-        circuitBreaker.receiveError(apiObserver1);
+        for (int i = 0; i < errorCnt; i++) {
+            circuitBreaker.receiveError(apiObserver1);
+        }
 
         /* then */
-
-        assertEquals(1, apiObserver1.getApiStatus().getErrorCnt());
+        assertEquals(errorCnt, apiObserver1.getApiStatus().getErrorCnt());
     }
 
     @Test
-    @DisplayName("A-API 장애 모니터링이 B-API 상태에 영향을 주지 않는다. ")
+    @DisplayName("apiObserver 간 독립성 보장")
     public void receiveError_independent() {
         /* given */
+        int errorCnt = 10;
 
         /* when */
 
-        circuitBreaker.receiveError(apiObserver1);
+        for (int i = 0; i < errorCnt; i++) {
+            circuitBreaker.receiveError(apiObserver1);
+        }
 
         /* then */
 
@@ -119,77 +137,127 @@ class CircuitBreakerTest {
     @DisplayName("error monitor에 동시성 이슈가 일어나 error cnt 변화에 문제가 생기지 않는다")
     public void receiveError_concurrency() throws InterruptedException {
         /* given */
+        int errorCnt = 100;
         ExecutorService executor = Executors.newFixedThreadPool(5);
 
         /* when */
         Runnable runnable = () -> {
             circuitBreaker.receiveError(apiObserver1);
         };
-        Runnable runnable2 = () -> {
-            circuitBreaker.receiveError(apiObserver2);
-        };
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < errorCnt; i++) {
 
             executor.execute(runnable);
-
-            if (i == 4) {
-                executor.execute(runnable2);
-            }
         }
 
         /* then */
 
-        if (executor.awaitTermination(1, TimeUnit.SECONDS)) {
-            assertEquals(1, apiObserver2.getApiStatus().getErrorCnt());
+        executor.shutdown();
+        if (executor.awaitTermination(60, TimeUnit.SECONDS))
+            /* then */ {
+            assertEquals(apiObserver1.getApiStatus().DEFAULT_MAX_ERROR_CNT,
+                apiObserver1.getApiStatus().getErrorCnt());
         }
-    }
-
-
-    @Test @DisplayName(" Mock API와 성공적으로 연결하여 API 연결 상태가 정상임으로 True를 반환")
-    public void checkIsAvailable_MockApi_ReturnTrue(){
-        /* given */
-        String mockUri = "/api/bookExist";
-        WireMockServer mockServer = generateMockServer(200,200,0);
-        mockServer.start();
-
-        String apiUri = "http://localhost:" + 8089 + mockUri;
-
-        ApiObserver apiObserver = new MockApiConn(apiUri,new ApiStatus(apiUri,5));
-
-
-        /* when */
-
-        boolean available
-            = true;
-
-        /* then */
-        assertTrue(available);
-    }
-
-    @Test @DisplayName(" API Timeout 에러에 대한 Circuit Breaker 에러 처리")
-    public void receiveError_mockServer_success(){
-
-        /* given */
-
-        String mockUri = "/api/bookExist";
-        WireMockServer mockServer = generateMockServer(200,200,200000);
-        mockServer.start();
-
-        ApiStatus apiStatus = new ApiStatus(uri,10);
-        MockApiConn mockApiConn = new MockApiConn(uri,apiStatus);
-
-        /* when */
-
-        Executable e = () -> apiQuerySender.sendSingleQuery(mockApiConn,HttpEntity.EMPTY);
-
-        /* then */
-
-        assertDoesNotThrow(e);
-
     }
 
     @Test
-    void closeObserver() {
+    void startScheduledRestoration() {
+        /* given */
+
+        /* when */
+
+        circuitBreaker.startScheduledRestoration(apiObserver1, 1000 * 2, TimeUnit.MILLISECONDS);
+
+        /* then */
+        verify(scheduledTasks, times(1)).put(any(), any());
+    }
+
+    @Test
+    @DisplayName("스케쥴 된 시간에 맞춰 API 상태를 체크")
+    void startScheduledRestoration2() throws InterruptedException {
+        /* given */
+
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Long> periodCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<TimeUnit> timeUnitCaptor = ArgumentCaptor.forClass(TimeUnit.class);
+
+        when(scheduler.scheduleAtFixedRate(runnableCaptor.capture(), anyLong(),
+            periodCaptor.capture(), timeUnitCaptor.capture()))
+            .thenReturn(mock(ScheduledFuture.class));
+
+
+        /* when */
+
+        circuitBreaker.startScheduledRestoration(apiObserver1, 1000 * 2, TimeUnit.MILLISECONDS);
+
+        runnableCaptor.getValue().run();
+
+        /* then */
+
+        verify(checker, times(1)).isRestoration(any());
+    }
+
+    @Test
+    @DisplayName("스케쥴 된 시간에 맞춰 API 상태를 체크 했더니 정상")
+    void startScheduledRestoration_normal() throws InterruptedException {
+        /* given */
+
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        ArgumentCaptor<Long> periodCaptor = ArgumentCaptor.forClass(Long.class);
+        ArgumentCaptor<TimeUnit> timeUnitCaptor = ArgumentCaptor.forClass(TimeUnit.class);
+
+        when(scheduler.scheduleAtFixedRate(runnableCaptor.capture(), anyLong(),
+            periodCaptor.capture(), timeUnitCaptor.capture()))
+            .thenReturn(mock(ScheduledFuture.class));
+
+        when(checker.isRestoration(any())).thenReturn(true);
+
+        when(scheduledTasks.get(any())).thenReturn(mock(ScheduledFuture.class));
+
+        /* when */
+
+        circuitBreaker.startScheduledRestoration(apiObserver1, 1000 * 2, TimeUnit.MILLISECONDS);
+
+        runnableCaptor.getValue().run();
+
+        /* then */
+        assertTrue(apiObserver1.getApiStatus().apiAccessible());
+    }
+
+    @Test
+    @DisplayName("에러 임계치를 넘으면 startScheduledRestoration가 호출 된다.")
+    void startScheduledRestoration_receiveError() {
+        /* given */
+        int errorCnt = 20;
+
+        for (int i = 0; i < errorCnt; i++) {
+            circuitBreaker.receiveError(apiObserver1);
+        }
+
+        /* when */
+        var result = circuitBreaker.getScheduledTasks().get(apiObserver1);
+
+        /* then */
+
+        verify(scheduledTasks, times(1)).put(any(), any());
+    }
+
+
+    @Test
+    void stopScheduledRestoration() {
+        /* given */
+
+        var future = mock(ScheduledFuture.class);
+
+        when(scheduledTasks.get(apiObserver1)).thenReturn(future);
+
+        /* when */
+        circuitBreaker.stopScheduledRestoration(apiObserver1);
+
+        /* then */
+
+        verify(future, times(1)).cancel(false);
+        verify(scheduledTasks, times(1)).remove(apiObserver1);
+        assertTrue(apiObserver1.getApiStatus().apiAccessible());
     }
 }

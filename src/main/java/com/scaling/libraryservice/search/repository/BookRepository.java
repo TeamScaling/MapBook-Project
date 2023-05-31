@@ -12,22 +12,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    // fixme : 메소드 이름 변경  findBooksByTitleNormal
     // 제목검색 FULLTEXT 서치 이용 + 페이징
     @Query(value = "SELECT * FROM books "
         + "WHERE MATCH(TITLE_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
     Page<Book> findBooksByKorBool(@Param("query") String query, Pageable pageable);
 
-    // fixme : 메소드 이름 변경  findBooksByTitleDetail
     // 제목에 대한 더 넓은 검색
     @Query(value = "SELECT * FROM books "
         + "WHERE MATCH(TITLE_NM) AGAINST (:query IN natural language MODE)", nativeQuery = true)
     Page<Book> findBooksByKorNatural(@Param("query") String query, Pageable pageable);
-
-    // 작가검색 FULLTEXT 서치 이용 + 페이징
-    @Query(value = "SELECT * FROM books "
-        + "WHERE MATCH(AUTHR_NM) AGAINST (:query IN BOOLEAN MODE)", nativeQuery = true)
-    Page<Book> findBooksByAuthor(@Param("query") String query, Pageable pageable);
     
     @Query(value = "select * from books "
         + "use index (idx_title_nm_space_based) "

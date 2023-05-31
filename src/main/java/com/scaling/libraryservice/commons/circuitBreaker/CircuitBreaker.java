@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import com.scaling.libraryservice.mapBook.domain.ApiConnection;
 import com.scaling.libraryservice.mapBook.domain.ApiObserver;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ public class CircuitBreaker {
     private final Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private final RestorationChecker checker;
 
+
     /**
      * {@link ApiObserver} 인스턴스의 API 액세스 상태를 확인하는 메소드입니다. {@link ApiObserver}가 현재 접근 가능한 API를 가리키고
      * 있는지 반환합니다.
@@ -31,7 +31,7 @@ public class CircuitBreaker {
      * @param apiObserver API 액세스 상태를 확인할 {@link ApiObserver} 인스턴스
      * @return {@link ApiObserver}가 가리키는 API가 접근 가능한 경우 true, 그렇지 않은 경우 false를 반환
      */
-    boolean isClosed(ApiObserver apiObserver) {
+    boolean isApiAccessible(ApiObserver apiObserver) {
         return apiObserver.getApiStatus().apiAccessible();
     }
 
@@ -51,13 +51,14 @@ public class CircuitBreaker {
             observingConnections.add(observer);
         }
 
-        boolean isErrorState = status.upErrorCnt();
+        if (status.apiAccessible()){
+            status.upErrorCnt();
 
-        if (isErrorState)
-            closeApi(observer);
+            if (status.isMaxError()) closeApi(observer);
 
-        log.error("Api Error - request api url : [{}] , current error cnt : [{}]"
-            , status.getApiUri(), status.getErrorCnt());
+            log.error("Api Error - request api url : [{}] , current error cnt : [{}]"
+                , status.getApiUri(), status.getErrorCnt());
+        }
     }
 
     /**
@@ -74,24 +75,27 @@ public class CircuitBreaker {
         log.info(status.getApiUri() + " is closed by nested api server error at [{}]",
             status.getClosedTime());
 
-        startScheduledRestoration(observer);
+        startScheduledRestoration(observer,60 * 10 * 3,TimeUnit.SECONDS);
     }
 
-    private void startScheduledRestoration(ApiObserver observer){
+    void startScheduledRestoration(ApiObserver observer,int period,TimeUnit timeUnit){
 
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
-                if (checker.isRestoration((ApiConnection) observer)) {
+                if (checker.isRestoration(observer)) {
                     stopScheduledRestoration(observer);
-                }}, 1, 60 * 10 * 3, TimeUnit.SECONDS);
+                }}, 1, period, timeUnit);
 
         scheduledTasks.put(observer, scheduledFuture);
     }
 
-    private void stopScheduledRestoration(ApiObserver observer){
+    void stopScheduledRestoration(ApiObserver observer){
 
         scheduledTasks.get(observer).cancel(false);
         scheduledTasks.remove(observer);
         observer.getApiStatus().openAccess();
     }
 
+    public Map<ApiObserver, ScheduledFuture<?>> getScheduledTasks() {
+        return scheduledTasks;
+    }
 }
