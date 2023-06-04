@@ -1,12 +1,12 @@
-package com.scaling.libraryservice.commons.api.service;
+package com.scaling.libraryservice.commons.api.service.provider;
 
-import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
+import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
 import com.scaling.libraryservice.commons.api.apiConnection.OpenApi;
+import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
-import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

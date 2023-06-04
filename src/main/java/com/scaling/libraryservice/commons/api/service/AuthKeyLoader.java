@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.api.apiConnection;
+package com.scaling.libraryservice.commons.api.service;
 
 import com.scaling.libraryservice.commons.api.entity.AuthKey;
 import com.scaling.libraryservice.commons.api.apiConnection.OpenApi;

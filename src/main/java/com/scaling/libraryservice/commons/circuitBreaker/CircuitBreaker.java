@@ -1,8 +1,6 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -17,8 +15,6 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @RequiredArgsConstructor
 public class CircuitBreaker {
-
-    private final List<ApiObserver> observingConnections;
     private final ScheduledExecutorService scheduler;
     private final Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private final RestorationChecker checker;
@@ -41,15 +37,9 @@ public class CircuitBreaker {
      *
      * @param observer 발생한 오류를 처리할 {@link ApiObserver} 인스턴스
      */
-    synchronized void receiveError(ApiObserver observer) {
-
-        Objects.requireNonNull(observer);
+    synchronized void receiveError(@NonNull ApiObserver observer) {
 
         ApiStatus status = observer.getApiStatus();
-
-        if (!observingConnections.contains(observer)) {
-            observingConnections.add(observer);
-        }
 
         if (status.apiAccessible()){
             status.upErrorCnt();
@@ -75,7 +65,7 @@ public class CircuitBreaker {
         log.info(status.getApiUri() + " is closed by nested api server error at [{}]",
             status.getClosedTime());
 
-        startScheduledRestoration(observer,60 * 10 * 3,TimeUnit.SECONDS);
+        startScheduledRestoration(observer,60*30,TimeUnit.SECONDS);
     }
 
     void startScheduledRestoration(ApiObserver observer,int period,TimeUnit timeUnit){

@@ -6,9 +6,9 @@ import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-class CircuitBreakerSupportTest {
+class CircuitBreakerSupporterTest {
 
-    private final CircuitBreakerSupport circuitBreakerSupport = new CircuitBreakerSupport();
+    private final CircuitBreakerSupporter circuitBreakerSupporter = new CircuitBreakerSupporter();
 
     @ApiMonitoring(api = BExistConn.class, substitute = "fallBackMethod")
     public void targetApiMonitoring() {
@@ -30,7 +30,7 @@ class CircuitBreakerSupportTest {
 
         /* when */
 
-        var result = circuitBreakerSupport.extractObserver(apiMonitoring);
+        var result = circuitBreakerSupporter.extractObserver(apiMonitoring);
 
         /* then */
 
@@ -45,7 +45,7 @@ class CircuitBreakerSupportTest {
 
         /* when */
 
-        var result = circuitBreakerSupport.extractSubstituteMethod(apiMonitoring,
+        var result = circuitBreakerSupporter.extractSubstituteMethod(apiMonitoring,
             this.getClass().getMethods());
 
         /* then */
@@ -61,7 +61,7 @@ class CircuitBreakerSupportTest {
 
         /* when */
 
-        Executable e = () -> circuitBreakerSupport.extractSubstituteMethod(apiMonitoring,
+        Executable e = () -> circuitBreakerSupporter.extractSubstituteMethod(apiMonitoring,
             this.getClass().getMethods());
 
         /* then */

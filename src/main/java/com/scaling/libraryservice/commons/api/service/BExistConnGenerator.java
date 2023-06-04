@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.mapBook.service;
+package com.scaling.libraryservice.commons.api.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
@@ -11,17 +11,20 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class BExistConnGenerator {
+public class BExistConnGenerator implements
+    ConnectionGenerator<BExistConn,LibraryDto, ReqMapBookDto> {
 
-    public List<BExistConn> generateNecessaryConns(@NonNull List<LibraryDto> nearByLibraries,
-        ReqMapBookDto reqMapBookDto) {
+    @Override
+    public List<BExistConn> generateNecessaryConns(@NonNull List<LibraryDto> nearByLibraries, ReqMapBookDto reqMapBookDto) {
 
-        if(nearByLibraries.isEmpty()){
+        boolean isHasBookSupport = nearByLibraries.stream().anyMatch(LibraryDto::isHasBookSupport);
+
+        if (nearByLibraries.isEmpty()) {
             log.info(reqMapBookDto.getAreaCd() + " 이 지역에 관련 도서관이 없으므로 API 통신을 하지 않음");
             return Collections.emptyList();
         }
 
-        if (reqMapBookDto.isSupportedArea()) {
+        if (isHasBookSupport) {
             return nearByLibraries.stream().filter(LibraryDto::hasBook)
                 .map(n -> new BExistConn(n.getLibNo(), reqMapBookDto.getIsbn())).toList();
 

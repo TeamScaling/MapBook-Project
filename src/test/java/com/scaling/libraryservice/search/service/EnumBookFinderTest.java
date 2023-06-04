@@ -47,7 +47,7 @@ class EnumBookFinderTest {
         when(bookRepository.findBooksByKorNatural(titleQuery.getKorToken(), pageable)).thenReturn(
             Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
 
         /* then */
         assertNotNull(result);
@@ -64,7 +64,7 @@ class EnumBookFinderTest {
         when(bookRepository.findBooksByKorNatural(titleQuery.getKorToken(), pageable)).thenReturn(
             Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
 
         /* then */
         assertNotNull(result);
@@ -80,7 +80,7 @@ class EnumBookFinderTest {
         when(bookRepository.findBooksByEngBool(titleQuery.getEngToken(), pageable)).thenReturn(
             Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
 
         /* then */
         assertNotNull(result);
@@ -98,7 +98,7 @@ class EnumBookFinderTest {
             bookRepository.findBooksByKorMtFlexible(titleQuery.getKorToken(), pageable)).thenReturn(
             Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
 
         /* then */
         assertNotNull(result);
@@ -116,7 +116,7 @@ class EnumBookFinderTest {
             bookRepository.findBooksByEngMtFlexible(titleQuery.getEngToken(), pageable)).thenReturn(
             Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
 
         /* then */
         assertNotNull(result);
@@ -138,8 +138,8 @@ class EnumBookFinderTest {
         when(bookRepository.findBooksByEngKorBool(titleQuery2.getEngToken(), titleQuery2.getKorToken(),
             pageable)).thenReturn(Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
-        var result2 = enumBookFinder.selectBooks(titleQuery2, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
+        var result2 = enumBookFinder.findBooks(titleQuery2, pageable);
 
         /* then */
         assertNotNull(result);
@@ -161,7 +161,7 @@ class EnumBookFinderTest {
             pageable)).thenReturn(
             Page.empty());
         /* when */
-        var result = enumBookFinder.selectBooks(titleQuery, pageable);
+        var result = enumBookFinder.findBooks(titleQuery, pageable);
 
         /* then */
         assertNotNull(result);

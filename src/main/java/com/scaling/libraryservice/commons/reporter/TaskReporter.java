@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.commons.reporter;
 
-public interface SlowTaskReporter {
+public interface TaskReporter {
 
     void report(String message);
 }

@@ -3,6 +3,7 @@ package com.scaling.libraryservice.recommend.service;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.recommend.dto.ReqRecommendDto;
+import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.service.BookFinder;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
@@ -25,7 +26,8 @@ import org.springframework.stereotype.Component;
 public class RecommendService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder querySelector;
+    private final BookFinder<BookDto> querySelector;
+
 
     /**
      * 검색어를 입력받아 해당하는 추천 도서 제목 목록을 반환합니다. 결과는 불용어를 제거한 형태로 반환됩니다.
@@ -39,7 +41,8 @@ public class RecommendService {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(reqRecommendDto.getQuery());
 
-        return querySelector.selectRecommends(titleQuery, 5).stream()
-            .map(r -> TitleTrimmer.TrimTitleResult(r.getTitle())).toList();
+        return querySelector.findRecommends(titleQuery, 5).stream()
+            .map(r -> TitleTrimmer.TrimTitleResult(r.getTitle()))
+            .toList();
     }
 }

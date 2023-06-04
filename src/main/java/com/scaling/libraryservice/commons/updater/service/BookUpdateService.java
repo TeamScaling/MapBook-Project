@@ -1,8 +1,7 @@
 package com.scaling.libraryservice.commons.updater.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
-import com.scaling.libraryservice.commons.api.service.DataProvider;
-import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
+import com.scaling.libraryservice.commons.api.service.provider.DataProvider;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import com.scaling.libraryservice.commons.updater.repository.BookUpdateRepository;
@@ -10,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +36,8 @@ public class BookUpdateService {
             return;
         }
 
+        long lastId = bookList.get(bookList.size()-1).getId();
+
 
         log.info("Book Updater is starting from [{}]", bookList.get(0).getId());
 
@@ -50,7 +49,7 @@ public class BookUpdateService {
         List<BookApiDto> bookApiDtoList = kakaoBookProvider.provideDataList(
             kakaoBookConns, nThreads);
 
-        updateBookEntity(bookApiDtoList, bookMap);
+        updateBookEntity(bookApiDtoList,bookMap,lastId);
     }
 
     /**
@@ -88,9 +87,7 @@ public class BookUpdateService {
         return bookMap;
     }
 
-    private void updateBookEntity(@NonNull List<BookApiDto> bookApiDtoList,Map<String, UpdateBook> map ){
-
-        long last = 1;
+    private void updateBookEntity(@NonNull List<BookApiDto> bookApiDtoList,Map<String, UpdateBook> map,long lastId){
 
         for (BookApiDto dto : bookApiDtoList) {
 
@@ -103,13 +100,11 @@ public class BookUpdateService {
                 updateBook.setPublisher(dto.getPublisher());
                 updateBook.setAuthor(dto.getAuthors());
                 updateBook.setDatatime(dto.getDateTime());
-
-                last = updateBook.getId();
             }
         }
 
-        deleteNotFoundBook(last);
-        log.info("book update is completed until [{}]", last);
+        deleteNotFoundBook(lastId);
+        log.info("book update is completed until [{}]", lastId);
     }
 
 }

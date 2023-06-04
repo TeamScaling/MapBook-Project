@@ -44,7 +44,7 @@ public class BookRecommendServiceTest {
         List<BookDto> books = List.of(bookDto1,bookDto2);
 
         when(titleAnalyzer.analyze(title)).thenReturn(titleQuery);
-        when(querySelector.selectRecommends(titleQuery,5)).thenReturn(books);
+        when(querySelector.findRecommends(titleQuery,5)).thenReturn(books);
 
         /* when */
         List<String> recommendBook = recommendService.getRecommendBook(new ReqRecommendDto(title));

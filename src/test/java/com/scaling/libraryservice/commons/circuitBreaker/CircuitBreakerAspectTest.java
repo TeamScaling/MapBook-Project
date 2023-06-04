@@ -24,7 +24,7 @@ class CircuitBreakerAspectTest {
     @Mock
     private CircuitBreaker circuitBreaker;
     @Mock
-    private CircuitBreakerSupport support;
+    private CircuitBreakerSupporter support;
     @Mock
     private ProceedingJoinPoint joinPoint;
     @Mock
