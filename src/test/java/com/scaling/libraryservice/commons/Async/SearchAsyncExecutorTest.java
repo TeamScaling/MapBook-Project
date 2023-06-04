@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.commons.reporter.SlowTaskReporter;
+import com.scaling.libraryservice.commons.reporter.TaskReporter;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
@@ -42,6 +42,10 @@ class SearchAsyncExecutorTest {
     @Mock
     private ReqBookDto reqBookDto;
 
+    @Mock
+    private TaskReporter taskReporter;
+
+
     @Test
     @DisplayName("3초 미만의 작업을 비동기를 사용하지 않고도 반환 한다.")
     void execute() {
@@ -50,11 +54,11 @@ class SearchAsyncExecutorTest {
 
         Page<BookDto> pageBook = mock(Page.class);
 
-        when(bookFinder.selectBooks(titleQuery, pageable)).thenReturn(pageBook);
+        when(bookFinder.findBooks(titleQuery, pageable)).thenReturn(pageBook);
 
         /* when */
 
-        var result = executor.execute(() -> bookFinder.selectBooks(titleQuery, pageable),
+        var result = executor.execute(() -> bookFinder.findBooks(titleQuery, pageable),
             reqBookDto, 3);
 
         /* then */
@@ -68,7 +72,7 @@ class SearchAsyncExecutorTest {
         Pageable pageable = PageRequest.of(1, 10);
         Page<BookDto> pageBook = mock(Page.class);
 
-        when(bookFinder.selectBooks(titleQuery, pageable))
+        when(bookFinder.findBooks(titleQuery, pageable))
             .thenAnswer(invocation -> {
                 Thread.sleep(1100); // 1.1 seconds delay
                 return pageBook;
@@ -79,7 +83,7 @@ class SearchAsyncExecutorTest {
 
         /* when */
 
-        var result = executor.execute(() -> bookFinder.selectBooks(titleQuery, pageable),
+        var result = executor.execute(() -> bookFinder.findBooks(titleQuery, pageable),
             reqBookDto, 1);
 
         /* then */
@@ -93,13 +97,13 @@ class SearchAsyncExecutorTest {
         Pageable pageable = PageRequest.of(1, 10);
         Page<BookDto> pageBook = mock(Page.class);
 
-        when(bookFinder.selectBooks(titleQuery, pageable))
+        when(bookFinder.findBooks(titleQuery, pageable))
             .thenAnswer(invocation -> {
                 Thread.sleep(1100);
                 return pageBook;
             });
 
-        Supplier<Page<BookDto>> supplier = () -> bookFinder.selectBooks(titleQuery, pageable);
+        Supplier<Page<BookDto>> supplier = () -> bookFinder.findBooks(titleQuery, pageable);
 
         CustomCacheManager<ReqBookDto, RespBooksDto> mockCacheManager = mock(CustomCacheManager.class);
         ReflectionTestUtils.setField(executor, "cacheManager", mockCacheManager);

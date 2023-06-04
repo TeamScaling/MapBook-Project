@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder bookFinder;
+    private final BookFinder<BookDto> bookFinder;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     /**
@@ -52,7 +52,7 @@ public class BookSearchService {
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
         Page<BookDto> booksPage = asyncExecutor.execute(
-            () -> bookFinder.selectBooks(titleQuery, pageable), reqBookDto, timeout);
+            () -> bookFinder.findBooks(titleQuery, pageable), reqBookDto, timeout);
 
         return new RespBooksDto(new MetaDto(booksPage, reqBookDto), booksPage);
     }

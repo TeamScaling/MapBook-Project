@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
-import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
+import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
 import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
 import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
 import com.scaling.libraryservice.commons.updater.repository.BookUpdateRepository;

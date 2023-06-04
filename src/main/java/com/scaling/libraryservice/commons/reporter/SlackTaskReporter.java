@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.reporter;
 
 import com.scaling.libraryservice.commons.api.apiConnection.OpenApi;
-import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
+import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
 import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component @RequiredArgsConstructor
-public class SlackReporter implements SlowTaskReporter {
+public class SlackTaskReporter implements TaskReporter {
 
     private final AuthKeyLoader authKeyLoader;
 
     private String authKey;
 
     @PostConstruct
-    public void loadKey(){
+    private void loadKey(){
         authKey = authKeyLoader.loadAuthKey(OpenApi.SLACK_BOT).getAuthKey();
     }
 

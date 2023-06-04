@@ -60,7 +60,7 @@ class CircuitBreakerTest {
         mockServer.stubFor(
             WireMock.get("/api/bookExist").willReturn(WireMock.ok()));
 
-        circuitBreaker = new CircuitBreaker(new ArrayList<>(), scheduler, scheduledTasks, checker);
+        circuitBreaker = new CircuitBreaker(scheduler, scheduledTasks, checker);
     }
 
     public ApiObserver setApiObserver() {
@@ -75,12 +75,7 @@ class CircuitBreakerTest {
         };
     }
 
-    void setMockServerDelay() {
 
-        mockServer.stubFor(WireMock.get("/api/bookExist")
-            .willReturn(WireMock.aResponse().withStatus(200).withFixedDelay(3000))
-        );
-    }
 
     @Test
     void isClosed() {

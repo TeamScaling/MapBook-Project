@@ -5,14 +5,13 @@ import com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.service.BExistConnGenerator;
+import com.scaling.libraryservice.commons.api.service.ConnectionGenerator;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
-import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
+import com.scaling.libraryservice.mapBook.service.MapBookService;
 import com.scaling.libraryservice.mapBook.service.location.LocationResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Slf4j
 public class MapBookController {
 
-    private final MapBookMatcher mapBookMatcher;
+    private final MapBookService mapBookService;
 
     private final LibraryFindService libraryFindService;
 
-    private final BExistConnGenerator connGenerator;
+    private final ConnectionGenerator<BExistConn,LibraryDto,ReqMapBookDto> connGenerator;
 
-    private final LocationResolver locationResolver;
+    private final LocationResolver<Integer,ReqMapBookDto> locationResolver;
 
 
     /**
@@ -43,17 +42,18 @@ public class MapBookController {
 
     @PostMapping("/books/mapBook/search")
     @ApiMonitoring(api = BExistConn.class, substitute = "fallBackMethodHasBook")
-    public String getMapBooks(@NonNull ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
+    public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
-        locationResolver.resolve(reqMapBookDto);
+        Integer areaCd = locationResolver.resolve(reqMapBookDto);
 
-        List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
+        List<LibraryDto> nearbyLibraries
+            = libraryFindService.getNearByLibraries(reqMapBookDto.getIsbn(),areaCd);
 
         List<BExistConn> necessaryConns
             = connGenerator.generateNecessaryConns(nearbyLibraries, reqMapBookDto);
 
-        List<RespMapBookDto> mapBooks = mapBookMatcher.
-            matchMapBooks(necessaryConns, nearbyLibraries, reqMapBookDto);
+        List<RespMapBookDto> mapBooks = mapBookService.
+            matchLibraryBooks(necessaryConns, nearbyLibraries, reqMapBookDto);
 
         model.put("mapBooks", mapBooks);
 
@@ -67,10 +67,12 @@ public class MapBookController {
      * @param reqMapBookDto getMapBooks moethod에게 전달 받은 사용자 요청 데이터가 담긴 Dto
      * @return Model을 전달 받고 View를 구성 할 html 파일 이름
      */
-    public String fallBackMethodHasBook(@NonNull ModelMap model,
+    public String fallBackMethodHasBook(ModelMap model,
         @ModelAttribute ReqMapBookDto reqMapBookDto) {
 
-        List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto);
+        Integer areaCd = locationResolver.resolve(reqMapBookDto);
+
+        List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto.getIsbn(),areaCd);
 
         List<RespMapBookDto> hasBookLibs = nearbyLibraries.stream()
             .map(l -> new RespMapBookDto(reqMapBookDto, l, "N"))

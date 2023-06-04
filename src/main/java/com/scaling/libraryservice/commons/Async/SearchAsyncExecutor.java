@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.Async;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.commons.reporter.SlowTaskReporter;
+import com.scaling.libraryservice.commons.reporter.TaskReporter;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
@@ -24,7 +24,7 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookD
 
     private final CustomCacheManager<ReqBookDto,RespBooksDto> cacheManager;
 
-    private final SlowTaskReporter slowTaskReporter;
+    private final TaskReporter taskReporter;
 
     @Override
     public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto,int timeout) {
@@ -37,7 +37,7 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>,ReqBookD
 
         }catch (TimeoutException | InterruptedException | ExecutionException e) {
             log.error("Query execution exceeded 3 seconds. Returning an empty result.");
-            slowTaskReporter.report(reqBookDto.getQuery());
+            taskReporter.report(reqBookDto.getQuery());
             asyncSearchBook(supplier,reqBookDto);
         }
 

@@ -32,7 +32,7 @@ public class LibraryDto {
 
     private String hasBook = "N";
 
-    private boolean isSupportedArea = false;
+    private boolean isHasBookSupport = false;
 
 
     public LibraryDto(@NonNull Library library) {
@@ -56,7 +56,7 @@ public class LibraryDto {
         this.hasBook = hasBook;
     }
 
-    public LibraryDto(Library library,String hasBook,boolean isSupportedArea) {
+    public LibraryDto(Library library,String hasBook,boolean isHasBookSupport) {
         this.libNm = library.getLibNm();
         this.libNo = library.getLibNo();
         this.libLon = library.getLibLon();
@@ -65,7 +65,7 @@ public class LibraryDto {
         this.libUrl = library.getLibUrl();
         this.areaCd = library.getAreaCd();
         this.hasBook = hasBook;
-        this.isSupportedArea = isSupportedArea;
+        this.isHasBookSupport = isHasBookSupport;
     }
 
     public boolean hasBook(){

@@ -1,9 +1,9 @@
-package com.scaling.libraryservice.commons.api.service;
+package com.scaling.libraryservice.commons.api.service.provider;
 
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
-import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.api.apiConnection.OpenApi;
+import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
@@ -21,8 +21,9 @@ public class BExistProvider implements DataProvider<ApiBookExistDto>{
 
     private final AuthKeyLoader authKeyLoader;
 
+
     @PostConstruct
-    public void loadAuthKey(){
+    private void loadAuthKey(){
         String apiAuthKey = authKeyLoader.loadAuthKey(OpenApi.DATA4_Lib).getAuthKey();
         BExistConn.setApiAuthKey(apiAuthKey);
     }

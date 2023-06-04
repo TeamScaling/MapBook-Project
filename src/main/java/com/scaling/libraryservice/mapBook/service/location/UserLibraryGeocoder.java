@@ -4,15 +4,17 @@ import com.scaling.libraryservice.mapBook.dto.LibraryDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class UserLibraryGeocoder implements LocationResolver {
+public class UserLibraryGeocoder implements LocationResolver<Integer,ReqMapBookDto> {
 
     private final LibraryRepository libraryRepo;
+    private List<LibraryDto> libraries;
 
     /**
      * 주변 대출 가능 도서관 찾기 요청 Dto에 담긴 위치 정보를 지역 코드로 변환 한다.
@@ -21,14 +23,17 @@ public class UserLibraryGeocoder implements LocationResolver {
      * @throws LocationException 사용자 요청에 담긴 위치 정보가 유효하지 않을 경우.
      */
     @Override
-    public void resolve(@NonNull ReqMapBookDto reqMapBookDto) throws LocationException {
-        if (!reqMapBookDto.isValidCoordinate()) {
-            throw new LocationException("잘못된 위치 정보");
+    public Integer resolve(@NonNull ReqMapBookDto reqMapBookDto){
+
+        if(libraries ==null){
+            libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
         }
 
         Integer areaCd = findNearestLibrary(reqMapBookDto).getAreaCd();
 
-        reqMapBookDto.updateAreaCd(areaCd);
+        upDateAreaCd(reqMapBookDto,areaCd);
+
+        return areaCd;
     }
 
     /**
@@ -41,7 +46,7 @@ public class UserLibraryGeocoder implements LocationResolver {
     private LibraryDto findNearestLibrary(ReqMapBookDto reqMapBookDto)
         throws LocationException {
 
-        return libraryRepo.findAll().stream().min((l1, l2) -> {
+        return libraries.stream().min((l1, l2) -> {
 
                 double d1 = HaversineCalculater.calculateDistance(
                     reqMapBookDto.getLat(), reqMapBookDto.getLon(), l1.getLibLat(), l1.getLibLon());
@@ -50,8 +55,13 @@ public class UserLibraryGeocoder implements LocationResolver {
                     reqMapBookDto.getLat(), reqMapBookDto.getLon(), l2.getLibLat(), l2.getLibLon());
 
                 return Double.compare(d1, d2);
-            }).map(LibraryDto::new)
-            .orElseThrow(() -> new LocationException("최단 거리 도서관 찾기 실패"));
+            }).orElseThrow(() -> new LocationException("최단 거리 도서관 찾기 실패"));
+    }
+
+
+    private void upDateAreaCd(ReqMapBookDto reqMapBookDto,Integer areaCd){
+
+        reqMapBookDto.setAreaCd(areaCd);
     }
 
 }

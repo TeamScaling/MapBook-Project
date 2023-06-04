@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.mapBook.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
-import com.scaling.libraryservice.commons.api.service.DataProvider;
+import com.scaling.libraryservice.commons.api.service.provider.DataProvider;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class MapBookMatcher implements ApiRelatedService {
+public class MapBookService implements ApiRelatedService {
 
     private final DataProvider<ApiBookExistDto> dataProvider;
 
@@ -34,7 +34,7 @@ public class MapBookMatcher implements ApiRelatedService {
      */
     @Timer
     @CustomCacheable
-    public List<RespMapBookDto> matchMapBooks(@NonNull List<BExistConn> bExistConns,
+    public List<RespMapBookDto> matchLibraryBooks(@NonNull List<BExistConn> bExistConns,
         List<LibraryDto> nearByLibraries, ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         if (bExistConns.isEmpty()) {

@@ -38,6 +38,9 @@ class LibraryFindServiceTest {
     @Mock
     private LibraryRepository libraryRepo;
 
+    String isbn13 = "9788089365210";
+    int areaCd = 26000;
+
     @BeforeEach
     void setUp() {
     }
@@ -46,13 +49,6 @@ class LibraryFindServiceTest {
     public void getNearByLibraries_SupportedArea(){
         /* given */
 
-        String isbn13 = "9788089365210";
-        int areaCd = 26000;
-
-        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,34.802858, 126.702513);
-        reqMapBookDto.setSupportedArea(true);
-        reqMapBookDto.updateAreaCd(areaCd);
-
         Library library1 = Library.builder().libNm("1").areaCd(areaCd).build();
         Library library2 = Library.builder().libNm("2").areaCd(areaCd).build();
 
@@ -60,17 +56,17 @@ class LibraryFindServiceTest {
 
         Optional<HsAreaCd> optional = Optional.of(new HsAreaCd());
 
-        when(hasBookAreaRepo.findById(26000)).thenReturn(optional);
-        when(libraryHasBookRepo.findHasBookLibraries(isbn13, 26000)).thenReturn(libraries);
+        when(hasBookAreaRepo.findById(areaCd)).thenReturn(optional);
+        when(libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)).thenReturn(libraries);
 
         /* when */
 
-        var result = libraryFindService.getNearByLibraries(reqMapBookDto);
+        var result = libraryFindService.getNearByLibraries(isbn13,areaCd);
 
         /* then */
         assertEquals(2,result.size());
         assertTrue(result.stream().allMatch(LibraryDto::hasBook));
-        assertTrue(result.stream().allMatch(LibraryDto::isSupportedArea));
+        assertTrue(result.stream().allMatch(LibraryDto::isHasBookSupport));
     }
 
     @Test @DisplayName("소장 서비스 지역이 아닐 때 주변 도서관 목록을 반환 할 수 있다")
@@ -79,10 +75,6 @@ class LibraryFindServiceTest {
 
         String isbn13 = "9788089365210";
         int areaCd = 26000;
-
-        ReqMapBookDto reqMapBookDto = new ReqMapBookDto(isbn13,34.802858, 126.702513);
-        reqMapBookDto.setSupportedArea(false);
-        reqMapBookDto.updateAreaCd(areaCd);
 
         Library library1 = Library.builder().libNm("1").areaCd(areaCd).build();
         Library library2 = Library.builder().libNm("2").areaCd(areaCd).build();
@@ -96,12 +88,12 @@ class LibraryFindServiceTest {
 
         /* when */
 
-        var result = libraryFindService.getNearByLibraries(reqMapBookDto);
+        var result = libraryFindService.getNearByLibraries(isbn13,26000);
 
         /* then */
         assertEquals(2,result.size());
         assertFalse(result.stream().allMatch(LibraryDto::hasBook));
-        assertFalse(result.stream().allMatch(LibraryDto::isSupportedArea));
+        assertFalse(result.stream().allMatch(LibraryDto::isHasBookSupport));
     }
 
 
@@ -120,7 +112,7 @@ class LibraryFindServiceTest {
 
 
         /* when */
-        var result = libraryFindService.getNearByHasBookLibraries(reqMapBookDto);
+        var result = libraryFindService.getNearByHasBookLibraries("1234",123);
 
         /* then */
 
@@ -132,17 +124,20 @@ class LibraryFindServiceTest {
     void getNearByHasBookLibraries_when_hasBookLibraries_false() {
         /* given */
 
-        ReqMapBookDto reqMapBookDto = ReqMapBookDto.builder().isbn("1234").areaCd(123).build();
+        String isbn13 = "123456789";
+        int areaCd = 123;
+
+        ReqMapBookDto reqMapBookDto = ReqMapBookDto.builder().isbn(isbn13).areaCd(areaCd).build();
 
         Library library1 = Library.builder().libNm("1").build();
         Library library2 = Library.builder().libNm("2").build();
 
         List<Library> libraries = List.of(library1, library2);
 
-        when(libraryHasBookRepo.findHasBookLibraries("1234",123)).thenReturn(Collections.emptyList());
+        when(libraryHasBookRepo.findHasBookLibraries(isbn13,areaCd)).thenReturn(Collections.emptyList());
 
         /* when */
-        var result = libraryFindService.getNearByHasBookLibraries(reqMapBookDto);
+        var result = libraryFindService.getNearByHasBookLibraries(isbn13,areaCd);
 
         /* then */
         assertEquals(result.size(),0);

@@ -2,8 +2,8 @@ package com.scaling.libraryservice.commons.updater;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.scaling.libraryservice.commons.api.apiConnection.AuthKeyLoader;
-import com.scaling.libraryservice.commons.api.service.KakaoBookProvider;
+import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
+import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import java.util.ArrayList;

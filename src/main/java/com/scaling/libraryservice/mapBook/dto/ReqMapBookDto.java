@@ -25,9 +25,8 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
     private String isbn;
     private Double lat;
     private Double lon;
-    private int areaCd;
 
-    private boolean isSupportedArea;
+    private int areaCd;
 
     public ReqMapBookDto() {
     }
@@ -40,13 +39,6 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
             .build();
     }
 
-    @Override
-    public String toString() {
-        return "ReqMapBookDto(" +
-            "isbn=" + isbn +
-            ", areaCd=" + areaCd +
-            ')';
-    }
 
     public ReqMapBookDto(String isbn, Double lat, Double lon) {
         this.isbn = isbn;
@@ -59,14 +51,6 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
         this.isbn = jsonObject.getString("isbn");
         this.lat = Double.valueOf(jsonObject.getString("lat"));
         this.lon = Double.valueOf(jsonObject.getString("lon"));
-    }
-
-
-    public boolean isValidCoordinate() {
-
-        return this.lat > 33.11 & this.lat < 38.61
-            & this.lon > 124.60 & this.lon < 131.87;
-
     }
 
     @Override
@@ -86,13 +70,7 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
         return Objects.hash(isbn, areaCd);
     }
 
-
-    public void updateAreaCd(Integer areaCd) {
-
+    public void setAreaCd(int areaCd) {
         this.areaCd = areaCd;
-    }
-
-    public void setSupportedArea(boolean supportedArea) {
-        isSupportedArea = supportedArea;
     }
 }

@@ -16,18 +16,18 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component @Slf4j
-public class EnumBookFinder implements BookFinder {
+public class EnumBookFinder implements BookFinder<BookDto> {
     private final BookRepository bookRepository;
     private final RecommendRepository recommendRepo;
 
     @Override
-    public Page<BookDto> selectBooks(TitleQuery titleQuery, Pageable pageable){
+    public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable){
 
         return selectBooksEntity(titleQuery,pageable).map(BookDto::new);
     }
 
     @Override
-    public List<BookDto> selectRecommends(TitleQuery titleQuery, int size){
+    public List<BookDto> findRecommends(TitleQuery titleQuery, int size){
 
         return selectRecBooksEntity(titleQuery,size).stream().map(BookDto::new).toList();
     }

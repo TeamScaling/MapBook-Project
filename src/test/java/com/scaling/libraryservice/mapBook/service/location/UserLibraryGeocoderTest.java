@@ -67,9 +67,7 @@ class UserLibraryGeocoderTest {
 
         /* when */
 
-        geocoder.resolve(reqMapBookDto);
-
-        var result = reqMapBookDto.getAreaCd();
+        int result = geocoder.resolve(reqMapBookDto);
 
         /* then */
 
@@ -89,17 +87,4 @@ class UserLibraryGeocoderTest {
         assertEquals(result, 0);
     }
 
-    @Test @DisplayName("잘못된 위/경도가 입력된 요청이 들어오면 에러를 던진다")
-    public void find_libraries_error(){
-        /* given */
-        var nonCorrectGeo
-            = new ReqMapBookDto("9788089365210",38.74273402531946, 127.3437713197453);
-
-        /* when */
-
-        Executable e = ()-> geocoder.resolve(nonCorrectGeo);
-
-        /* then */
-        assertThrows(LocationException.class,e);
-    }
 }

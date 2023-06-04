@@ -4,5 +4,5 @@ import java.util.function.Supplier;
 
 public interface AsyncExecutor<T,V> {
 
-    public T execute(Supplier<T> supplier,V value,int timeout);
+    T execute(Supplier<T> supplier,V value,int timeout);
 }

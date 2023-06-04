@@ -9,8 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.service.ApiRelatedService;
-import com.scaling.libraryservice.mapBook.service.MapBookMatcher;
+import com.scaling.libraryservice.mapBook.service.MapBookService;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
@@ -46,7 +45,7 @@ class CustomCacheAspectTest {
     private BookSearchService bookSearchService;
 
     @Mock
-    private MapBookMatcher mapBookMatcher;
+    private MapBookService mapBookService;
 
     @Mock
     private StopWatch stopWatch;
@@ -91,7 +90,7 @@ class CustomCacheAspectTest {
 
         /* when */
 
-        var result = cacheAspect2.patchCacheManager(joinPoint, mapBookMatcher.getClass(),mapBookCacheKey);
+        var result = cacheAspect2.patchCacheManager(joinPoint, mapBookService.getClass(),mapBookCacheKey);
 
         /* then */
 
@@ -104,7 +103,7 @@ class CustomCacheAspectTest {
         when(joinPoint.proceed()).thenReturn(respBooksDto);
         /* when */
 
-        cacheAspect.patchCacheManager(joinPoint, MapBookMatcher.class,bookCacheKey);
+        cacheAspect.patchCacheManager(joinPoint, MapBookService.class,bookCacheKey);
 
         /* then */
         verify(cacheManager,times(1)).put(any(),any(),any());

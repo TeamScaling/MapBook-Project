@@ -1,9 +1,7 @@
 package com.scaling.libraryservice.mapBook.service.location;
 
-import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+public interface LocationResolver<T,V> {
 
-public interface LocationResolver {
-
-    void resolve(ReqMapBookDto reqMapBookDto);
+    T resolve(V item);
 
 }
