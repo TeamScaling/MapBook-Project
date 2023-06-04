@@ -18,7 +18,7 @@ public enum TitleType {
     /**
      * 한국어 다중 단어 검색어 유형
      */
-    KOR_MT_UNDER_TWO,
+    KOR_MT_TWO,
 
     KOR_MT_OVER_TWO,
 
@@ -27,10 +27,6 @@ public enum TitleType {
      */
     ENG_MT,
 
-    /**
-     * 한국어-영어 혼합 검색어 유형
-     */
-    KOR_ENG,
 
     /**
      * 영어-한국어 단일 단어 검색어 유형

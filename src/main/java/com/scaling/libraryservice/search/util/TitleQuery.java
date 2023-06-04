@@ -30,18 +30,13 @@ public class TitleQuery {
      */
     private final String korToken;
 
-    /**
-     * 영어와 한국어 혼합된 검색어 토큰을 저장하는 변수
-     */
-    private final String engKorToken;
 
     private TitleQuery(@NonNull TitleType titleType, @Nullable String engToken,
-        @Nullable String korToken, @Nullable String engKorToken) {
+        @Nullable String korToken) {
 
         this.titleType = titleType;
         this.engToken = engToken;
         this.korToken = korToken;
-        this.engKorToken = engKorToken;
     }
 
 }

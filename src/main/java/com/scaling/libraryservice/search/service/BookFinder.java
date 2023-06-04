@@ -5,9 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface BookFinder<T> {
+public interface BookFinder<T,V> {
 
-    Page<T> findBooks(TitleQuery titleQuery,Pageable pageable);
+    T findBooks(TitleQuery titleQuery,V target);
 
-    List<T> findRecommends(TitleQuery titleQuery,int size);
 }
