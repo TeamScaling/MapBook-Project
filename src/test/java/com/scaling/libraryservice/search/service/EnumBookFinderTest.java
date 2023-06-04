@@ -4,9 +4,8 @@ import static com.scaling.libraryservice.search.util.TitleType.ENG_KOR_MT;
 import static com.scaling.libraryservice.search.util.TitleType.ENG_KOR_SG;
 import static com.scaling.libraryservice.search.util.TitleType.ENG_MT;
 import static com.scaling.libraryservice.search.util.TitleType.ENG_SG;
-import static com.scaling.libraryservice.search.util.TitleType.KOR_ENG;
 import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_OVER_TWO;
-import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_UNDER_TWO;
+import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_TWO;
 import static com.scaling.libraryservice.search.util.TitleType.KOR_SG;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
@@ -90,7 +89,7 @@ class EnumBookFinderTest {
     @DisplayName("KOR_MT_UNDER_TWO 타입이 들어오면 DB를 통해 Book을 반환 할 수 있다")
     void selectBooks4() {
         /* given */
-        TitleQuery titleQuery = TitleQuery.builder().titleType(KOR_MT_UNDER_TWO).korToken("자바 정석")
+        TitleQuery titleQuery = TitleQuery.builder().titleType(KOR_MT_TWO).korToken("자바 정석")
             .build();
         Pageable pageable = PageRequest.of(1, 10);
 
@@ -123,26 +122,21 @@ class EnumBookFinderTest {
     }
 
     @Test
-    @DisplayName("KOR_ENG, ENG_KOR_SG 타입이 들어오면 DB를 통해 Book을 반환 할 수 있다")
+    @DisplayName(" ENG_KOR_SG 타입이 들어오면 DB를 통해 Book을 반환 할 수 있다")
     void selectBooks6() {
         /* given */
-        TitleQuery titleQuery = TitleQuery.builder().titleType(KOR_ENG).engToken("java").korToken("스프링 자바")
-            .build();
         TitleQuery titleQuery2 = TitleQuery.builder().titleType(ENG_KOR_SG).engToken("java").korToken("스프링")
             .build();
 
         Pageable pageable = PageRequest.of(1, 10);
 
-        when(bookRepository.findBooksByEngKorBool(titleQuery.getEngToken(), titleQuery.getKorToken(),
-                pageable)).thenReturn(Page.empty());
+
         when(bookRepository.findBooksByEngKorBool(titleQuery2.getEngToken(), titleQuery2.getKorToken(),
             pageable)).thenReturn(Page.empty());
         /* when */
-        var result = enumBookFinder.findBooks(titleQuery, pageable);
         var result2 = enumBookFinder.findBooks(titleQuery2, pageable);
 
         /* then */
-        assertNotNull(result);
         assertNotNull(result2);
     }
 

@@ -34,7 +34,7 @@ class SearchAsyncExecutorTest {
     private SearchAsyncExecutor executor;
 
     @Mock
-    private BookFinder bookFinder;
+    private BookFinder<Page<BookDto>,Pageable> bookFinder;
 
     @Mock
     private TitleQuery titleQuery;

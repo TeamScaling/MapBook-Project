@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class RecommendService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder<BookDto> querySelector;
+    private final BookFinder<List<BookDto>, Integer> bookFinder;
 
 
     /**
@@ -41,7 +41,7 @@ public class RecommendService {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(reqRecommendDto.getQuery());
 
-        return querySelector.findRecommends(titleQuery, 5).stream()
+        return bookFinder.findBooks(titleQuery, 5).stream()
             .map(r -> TitleTrimmer.TrimTitleResult(r.getTitle()))
             .toList();
     }

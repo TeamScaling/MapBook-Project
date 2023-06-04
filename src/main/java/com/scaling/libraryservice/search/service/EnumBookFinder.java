@@ -16,20 +16,11 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component @Slf4j
-public class EnumBookFinder implements BookFinder<BookDto> {
+public class EnumBookFinder implements BookFinder<Page<BookDto>,Pageable> {
     private final BookRepository bookRepository;
-    private final RecommendRepository recommendRepo;
-
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable){
-
         return selectBooksEntity(titleQuery,pageable).map(BookDto::new);
-    }
-
-    @Override
-    public List<BookDto> findRecommends(TitleQuery titleQuery, int size){
-
-        return selectRecBooksEntity(titleQuery,size).stream().map(BookDto::new).toList();
     }
 
     /**
@@ -49,18 +40,20 @@ public class EnumBookFinder implements BookFinder<BookDto> {
             case KOR_SG, KOR_MT_OVER_TWO -> {
                 return bookRepository.findBooksByKorNatural(titleQuery.getKorToken(), pageable);
             }
+
+            case KOR_MT_TWO -> {
+                return bookRepository.findBooksByKorMtFlexible(titleQuery.getKorToken(), pageable);
+            }
+
             case ENG_SG -> {
                 return bookRepository.findBooksByEngBool(titleQuery.getEngToken(), pageable);
-            }
-            case KOR_MT_UNDER_TWO -> {
-                return bookRepository.findBooksByKorMtFlexible(titleQuery.getKorToken(), pageable);
             }
 
             case ENG_MT -> {
                 return bookRepository.findBooksByEngMtFlexible(titleQuery.getEngToken(), pageable);
             }
 
-            case KOR_ENG, ENG_KOR_SG -> {
+            case ENG_KOR_SG -> {
                 return bookRepository.findBooksByEngKorBool(titleQuery.getEngToken(),
                     titleQuery.getKorToken(), pageable);
             }
@@ -76,49 +69,6 @@ public class EnumBookFinder implements BookFinder<BookDto> {
         }
     }
 
-    /**
-     * 검색어를 분석하여 추천 도서를 조회할 때 사용할 최적의 쿼리를 선택하고, 추천 도서 데이터를 반환합니다.
-     *
-     * @param titleQuery 검색 쿼리를 분석한 결과를 담고 있는 TitleQuery 객체
-     * @param size  추천 도서를 어느 범위까지 보여 줄지에 대한 값
-     * @return 선택된 추천 도서 DTO들을 담은 List
-     */
-    private List<Book> selectRecBooksEntity(@NonNull TitleQuery titleQuery, int size) {
-        TitleType type = titleQuery.getTitleType();
 
-        log.info("Query is [{}] and tokens : [{}]", type.name(), titleQuery);
-
-        switch (type) {
-
-            case KOR_SG, KOR_MT_OVER_TWO -> {
-                return recommendRepo.findBooksByKorBoolOrder(titleQuery.getKorToken(), size);
-            }
-
-            case ENG_SG -> {
-                return recommendRepo.findBooksByEngBoolOrder(titleQuery.getEngToken(), size);
-            }
-
-            case KOR_MT_UNDER_TWO -> {
-                return recommendRepo.findBooksByKorMtFlexible(titleQuery.getKorToken(), size);
-            }
-
-            case ENG_MT -> {
-                return recommendRepo.findBooksByEngMtOrderFlexible(titleQuery.getEngToken(), size);
-            }
-            case KOR_ENG, ENG_KOR_SG -> {
-                return recommendRepo.findBooksByEngKorBoolOrder(titleQuery.getEngToken(),
-                        titleQuery.getKorToken(), size);
-            }
-
-            case ENG_KOR_MT -> {
-                return recommendRepo.findBooksByEngKorNaturalOrder(
-                    titleQuery.getEngToken(),
-                    titleQuery.getKorToken(),
-                    size);
-            }
-
-            default -> throw new IllegalArgumentException("Invalid title type: " + type);
-        }
-    }
 
 }
