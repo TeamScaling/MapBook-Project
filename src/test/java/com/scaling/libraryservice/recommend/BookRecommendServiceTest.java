@@ -28,7 +28,7 @@ public class BookRecommendServiceTest {
     private TitleAnalyzer titleAnalyzer;
 
     @Mock
-    private BookFinder querySelector;
+    private BookFinder<List<BookDto>, Integer> querySelector;
 
     @Test
     @DisplayName("추천 도서 검색")
@@ -44,7 +44,7 @@ public class BookRecommendServiceTest {
         List<BookDto> books = List.of(bookDto1,bookDto2);
 
         when(titleAnalyzer.analyze(title)).thenReturn(titleQuery);
-        when(querySelector.findRecommends(titleQuery,5)).thenReturn(books);
+        when(querySelector.findBooks(titleQuery,5)).thenReturn(books);
 
         /* when */
         List<String> recommendBook = recommendService.getRecommendBook(new ReqRecommendDto(title));

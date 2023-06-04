@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder<BookDto> bookFinder;
+    private final BookFinder<Page<BookDto>,Pageable> bookFinder;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     /**

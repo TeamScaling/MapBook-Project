@@ -5,7 +5,7 @@ import static com.scaling.libraryservice.search.util.TitleType.ENG_KOR_SG;
 import static com.scaling.libraryservice.search.util.TitleType.ENG_MT;
 import static com.scaling.libraryservice.search.util.TitleType.ENG_SG;
 import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_OVER_TWO;
-import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_UNDER_TWO;
+import static com.scaling.libraryservice.search.util.TitleType.KOR_MT_TWO;
 import static com.scaling.libraryservice.search.util.TitleType.KOR_SG;
 
 import com.scaling.libraryservice.commons.timer.Timer;
@@ -81,7 +81,7 @@ public class TitleAnalyzer {
             return TitleQuery.builder().titleType(KOR_MT_OVER_TWO).korToken(query).build();
         }else{
             query = TitleTrimmer.splitAddPlus(query);
-            return TitleQuery.builder().titleType(KOR_MT_UNDER_TWO).korToken(query).build();
+            return TitleQuery.builder().titleType(KOR_MT_TWO).korToken(query).build();
         }
     }
 

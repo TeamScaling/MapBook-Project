@@ -98,7 +98,7 @@ class TitleAnalyzerTest {
 
         /* then */
 
-        assertEquals(TitleType.KOR_MT_UNDER_TWO, result.getTitleType());
+        assertEquals(TitleType.KOR_MT_TWO, result.getTitleType());
     }
 
     @Test
