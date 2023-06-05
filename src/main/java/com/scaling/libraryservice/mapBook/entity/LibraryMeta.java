@@ -4,9 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 
 /**
@@ -15,8 +13,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "lib_meta")
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
 public class LibraryMeta {
 
     @Id
