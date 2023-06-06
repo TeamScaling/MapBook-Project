@@ -12,6 +12,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+/**
+ * 사용자의 지역 코드와 국제 도서 표준 번호(ISBN13)를 이용하여 사용자 주변의 도서관 데이터를 조회하고 반환하는 서비스 클래스입니다.
+ *
+ * <p>이 클래스는 두 가지 주요 기능을 제공합니다:</p>
+ * <ul>
+ * <li>특정 도서가 사용자 주변 도서관에 소장되어 있는지 확인하고, 소장 도서관 정보를 반환합니다.</li>
+ * <li>사용자 주변 도서관 정보를 반환합니다.</li>
+ * </ul>
+ *
+ * <p>이 클래스는 {@link LibraryRepository}, {@link LibraryHasBookRepository},
+ * {@link HasBookAreaRepository}를 사용하여 도서관 정보와 도서 소장 정보를 조회합니다.</p>
+ *
+ * <p>{@link #getNearByLibraries(String, Integer)} 메소드는 지역 코드와 ISBN13을 이용하여 사용자 주변의 도서관 데이터를 반환하며,
+ * {@link #getNearByLibraries(Integer)} 메소드는 지역 코드만을 이용하여 사용자 주변의 도서관 데이터를 반환합니다.</p>
+ *
+ * <p>또한, {@link #isSupportedArea(Integer)} 메소드를 이용하여 지정된 지역 코드가 도서 소장 가능 지역인지 판단할 수 있습니다.</p>
+ */
 @RequiredArgsConstructor
 @Service
 @Slf4j

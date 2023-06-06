@@ -68,6 +68,15 @@ public class CircuitBreaker {
         startScheduledRestoration(observer,60*30,TimeUnit.SECONDS);
     }
 
+    /**
+     * 주어진 {@link ApiObserver}에 대해 주기적인 복구 작업을 스케줄링하는 메소드입니다.
+     * 이 메소드는 {@link ApiObserver}가 가리키는 API 서버의 가용성을 정기적으로 확인합니다.
+     * 복구 가능한 경우 (즉, API 서버가 다시 사용 가능해질 경우), 스케줄링된 복구 작업을 중지합니다.
+     *
+     * @param observer 복구 작업을 스케줄링할 {@link ApiObserver} 인스턴스
+     * @param period 복구 작업을 반복할 시간 간격 (주기)
+     * @param timeUnit 주기의 시간 단위
+     */
     void startScheduledRestoration(ApiObserver observer,int period,TimeUnit timeUnit){
 
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
@@ -78,6 +87,12 @@ public class CircuitBreaker {
         scheduledTasks.put(observer, scheduledFuture);
     }
 
+    /**
+     * 주어진 {@link ApiObserver}에 대한 스케줄링된 복구 작업을 중지하는 메소드입니다.
+     * 이 메소드는 {@link ApiObserver}가 가리키는 API 서버에 대한 접근을 다시 허용합니다.
+     *
+     * @param observer 복구 작업을 중지할 {@link ApiObserver} 인스턴스
+     */
     void stopScheduledRestoration(ApiObserver observer){
 
         scheduledTasks.get(observer).cancel(false);
@@ -85,7 +100,12 @@ public class CircuitBreaker {
         observer.getApiStatus().openAccess();
     }
 
-    public Map<ApiObserver, ScheduledFuture<?>> getScheduledTasks() {
+    /**
+     * 현재 스케줄링된 복구 작업을 모두 반환하는 메소드입니다.
+     *
+     * @return 각 {@link ApiObserver}에 대한 스케줄링된 복구 작업을 포함하는 맵
+     */
+    Map<ApiObserver, ScheduledFuture<?>> getScheduledTasks() {
         return scheduledTasks;
     }
 }
