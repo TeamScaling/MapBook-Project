@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>책있나?</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link type="text/css" th:href="@{/css/home.css}" rel="stylesheet">
+  <script>
+    function goToLibraryView() {
+      window.location.href = "/mapLibrary";
+    }
+  </script>
+</head>
+
+<body>
+<header>
+</header>
+<main>
+  <div class="search-box">
+    <h1>MapBook</h1>
+    <form action="/books/search">
+      <select name="target" aria-label="선택">
+        <option value="title">도서명</option>
+<!--        <option value="author">저자</option>-->
+<!--        <option value="publisher">출판사</option>-->
+<!--        <option value="all">전체</option>-->
+      </select>
+      <label>
+        <input id="query-input" type="text" name="query" placeholder="검색어를 입력하세요">
+      </label>
+      <button id="search-button" type="submit">검색</button>
+      <p>
+    </form>
+<!--    <button type="submit" onclick="goToLibraryView()">도서관View</button>-->
+  </div>
+</main>
+<footer class>
+  <p>&copy; 2023 HanghaeLibrary reserved.</p>
+</footer>
+  <script>
+    //2자미만 검색시 알람
+    const form = document.querySelector('form[action="/books/search"]');
+    const queryInput = document.getElementById('query-input');
+
+    form.addEventListener('submit', function(event) {
+      if (queryInput.value.trim().length < 2) {
+        event.preventDefault(); // 검색을 실행하지 않음
+        alert('검색어를 두글자 이상 입력해주세요.');
+      } else if (queryInput.value.trim().length > 30 ){
+        event.preventDefault(); // 검색을 실행하지 않음
+        alert('검색어를 30글자 이하로 입력해주세요.');
+      }
+    });
+
+    queryInput.addEventListener('keypress', function(event) {
+      if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
+        event.preventDefault(); // 검색을 실행하지 않음
+        alert('검색어를 두글자 이상 입력해주세요.');
+      } else if (queryInput.value.trim().length > 30 ){
+        event.preventDefault(); // 검색을 실행하지 않음
+        alert('검색어를 30글자 이하로 입력해주세요.');
+      }
+
+    });
+  </script>
+</body>
+</html>

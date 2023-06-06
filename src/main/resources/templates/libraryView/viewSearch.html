@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+  <script>
+    function openPopup2() {
+      const areaCd = document.getElementById('search-input').value;
+      const url = `/mapLibrary/search?areaCd=${areaCd}`;
+      window.open(url, 'areaCdInfo', 'width=1200,height=800');
+      return false;
+
+    }
+    function openPopup(isbn, lat, lon) {
+
+      const url = `/books/mapBook/search?isbn=${isbn}&lat=${lat}&lon=${lon}`;
+      window.open(url, 'areaCdInfo', 'width=1200,height=800');
+      return false;
+    }
+  </script>
+</head>
+<body>
+<div id="search-form">
+  <form onsubmit="return openPopup2()">
+    <input id="search-input" type="text" placeholder="지역 코드를 입력하세요" name="areaCd">
+    <button type="submit">검색</button>
+  </form>
+</div>
+<br>
+<div id="search-form">
+  <form action="/mapLibrary/all" method="post">
+    <button type="submit">도서관 전체 보기</button>
+  </form>
+</div>
+<!-- 표 형태로 libraryMeta 정보를 표시 -->
+<table>
+  <thead>
+  <tr>
+    <th>지역 코드</th>
+    <th>도서관 수</th>
+    <th>지역명 1</th>
+    <th>지역명 2</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="library : ${libraryMeta}">
+    <td th:text="${library.areaCd}"></td>
+    <td th:text="${library.count}"></td>
+    <td th:text="${library.oneArea}"></td>
+    <td th:text="${library.twoArea}"></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

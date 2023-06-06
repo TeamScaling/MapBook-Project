@@ -1,0 +1,102 @@
+  /* 전체 레이아웃 */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: sans-serif;
+}
+
+/* 헤더 */
+header {
+  background-color: white;
+  color: black;
+  padding: 20px;
+}
+
+/* 메인 섹션 */
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 200px;
+}
+
+.search-box {
+  text-align: center;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
+}
+
+input[type="text"] {
+  width: 350px;
+  height: 30px;
+  padding: 5px;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+  background-color: #f2f2f2;
+}
+
+button[type="submit"] {
+  height: 40px;
+  width: 40px;
+  border: none;
+  border-radius: 0 5px 5px 0;
+  background-color: midnightblue;
+  color: #fff;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover{
+  background-color: steelblue;
+}
+/* select 요소 안의 option 태그에 스타일 적용 */
+select {
+  border: #ffffff;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+/* 푸터 */
+footer {
+  background-color: white;
+  color: black;
+  padding: 20px;
+  text-align: center;
+}
+
+/* 모바일 최적화 스타일 */
+@media (max-width: 768px) {
+  main {
+    margin-top: 100px; /* 모바일에서 상단 여백 축소 */
+  }
+
+  input[type="text"] {
+    width: 250px; /* 모바일에서 더 작은 폭으로 조정 */
+    height: 40px; /* 더 큰 UI로 조정 */
+    padding: 10px; /* 더 큰 UI로 조정 */
+  }
+
+  /* 글씨 크기 조정 */
+  body {
+    font-size: 14px;
+  }
+
+  /* 선택 창 스타일 변경 */
+  select {
+    width: 250px; /* 모바일에서 더 작은 폭으로 조정 */
+    height: 40px; /* 더 큰 UI로 조정 */
+    font-size: 14px; /* 글씨 크기 조정 */
+    padding: 5px; /* 더 큰 UI로 조정 */
+    border-radius: 5px; /* 둥근 테두리 추가 */
+  }
+
+  button[type="submit"]:active {
+    width: 100%; /* 모바일에서 가로폭 100%로 조정 */
+    height: 40px; /* 더 큰 UI로 조정 */
+    border-radius: 5px; /* 둥근 테두리 추가 */
+    background-color: steelblue;
+  }
+}

@@ -1,0 +1,21 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/app/
+    overwrite: yes
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  ApplicationStart:
+    - location: script/stop.sh
+      timeout: 60
+      runas: ubuntu
+    - location: script/start.sh
+      timeout: 60
+      runas: ubuntu

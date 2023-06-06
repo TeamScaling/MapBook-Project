@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+
 }
 
 group = 'com.scaling'
@@ -11,11 +12,15 @@ sourceCompatibility = '17'
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
+
     }
 }
 
+
+
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -27,8 +32,42 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation group: 'org.apache.opennlp', name: 'opennlp-tools', version: '2.1.1'
+
+    // https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
+    testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.5'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+
+    implementation 'com.github.shin285:KOMORAN:3.3.4'
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api" // java.lang.NoClassDefFoundError (javax.annotation.Generated) 대응 코드
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api" // java.lang.NoClassDefFoundError (javax.annotation.Entity) 대응 코드
+
+    implementation group: 'org.json', name: 'json', version: '20220924'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.1'
+
+    implementation("com.slack.api:bolt:1.18.0")
+    implementation("com.slack.api:bolt-servlet:1.18.0")
+    implementation("com.slack.api:bolt-jetty:1.18.0")
+
+
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+
+// CICD : plain jar 파일 중복생성 방지
+jar {
+    enabled = false
+}
+

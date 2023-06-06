@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="../static/css/login.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+  <meta charset="UTF-8">
+  <title>로그인 페이지</title>
+</head>
+<style>
+  .banner-info {
+    width: 538px;
+    margin: 50px auto 10px auto;
+    font-size: 20px;
+    flex-direction: column;
+    justify-content: left;
+    align-items: center;
+  }
+  .login-tags {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .login-tag {
+    margin: auto;
+    cursor: pointer;
+  }
+
+  a {
+    font-size: 15px;
+  }
+
+  #login-form {
+    width: 538px;
+    height: 740px;
+    margin: 20px auto 20px auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    /*padding: 20px 0 0;*/
+    border-radius: 10px;
+    background-color: #ffffff;
+    /*border: 2px rosybrown; !* 모든 가장자리 두께를 2px로 설정합니다. *!*/
+    box-shadow: 0 4px 25px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  .none {
+    display: none;
+  }
+
+  .login-input-box {
+    width: 370px;
+    height: 52px;
+    margin: 14px 0 0;
+    border-radius: 5px;
+  }
+
+  .login-id-label {
+    width: 382px;
+    padding-left: 11px;
+    margin-top: 20px;
+    /*margin: 0 337.9px 14px 11px;*/
+    font-size: 16px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: -0.8px;
+    text-align: left;
+    color: #212529;
+  }
+
+  #login-id-submit {
+    border-width: 0;
+    width: 393px;
+    height: 62px;
+    flex-grow: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 40px 0 0;
+    padding: 11px 12px;
+    border-radius: 5px;
+    background-color: rosybrown;
+
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    letter-spacing: normal;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+  }
+  input[type=text] {
+    background-color: #f1f1f1;
+    /*width: 100%;*/
+  }
+  input[type=password] {
+    background-color: #f1f1f1;
+  }
+</style>
+<body>
+
+<div class = "banner-info">
+  <p style="border-bottom: 1px dashed lightgray; font-weight: bold"  >회원가입</p>
+  <p style="border-bottom: 1px dashed lightgray;" ><a>🏠 회원정보</a> > <a>회원가입</a></p>
+</div>
+
+<div id="login-form">
+  <div >
+    <p style="height: 30px; font-size: 48px; font-weight: bold; text-align: center"> 항해 99 라이브러리</p>
+    <p style="height: 30px;font-size: 30px; text-align: right"> Hanghae Library</p>
+
+    <div class="login-id-label"></div>
+    <input type="text" name="username" id="username" class="login-input-box" placeholder="아이디">
+
+    <div class="login-id-label"></div>
+    <input type="password" name="password" id="password" class="login-input-box" placeholder="비밀번호">
+
+    <div class="login-id-label"></div>
+    <input type="password" name="password" id="password" class="login-input-box" placeholder="비밀번호 확인">
+
+    <div class="input-group mb-3">
+      <input type="password" name="password" id="password" class="login-input-box" placeholder="휴대폰 인증">
+      <div class="input-group-append">
+        <button class="btn btn-secondary" type="button">인증</button>
+      </div>
+    </div>
+
+    <button id="login-id-submit">회원 가입</button>
+  </div>
+</div>
+
+</body>
+</html>
