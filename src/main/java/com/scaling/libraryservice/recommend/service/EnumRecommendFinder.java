@@ -12,11 +12,29 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+
+/**
+ * 사용자의 추천 도서 목록을 찾는 클래스입니다.
+ *
+ * <p>이 클래스는 {@link BookFinder} 인터페이스를 구현합니다. {@link BookFinder#findBooks} 메소드를 통해
+ * 추천 도서를 검색하고, 그 결과를 {@link BookDto} 형태의 리스트로 반환합니다.</p>
+ *
+ * <p>추천 도서 정보는 {@link RecommendRepository}를 통해 조회됩니다.</p>
+ *
+ */
 @RequiredArgsConstructor
 @Slf4j @Component
 public class EnumRecommendFinder implements BookFinder<List<BookDto>, Integer> {
 
     private final RecommendRepository recommendRepo;
+
+    /**
+     * 주어진 쿼리와 사용자 ID를 이용하여 추천 도서를 찾아 {@link BookDto} 형태의 리스트로 반환합니다.
+     *
+     * @param titleQuery 검색 쿼리 정보를 담은 {@link TitleQuery} 객체.
+     * @param target 사용자 ID
+     * @return 찾아진 추천 도서 정보를 담은 {@link BookDto} 객체의 리스트
+     */
     @Override
     public List<BookDto> findBooks(TitleQuery titleQuery, Integer target) {
         return selectRecBooksEntity(titleQuery,target).stream().map(BookDto::new).toList();

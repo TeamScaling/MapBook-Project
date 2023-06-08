@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
 import com.scaling.libraryservice.commons.api.service.provider.DataProvider;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;

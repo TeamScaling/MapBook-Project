@@ -9,6 +9,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+/**
+ * 사용자의 위치 정보를 바탕으로 가장 가까운 도서관을 찾고, 해당 도서관의 지역 코드를 반환하는 클래스입니다.
+ * {@link LocationResolver} 인터페이스를 구현하며, 입력 값으로 {@link ReqMapBookDto}를 받고 출력 값으로 해당 도서관의 지역 코드를 반환합니다.
+ *
+ * <p>이 클래스는 사용자의 위치 정보와 모든 도서관의 위치 정보를 비교하여 가장 가까운 도서관을 찾는 방식으로 작동합니다.
+ * 이를 위해 {@link LibraryRepository}를 통해 모든 도서관의 정보를 로드하며, 이 정보는 {@link LibraryDto}의 리스트 형태로 저장됩니다.
+ * 위치 비교는 {@link HaversineCalculater}를 사용하여 계산되며, 가장 가까운 도서관의 지역 코드를 사용자 요청 Dto에 업데이트한 후 반환합니다.</p>
+ *
+ * <p>{@link LocationResolver#resolve(Object)} 메소드를 오버라이드하여 사용자의 위치 정보를 지역 코드로 변환하는 기능을 제공합니다.</p>
+ */
 @RequiredArgsConstructor
 @Component
 public class UserLibraryGeocoder implements LocationResolver<Integer,ReqMapBookDto> {
