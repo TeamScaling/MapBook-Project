@@ -1,25 +1,84 @@
-"# LibraryService"
+# MapBook
+> No more searching each library separately, search them all at once with MapBook! <br>
+> Don't bother finding where to borrow books, let MapBook automatically search the libraries around you!
+
+
+### Service Goals
+- Improve the usability of public library web services.
+    - Allow users to search for books and check their availability in one stop.
+    - Enable search functions supported by bookstore sites (such as Kyobo Bookstore and Yes24) to be used in public libraries.
+    - Ensure the service is available even in the event of an OpenAPI failure.
+
+### Challenge Goals
+- Improve understanding of Java, Spring, and MySQL by avoiding the use of external services and implementing them directly.
+    - Implement a fast and flexible search without using ElasticSearch, and compare with external services later.
+    - Implement caching without using Redis.
+    - Implement circuit breakers without using libraries.
+
+### Explore the Project
+- [Try MapBook](https://mapbook.pro/)
+- [MapBook Notion](https://www.notion.so/TeamScaling-MapBook-9bfd3aadc2a54a2e9c32a7ebd08409e6)
+
+
+
 <p align = "center">
-<img width="85%" height = "550" alt="mapbook" src="src/main/resources/static/images/mapbook.png" >
+<img width="50%" height = "50%" alt="mapbook" src="src/main/resources/static/images/Untitled2.png" >
+<img width="50%" height = "50%" alt="mapbook" src="src/main/resources/static/images/Untitled3.png" >
 </p>
 
-# MapBook 
-### 빠르고 유연한 검색 / 검색어 기반 추천도서 / 주변 도서관 대여여부 확인
+<div align=center><h1>📚 STACKS</h1></div>
+<div align=center> 
+  <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white"> 
+  <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white">
+  <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white">
+  <img src="https://img.shields.io/badge/bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white">
+  <img src="https://img.shields.io/badge/gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+  <br>
+
+  <br>
+</div>
+
+### Project Duration & Team
+- Duration: 2023.03.31 - 2023.05.12 (6 weeks)
+- Team: 4 Backend Developers
+
+### Backend Technology
+- Java
+- Spring Boot
+- Spring JPA
+- Thymeleaf
+- Komoran
+- Junit5
+- WireMock
+- Mockito
+
+### Infrastructure
+- AWS EC2
+- Github CI/CD
+- AWS RDS (Mysql 8.0)
+
+### Open API
+- Kakao Map
+- Library Information System (for book availability check)
+
+### Project Characteristics
+- This is a 'challenge project' consisting of backend developers only.
+- We focused on implementing essential UI and mainly concentrated on backend technologies.
 
 
-# 프로젝트 설명
-- 프로젝트 이름 : [mapbook.pro](http://mapbook.pro) (책있나?)**
-# 프로젝트 목표
-- 서비스 목표 : 공공도서관 웹 사용성 개선
-    - 도서 검색과 대여가능여부 확인이 원스톱으로 이뤄지도록
-    - 도서판매 사이트(교보문고, yes24)가 지원하는 검색기능을 공공도서관에서도 사용할 수 있도록
-    - OpenAPI 장애 시에도 서비스 가능하도록
+<div align=center><h1>📝 Class Diagram</h1></div>
+<p align = "center">
+<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/bookSearch.png" >
+<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/mapBook.png" >
+<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/CircuitBreaker.png" >
+</p>
+<div align=center><h1>📝 Sequence Diagram</h1></div>
+<p align = "center">
+<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/BookSearch.png" >
+<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/BookSearch2.png" >
+<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/mapbook2.png" >
+<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/mapbook3.png" >
+<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/circuitBreaker.png" >
+<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/circuitBreaker2.png" >
+</p>
 
-- 챌린지 목표 : Java, Spring, MySQL 이해도를 높이기 위해 외부 서비스 사용을 지양하고 직접 구현
-    - ElasticSearch를 사용하지 않고 빠르고 유연한 검색 구현 → 이후 외부서비스 적용하고 비교
-    - Redis를 사용하지 않고 캐싱 구현
-    - 라이브러리 사용하지 않고 서킷브레이커 구현
-  
-- 프로젝트 둘러보기
-    - [MapBook 사용해보기](https://mapbook.pro/)
-    - [MapBook Notion](https://www.notion.so/TeamScaling-MapBook-9bfd3aadc2a54a2e9c32a7ebd08409e6)
