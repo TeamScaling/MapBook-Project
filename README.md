@@ -22,8 +22,8 @@
 
 
 <p align = "center">
-<img width="50%" height = "50%" alt="mapbook" src="src/main/resources/static/images/Untitled2.png" >
-<img width="50%" height = "50%" alt="mapbook" src="src/main/resources/static/images/Untitled3.png" >
+<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/Untitled2.png" >
+<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/Untitled3.png" >
 </p>
 
 <div align=center><h1>📚 STACKS</h1></div>
