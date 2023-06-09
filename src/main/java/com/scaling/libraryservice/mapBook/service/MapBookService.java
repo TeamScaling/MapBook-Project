@@ -18,6 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
+/**
+ * 사용자가 원하는 도서와 사용자 주변의 도서관을 연결하여 대출 가능한 도서관의 정보를 제공하는 서비스 클래스입니다.
+ *
+ * <p>이 클래스는 {@link DataProvider<ApiBookExistDto>}를 사용하여 도서의 대출 가능 여부 데이터를 가져옵니다.</p>
+ *
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -75,6 +81,14 @@ public class MapBookService implements ApiRelatedService {
         return result;
     }
 
+    /**
+     * API에서 받은 도서 대출 가능 여부 데이터를 Map 형태로 변환하여 반환합니다.
+     *
+     * <p>대출 가능한 도서만 Map에 추가되며, Map의 키는 도서관 코드, 값은 도서 대출 가능 여부 데이터입니다.</p>
+     *
+     * @param apiResults API로부터 받은 도서 대출 가능 여부 데이터 리스트
+     * @return 도서관 코드를 키로, 도서 대출 가능 여부 데이터를 값으로 가지는 Map
+     */
     private Map<Integer, ApiBookExistDto> changeToMap(List<ApiBookExistDto> apiResults) {
 
         Map<Integer, ApiBookExistDto> bookExistMap = new HashMap<>();

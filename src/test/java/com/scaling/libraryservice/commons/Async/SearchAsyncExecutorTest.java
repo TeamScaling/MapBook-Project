@@ -31,7 +31,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class SearchAsyncExecutorTest {
 
     @InjectMocks
-    private SearchAsyncExecutor executor;
+    private SearchAsyncExecutor<Page<BookDto>,ReqBookDto> executor;
 
     @Mock
     private BookFinder<Page<BookDto>,Pageable> bookFinder;
