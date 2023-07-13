@@ -12,8 +12,10 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
+@Component
 public class BExistProvider implements DataProvider<ApiBookExistDto>{
 
     private final ApiQuerySender apiQuerySender;
@@ -34,6 +36,6 @@ public class BExistProvider implements DataProvider<ApiBookExistDto>{
         List<ResponseEntity<String>> responseEntities =
             apiQuerySender.sendMultiQuery(connections, nThreads, HttpEntity.EMPTY);
 
-        return apiQueryBinder.bindList(responseEntities);
+        return apiQueryBinder.bindList(responseEntities,this.getClass());
     }
 }
