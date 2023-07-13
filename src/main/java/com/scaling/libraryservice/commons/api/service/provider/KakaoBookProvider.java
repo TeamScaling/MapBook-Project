@@ -11,9 +11,11 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 
 @RequiredArgsConstructor
+@Component
 public class KakaoBookProvider implements DataProvider<BookApiDto> {
 
     private final ApiQuerySender apiQuerySender;
@@ -33,7 +35,7 @@ public class KakaoBookProvider implements DataProvider<BookApiDto> {
         List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(connections,
             nThreads, new KakaoBookConn("", 1L).getHttpEntity());
 
-        return apiQueryBinder.bindList(responseEntities);
+        return apiQueryBinder.bindList(responseEntities,this.getClass());
     }
 
 }

@@ -79,34 +79,5 @@ public class AppConfig {
     }
 
 
-    @Bean
-    public BindingStrategy<BookApiDto> kakaoBinding() {
-
-        return new KakaoBookBinding();
-    }
-
-    @Bean
-    public BindingStrategy<ApiBookExistDto> bookExistBinding() {
-
-        return new BookExistBinding();
-    }
-
-    @Bean
-    public KakaoBookProvider kakaoBookProvider(AuthKeyLoader loader) {
-
-        ApiQueryBinder<BookApiDto> binder = new ApiQueryBinder<>(kakaoBinding());
-
-        return new KakaoBookProvider(apiQuerySender(), binder,loader);
-    }
-
-    @Bean
-    public BExistProvider bExistProvider(AuthKeyLoader loader){
-
-        ApiQueryBinder<ApiBookExistDto> binder = new ApiQueryBinder<>(bookExistBinding());
-
-        return new BExistProvider(apiQuerySender(),binder,loader);
-    }
-
-
 }
 
