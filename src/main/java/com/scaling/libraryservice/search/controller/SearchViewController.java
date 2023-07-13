@@ -57,7 +57,6 @@ public class SearchViewController {
             model.put("totalPages", searchResult.getMeta().getTotalPages());
             model.put("size", searchResult.getMeta().getTotalElements());
         }
-        //fixme : query가 empty일 때, 사용자가 공백 검색을 못하게 alert를 띄운다.
 
         return "search/searchResult";
     }
