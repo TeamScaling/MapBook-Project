@@ -34,6 +34,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.apache.opennlp', name: 'opennlp-tools', version: '2.1.1'
 
+    implementation 'org.apache.commons:commons-csv:1.8'
+
     // https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
     testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
 
