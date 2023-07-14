@@ -11,8 +11,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class CsvMerger {
-
+public class CsvFileMerger {
 
     public static void main(String[] args) {
 
@@ -21,11 +20,11 @@ public class CsvMerger {
         // 출력 파일명 입력
         String outputFileName = "lib_books.csv";
 
-        merge(inputFolder, outputFileName);
+        mergeCsvFile(inputFolder, outputFileName);
     }
 
 
-    public static void merge(String inputFolder, String outputFileName) {
+    public static void mergeCsvFile(String inputFolder, String outputFileName) {
 
         File[] files = new File(inputFolder)
             .listFiles((dir, name) -> name.endsWith(".csv"));

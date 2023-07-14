@@ -89,4 +89,9 @@ public class LibraryFindService {
         return hasBookAreaRepo.findById(areaCd).isPresent();
     }
 
+    public List<LibraryDto> getAllLibraries(){
+
+        return libraryRepo.findAll().stream().map(LibraryDto::new).toList();
+    }
+
 }
