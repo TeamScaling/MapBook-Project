@@ -15,6 +15,7 @@ import com.scaling.libraryservice.search.service.strategy.EngKorBoolSt;
 import com.scaling.libraryservice.search.service.strategy.EngKorNaturalSt;
 import com.scaling.libraryservice.search.service.strategy.KorBoolSt;
 import com.scaling.libraryservice.search.service.strategy.KorNaturalSt;
+import com.scaling.libraryservice.search.service.strategy.SelectStrategy;
 import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.util.TitleType;
 import java.util.EnumMap;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookFinderImpl implements BookFinder<Page<BookDto>, Pageable>{
 
-    private final Map<TitleType,SelectStrategy> strategyMap;
+    private final Map<TitleType, SelectStrategy> strategyMap;
 
     public BookFinderImpl(BookRepository bookRepository) {
         this.strategyMap = new EnumMap<>(TitleType.class);

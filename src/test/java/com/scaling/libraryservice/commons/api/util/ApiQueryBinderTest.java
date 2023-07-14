@@ -3,6 +3,7 @@ package com.scaling.libraryservice.commons.api.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
+import com.scaling.libraryservice.commons.api.service.provider.BExistProvider;
 import com.scaling.libraryservice.commons.api.util.binding.BookExistBinding;
 import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ class ApiQueryBinderTest {
     @BeforeEach
     public void setUp(){
 
-        this.apiQueryBinder = new ApiQueryBinder<>(new BookExistBinding());
+        this.apiQueryBinder = new ApiQueryBinder<>();
     }
 
 
@@ -58,7 +59,7 @@ class ApiQueryBinderTest {
 
         var response = apiQuerySender.sendSingleQuery(apiConnection,HttpEntity.EMPTY);
 
-        var result = apiQueryBinder.bind(response);
+        var result = apiQueryBinder.bind(response, BExistProvider.class);
 
         /* then */
 

@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.search.service;
+package com.scaling.libraryservice.search.service.strategy;
 
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.util.TitleQuery;
