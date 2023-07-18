@@ -39,4 +39,8 @@ public class TitleQuery {
         this.korToken = korToken;
     }
 
+    public String getEngKorTokens(){
+        return String.join(" ",engToken,korToken).trim();
+    }
+
 }

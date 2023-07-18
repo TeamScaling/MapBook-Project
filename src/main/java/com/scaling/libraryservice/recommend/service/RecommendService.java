@@ -3,14 +3,14 @@ package com.scaling.libraryservice.recommend.service;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.recommend.dto.ReqRecommendDto;
-import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.util.TitleQuery;
-import com.scaling.libraryservice.search.service.BookFinder;
+import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.util.TitleTrimmer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 public class RecommendService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder<List<BookDto>, Integer> bookFinder;
+    private final BookRepository bookRepository;
 
 
     /**
@@ -41,7 +41,7 @@ public class RecommendService {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(reqRecommendDto.getQuery());
 
-        return bookFinder.findBooks(titleQuery, 5).stream()
+        return bookRepository.findBooks(titleQuery, Pageable.ofSize(5)).stream()
             .map(r -> TitleTrimmer.TrimTitleResult(r.getTitle()))
             .toList();
     }

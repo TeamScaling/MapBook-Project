@@ -23,17 +23,18 @@ public class KomoranTokenizer implements TitleTokenizer {
      * @return 추출된 명사가 담긴 List
      */
     @Override
-    public List<String> tokenize(String target){
+    public List<String> tokenize(String target) {
 
         KomoranResult analyzeResultList = komoran.analyze(target);
 
         List<Token> tokens = analyzeResultList.getTokenList();
 
         List<String> nounList =
-            tokens.stream().filter(i ->  i.getPos().equals("NNP") | i.getPos().equals("NNG"))
+            tokens.stream().filter(
+                    i -> i.getPos().equals("NNP") || i.getPos().equals("NNG"))
                 .map(Token::getMorph).toList();
 
-        return nounList.stream().distinct().filter(non -> non.length()>1).toList();
+        return nounList.stream().distinct().filter(non -> non.length() > 1).toList();
     }
 
 }

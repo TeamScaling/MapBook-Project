@@ -1,21 +1,14 @@
 package com.scaling.libraryservice.config;
 
 
-import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
-import com.scaling.libraryservice.commons.api.service.provider.BExistProvider;
-import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
-import com.scaling.libraryservice.commons.api.util.binding.BindingStrategy;
-import com.scaling.libraryservice.commons.api.util.binding.BookExistBinding;
-import com.scaling.libraryservice.commons.api.util.binding.KakaoBookBinding;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.QuerySendChecker;
 import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
-import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
-import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
-import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import javax.persistence.EntityManager;
 import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.springframework.context.annotation.Bean;
@@ -76,6 +69,12 @@ public class AppConfig {
     public RestorationChecker restorationChecker() {
 
         return new QuerySendChecker(apiQuerySenderTimeOut());
+    }
+
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager em){
+
+        return new JPAQueryFactory(em);
     }
 
 

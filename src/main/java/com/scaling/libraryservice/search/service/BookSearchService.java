@@ -4,6 +4,7 @@ import com.scaling.libraryservice.commons.Async.AsyncExecutor;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
+import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookFinder<Page<BookDto>,Pageable> bookFinder;
+    private final BookRepository bookRepository;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     /**
@@ -52,7 +53,7 @@ public class BookSearchService {
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
         Page<BookDto> booksPage = asyncExecutor.execute(
-            () -> bookFinder.findBooks(titleQuery, pageable), reqBookDto, timeout);
+            () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout);
 
         return new RespBooksDto(new MetaDto(booksPage, reqBookDto), booksPage);
     }
