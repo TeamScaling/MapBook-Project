@@ -62,5 +62,19 @@ class KomoranTokenizerTest {
         assertTrue(result.stream().anyMatch(s -> s.equals("메시지")));
     }
 
+    @Test @DisplayName("2글자 이상의 명사만 추출 한다.")
+    void tokenize4() {
+        /* given */
+
+        String target = "아프니까 청춘";
+
+        /* when */
+        var result = komoranTokenizer.tokenize(target);
+
+        /* then */
+        System.out.println(result);
+    }
+
+
 
 }

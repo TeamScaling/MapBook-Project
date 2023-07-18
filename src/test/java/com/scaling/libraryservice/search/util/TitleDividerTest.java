@@ -2,6 +2,7 @@ package com.scaling.libraryservice.search.util;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.scaling.libraryservice.search.util.TitleDivider.Language;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,8 +21,8 @@ class TitleDividerTest {
 
         /* then */
 
-        assertTrue(result.get("eng").stream().anyMatch(e -> e.equals("java")));
-        assertTrue(result.get("kor").stream().anyMatch(e -> e.equals("정석")));
+        assertTrue(result.get(Language.ENG).contains("java"));
+        assertTrue(result.get(Language.KOR).contains("정석"));
     }
 
     @Test @DisplayName("불용어가 있었도 영어,한글을 분리 할 수 있다.")
@@ -35,9 +36,9 @@ class TitleDividerTest {
         var result = TitleDivider.divideKorEng(title);
 
         /* then */
-        
-        assertTrue(result.get("eng").stream().allMatch(e -> e.equals("java")));
-        assertTrue(result.get("kor").stream().allMatch(e -> e.equals("정석")));
+
+        assertTrue(result.get(Language.ENG).contains("java"));
+        assertTrue(result.get(Language.KOR).contains("정석"));
     }
 
     @Test @DisplayName("불용어가 단어 사이에 잘못 위치해도 영어,한글을 분리 할 수 있다.")
@@ -51,8 +52,8 @@ class TitleDividerTest {
         var result = TitleDivider.divideKorEng(title);
 
         /* then */
-        assertTrue(result.get("eng").stream().allMatch(e -> e.equals("java")));
-        assertTrue(result.get("kor").stream().allMatch(e -> e.equals("정석")));
+        assertTrue(result.get(Language.ENG).contains("java"));
+        assertTrue(result.get(Language.KOR).contains("정석"));
     }
 
 }

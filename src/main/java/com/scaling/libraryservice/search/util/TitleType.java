@@ -1,41 +1,26 @@
 package com.scaling.libraryservice.search.util;
 
+
+import static com.scaling.libraryservice.search.util.SearchMode.BooleanMode;
+import static com.scaling.libraryservice.search.util.SearchMode.NaturalMode;
+
 /**
  * 검색어 유형을 정의하기 위한 Enum 클래스입니다.
  */
 public enum TitleType {
 
-    /**
-     * 한국어 단일 단어 검색어 유형
-     */
-    KOR_SG,
+    TOKEN_ONE(NaturalMode),
 
-    /**
-     * 영어 단일 단어 검색어 유형
-     */
-    ENG_SG,
-
-    /**
-     * 한국어 다중 단어 검색어 유형
-     */
-    KOR_MT_TWO,
-
-    KOR_MT_OVER_TWO,
-
-    /**
-     * 영어 다중 단어 검색어 유형
-     */
-    ENG_MT,
+    TOKEN_TWO_OR_MORE(BooleanMode);
 
 
-    /**
-     * 영어-한국어 단일 단어 검색어 유형
-     */
-    ENG_KOR_SG,
+    private final SearchMode mode;
 
-    /**
-     * 영어-한국어 다중 단어 검색어 유형
-     */
-    ENG_KOR_MT
+    TitleType(SearchMode mode) {
+        this.mode = mode;
+    }
 
+    public SearchMode getMode() {
+        return mode;
+    }
 }
