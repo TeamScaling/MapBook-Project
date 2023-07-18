@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.search.service;
+package com.scaling.libraryservice.search.repository;
 
 import org.hibernate.dialect.MySQL8Dialect;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
