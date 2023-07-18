@@ -37,11 +37,6 @@
       </a>
     </div>
   </div>
-  <button onclick="getRecommend()">추천 도서 보기</button>
-
-  <div class="recommend-box" id="recommend-box" style="display: none">
-    <p> ---검색중----</p>
-  </div>
 
 </header>
 
@@ -304,34 +299,6 @@
     });
 
     return false;
-  }
-
-  function getRecommend() {
-    // 현재 페이지 URL에서 'query' 파라미터 값 가져오기
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get('query');
-
-    if ($('#recommend-box').css('display') === 'none') {
-      $('#recommend-box').show();
-    }
-
-    $.ajax({
-      type: 'POST',
-      url: `/books/recommend`,
-      contentType: "application/json",
-      data: JSON.stringify({query}), // query 파라미터를 data 객체에 추가
-      success: function (response) {
-        $('#recommend-box').empty();
-        for (let i = 0; i < response.length; i++) {
-          let bookNm = response[i];
-          $('#recommend-box').append(`(${i+1}) ${bookNm}<br>`);
-        }
-        console.log(response);
-      },
-      error(error) {
-        console.error(error);
-      }
-    })
   }
 </script>
 
