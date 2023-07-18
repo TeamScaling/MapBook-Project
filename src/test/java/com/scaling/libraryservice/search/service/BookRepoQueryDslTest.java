@@ -25,28 +25,6 @@ class BookRepoQueryDslTest {
     @Autowired
     BookRepoQueryDsl bookRepoQueryDsl;
 
-//    select *
-//    from (select *
-//        from korBook
-//        where match(ENG_TITLE_TOKEN) against('react' in boolean MODE )) AS l
-//    where match(TITLE_NM) against('교과서' in natural LANGUAGE MODE );
-
-
-    @Test
-    public void test() {
-
-        JPAQueryFactory factory = new JPAQueryFactory(em);
-
-        NumberTemplate<Double> template = Expressions.numberTemplate(Double.class,
-            "function('BooleanMatch',{0},{1})", book.title, "+자바 +정석");
-
-        var result = factory
-            .selectFrom(book)
-            .where(template.gt(0))
-            .fetch();
-
-        result.forEach(System.out::println);
-    }
 
 //    @Test
 //    public void finder() {
