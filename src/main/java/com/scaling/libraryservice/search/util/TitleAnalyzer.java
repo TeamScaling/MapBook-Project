@@ -45,7 +45,6 @@ public class TitleAnalyzer {
         String result = joiner.toString().trim();
 
         if (result.split(" ").length >= TOKEN_SIZE_LIMIT) {
-
             return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
         } else {
             return titleQueryBuilder.titleType(TOKEN_ONE).build();
