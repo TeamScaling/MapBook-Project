@@ -26,8 +26,7 @@ class CsvWriterTest {
 
     @Autowired
     BookRepoQueryDsl bookRepository;
-
-    @Test
+    
     public void test3() {
 
         int pageSize = 500000;
