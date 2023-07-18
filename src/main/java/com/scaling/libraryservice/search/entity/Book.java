@@ -4,13 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 
 @Entity
-@Table(name = "books")
+@Table(name = "book_final")
 @ToString
 @Getter
 public class Book {
@@ -36,6 +35,9 @@ public class Book {
 
     @Column(name = "loan_cnt")
     private Integer loanCnt;
+
+    @Column(name = "title_token")
+    private String titleToken;
 
 
     public Integer getLoanCnt() {

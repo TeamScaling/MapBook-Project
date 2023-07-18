@@ -42,6 +42,7 @@ public class BookDto {
         this.bookImg =book.getBookImg();
     }
 
+
     public BookDto(@NonNull BookDto bookDto) {
         this.id = bookDto.getId();
         this.title = bookDto.getTitle();

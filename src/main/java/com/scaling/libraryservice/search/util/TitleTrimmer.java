@@ -7,20 +7,6 @@ import org.springframework.lang.NonNull;
 
 public class TitleTrimmer {
 
-    public static String removeKeyword(@NonNull String query) {
-
-        String[] keyWord = {"이야기", "장편소설", "한국사"};
-
-        if (query.split(" ").length > 1) {
-
-            for (String key : keyWord) {
-                query = query.replaceAll(key, "");
-            }
-        }
-
-        return query.trim();
-    }
-
 
     /**
      * 주어진 제목 문자열을 나눈 뒤 다른 문자를 더해 알맞게 변형 합니다.
@@ -29,6 +15,7 @@ public class TitleTrimmer {
      * @return 변형된 제목 문자열
      */
     public static String splitAddPlus(@NonNull String target) {
+        target = target.trim();
         return Arrays.stream(target.split(" "))
             .map(name -> "+" + name)
             .collect(Collectors.joining(" "));

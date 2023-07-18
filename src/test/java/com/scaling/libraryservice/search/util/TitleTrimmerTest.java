@@ -2,27 +2,12 @@ package com.scaling.libraryservice.search.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class TitleTrimmerTest {
 
 
-    @Test @DisplayName("불필요한 키워드를 제거 할 수 있다")
-    public void remove_keyWord() {
-        /* given */
-
-        String query = "28 : 정유정 장편소설 이야기 한국사";
-        String removeQuery = "28 : 정유정";
-
-        /* when */
-        var result = TitleTrimmer.removeKeyword(query);
-
-        /* then */
-
-        Assertions.assertEquals(result, removeQuery);
-    }
 
     @Test
     void splitAddPlus() {

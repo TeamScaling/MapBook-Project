@@ -2,7 +2,7 @@ package com.scaling.libraryservice.search.util;
 
 import com.scaling.libraryservice.commons.timer.Timer;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.lang.NonNull;
@@ -20,7 +20,7 @@ public class TitleDivider {
      * @return 영어와 한글로 분리된 검색어가 담긴 Map 객체 (키: "eng" - 영어, "kor" - 한글)
      */
     @Timer
-    public static Map<String, List<String>> divideKorEng(@NonNull String query) {
+    public static Map<Language, String> divideKorEng(@NonNull String query) {
         char[] chars = query.toCharArray();
 
         StringBuilder engBuilder = new StringBuilder();
@@ -61,11 +61,15 @@ public class TitleDivider {
             kor.add(korBuilder.toString());
         }
 
-        Map<String, List<String>> result = new HashMap<>();
-        result.put("eng", eng);
-        result.put("kor", kor);
+        Map<Language, String> result = new EnumMap<>(Language.class);
+        result.put(Language.ENG, String.join(" ", eng).toLowerCase());
+        result.put(Language.KOR, String.join(" ",kor));
 
         return result;
+    }
+
+    enum Language{
+        ENG,KOR
     }
 
 

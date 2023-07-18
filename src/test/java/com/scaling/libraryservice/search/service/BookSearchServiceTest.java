@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.search.service;
 
+import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
@@ -10,7 +11,6 @@ import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleQuery;
-import com.scaling.libraryservice.search.util.TitleType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,7 +37,7 @@ class BookSearchServiceTest {
 
         ReqBookDto reqBookDto = new ReqBookDto("java 정석", 1, 10);
 
-        TitleQuery titleQuery = TitleQuery.builder().titleType(TitleType.ENG_KOR_SG)
+        TitleQuery titleQuery = TitleQuery.builder().titleType(TOKEN_TWO_OR_MORE)
             .engToken("java").korToken("정석").build();
 
         when(titleAnalyzer.analyze(query)).thenReturn(titleQuery);
