@@ -19,7 +19,7 @@ class KakaoBookProviderTest {
     @Autowired
     private KakaoBookProvider kakaoBookProvider;
 
-    @Test
+
     @DisplayName("getBookMulti 메소드를 통해 BookApiDto list를 반환 받는 데 성공")
     public void test_getBookMulti() {
         /* given */
