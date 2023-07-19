@@ -76,6 +76,10 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
     implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
+
+    // https://mvnrepository.com/artifact/org.bitbucket.eunjeon/seunjeon
+    implementation group: 'org.bitbucket.eunjeon', name: 'seunjeon_2.12', version: '1.5.0'
+
 }
 
 tasks.named('test') {

@@ -29,6 +29,8 @@ public class KomoranTokenizer implements TitleTokenizer {
 
         List<Token> tokens = analyzeResultList.getTokenList();
 
+        tokens.forEach(System.out::println);
+
         List<String> nounList =
             tokens.stream().filter(
                     i -> i.getPos().equals("NNP") || i.getPos().equals("NNG"))
