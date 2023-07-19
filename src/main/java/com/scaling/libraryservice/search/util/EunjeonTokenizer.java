@@ -19,9 +19,9 @@ public class EunjeonTokenizer  {
         Analyzer.parseJava(target).forEach(node ->
             {
                 if (isNNP(node) || isNNG(node)) {
-                    tokenizedWords.add(node.copy$default$1().getSurface());
+                    tokenizedWords.add(node.copy$default$1().surface());
                 } else if (isSL(node)) {
-                    slWords.add(node.copy$default$1().getSurface());
+                    slWords.add(node.copy$default$1().surface());
                 }
             }
         );
@@ -34,7 +34,7 @@ public class EunjeonTokenizer  {
     }
 
     private boolean hasFeatureHead(LNode node, String feature) {
-        return node.copy$default$1().getFeatureHead().equals(feature);
+        return node.copy$default$1().feature().head().equals(feature);
     }
 
     private boolean isSL(LNode node) {
