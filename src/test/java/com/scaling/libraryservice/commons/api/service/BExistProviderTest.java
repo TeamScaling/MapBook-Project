@@ -21,7 +21,7 @@ class BExistProviderTest {
     public void setUp() {
 
     }
-    
+
     public void provideDataList() {
         /* given */
 
