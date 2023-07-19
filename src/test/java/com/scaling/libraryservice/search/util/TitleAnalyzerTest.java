@@ -17,7 +17,7 @@ class TitleAnalyzerTest {
     @BeforeEach
     public void setUp() {
 
-        titleAnalyzer = new TitleAnalyzer(new KomoranTokenizer(new Komoran(DEFAULT_MODEL.FULL)));
+        titleAnalyzer = new TitleAnalyzer(new EunjeonTokenizer());
     }
 
     @Test
@@ -32,7 +32,7 @@ class TitleAnalyzerTest {
         var result = titleAnalyzer.analyze(title);
 
         /* then */
-
+        System.out.println(result);
         assertEquals(TOKEN_TWO_OR_MORE, result.getTitleType());
     }
 

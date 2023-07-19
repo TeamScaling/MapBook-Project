@@ -62,7 +62,7 @@ class CsvWriterTest {
 
             //마지막으로 객체를 변환하여 Csv file로 만들기 위해
             //미리 정의한 메소드를 호출 한다
-            csvWriter.writeAnalyzedBooksToCsv(books, "bookFinal2.csv");
+            csvWriter.writeAnalyzedBooksToCsv(books, "books.csv");
 
             pageable = pageable.next();  // 다음 페이지를 가져오기 위한 설정
 

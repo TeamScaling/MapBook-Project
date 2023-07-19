@@ -1,12 +1,14 @@
 package com.scaling.libraryservice.search.util;
 
-import static com.scaling.libraryservice.search.util.TitleDivider.Language.KOR;
+import static com.scaling.libraryservice.search.util.Language.ENG;
+import static com.scaling.libraryservice.search.util.Language.KOR;
 import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ONE;
 import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
 
-import com.scaling.libraryservice.search.util.TitleDivider.Language;
+import com.scaling.libraryservice.commons.timer.Timer;
+import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,44 +21,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class TitleAnalyzer {
 
-    private final TitleTokenizer tokenizer;
+    private final EunjeonTokenizer tokenizer;
 
-    private static final int TOKEN_SIZE_LIMIT = 2;
+    private static final int TOKEN_SIZE_DEFAULT = 1;
 
+    @Timer
     public TitleQuery analyze(String query) {
 
-        Map<Language, String> titleMap = TitleDivider.divideKorEng(query);
-
-        StringJoiner joiner = new StringJoiner(" ");
+        Map<Language, List<String>> titleMap = tokenizer.tokenize(query);
 
         var titleQueryBuilder = TitleQuery.builder();
 
+        AtomicInteger count = new AtomicInteger();
+
         titleMap.forEach((key, tokens) -> {
 
-            if(key == KOR){
-                titleQueryBuilder.korToken(getKorToken(tokens));
-            }else{
-                titleQueryBuilder.engToken(tokens);
-            }
+            if (key == KOR) {
+                count.addAndGet(tokens.size());
+                titleQueryBuilder.korToken(String.join(" ", tokens));
 
-            joiner.add(tokens);
+            } else if(key == ENG) {
+
+                count.addAndGet(tokens.size());
+                titleQueryBuilder.engToken(String.join(" ", tokens));
+            }
         });
 
-        String result = joiner.toString().trim();
-
-        if (result.split(" ").length >= TOKEN_SIZE_LIMIT) {
-            return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
-        } else {
-            return titleQueryBuilder.titleType(TOKEN_ONE).build();
-        }
-    }
-
-    private String getKorToken(String korToken) {
-
-        if (!korToken.isEmpty()) {
-            return String.join(" ",tokenizer.tokenize(korToken));
-        } else {
-            return korToken;
-        }
+        return count.get() == TOKEN_SIZE_DEFAULT ?
+            titleQueryBuilder.titleType(TOKEN_ONE).build()
+            : titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
     }
 }

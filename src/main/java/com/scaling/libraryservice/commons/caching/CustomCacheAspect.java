@@ -45,14 +45,19 @@ public class CustomCacheAspect<K, I> {
     @SuppressWarnings("unchecked")
     public I cacheAround(@NonNull ProceedingJoinPoint joinPoint) throws Throwable {
 
+        // 해당 클래스로 등록된 caffeineCache 인스턴스가 있는지 찾기 위해
         Class<?> customer = joinPoint.getTarget().getClass();
+
+        // 타겟 메소드의 매개 변수에서 해당하는 캐쉬 키를 찾는다.
         CacheKey<K, I> cacheKey = cacheManager.generateCacheKey(joinPoint.getArgs());
 
+        // caching을 사용하고 있지 않다면, 먼저 등록을 한다. 그리고 마지막에 등록된 캐싱 객체에 캐시 데이터를 넣음
         if (!cacheManager.isUsingCaching(customer)) {
 
             cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(),
                 customer);
         } else {
+
             if (cacheManager.isContainItem(customer, cacheKey)) {
                 log.info("Cache Manager find this item ");
                 return cacheManager.get(customer, cacheKey);
@@ -76,10 +81,12 @@ public class CustomCacheAspect<K, I> {
         throws Throwable {
         StopWatch stopWatch = new StopWatch();
 
+        // 캐싱이 필요한지를 판별하기 위해 해당 메소드의 시작과 끝나는 시간을 측정
         stopWatch.start();
         I result = (I)joinPoint.proceed();
         stopWatch.stop();
 
+        // 메소드가 2초를 초과하거나 api 관련한 클래스면 caching 처리 한다.
         if (stopWatch.getTotalTimeSeconds() > 2.0 | ApiRelatedService.class.isAssignableFrom(customer)) {
 
             log.info(
