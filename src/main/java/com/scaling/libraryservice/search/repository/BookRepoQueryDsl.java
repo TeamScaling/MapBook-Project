@@ -2,7 +2,6 @@ package com.scaling.libraryservice.search.repository;
 
 import static com.scaling.libraryservice.search.entity.QBook.book;
 import static com.scaling.libraryservice.search.util.SearchMode.BOOLEAN_MODE;
-import static com.scaling.libraryservice.search.util.SearchMode.NGRAM_MODE;
 
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
@@ -32,19 +31,9 @@ public class BookRepoQueryDsl implements BookRepository {
 
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
-
-        System.out.println(titleQuery.getEngKorTokens());
         // match..against 문을 활용하여 Full text search를 수행
 
-        System.out.println("@@@@@ "+titleQuery);
-
-        JPAQuery<Book> books;
-
-        if(titleQuery.getTitleType().getMode() == NGRAM_MODE){
-            books = ngramModeJpaQuery(titleQuery,pageable);
-        }else{
-            books = spacedModeJpaQuery(titleQuery,pageable);
-        }
+        JPAQuery<Book> books = getJpaQuery(titleQuery,pageable);
 
         long totalSize = getTotalSizeForPaging(titleQuery);
 
@@ -54,22 +43,7 @@ public class BookRepoQueryDsl implements BookRepository {
             pageable, () -> totalSize);
     }
 
-    private JPAQuery<Book> ngramModeJpaQuery(TitleQuery titleQuery,
-        Pageable pageable) {
-
-        return factory
-            .selectFrom(book)
-            .where(
-                getTemplate(
-                    titleQuery.getTitleType(),
-                    titleQuery.getEngKorTokens(),
-                    book.title)
-                    .gt(SCORE_OF_MATCH))
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize());
-    }
-
-    private JPAQuery<Book> spacedModeJpaQuery(TitleQuery titleQuery,
+    private JPAQuery<Book> getJpaQuery(TitleQuery titleQuery,
         Pageable pageable) {
 
         return factory
@@ -89,10 +63,6 @@ public class BookRepoQueryDsl implements BookRepository {
 
         // 1.키워드가 하나인 포괄적 키워드는 count query 성능을 위해 size를 제한 한다.
         // 2.그럼에도 결과값은 전체 대출 횟수를 기준으로 내림 차순으로 보여주기 때문에 검색 품질은 보장한다.
-
-        if(titleQuery.getTitleType().getMode() == NGRAM_MODE){
-            return countQuery(titleQuery,book.title).fetchOne();
-        }
 
         if (titleQuery.getTitleType() == TitleType.TOKEN_ONE) {
             return LIMIT_CNT;
