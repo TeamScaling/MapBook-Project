@@ -4,8 +4,6 @@ import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ONE;
 import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
-import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

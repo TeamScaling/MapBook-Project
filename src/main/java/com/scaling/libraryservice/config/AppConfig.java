@@ -9,8 +9,6 @@ import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
-import kr.co.shineware.nlp.komoran.constant.DEFAULT_MODEL;
-import kr.co.shineware.nlp.komoran.core.Komoran;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -57,12 +55,6 @@ public class AppConfig {
     public ApiQuerySender apiQuerySender() {
 
         return new ApiQuerySender(restTemplate());
-    }
-
-    @Bean
-    public Komoran komoran() {
-
-        return new Komoran(DEFAULT_MODEL.FULL);
     }
 
     @Bean
