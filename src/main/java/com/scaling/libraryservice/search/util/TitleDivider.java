@@ -63,13 +63,13 @@ public class TitleDivider {
 
         Map<Language, String> result = new EnumMap<>(Language.class);
         result.put(Language.ENG, String.join(" ", eng).toLowerCase());
-        result.put(Language.KOR, String.join(" ",kor));
+        result.put(Language.KOR_N, String.join(" ",kor));
 
         return result;
     }
 
     enum Language{
-        ENG,KOR
+        ENG,KOR_N,KOR_OTHER
     }
 
 

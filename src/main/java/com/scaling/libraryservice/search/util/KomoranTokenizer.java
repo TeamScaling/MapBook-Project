@@ -1,6 +1,8 @@
 package com.scaling.libraryservice.search.util;
 
+import com.scaling.libraryservice.search.util.TitleDivider.Language;
 import java.util.List;
+import java.util.Map;
 import kr.co.shineware.nlp.komoran.core.Komoran;
 import kr.co.shineware.nlp.komoran.model.KomoranResult;
 import kr.co.shineware.nlp.komoran.model.Token;
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * 한글 제목을 토크화 하는 클래스입니다.
  */
-@Component
+
 @RequiredArgsConstructor
 public class KomoranTokenizer implements TitleTokenizer {
 
@@ -39,4 +41,8 @@ public class KomoranTokenizer implements TitleTokenizer {
         return nounList.stream().distinct().filter(non -> non.length() > 1).toList();
     }
 
+    @Override
+    public Map<Language, List<String>> tokenize2(String target) {
+        return null;
+    }
 }

@@ -1,5 +1,5 @@
 package com.scaling.libraryservice.search.util;
 
 public enum SearchMode {
-    BooleanMode, NaturalMode
+    BOOLEAN_MODE, NATURAL_MODE, NGRAM_MODE
 }
