@@ -57,8 +57,6 @@ public class SearchViewController {
             model.put("totalPages", searchResult.getMeta().getTotalPages());
             model.put("size", searchResult.getMeta().getTotalElements());
 
-
-            System.out.println(searchResult.getDocuments());
         }
 
 
