@@ -26,6 +26,8 @@ public class BookDto {
 
     private String bookImg;
 
+    private Integer lonaCnt;
+
 
     public BookDto(@NonNull Book book) {
 
@@ -40,17 +42,10 @@ public class BookDto {
         this.author = book.getAuthor();
         this.isbn = book.getIsbn();
         this.bookImg =book.getBookImg();
+        this.lonaCnt = book.getLoanCnt();
     }
 
 
-    public BookDto(@NonNull BookDto bookDto) {
-        this.id = bookDto.getId();
-        this.title = bookDto.getTitle();
-        this.content = bookDto.getContent();
-        this.author = bookDto.getAuthor();
-        this.isbn = bookDto.getIsbn();
-        this.bookImg = bookDto.getBookImg();
-    }
 
     public BookDto(@NonNull JSONObject json) {
         this.id = json.getLong("id");

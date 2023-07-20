@@ -22,7 +22,7 @@ public class RespBooksDto {
 
     public RespBooksDto(MetaDto metaDto, @NonNull Page<BookDto> booksPage) {
         this.meta = metaDto;
-        this.documents = booksPage.stream().map(BookDto::new).toList();
+        this.documents = booksPage.stream().toList();
     }
 
     public RespBooksDto(@NonNull JSONObject jsonObject){

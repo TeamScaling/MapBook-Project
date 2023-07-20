@@ -24,15 +24,14 @@ public class BookRepoQueryDsl implements BookRepository {
 
     private final JPAQueryFactory factory;
 
-    private final static int LIMIT_CNT = 30;
+    private final static int LIMIT_CNT = 300;
 
     private final static double SCORE_OF_MATCH = 0.0;
 
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
 
-        System.out.println(titleQuery.getEngKorTokens()+":"+titleQuery.getTitleType());
-
+        // match..against 문을 활용하여 Full text search를 수행
         JPAQuery<Book> books = factory
             .selectFrom(book)
             .where(
@@ -41,21 +40,64 @@ public class BookRepoQueryDsl implements BookRepository {
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
 
-        long totalSize;
+        long totalSize = getTotalSizeForPaging(titleQuery);
 
-        if (titleQuery.getTitleType() == TitleType.TOKEN_ONE) {
-            totalSize = LIMIT_CNT;
-        }else{
-            totalSize = countQuery(titleQuery).fetchOne();
-        }
-
-        long finalTotalSize = totalSize;
-
+        // 최종적으로 페이징 처리된 도서 검색 결과를 반환.
         return PageableExecutionUtils.getPage(
             books.fetch().stream().map(BookDto::new).toList(),
-            pageable, () -> finalTotalSize);
+            pageable, () -> totalSize);
     }
 
+    private long getTotalSizeForPaging(TitleQuery titleQuery){
+
+        // 1.키워드가 하나인 포괄적 키워드는 count query 성능을 위해 size를 제한 한다.
+        // 2.그럼에도 결과값은 전체 대출 횟수를 기준으로 내림 차순으로 보여주기 때문에 검색 품질은 보장한다.
+        if (titleQuery.getTitleType() == TitleType.TOKEN_ONE) {
+            return LIMIT_CNT;
+        }else{
+            //키워드가 2개 이상일 땐, countQuery 메소드를 호출한다.
+            return countQuery(titleQuery).fetchOne();
+        }
+    }
+
+
+    private JPAQuery<Long> countQuery(TitleQuery titleQuery) {
+
+        return factory
+            .select(book.count())
+            .from(book)
+            .where(
+                getTemplate(
+                    titleQuery.getTitleType()
+                    , titleQuery.getEngKorTokens()).gt(SCORE_OF_MATCH));
+    }
+
+    // 사용자가 입력한 제목 쿼리를 분석한 결과를 바탕으로 boolean or natural 모드를 동적으로 선택
+    NumberTemplate<Double> getTemplate(TitleType type, String name) {
+
+        String function;
+
+        if (type.getMode() == BooleanMode) {
+            function = "function('BooleanMatch',{0},{1})";
+
+            // boolean 모드에서 모두 반드시 포함된 결과를 위해 '+'를 붙여주는 정적 메소드 호출.
+            name = TitleTrimmer.splitAddPlus(name);
+        } else {
+            function = "function('NaturalMatch',{0},{1})";
+        }
+
+        return Expressions.numberTemplate(Double.class,
+            function, book.titleToken, name);
+    }
+
+    private JPAQuery<Long> countQueryAll() {
+
+        return factory
+            .select(book.count())
+            .from(book);
+    }
+
+    // csv file로 변환 할 때 사용하기 위한 메소드.
     public Page<Book> findAllAndSort(Pageable pageable){
 
         JPAQuery<Book> books = factory
@@ -69,40 +111,4 @@ public class BookRepoQueryDsl implements BookRepository {
             pageable, () -> countQueryAll().fetchOne());
     }
 
-
-    private JPAQuery<Long> countQuery(TitleQuery titleQuery) {
-
-        return factory
-            .select(book.count())
-            .from(book)
-            .where(
-                getTemplate(
-                    titleQuery.getTitleType()
-                    , titleQuery.getEngKorTokens()).gt(SCORE_OF_MATCH)
-            );
-    }
-
-    private JPAQuery<Long> countQueryAll() {
-
-        return factory
-            .select(book.count())
-            .from(book);
-    }
-
-
-    NumberTemplate<Double> getTemplate(TitleType type, String name) {
-
-        String function;
-
-        if (type.getMode() == BooleanMode) {
-            function = "function('BooleanMatch',{0},{1})";
-            name = TitleTrimmer.splitAddPlus(name);
-        } else {
-            function = "function('NaturalMatch',{0},{1})";
-        }
-
-
-        return Expressions.numberTemplate(Double.class,
-            function, book.titleToken, name);
-    }
 }

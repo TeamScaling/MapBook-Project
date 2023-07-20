@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.Async;
+package com.scaling.libraryservice.commons.async;
 
 import java.util.function.Supplier;
 

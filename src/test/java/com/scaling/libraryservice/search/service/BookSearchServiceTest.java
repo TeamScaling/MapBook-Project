@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
-import com.scaling.libraryservice.commons.Async.AsyncExecutor;
+import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;

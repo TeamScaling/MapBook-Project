@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.Async;
+package com.scaling.libraryservice.commons.async;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;

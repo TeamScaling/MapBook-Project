@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.tester;
+package com.scaling.libraryservice.commons.tester;
 
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
