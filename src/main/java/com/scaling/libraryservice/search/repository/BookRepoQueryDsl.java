@@ -24,7 +24,7 @@ public class BookRepoQueryDsl implements BookRepository {
 
     private final JPAQueryFactory factory;
 
-    private final static int LIMIT_CNT = 30;
+    private final static int LIMIT_CNT = 300;
 
     private final static double SCORE_OF_MATCH = 0.0;
 
