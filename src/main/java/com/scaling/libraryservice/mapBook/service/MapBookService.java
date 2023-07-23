@@ -44,7 +44,7 @@ public class MapBookService implements ApiRelatedService {
         List<LibraryDto> nearByLibraries, ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         if (bExistConns.isEmpty()) {
-            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto, l, "N"))
+            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto, l, "NN_TOKEN"))
                 .toList();
         }
 
