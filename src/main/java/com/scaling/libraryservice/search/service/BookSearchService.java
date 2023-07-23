@@ -55,8 +55,6 @@ public class BookSearchService {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
-        System.out.println(titleQuery);
-
         Page<BookDto> booksPage = asyncExecutor.execute(
             () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout);
 
