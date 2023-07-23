@@ -1,11 +1,9 @@
 package com.scaling.libraryservice.search.util;
 
-import static com.scaling.libraryservice.search.util.Language.ENG;
-import static com.scaling.libraryservice.search.util.Language.KOR;
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ONE;
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
+import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
 
 import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,27 +26,44 @@ public class TitleAnalyzer {
     @Timer
     public TitleQuery analyze(String query) {
 
-        Map<Language, List<String>> titleMap = tokenizer.tokenize(query);
+        Map<Token, List<String>> titleMap = tokenizer.tokenize(query);
 
-        var titleQueryBuilder = TitleQuery.builder();
+        TitleQueryBuilder titleQueryBuilder = TitleQuery.builder();
 
-        AtomicInteger count = new AtomicInteger();
+        AtomicInteger nTokens = new AtomicInteger();
+        AtomicInteger etcTokens = new AtomicInteger();
 
         titleMap.forEach((key, tokens) -> {
 
-            if (key == KOR) {
-                count.addAndGet(tokens.size());
-                titleQueryBuilder.korToken(String.join(" ", tokens));
+            if (key == NN_TOKEN) {
+                nTokens.addAndGet(tokens.size());
+                titleQueryBuilder.nnToken(String.join(" ", tokens));
 
-            } else if(key == ENG) {
+            } else  {
 
-                count.addAndGet(tokens.size());
-                titleQueryBuilder.engToken(String.join(" ", tokens));
+                etcTokens.addAndGet(tokens.size());
+                if(!tokens.isEmpty()){
+                    titleQueryBuilder.etcToken(String.join(" ", tokens));
+                }
             }
         });
 
-        return count.get() == TOKEN_SIZE_DEFAULT ?
-            titleQueryBuilder.titleType(TOKEN_ONE).build()
-            : titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
+        int nnCnt = nTokens.get();
+        int etcCnt = etcTokens.get();
+
+        return buildTitleQuery(nnCnt,etcCnt,titleQueryBuilder);
+    }
+
+    private TitleQuery buildTitleQuery(int nnCnt,int etcCnt,TitleQueryBuilder titleQueryBuilder){
+        if(etcCnt > 0){
+            return titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX).build();
+        }else{
+
+            if(nnCnt == TOKEN_SIZE_DEFAULT){
+                return titleQueryBuilder.titleType(TitleType.TOKEN_ONE).build();
+            }else{
+                return titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build();
+            }
+        }
     }
 }

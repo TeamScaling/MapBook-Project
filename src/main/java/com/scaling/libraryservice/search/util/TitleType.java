@@ -11,7 +11,9 @@ public enum TitleType {
 
     TOKEN_ONE(NATURAL_MODE),
 
-    TOKEN_TWO_OR_MORE(BOOLEAN_MODE);
+    TOKEN_TWO_OR_MORE(BOOLEAN_MODE),
+
+    TOKEN_COMPLEX(BOOLEAN_MODE);
 
 
     private final SearchMode mode;

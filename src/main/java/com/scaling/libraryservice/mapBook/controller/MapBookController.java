@@ -75,7 +75,7 @@ public class MapBookController {
         List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto.getIsbn(),areaCd);
 
         List<RespMapBookDto> hasBookLibs = nearbyLibraries.stream()
-            .map(l -> new RespMapBookDto(reqMapBookDto, l, "N"))
+            .map(l -> new RespMapBookDto(reqMapBookDto, l, "NN_TOKEN"))
             .toList();
 
         model.put("hasBookLibs", hasBookLibs);

@@ -38,7 +38,7 @@ class BookSearchServiceTest {
         ReqBookDto reqBookDto = new ReqBookDto("java 정석", 1, 10);
 
         TitleQuery titleQuery = TitleQuery.builder().titleType(TOKEN_TWO_OR_MORE)
-            .engToken("java").korToken("정석").build();
+            .etcToken("java").nnToken("정석").build();
 
         when(titleAnalyzer.analyze(query)).thenReturn(titleQuery);
         when(asyncExecutor.execute(any(), any(), anyInt())).thenReturn(Page.empty());

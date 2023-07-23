@@ -9,7 +9,7 @@ import lombok.ToString;
 
 
 @Entity
-@Table(name = "book_new")
+@Table(name = "book_final")
 @ToString
 @Getter
 public class Book {

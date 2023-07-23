@@ -1,6 +1,11 @@
 package com.scaling.libraryservice.search.util;
 
+import static com.scaling.libraryservice.search.util.Token.ETC_TOKEN;
+import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -11,26 +16,48 @@ import org.springframework.stereotype.Component;
 @Component
 public class EunjeonTokenizer  {
 
-    public Map<Language, List<String>> tokenize(String target) {
+    public Map<Token, List<String>> tokenize(String target) {
+
+        List<String> tokenizedWords = getNnTokens(target);
+
+        // 사용자 검색 쿼리에서 명사 부분을 제외한 나머지를 추출 한다.
+        target = getEtcTokens(tokenizedWords,target);
+
+        Map<Token,List<String>> map = new EnumMap<>(Token.class);
+        map.put(NN_TOKEN,tokenizedWords);
+
+        if(!target.isBlank() && target.length() > 1){
+            map.put(ETC_TOKEN, Arrays.stream(target.split(" ")).toList());
+        }else{
+            map.put(ETC_TOKEN, Collections.emptyList());
+        }
+
+        return map;
+    }
+
+    private List<String> getNnTokens(String target){
 
         List<String> tokenizedWords = new ArrayList<>();
-        List<String> slWords = new ArrayList<>();
 
         Analyzer.parseJava(target).forEach(node ->
             {
-                if (isNNP(node) || isNNG(node)) {
-                    tokenizedWords.add(node.copy$default$1().getSurface());
-                } else if (isSL(node)) {
-                    slWords.add(node.copy$default$1().getSurface());
+                if (isNNP(node) || isNNG(node) || isSL(node)) {
+                    if(node.copy$default$1().getSurface().length()> 1){
+                        tokenizedWords.add(node.copy$default$1().getSurface());
+                    }
                 }
             }
         );
 
-        Map<Language,List<String>> map = new EnumMap<>(Language.class);
-        map.put(Language.KOR,tokenizedWords);
-        map.put(Language.ENG,slWords);
+        return tokenizedWords;
+    }
 
-        return map;
+    private String getEtcTokens(List<String> nnWords,String target){
+        for(String str : nnWords){
+            target = target.replaceAll(str,"");
+        }
+
+        return target.trim();
     }
 
     private boolean hasFeatureHead(LNode node, String feature) {

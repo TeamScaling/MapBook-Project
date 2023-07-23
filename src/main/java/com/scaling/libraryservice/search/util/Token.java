@@ -1,5 +1,5 @@
 package com.scaling.libraryservice.search.util;
 
-enum Language {
-    ENG, KOR
+public enum Token {
+    NN_TOKEN, ETC_TOKEN
 }

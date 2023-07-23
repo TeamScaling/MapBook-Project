@@ -23,24 +23,24 @@ public class TitleQuery {
     /**
      * 영어 검색어 토큰을 저장하는 변수
      */
-    private final String engToken;
+    private final String etcToken;
 
     /**
      * 한국어 검색어 토큰을 저장하는 변수
      */
-    private final String korToken;
+    private final String nnToken;
 
 
-    private TitleQuery(@NonNull TitleType titleType, @Nullable String engToken,
-        @Nullable String korToken) {
+    private TitleQuery(@NonNull TitleType titleType, @Nullable String etcToken,
+        @Nullable String nnToken) {
 
         this.titleType = titleType;
-        this.engToken = engToken;
-        this.korToken = korToken;
+        this.etcToken = etcToken;
+        this.nnToken = nnToken;
     }
 
     public String getEngKorTokens(){
-        return String.join(" ",engToken,korToken).trim();
+        return String.join(" ", etcToken, nnToken).trim();
     }
 
 }
