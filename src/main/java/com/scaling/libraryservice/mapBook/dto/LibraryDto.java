@@ -30,7 +30,7 @@ public class LibraryDto {
     private final String libUrl;
     private final Integer areaCd;
 
-    private String hasBook = "N";
+    private String hasBook = "NN_TOKEN";
 
     private boolean isHasBookSupport = false;
 

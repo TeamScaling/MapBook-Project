@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.search.util;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 
@@ -19,6 +20,11 @@ public class TitleTrimmer {
         return Arrays.stream(target.split(" "))
             .map(name -> "+" + name)
             .collect(Collectors.joining(" "));
+    }
+
+    public static List<String> splitAddPlus(@NonNull List<String> target) {
+
+        return target.stream().map(str -> "+"+str).toList();
     }
 
     /**

@@ -45,7 +45,7 @@ class ApiQueryBinderTest {
             + "        },\n"
             + "        \"result\": {\n"
             + "            \"hasBook\": \"Y\",\n"
-            + "            \"loanAvailable\": \"N\"\n"
+            + "            \"loanAvailable\": \"NN_TOKEN\"\n"
             + "        }\n"
             + "    }\n"
             + "}";
