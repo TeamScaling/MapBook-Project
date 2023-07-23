@@ -3,13 +3,13 @@ package com.scaling.libraryservice.search.service;
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.search.dto.ReqBookDto;
-import com.scaling.libraryservice.search.repository.BookRepository;
-import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import com.scaling.libraryservice.search.util.TitleQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 /**
  * 도서 검색 기능을 제공하는 서비스 클래스입니다. 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
@@ -50,12 +51,19 @@ public class BookSearchService {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
         Page<BookDto> booksPage = asyncExecutor.execute(
             () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout);
 
-        return new RespBooksDto(new MetaDto(booksPage, reqBookDto), booksPage);
+        stopWatch.stop();
+
+        String searchTime = String.format("%.3f",stopWatch.getTotalTimeSeconds());
+
+        return new RespBooksDto(new MetaDto(booksPage, reqBookDto, searchTime), booksPage);
     }
 
 }

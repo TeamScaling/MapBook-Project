@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * 도서 검색 기능을 제공하는 웹 컨트롤러입니다.
- * 사용자가 도서 검색 페이지에서 입력한 검색어를 이용하여 검색 결과를 반환합니다.
+ * 도서 검색 기능을 제공하는 웹 컨트롤러입니다. 사용자가 도서 검색 페이지에서 입력한 검색어를 이용하여 검색 결과를 반환합니다.
  */
 @RequiredArgsConstructor
 @Controller
@@ -39,7 +39,6 @@ public class SearchViewController {
      * @param query  검색어
      * @param page   검색 결과 페이지 번호
      * @param size   페이지 당 반환할 도서 수
-     * @param target 검색 대상 (기본값: "title")
      * @param model  검색 결과를 저장할 ModelMap 객체
      * @return 검색 결과 페이지의 View 이름
      */
@@ -48,19 +47,14 @@ public class SearchViewController {
     public String searchBook(@RequestParam(value = "query", required = false) String query,
         @RequestParam(value = "page", defaultValue = "1") int page,
         @RequestParam(value = "size", defaultValue = "10") int size,
-        @RequestParam(value = "target", defaultValue = "title") String target, ModelMap model) {
+        ModelMap model) {
 
-        if (!query.isEmpty()) {
-            RespBooksDto searchResult = searchService.searchBooks(new ReqBookDto(query,page,size),3);
+        RespBooksDto searchResult = searchService.searchBooks(new ReqBookDto(query, page, size), 3);
 
-            model.put("searchResult", searchResult);
-            model.put("totalPages", searchResult.getMeta().getTotalPages());
-            model.put("size", searchResult.getMeta().getTotalElements());
-
-
-            System.out.println(searchResult.getDocuments());
-        }
-
+        model.put("searchResult", searchResult);
+        model.put("totalPages", searchResult.getMeta().getTotalPages());
+        model.put("size", searchResult.getMeta().getTotalElements());
+        model.put("searchTime",searchResult.getMeta().getSearchTime());
 
         return "search/searchResult";
     }

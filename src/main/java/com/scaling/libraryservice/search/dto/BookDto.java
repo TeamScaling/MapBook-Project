@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.entity.Book;
+import com.scaling.libraryservice.search.util.TitleTrimmer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class BookDto {
     public BookDto(@NonNull Book book) {
 
         this.id = book.getId();
-        this.title = book.getTitle();
+        this.title = TitleTrimmer.TrimTitleResult(book.getTitle());
 
         if (book.getContent().isEmpty()) {
             this.content = "[내용 없음]";

@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.search.util;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
@@ -11,7 +10,6 @@ import org.springframework.lang.Nullable;
  */
 @ToString
 @Getter
-@Builder
 public class TitleQuery {
 
 
@@ -23,24 +21,44 @@ public class TitleQuery {
     /**
      * 영어 검색어 토큰을 저장하는 변수
      */
-    private final String engToken;
+    private final String etcToken;
 
     /**
      * 한국어 검색어 토큰을 저장하는 변수
      */
-    private final String korToken;
+    private final String nnToken;
 
 
-    private TitleQuery(@NonNull TitleType titleType, @Nullable String engToken,
-        @Nullable String korToken) {
+    private TitleQuery(@NonNull TitleType titleType, @Nullable String etcToken,
+        @Nullable String nnToken) {
 
         this.titleType = titleType;
-        this.engToken = engToken;
-        this.korToken = korToken;
+        this.etcToken = etcToken;
+        this.nnToken = nnToken;
     }
 
-    public String getEngKorTokens(){
-        return String.join(" ",engToken,korToken).trim();
-    }
+    public static class TitleQueryBuilder {
+        private TitleType titleType;
+        private String etcToken;
+        private String nnToken;
 
+        public TitleQueryBuilder titleType(TitleType titleType) {
+            this.titleType = titleType;
+            return this;
+        }
+
+        public TitleQueryBuilder etcToken(String etcToken) {
+            this.etcToken = etcToken;
+            return this;
+        }
+
+        public TitleQueryBuilder nnToken(String nnToken) {
+            this.nnToken = nnToken;
+            return this;
+        }
+
+        public TitleQuery build() {
+            return new TitleQuery(titleType, etcToken, nnToken);
+        }
+    }
 }

@@ -1,12 +1,12 @@
 package com.scaling.libraryservice.search.util;
 
-import static com.scaling.libraryservice.search.util.TitleDivider.Language.KOR;
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ONE;
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
+import static com.scaling.libraryservice.search.util.Token.ETC_TOKEN;
+import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
 
-import com.scaling.libraryservice.search.util.TitleDivider.Language;
+import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
+import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,44 +19,62 @@ import org.springframework.stereotype.Component;
 @Component
 public class TitleAnalyzer {
 
-    private final TitleTokenizer tokenizer;
+    private final EunjeonTokenizer tokenizer;
 
-    private static final int TOKEN_SIZE_LIMIT = 2;
+    private static final int TOKEN_MIN_SIZE = 1;
 
+    @Timer
     public TitleQuery analyze(String query) {
 
-        Map<Language, String> titleMap = TitleDivider.divideKorEng(query);
+        String originalQuery = query;
 
-        StringJoiner joiner = new StringJoiner(" ");
+        Map<Token, List<String>> titleMap = tokenizer.tokenize(query);
 
-        var titleQueryBuilder = TitleQuery.builder();
-
+        TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder();
+        
+        // 형태소 분석을 마친 결과를 TitleQuery의 멤버 변수에 맞게 각각 담는다.
         titleMap.forEach((key, tokens) -> {
-
-            if(key == KOR){
-                titleQueryBuilder.korToken(getKorToken(tokens));
-            }else{
-                titleQueryBuilder.engToken(tokens);
+            if (key == NN_TOKEN) {
+                titleQueryBuilder.nnToken(String.join(" ", tokens));
+            } else {
+                titleQueryBuilder.etcToken(String.join(" ", tokens));
             }
-
-            joiner.add(tokens);
         });
 
-        String result = joiner.toString().trim();
-
-        if (result.split(" ").length >= TOKEN_SIZE_LIMIT) {
-            return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
-        } else {
-            return titleQueryBuilder.titleType(TOKEN_ONE).build();
-        }
+        // 어떤 검색 모드를 실시 할지 결정 한다.
+        return resolveTitleQuery(
+            titleMap.get(NN_TOKEN).size(),
+            titleMap.get(ETC_TOKEN).size(),
+            titleQueryBuilder,
+            originalQuery);
     }
 
-    private String getKorToken(String korToken) {
+    private TitleQuery resolveTitleQuery(int nnCnt, int etcCnt,
+        TitleQueryBuilder titleQueryBuilder, String query) {
 
-        if (!korToken.isEmpty()) {
-            return String.join(" ",tokenizer.tokenize(korToken));
-        } else {
-            return korToken;
-        }
+        // 명사를 제외한 토큰들의 갯수가 최소를 넘으면
+        return etcCnt >= TOKEN_MIN_SIZE ?
+            analyzeForEtcTokens(nnCnt, query, titleQueryBuilder) :
+            analyzeForNnTokens(nnCnt, titleQueryBuilder);
     }
+
+
+    private TitleQuery analyzeForEtcTokens(int nnCnt, String query,
+        TitleQueryBuilder titleQueryBuilder) {
+
+        return nnCnt < TOKEN_MIN_SIZE ?
+            // 명사 토큰의 갯수가 최소값을 넘지 못하면
+            titleQueryBuilder.titleType(TitleType.TOKEN_ALL_ETC).etcToken(query).build()
+            : titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX).build();
+    }
+
+    // 명사 토큰을 검색할 모드를 결정 한다( boolean or natural)
+    private TitleQuery analyzeForNnTokens(int nnCnt,
+        TitleQueryBuilder titleQueryBuilder) {
+        
+        return nnCnt == TOKEN_MIN_SIZE ?
+            titleQueryBuilder.titleType(TitleType.TOKEN_ONE).build()
+            : titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build();
+    }
+
 }

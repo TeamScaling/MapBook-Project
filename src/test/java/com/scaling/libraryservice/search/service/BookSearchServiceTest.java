@@ -11,6 +11,7 @@ import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleQuery;
+import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,8 +38,8 @@ class BookSearchServiceTest {
 
         ReqBookDto reqBookDto = new ReqBookDto("java 정석", 1, 10);
 
-        TitleQuery titleQuery = TitleQuery.builder().titleType(TOKEN_TWO_OR_MORE)
-            .engToken("java").korToken("정석").build();
+        TitleQuery titleQuery = new TitleQueryBuilder().titleType(TOKEN_TWO_OR_MORE)
+            .etcToken("java").nnToken("정석").build();
 
         when(titleAnalyzer.analyze(query)).thenReturn(titleQuery);
         when(asyncExecutor.execute(any(), any(), anyInt())).thenReturn(Page.empty());

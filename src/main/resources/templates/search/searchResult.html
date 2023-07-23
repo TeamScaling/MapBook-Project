@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8">
   <title>검색 결과 - 책있나?</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="shortcut icon" href="../../static/images/mapbook.png">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <link type="text/css" th:href="@{/css/searchResult.css}" rel="stylesheet">
 
 </head>
@@ -23,11 +27,11 @@
         <input id="query-input" type="text" name="query" placeholder="검색어를 입력하세요">
       </label>
       <button id="search-button" type="submit">검색</button>
-<!--      <p>-->
-<!--        '<span id="query"></span>' 에 대한 자료검색 결과이며 총 도서 수:-->
-<!--        <span th:text="${size}"></span>건이 검색되었습니다.-->
-<!--      </p><br>-->
-      <P>대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수입니다</P>
+      <p>
+        '<span id="query"></span>' 에 대한 자료검색 결과 <br>
+        (검색 속도: <span th:text="${searchTime}"></span> 초)
+      </p><br>
+      <P>대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수</P>
     </form>
     <div>
       <a href="/" class="home-button">
@@ -43,7 +47,7 @@
     <table>
       <thead>
       <tr>
-        <th>ISBN</th>
+        <th class="hidden">ISBN</th>
         <th>도서 제목</th>
         <th>작가</th>
         <th>내용</th>
@@ -55,18 +59,21 @@
       </thead>
       <tbody id="book-info-column">
       <tr th:each="book : ${searchResult.documents}">
-        <td th:text="${book.getIsbn()}"></td>
+        <td class="hidden" th:text="${book.getIsbn()}"></td>
         <td>
           <span th:text="${book.title}"></span>
         </td>
         <td th:text="${book.author}"></td>
         <td th:text="${book.content}"></td>
         <td>
-          <img class="book-image" th:attr="src=${!book.bookImg.isEmpty() ? book.bookImg : 'https://someone-be-bucket.s3.ap-northeast-2.amazonaws.com/mapbook+logo.png'}" alt="준비중"/>
+          <img class="book-image"
+               th:attr="src=${!book.bookImg.isEmpty() ? book.bookImg : 'https://someone-be-bucket.s3.ap-northeast-2.amazonaws.com/mapbook+logo.png'}"
+               alt="준비중"/>
         </td>
         <td>
-          <button class="loan-check-btn" th:data-isbn="${book.isbn}" onsubmit="return openPopup_MapBook()">
-            내 주변<br>도서관
+          <button class="loan-check-btn" th:data-isbn="${book.isbn}"
+                  onsubmit="return openPopup_MapBook()">
+            도서관<br>찾기
           </button>
         </td>
         <td>
@@ -78,7 +85,8 @@
       </tbody>
     </table>
 
-    <div class="alert alert-success" role="alert" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
+    <div class="alert alert-success" role="alert"
+         style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
       도서 제목이 클립보드에 복사되었습니다.
     </div>
   </div>
@@ -105,7 +113,7 @@
     if (queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 두글자 이상 입력해주세요.');
-    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30){
+    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 30글자 이하로 입력해주세요.');
     }
@@ -115,7 +123,7 @@
     if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 2글자 이상 입력해주세요.');
-    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30){
+    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30) {
       event.preventDefault(); // 검색을 실행하지 않음
       alert('검색어를 30글자 이하로 입력해주세요.');
     }
@@ -165,15 +173,15 @@
 </script>
 
 <script th:inline="javascript">
-  $(document).ready(function() {
+  $(document).ready(function () {
     let urlParams = new URLSearchParams(window.location.search);
     let size = [[${size}]];
 
     let endPage;
-    if( size % 10 === 0 ){
+    if (size % 10 === 0) {
       endPage = size / 10
     } else {
-      endPage = Math.ceil( size / 10 );
+      endPage = Math.ceil(size / 10);
     }
     let startPage;
 
@@ -191,24 +199,26 @@
       totalPages = currentPage + 4;
       let startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
 
-      if( endPage > 5 ) {
+      if (endPage > 5) {
         totalPages = startPage + 4;
       }
 
       for (let i = startPage; i <= totalPages; i++) {
         let pageLink = $("<a>").attr("href", url + i).addClass("page-link").text(i);
         let pageItem = $("<li>").addClass("page-item").append(pageLink);
-        if (i === currentPage || (currentPage >= startPage && currentPage <= endPage && i === currentPage)) {
+        if (i === currentPage || (currentPage >= startPage && currentPage <= endPage && i
+            === currentPage)) {
           pageItem.addClass("current");
         }
         pages.append(pageItem);
       }
     }
+
     generatePageLinks(currentPage);
 
     // 이전 페이지 버튼 클릭 시 이벤트 처리
-    $("#prevBtn").on("click", function(event) {
-      if (currentPage === 1){
+    $("#prevBtn").on("click", function (event) {
+      if (currentPage === 1) {
         alert("현재 페이지는 1페이지입니다. 이전 페이지는 없습니다.")
         event.preventDefault();
       } else if (currentPage > 1) {
@@ -217,9 +227,9 @@
     });
 
     // 다음 페이지 버튼 클릭 시 이벤트 처리
-    $("#nextBtn").on("click", function(event) {
+    $("#nextBtn").on("click", function (event) {
       const nextPage = currentPage + 1;
-      if (currentPage === endPage){
+      if (currentPage === endPage) {
         alert("현재 페이지는 마지막 페이지입니다. 다음 페이지는 없습니다.")
         event.preventDefault();
       } else if (nextPage <= totalPages) {
@@ -232,7 +242,7 @@
     });
 
     const pageLinks = $(".page-link");
-    pageLinks.each(function(index) {
+    pageLinks.each(function (index) {
       const pageItem = $(this).parent();
       const pageNum = parseInt($(this).text());
       if (pageNum === currentPage) {
@@ -248,7 +258,7 @@
     });
   });
 
-  $('.loan-check-btn').on('click', function() {
+  $('.loan-check-btn').on('click', function () {
     let isbn = $(this).attr('data-isbn');
     let bigNumberIsbn = new BigNumber(isbn);
     isbn = bigNumberIsbn.toFixed();
@@ -271,7 +281,6 @@
       });
     });
   });
-
 
   function openPopup_MapBook(isbn, lat, lon) {
 
@@ -300,34 +309,43 @@
 
     return false;
   }
+</script>
+<script>
+  $('#query-input').autocomplete({
+    source: function (request, response) { //source: 입력시 보일 목록
+      $.ajax({
+        url: "/books/autocomplete"
+        , type: "POST"
+        , dataType: "JSON"
+        , data: {value: request.term} // 검색 키워드
+        , success: function (data) {  // 성공
+          console.log(data);
+          response(
+              $.map(data.resultList, function (item) {
+                return {
 
-  function getRecommend() {
-    // 현재 페이지 URL에서 'query' 파라미터 값 가져오기
-    const urlParams = new URLSearchParams(window.location.search);
-    const query = urlParams.get('query');
-
-    if ($('#recommend-box').css('display') === 'none') {
-      $('#recommend-box').show();
-    }
-
-    $.ajax({
-      type: 'POST',
-      url: `/books/recommend`,
-      contentType: "application/json",
-      data: JSON.stringify({query}), // query 파라미터를 data 객체에 추가
-      success: function (response) {
-        $('#recommend-box').empty();
-        for (let i = 0; i < response.length; i++) {
-          let bookNm = response[i];
-          $('#recommend-box').append(`(${i+1}) ${bookNm}<br>`);
+                  label: item.title   // 목록에 표시되는 값
+                };
+              })
+          );    //response
         }
-        console.log(response);
-      },
-      error(error) {
-        console.error(error);
-      }
-    })
-  }
+        , error: function () { //실패
+          alert("오류가 발생했습니다.");
+        }
+      });
+    }
+    , focus: function (event, ui) { // 방향키로 자동완성단어 선택 가능하게 만들어줌
+      return false;
+    }
+    , minLength: 2// 최소 글자수
+    , autoFocus: true // true == 첫 번째 항목에 자동으로 초점이 맞춰짐
+    , delay: 200  //autocomplete 딜레이 시간(ms)
+    , select: function (evt, ui) {
+      // 아이템 선택시 실행 ui.item 이 선택된 항목을 나타내는 객체, lavel/value/idx를 가짐
+      console.log(ui.item.label);
+      console.log(ui.item.idx);
+    }
+  });
 </script>
 
 </body>
