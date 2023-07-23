@@ -3,14 +3,13 @@ package com.scaling.libraryservice.search.service;
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.search.dto.ReqBookDto;
-import com.scaling.libraryservice.search.repository.BookRepoJpa;
-import com.scaling.libraryservice.search.repository.BookRepository;
-import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
+import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import com.scaling.libraryservice.search.util.TitleQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -30,8 +29,6 @@ public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
     private final BookRepository bookRepository;
-
-    private final BookRepoJpa bookRepoJpa;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     /**

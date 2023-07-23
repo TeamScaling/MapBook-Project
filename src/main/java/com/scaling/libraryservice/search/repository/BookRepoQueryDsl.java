@@ -2,14 +2,13 @@ package com.scaling.libraryservice.search.repository;
 
 import static com.scaling.libraryservice.search.entity.QBook.book;
 import static com.scaling.libraryservice.search.util.SearchMode.BOOLEAN_MODE;
-import static com.scaling.libraryservice.search.util.SearchMode.COMPLEX_MODE;
-import static com.scaling.libraryservice.search.util.SearchMode.NATURAL_MODE;
+import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ALL_ETC;
+import static com.scaling.libraryservice.search.util.TitleType.TOKEN_COMPLEX;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringPath;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.dto.BookDto;
@@ -31,14 +30,13 @@ public class BookRepoQueryDsl implements BookRepository {
     private final JPAQueryFactory factory;
 
     private final static int LIMIT_CNT = 300;
-
     private final static double SCORE_OF_MATCH = 0.0;
 
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
-        JPAQuery<Book> books = getJpaQuery(titleQuery, pageable);
+        JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
 
         long totalSize = getTotalSizeForPaging(titleQuery);
 
@@ -48,32 +46,45 @@ public class BookRepoQueryDsl implements BookRepository {
             pageable, () -> totalSize);
     }
 
-    private JPAQuery<Book> getJpaQuery(TitleQuery titleQuery,
+    private JPAQuery<Book> getFtSearchJPAQuery(TitleQuery titleQuery,
         Pageable pageable) {
 
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(
-            getTemplate(
-                titleQuery.getTitleType().getMode(),
-                titleQuery.getNnToken(),
-                book.titleToken).gt(SCORE_OF_MATCH));
-
-        if(titleQuery.getTitleType() ==  TitleType.TOKEN_COMPLEX){
-            builder.and(
-                getTemplate(
-                    NATURAL_MODE,
-                    titleQuery.getEtcToken(),
-                    book.title).gt(SCORE_OF_MATCH));
-        }
-
-
+        BooleanBuilder builder = configBuilder(titleQuery);
 
         return factory
             .selectFrom(book)
             .where(builder)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
+    }
+
+    private BooleanBuilder configBuilder(TitleQuery titleQuery){
+
+        BooleanBuilder builder = new BooleanBuilder();
+        SearchMode mode = titleQuery.getTitleType().getMode();
+
+        if (titleQuery.getTitleType() == TOKEN_ALL_ETC) {
+            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.title);
+        } else {
+            addFullTextSearchQuery(builder, mode, titleQuery.getNnToken(), book.titleToken);
+            
+            // 명사와 나머지 단어들도 함께 찾아야 하면 title에 대한 Full Text 구문을 추가 한다.
+            if (titleQuery.getTitleType() == TOKEN_COMPLEX) {
+                addFullTextSearchQuery(builder, titleQuery.getTitleType().getSecondMode(), titleQuery.getEtcToken(), book.title);
+            }
+        }
+
+        return builder;
+    }
+
+    private void addFullTextSearchQuery(BooleanBuilder builder, SearchMode mode,
+        String token, StringPath colum) {
+
+        builder.and(
+            getTemplate(
+                mode,
+                token, colum).gt(
+                SCORE_OF_MATCH));
     }
 
 
@@ -99,7 +110,7 @@ public class BookRepoQueryDsl implements BookRepository {
             .where(
                 getTemplate(
                     titleQuery.getTitleType().getMode(),
-                    titleQuery.getEngKorTokens(),
+                    titleQuery.getNnToken(),
                     colum).gt(SCORE_OF_MATCH));
     }
 

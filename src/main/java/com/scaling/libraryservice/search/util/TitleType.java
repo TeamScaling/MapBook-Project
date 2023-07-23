@@ -9,20 +9,32 @@ import static com.scaling.libraryservice.search.util.SearchMode.NATURAL_MODE;
  */
 public enum TitleType {
 
-    TOKEN_ONE(NATURAL_MODE),
+    TOKEN_ONE(NATURAL_MODE,null),
 
-    TOKEN_TWO_OR_MORE(BOOLEAN_MODE),
+    TOKEN_TWO_OR_MORE(BOOLEAN_MODE,null),
+    TOKEN_COMPLEX(BOOLEAN_MODE,NATURAL_MODE),
 
-    TOKEN_COMPLEX(BOOLEAN_MODE);
+    TOKEN_ALL_ETC(NATURAL_MODE,null);
 
 
     private final SearchMode mode;
 
-    TitleType(SearchMode mode) {
+    private final SearchMode secondMode;
+
+    TitleType(SearchMode mode,SearchMode secondMode) {
         this.mode = mode;
+        this.secondMode = secondMode;
     }
 
     public SearchMode getMode() {
         return mode;
+    }
+
+    public SearchMode getSecondMode(){
+        if(secondMode == null){
+            throw new NullPointerException();
+        }
+
+        return secondMode;
     }
 }
