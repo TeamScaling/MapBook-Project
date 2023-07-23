@@ -29,21 +29,21 @@ public class BookRepoQueryDsl implements BookRepository {
 
     private final JPAQueryFactory factory;
 
-    private final static int LIMIT_CNT = 300;
+    private final static int LIMIT_CNT = 100;
     private final static double SCORE_OF_MATCH = 0.0;
 
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
-        JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
+        System.out.println(titleQuery);
 
-        long totalSize = getTotalSizeForPaging(titleQuery);
+        JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
 
         // 최종적으로 페이징 처리된 도서 검색 결과를 반환.
         return PageableExecutionUtils.getPage(
             books.fetch().stream().map(BookDto::new).toList(),
-            pageable, () -> totalSize);
+            pageable, () -> LIMIT_CNT);
     }
 
     private JPAQuery<Book> getFtSearchJPAQuery(TitleQuery titleQuery,
@@ -88,18 +88,18 @@ public class BookRepoQueryDsl implements BookRepository {
     }
 
 
-    private long getTotalSizeForPaging(TitleQuery titleQuery) {
-
-        // 1.키워드가 하나인 포괄적 키워드는 count query 성능을 위해 size를 제한 한다.
-        // 2.그럼에도 결과값은 전체 대출 횟수를 기준으로 내림 차순으로 보여주기 때문에 검색 품질은 보장한다.
-
-        if (titleQuery.getTitleType() == TitleType.TOKEN_ONE) {
-            return LIMIT_CNT;
-        } else {
-            //키워드가 2개 이상일 땐, countQuery 메소드를 호출한다.
-            return countQuery(titleQuery, book.titleToken).fetchOne();
-        }
-    }
+//    private long getTotalSizeForPaging(TitleQuery titleQuery) {
+//
+//        // 1.키워드가 하나인 포괄적 키워드는 count query 성능을 위해 size를 제한 한다.
+//        // 2.그럼에도 결과값은 전체 대출 횟수를 기준으로 내림 차순으로 보여주기 때문에 검색 품질은 보장한다.
+//
+//        if (titleQuery.getTitleType() == TitleType.TOKEN_ONE) {
+//            return LIMIT_CNT;
+//        } else {
+//            //키워드가 2개 이상일 땐, countQuery 메소드를 호출한다.
+//            return countQuery(titleQuery, book.titleToken).fetchOne();
+//        }
+//    }
 
 
     private JPAQuery<Long> countQuery(TitleQuery titleQuery, StringPath colum) {

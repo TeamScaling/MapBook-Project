@@ -28,10 +28,10 @@
       </label>
       <button id="search-button" type="submit">검색</button>
       <p>
-        '<span id="query"></span>' 에 대한 자료검색 결과이며 총 도서 수:
-        <span th:text="${size}"></span>건이 검색되었습니다.
+        '<span id="query"></span>' 에 대한 자료검색 결과 <br>
+        (검색 속도: <span th:text="${searchTime}"></span> 초)
       </p><br>
-      <P>대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수입니다</P>
+      <P>대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수</P>
     </form>
     <div>
       <a href="/" class="home-button">
