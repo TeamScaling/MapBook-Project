@@ -14,29 +14,30 @@ import org.bitbucket.eunjeon.seunjeon.LNode;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EunjeonTokenizer  {
+public class EunjeonTokenizer {
 
     public Map<Token, List<String>> tokenize(String target) {
 
         List<String> tokenizedWords = getNnTokens(target);
 
         // 사용자 검색 쿼리에서 명사 부분을 제외한 나머지를 추출 한다.
-        target = getEtcTokens(tokenizedWords,target);
+        target = getEtcTokens(tokenizedWords, target);
 
-        Map<Token,List<String>> map = new EnumMap<>(Token.class);
-        map.put(NN_TOKEN,tokenizedWords);
+        Map<Token, List<String>> map = new EnumMap<>(Token.class);
+        map.put(NN_TOKEN, tokenizedWords);
 
         // 문장을 제외한 나머지 부분이 길이가 2 이상인 경우에만 담는다.
-        if(!target.isBlank() && target.length() > 1){
-            map.put(ETC_TOKEN, Arrays.stream(target.split(" ")).toList());
-        }else{
+        if (!target.isBlank() && target.length() > 1) {
+            map.put(ETC_TOKEN,
+                Arrays.stream(target.split(" ")).filter(s -> s.length() > 1).toList());
+        } else {
             map.put(ETC_TOKEN, Collections.emptyList());
         }
 
         return map;
     }
 
-    private List<String> getNnTokens(String target){
+    private List<String> getNnTokens(String target) {
 
         List<String> tokenizedWords = new ArrayList<>();
 
@@ -47,7 +48,7 @@ public class EunjeonTokenizer  {
 
                     String surface = node.copy$default$1().surface();
 
-                    if(surface.length() > 1){
+                    if (surface.length() > 1) {
                         tokenizedWords.add(surface);
                     }
                 }
@@ -57,12 +58,12 @@ public class EunjeonTokenizer  {
         return tokenizedWords;
     }
 
-    private String getEtcTokens(List<String> nnWords,String target){
-        for(String str : nnWords){
-            target = target.replaceAll(str,"");
+    private String getEtcTokens(List<String> nnWords, String target) {
+        for (String str : nnWords) {
+            target = target.replaceAll(str, "").trim();
         }
 
-        return target.trim();
+        return target;
     }
 
     private boolean hasFeatureHead(LNode node, String feature) {
