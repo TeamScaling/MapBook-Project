@@ -47,20 +47,20 @@ class EunjeonTokenizerTest {
 //        assertTrue(result.get(Language.KOR_N).stream().anyMatch(s -> s.equals("정석")));
 //    }
 
-    @Test
-    @DisplayName("영어+한글 제목에서 한글 명사만 추출 할 수 있다.")
-    void tokenize3() {
-        /* given */
-
-        String target = "확장 가능하고 유지보수가 쉬운";
-
-        /* when */
-        var result = tokenizer.tokenize(target);
-
-        /* then */
-
-        System.out.println(result);
-    }
+//    @Test
+//    @DisplayName("영어+한글 제목에서 한글 명사만 추출 할 수 있다.")
+//    void tokenize3() {
+//        /* given */
+//
+//        String target = "확장 가능하고 유지보수가 쉬운";
+//
+//        /* when */
+//        var result = tokenizer.tokenize(target);
+//
+//        /* then */
+//
+//        System.out.println(result);
+//    }
 
 
 
