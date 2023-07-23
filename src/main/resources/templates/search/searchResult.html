@@ -47,7 +47,7 @@
     <table>
       <thead>
       <tr>
-        <th>ISBN</th>
+        <th class="hidden">ISBN</th>
         <th>도서 제목</th>
         <th>작가</th>
         <th>내용</th>
@@ -59,7 +59,7 @@
       </thead>
       <tbody id="book-info-column">
       <tr th:each="book : ${searchResult.documents}">
-        <td th:text="${book.getIsbn()}"></td>
+        <td class="hidden" th:text="${book.getIsbn()}"></td>
         <td>
           <span th:text="${book.title}"></span>
         </td>
@@ -73,7 +73,7 @@
         <td>
           <button class="loan-check-btn" th:data-isbn="${book.isbn}"
                   onsubmit="return openPopup_MapBook()">
-            내 주변<br>도서관
+            도서관<br>찾기
           </button>
         </td>
         <td>

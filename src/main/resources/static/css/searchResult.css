@@ -22,6 +22,14 @@ table {
   max-width: 1000px;
 }
 
+title {
+  width: 400px;
+}
+
+.hidden {
+  display: none;
+}
+
 div[id="book-info-box"] {
   padding: 10px;
 }
