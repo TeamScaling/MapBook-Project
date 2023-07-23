@@ -12,7 +12,7 @@ import org.springframework.lang.NonNull;
 @Setter
 @Getter
 @NoArgsConstructor
-@ToString @Builder
+@ToString
 public class MetaDto {
 
     private long totalPages;
@@ -20,11 +20,22 @@ public class MetaDto {
     private long currentPage;
     private long pageSize;
 
-    public MetaDto(long totalPages, long totalElements, long currentPage, long pageSize) {
+    private String searchTime;
+
+    public MetaDto(long totalPages, long totalElements, long currentPage, long pageSize,String searchTime) {
         this.totalPages = totalPages;
         this.totalElements = totalElements;
         this.currentPage = currentPage;
         this.pageSize = pageSize;
+        this.searchTime = searchTime;
+    }
+
+    public MetaDto(@NonNull Page<BookDto> books,@NonNull ReqBookDto reqBookDto,String searchTime) {
+        this.totalPages = books.getTotalPages();
+        this.totalElements = books.getTotalElements();
+        this.currentPage = reqBookDto.getPage();
+        this.pageSize = reqBookDto.getSize();
+        this.searchTime = searchTime;
     }
 
     public MetaDto(@NonNull Page<BookDto> books,@NonNull ReqBookDto reqBookDto) {
