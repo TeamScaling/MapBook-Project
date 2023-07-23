@@ -26,6 +26,7 @@ public class EunjeonTokenizer  {
         Map<Token,List<String>> map = new EnumMap<>(Token.class);
         map.put(NN_TOKEN,tokenizedWords);
 
+        // 문장을 제외한 나머지 부분이 길이가 2 이상인 경우에만 담는다.
         if(!target.isBlank() && target.length() > 1){
             map.put(ETC_TOKEN, Arrays.stream(target.split(" ")).toList());
         }else{
@@ -39,11 +40,15 @@ public class EunjeonTokenizer  {
 
         List<String> tokenizedWords = new ArrayList<>();
 
+        // 자연어 분석기를 사용하여 명사,외국어를 추출한다.
         Analyzer.parseJava(target).forEach(node ->
             {
                 if (isNNP(node) || isNNG(node) || isSL(node)) {
-                    if(node.copy$default$1().getSurface().length()> 1){
-                        tokenizedWords.add(node.copy$default$1().getSurface());
+
+                    String surface = node.copy$default$1().surface();
+
+                    if(surface.length() > 1){
+                        tokenizedWords.add(surface);
                     }
                 }
             }
@@ -61,7 +66,8 @@ public class EunjeonTokenizer  {
     }
 
     private boolean hasFeatureHead(LNode node, String feature) {
-        return node.copy$default$1().getFeatureHead().equals(feature);
+
+        return node.copy$default$1().feature().head().equals(feature);
     }
 
     private boolean isSL(LNode node) {

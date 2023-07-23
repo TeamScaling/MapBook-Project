@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.search.util;
 
+import static com.scaling.libraryservice.search.util.TitleType.TOKEN_COMPLEX;
 import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ONE;
 import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +32,7 @@ class TitleAnalyzerTest {
 
         /* then */
         System.out.println(result);
-        assertEquals(TOKEN_TWO_OR_MORE, result.getTitleType());
+        assertEquals(TOKEN_COMPLEX, result.getTitleType());
     }
 
     @Test

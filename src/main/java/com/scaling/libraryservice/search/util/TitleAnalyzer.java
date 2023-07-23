@@ -3,7 +3,6 @@ package com.scaling.libraryservice.search.util;
 import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
 
 import com.scaling.libraryservice.commons.timer.Timer;
-import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +27,7 @@ public class TitleAnalyzer {
 
         Map<Token, List<String>> titleMap = tokenizer.tokenize(query);
 
-        TitleQueryBuilder titleQueryBuilder = TitleQuery.builder();
+        TitleQuery.TitleQueryBuilder titleQueryBuilder = TitleQuery.builder();
 
         AtomicInteger nTokens = new AtomicInteger();
         AtomicInteger etcTokens = new AtomicInteger();
@@ -39,10 +38,10 @@ public class TitleAnalyzer {
                 nTokens.addAndGet(tokens.size());
                 titleQueryBuilder.nnToken(String.join(" ", tokens));
 
-            } else  {
+            } else {
 
                 etcTokens.addAndGet(tokens.size());
-                if(!tokens.isEmpty()){
+                if (!tokens.isEmpty()) {
                     titleQueryBuilder.etcToken(String.join(" ", tokens));
                 }
             }
@@ -51,17 +50,13 @@ public class TitleAnalyzer {
         int nnCnt = nTokens.get();
         int etcCnt = etcTokens.get();
 
-        return buildTitleQuery(nnCnt,etcCnt,titleQueryBuilder);
-    }
-
-    private TitleQuery buildTitleQuery(int nnCnt,int etcCnt,TitleQueryBuilder titleQueryBuilder){
-        if(etcCnt > 0){
+        if (etcCnt > 0) {
             return titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX).build();
-        }else{
+        } else {
 
-            if(nnCnt == TOKEN_SIZE_DEFAULT){
+            if (nnCnt == TOKEN_SIZE_DEFAULT) {
                 return titleQueryBuilder.titleType(TitleType.TOKEN_ONE).build();
-            }else{
+            } else {
                 return titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build();
             }
         }
