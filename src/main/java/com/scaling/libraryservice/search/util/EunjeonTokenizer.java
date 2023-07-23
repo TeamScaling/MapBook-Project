@@ -3,64 +3,85 @@ package com.scaling.libraryservice.search.util;
 import static com.scaling.libraryservice.search.util.Token.ETC_TOKEN;
 import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import org.bitbucket.eunjeon.seunjeon.Analyzer;
 import org.bitbucket.eunjeon.seunjeon.LNode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class EunjeonTokenizer {
 
+    private final static int TOKEN_MIN_SIZE = 2;
+
+    private final static String ENG_FEATURE = "SL";
+
+    private final static String KOR_NNP_FEATURE = "NNP";
+
+    private final static String KOR_NNG_FEATURE = "NNG";
+
     public Map<Token, List<String>> tokenize(String target) {
 
-        List<String> tokenizedWords = getNnTokens(target);
+        // 검색어에서 명사만 추출 한다.
+        List<String> tokenizedWords = getQualifiedNnTokens(target);
 
-        // 사용자 검색 쿼리에서 명사 부분을 제외한 나머지를 추출 한다.
+        // 사용자 검색어에서 명사 부분을 제외한 나머지를 추출 한다.
         target = getEtcTokens(tokenizedWords, target);
 
-        Map<Token, List<String>> map = new EnumMap<>(Token.class);
-        map.put(NN_TOKEN, tokenizedWords);
+        // 형태소 분석을 마친 결과값을 map에 담는다.
+        Map<Token, List<String>> resultMap = new EnumMap<>(Token.class);
+        resultMap.put(NN_TOKEN, tokenizedWords);
 
-        // 문장을 제외한 나머지 부분이 길이가 2 이상인 경우에만 담는다.
-        if (!target.isBlank() && target.length() > 1) {
-            map.put(ETC_TOKEN,
-                Arrays.stream(target.split(" ")).filter(s -> s.length() > 1).toList());
-        } else {
-            map.put(ETC_TOKEN, Collections.emptyList());
-        }
+        // 명사를 제외한 나머지 어절을 조건에 맞게 담는다.
+        filterAndStoreEtcTokens(target, resultMap);
 
-        return map;
+        return resultMap;
     }
 
-    private List<String> getNnTokens(String target) {
+    // 명사를 제외한 나머지 어절을 조건에 맞게 담는다.
+    private void filterAndStoreEtcTokens(String target, Map<Token, List<String>> resultMap) {
+        resultMap.put(ETC_TOKEN,
+            Arrays.stream(
+                target.split(" "))
+                .filter(this::isQualifiedToken)
+                .toList());
+    }
 
-        List<String> tokenizedWords = new ArrayList<>();
+    // 형태소 분석기로 분석 한 뒤 적합한 어절을 최소 사이즈 이상만 List에 담아 반환
+    private List<String> getQualifiedNnTokens(String target) {
 
-        // 자연어 분석기를 사용하여 명사,외국어를 추출한다.
-        Analyzer.parseJava(target).forEach(node ->
-            {
-                if (isNNP(node) || isNNG(node) || isSL(node)) {
+        return Analyzer.parseJava(target)
+            .stream()
+            .filter(this::isQualifiedNode)
+            .map(this::filterAndExtractString)
+            .filter(this::isQualifiedToken)
+            .toList();
+    }
 
-                    String surface = node.copy$default$1().surface();
+    // 영어 node인 경우에는 소문자로 변환 한다.
+    private String filterAndExtractString(LNode node) {
+        return isSL(node) ? node.copy$default$1()
+            .surface().toLowerCase()
+            : node.copy$default$1().surface();
+    }
 
-                    if (surface.length() > 1) {
-                        tokenizedWords.add(surface);
-                    }
-                }
-            }
-        );
+    private boolean isQualifiedToken(String token) {
+        return token.length() >= TOKEN_MIN_SIZE
+            && token.matches("^[a-zA-Z0-9가-힣]*$");
+    }
 
-        return tokenizedWords;
+    private boolean isQualifiedNode(LNode node) {
+        return isNNP(node) || isNNG(node) || isSL(node);
     }
 
     private String getEtcTokens(List<String> nnWords, String target) {
+
+        // 사용자 검색어에서 명사로 분석된 단어를 제거 한다.
         for (String str : nnWords) {
-            target = target.replaceAll(str, "").trim();
+            target = StringUtils.delete(target, str);
         }
 
         return target;
@@ -72,15 +93,15 @@ public class EunjeonTokenizer {
     }
 
     private boolean isSL(LNode node) {
-        return hasFeatureHead(node, "SL");
+        return hasFeatureHead(node, ENG_FEATURE);
     }
 
     private boolean isNNP(LNode node) {
-        return hasFeatureHead(node, "NNP");
+        return hasFeatureHead(node, KOR_NNP_FEATURE);
     }
 
     private boolean isNNG(LNode node) {
-        return hasFeatureHead(node, "NNG");
+        return hasFeatureHead(node, KOR_NNG_FEATURE);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.search.util;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
@@ -11,7 +10,6 @@ import org.springframework.lang.Nullable;
  */
 @ToString
 @Getter
-@Builder
 public class TitleQuery {
 
 
@@ -39,8 +37,28 @@ public class TitleQuery {
         this.nnToken = nnToken;
     }
 
-    public String getEngKorTokens(){
-        return String.join(" ", etcToken, nnToken).trim();
-    }
+    public static class TitleQueryBuilder {
+        private TitleType titleType;
+        private String etcToken;
+        private String nnToken;
 
+        public TitleQueryBuilder titleType(TitleType titleType) {
+            this.titleType = titleType;
+            return this;
+        }
+
+        public TitleQueryBuilder etcToken(String etcToken) {
+            this.etcToken = etcToken;
+            return this;
+        }
+
+        public TitleQueryBuilder nnToken(String nnToken) {
+            this.nnToken = nnToken;
+            return this;
+        }
+
+        public TitleQuery build() {
+            return new TitleQuery(titleType, etcToken, nnToken);
+        }
+    }
 }
