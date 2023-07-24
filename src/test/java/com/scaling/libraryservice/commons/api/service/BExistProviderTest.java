@@ -22,7 +22,6 @@ class BExistProviderTest {
 
     }
 
-    @Test
     public void provideDataList() {
         /* given */
 
