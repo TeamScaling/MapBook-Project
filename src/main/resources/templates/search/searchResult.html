@@ -319,18 +319,16 @@
         , dataType: "JSON"
         , data: {value: request.term} // 검색 키워드
         , success: function (data) {  // 성공
-          console.log(data);
           response(
               $.map(data.resultList, function (item) {
                 return {
-
                   label: item.title   // 목록에 표시되는 값
                 };
               })
           );    //response
         }
         , error: function () { //실패
-          alert("오류가 발생했습니다.");
+          console.log("오류가 발생했습니다.")
         }
       });
     }
@@ -338,13 +336,8 @@
       return false;
     }
     , minLength: 2// 최소 글자수
-    , autoFocus: true // true == 첫 번째 항목에 자동으로 초점이 맞춰짐
-    , delay: 200  //autocomplete 딜레이 시간(ms)
-    , select: function (evt, ui) {
-      // 아이템 선택시 실행 ui.item 이 선택된 항목을 나타내는 객체, lavel/value/idx를 가짐
-      console.log(ui.item.label);
-      console.log(ui.item.idx);
-    }
+    , autoFocus: false // true == 첫 번째 항목에 자동으로 초점이 맞춰짐
+    , delay: 300  //autocomplete 딜레이 시간(ms)
   });
 </script>
 

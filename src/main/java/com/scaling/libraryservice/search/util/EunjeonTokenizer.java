@@ -56,21 +56,15 @@ public class EunjeonTokenizer {
         return Analyzer.parseJava(target)
             .stream()
             .filter(this::isQualifiedNode)
-            .map(this::filterAndExtractString)
+            .map(node -> node.copy$default$1().surface())
             .filter(this::isQualifiedToken)
             .toList();
     }
 
-    // 영어 node인 경우에는 소문자로 변환 한다.
-    private String filterAndExtractString(LNode node) {
-        return isSL(node) ? node.copy$default$1()
-            .surface().toLowerCase()
-            : node.copy$default$1().surface();
-    }
 
+    // 최소 사이즈를 넘는 토큰과 영어,한글,숫자만 유효한 토큰으로 결정
     private boolean isQualifiedToken(String token) {
-        return token.length() >= TOKEN_MIN_SIZE
-            && token.matches("^[a-zA-Z0-9가-힣]*$");
+        return token.length() >= TOKEN_MIN_SIZE;
     }
 
     private boolean isQualifiedNode(LNode node) {
