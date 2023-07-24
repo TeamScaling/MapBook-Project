@@ -44,7 +44,7 @@ public class MapBookController {
     @ApiMonitoring(api = BExistConn.class, substitute = "fallBackMethodHasBook")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
-        Integer areaCd = locationResolver.resolve(new ReqMapBookDto(reqMapBookDto.getIsbn(),37.7585597,126.780114));
+        Integer areaCd = locationResolver.resolve(reqMapBookDto);
 
         List<LibraryDto> nearbyLibraries
             = libraryFindService.getNearByLibraries(reqMapBookDto.getIsbn(),areaCd);
