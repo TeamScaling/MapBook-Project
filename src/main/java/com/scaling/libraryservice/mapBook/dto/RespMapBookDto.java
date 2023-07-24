@@ -16,7 +16,7 @@ public class RespMapBookDto {
     private String isbn13;
     private String libCode;
     private String libNm;
-    private String hasBook;
+    private boolean hasBook;
     private String loanAvailable;
     private Double libLo;
     private Double libLa;
@@ -29,7 +29,7 @@ public class RespMapBookDto {
 
         this.isbn13 = dto.getIsbn13();
         this.libCode = dto.getLibCode();
-        this.hasBook = dto.getHasBook();
+        this.hasBook = dto.isLoanAble();
         this.loanAvailable = dto.getLoanAvailable();
 
         this.libLo = libraryDto.getLibLon();
@@ -40,16 +40,13 @@ public class RespMapBookDto {
         this.areaCd = libraryDto.getAreaCd();
 
         this.available = true;
-
     }
 
-    public RespMapBookDto(@NonNull ReqMapBookDto reqMapBookDto,@NonNull LibraryDto libraryDto,String loanAvailable) {
+    public RespMapBookDto(@NonNull ReqMapBookDto reqMapBookDto,@NonNull LibraryDto libraryDto,boolean loanAvailable) {
 
         this.isbn13 = reqMapBookDto.getIsbn();
         this.libCode = String.valueOf(libraryDto.getLibNo());
-        this.loanAvailable = loanAvailable;
-
-        this.hasBook = libraryDto.getHasBook();
+        this.hasBook = libraryDto.isHasBook();
         this.libLo = libraryDto.getLibLon();
         this.libLa = libraryDto.getLibLat();
         this.libArea = libraryDto.getLibArea();
@@ -57,14 +54,14 @@ public class RespMapBookDto {
         this.libUrl = libraryDto.getLibUrl();
         this.areaCd = libraryDto.getAreaCd();
 
-        this.available = false;
+        this.available = loanAvailable;
     }
 
     public RespMapBookDto(@NonNull JSONObject jsonObject){
 
         this.isbn13 = jsonObject.getString("isbn13");
         this.libCode = jsonObject.getString("libCode");
-        this.hasBook = jsonObject.getString("hasBook");
+        this.hasBook = jsonObject.getString("hasBook").equals("Y");
         this.loanAvailable = jsonObject.getString("loanAvailable");
 
         this.libLo = jsonObject.getDouble("libLo");

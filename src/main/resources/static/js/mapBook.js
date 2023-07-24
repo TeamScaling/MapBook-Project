@@ -78,12 +78,10 @@ var positions = [];
 for (let i = 0; i < loanAbleData.length; i++) {
   const markerData = loanAbleData[i];
 
-  const loanAvailable = markerData.loanAvailable;
-
   // iwPosition = new kakao.maps.LatLng(33.450701, 126.570667); //인포윈도우 표시 위치입니다
 
 
-  if (loanAvailable === "Y") {
+  if (markerData.available === true) {
     const newMarker = {
       content: `<div>${markerData.libNm}</div>`,
       latlng: new kakao.maps.LatLng(markerData.libLa, markerData.libLo),

@@ -12,25 +12,23 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class BExistConnGenerator implements
-    ConnectionGenerator<BExistConn,LibraryDto, ReqMapBookDto> {
+    ConnectionGenerator<BExistConn, LibraryDto, ReqMapBookDto> {
 
     @Override
-    public List<BExistConn> generateNecessaryConns(@NonNull List<LibraryDto> nearByLibraries, ReqMapBookDto reqMapBookDto) {
-
-        boolean isHasBookSupport = nearByLibraries.stream().anyMatch(LibraryDto::isHasBookSupport);
+    public List<BExistConn> generateNecessaryConns(@NonNull List<LibraryDto> nearByLibraries,
+        ReqMapBookDto reqMapBookDto) {
 
         if (nearByLibraries.isEmpty()) {
             log.info(reqMapBookDto.getAreaCd() + " 이 지역에 관련 도서관이 없으므로 API 통신을 하지 않음");
             return Collections.emptyList();
         }
 
-        if (isHasBookSupport) {
-            return nearByLibraries.stream().filter(LibraryDto::hasBook)
-                .map(n -> new BExistConn(n.getLibNo(), reqMapBookDto.getIsbn())).toList();
+        boolean isHasBookSupport = nearByLibraries.stream().anyMatch(LibraryDto::isHasBookSupport);
 
-        } else {
-            return nearByLibraries.stream()
-                .map(n -> new BExistConn(n.getLibNo(), reqMapBookDto.getIsbn())).toList();
-        }
+        return nearByLibraries.stream()
+            .filter(libraryDto -> !isHasBookSupport || libraryDto.isHasBook())
+            .map(libraryDto -> new BExistConn(libraryDto.getLibNo(), reqMapBookDto.getIsbn()))
+            .toList();
     }
+
 }

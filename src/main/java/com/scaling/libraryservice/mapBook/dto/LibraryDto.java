@@ -30,7 +30,7 @@ public class LibraryDto {
     private final String libUrl;
     private final Integer areaCd;
 
-    private String hasBook = "NN_TOKEN";
+    private boolean hasBook = false;
 
     private boolean isHasBookSupport = false;
 
@@ -45,18 +45,8 @@ public class LibraryDto {
         this.areaCd = library.getAreaCd();
     }
 
-    public LibraryDto(@NonNull Library library,String hasBook) {
-        this.libNm = library.getLibNm();
-        this.libNo = library.getLibNo();
-        this.libLon = library.getLibLon();
-        this.libLat = library.getLibLat();
-        this.libArea = library.getLibArea();
-        this.libUrl = library.getLibUrl();
-        this.areaCd = library.getAreaCd();
-        this.hasBook = hasBook;
-    }
 
-    public LibraryDto(Library library,String hasBook,boolean isHasBookSupport) {
+    public LibraryDto(Library library,boolean hasBook,boolean isHasBookSupport) {
         this.libNm = library.getLibNm();
         this.libNo = library.getLibNo();
         this.libLon = library.getLibLon();
@@ -68,8 +58,5 @@ public class LibraryDto {
         this.isHasBookSupport = isHasBookSupport;
     }
 
-    public boolean hasBook(){
-        return hasBook.equals("Y");
-    }
 
 }

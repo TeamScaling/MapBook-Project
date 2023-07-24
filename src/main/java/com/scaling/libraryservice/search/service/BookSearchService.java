@@ -10,6 +10,7 @@ import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.util.TitleAnalyzer;
 import com.scaling.libraryservice.search.util.TitleQuery;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -64,6 +65,17 @@ public class BookSearchService {
         String searchTime = String.format("%.3f",stopWatch.getTotalTimeSeconds());
 
         return new RespBooksDto(new MetaDto(booksPage, reqBookDto, searchTime), booksPage);
+    }
+
+    public RespBooksDto bookAutoComplete(ReqBookDto reqBookDto,int timeout){
+
+        RespBooksDto respBooksDto = searchBooks(reqBookDto,timeout);
+
+        //맨위에 결과값이 front에서 짤려 보이는 문제 해결하기 위해 빈 제목을 넣는다.
+        List<BookDto> books = respBooksDto.getDocuments();
+        books.add(0,BookDto.emptyDto());
+
+        return respBooksDto;
     }
 
 }
