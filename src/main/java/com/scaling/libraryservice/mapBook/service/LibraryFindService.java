@@ -62,7 +62,7 @@ public class LibraryFindService {
      * @return 지역 코드를 통해 찾은 주변 도서관 정보 Dto를 담은 List
      */
     public List<LibraryDto> getNearByLibraries(Integer areaCd) {
-
+        log.info("This is not support Area");
         return libraryRepo.findAllByAreaCd(areaCd).stream()
             .map(LibraryDto::new)
             .toList();
