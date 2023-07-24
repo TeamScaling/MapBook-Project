@@ -15,6 +15,7 @@ import org.springframework.lang.NonNull;
 @ToString
 public class MetaDto {
 
+    private String query;
     private long totalPages;
     private long totalElements;
     private long currentPage;
@@ -31,6 +32,7 @@ public class MetaDto {
     }
 
     public MetaDto(@NonNull Page<BookDto> books,@NonNull ReqBookDto reqBookDto,String searchTime) {
+        this.query = reqBookDto.getQuery();
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();

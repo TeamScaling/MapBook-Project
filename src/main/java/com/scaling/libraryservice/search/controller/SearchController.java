@@ -2,39 +2,61 @@ package com.scaling.libraryservice.search.controller;
 
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.TestingBookDto;
+import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.service.BookSearchService;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 @Slf4j
 @RequiredArgsConstructor
-public class SearchRestController {
+public class SearchController {
 
     private final BookSearchService bookSearchService;
 
+    /**
+     * 메인 홈페이지를 반환하는 메서드입니다.
+     *
+     * @return 홈페이지의 View 이름
+     */
+    @GetMapping("/")
+    public String home() {
+        return "search/searchResult";
+    }
+
     @Timer
-    @RequestMapping(value = "/books/autocomplete")
-    public @ResponseBody Map<String, Object> autocomplete
-        (@RequestParam Map<String, Object> paramMap) throws Exception {
+    @PostMapping(value = "/books/autocomplete")
+    public ResponseEntity<List<BookDto>> autocomplete(@RequestParam(value = "query") String query) {
 
         RespBooksDto result = bookSearchService.searchBooks(
-            new ReqBookDto(paramMap.get("value") + "", 1, 5), 3);
+            new ReqBookDto(query, 1, 5), 3);
 
-        paramMap.put("resultList", result.getDocuments());
+        return ResponseEntity.ok(result.getDocuments());
+    }
 
-        return paramMap;
+    @GetMapping("/books/search")
+    @Timer
+    public ResponseEntity<RespBooksDto> searchBook(@RequestParam(value = "query", required = false) String query,
+        @RequestParam(value = "page", defaultValue = "1") int page,
+        @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        RespBooksDto searchResult
+            = bookSearchService.searchBooks(new ReqBookDto(query, page, size), 3);
+
+        return ResponseEntity.ok(searchResult);
     }
 
     @GetMapping("/books/search/test")
