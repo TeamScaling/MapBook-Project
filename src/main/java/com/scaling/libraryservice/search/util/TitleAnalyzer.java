@@ -23,15 +23,20 @@ public class TitleAnalyzer {
 
     private static final int TOKEN_MIN_SIZE = 1;
 
+    private static final int TOKEN_MAX_SIZE = 3;
+
     @Timer
     public TitleQuery analyze(String query) {
 
+        query = TitleFilter.filtering(query);
+
+        // tokenizer를 거치면 원본 검색어가 수정되기 때문에 필요 모드에서 사용하기 위해 원본을 저장 한다.
         String originalQuery = query;
 
         Map<Token, List<String>> titleMap = tokenizer.tokenize(query);
 
         TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder();
-        
+
         // 형태소 분석을 마친 결과를 TitleQuery의 멤버 변수에 맞게 각각 담는다.
         titleMap.forEach((key, tokens) -> {
             if (key == NN_TOKEN) {
@@ -42,36 +47,45 @@ public class TitleAnalyzer {
         });
 
         // 어떤 검색 모드를 실시 할지 결정 한다.
-        return resolveTitleQuery(
+        return resolveTitleTypeByTokenCnt(
             titleMap.get(NN_TOKEN).size(),
             titleMap.get(ETC_TOKEN).size(),
             titleQueryBuilder,
             originalQuery);
     }
 
-    private TitleQuery resolveTitleQuery(int nnCnt, int etcCnt,
+    private TitleQuery resolveTitleTypeByTokenCnt(int nnCnt, int etcCnt,
+        TitleQueryBuilder titleQueryBuilder, String query) {
+
+        // 명사 토큰이 최대치 이상이면 명사만을 가지고 검색하는 전략을 택한다. 아닐 때는 다른 어절도 고려한다.
+        return nnCnt >= TOKEN_MAX_SIZE?
+            titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build() :
+            considerEtcToken(nnCnt,etcCnt,titleQueryBuilder,query);
+    }
+
+    private TitleQuery considerEtcToken(int nnCnt, int etcCnt,
         TitleQueryBuilder titleQueryBuilder, String query) {
 
         // 명사를 제외한 토큰들의 갯수가 최소를 넘으면
         return etcCnt >= TOKEN_MIN_SIZE ?
-            analyzeForEtcTokens(nnCnt, query, titleQueryBuilder) :
-            analyzeForNnTokens(nnCnt, titleQueryBuilder);
+            considerNnToken(nnCnt, query, titleQueryBuilder) :
+            decideNnSearchMode(nnCnt, titleQueryBuilder);
     }
 
 
-    private TitleQuery analyzeForEtcTokens(int nnCnt, String query,
+    private TitleQuery considerNnToken(int nnCnt, String query,
         TitleQueryBuilder titleQueryBuilder) {
 
         return nnCnt < TOKEN_MIN_SIZE ?
-            // 명사 토큰의 갯수가 최소값을 넘지 못하면
+            // 명사 토큰의 갯수가 최소값을 넘지 못하면 검색어를 가지고 전체 검색 모드
             titleQueryBuilder.titleType(TitleType.TOKEN_ALL_ETC).etcToken(query).build()
             : titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX).build();
     }
 
     // 명사 토큰을 검색할 모드를 결정 한다( boolean or natural)
-    private TitleQuery analyzeForNnTokens(int nnCnt,
+    private TitleQuery decideNnSearchMode(int nnCnt,
         TitleQueryBuilder titleQueryBuilder) {
-        
+
         return nnCnt == TOKEN_MIN_SIZE ?
             titleQueryBuilder.titleType(TitleType.TOKEN_ONE).build()
             : titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build();
