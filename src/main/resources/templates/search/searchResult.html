@@ -26,28 +26,18 @@
 </head>
 <body>
 <header>
-  <nav class="navbar navbar-expand bg-body fixed-top">
-    <div class="container-fluid" style="background-color: white; height: 50px">
-      <a class="navbar-brand" href="https://mapbook.pro"
-         style="color: #00b74a; font-size: 30px; font-weight: bold; margin-left: 10%;">MapBook</a>
-      <a class="navbar-brand" style="margin-left: 30pt"> 전국 모든 도서관 도서 검색 & 지도</a>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <div class="d-flex" role="search" style="padding-right: 400pt">
-            <div class="input-group rounded">
-              <input id="search-input" type="search" class="form-control rounded"
-                     placeholder="Search" aria-label="Search" aria-describedby="search-addon"/>
-              <span class="input-group-text border-0" id="search-addon">
-                            <i class="fas fa-search"></i>
-                  </span>
-            </div>
-          </div>
-        </ul>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand"
+         style="color: #00b74a; font-size: 30px; font-weight: bold; margin-left: 15%;">MapBook</a>
+      <div class="d-flex" style="margin-right: 30%">
+        <input id="search-input" class="form-control me-2" type="search" placeholder="전국 모든 도서관 책 찾기" aria-label="Search">
+        <button id="search-input-btn"  class="btn btn-success" type="button">Search</button>
       </div>
     </div>
   </nav>
-</header>
 
+</header>
 
 <!-- Page Content-->
 <div class="container px-4 px-lg-6 p-5" id="book_container" style="margin-top: 20pt">
