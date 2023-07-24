@@ -3,7 +3,6 @@ package com.scaling.libraryservice.search.service;
 import static com.scaling.libraryservice.search.entity.QBook.book;
 
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.entity.QBook;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;

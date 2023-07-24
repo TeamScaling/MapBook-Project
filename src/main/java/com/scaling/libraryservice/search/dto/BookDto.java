@@ -2,6 +2,7 @@ package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.util.TitleTrimmer;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,25 +28,20 @@ public class BookDto {
 
     private String bookImg;
 
-    private Integer lonaCnt;
+    private Integer loanCnt;
 
 
     public BookDto(@NonNull Book book) {
-
         this.id = book.getId();
         this.title = TitleTrimmer.TrimTitleResult(book.getTitle());
-
-        if (book.getContent().isEmpty()) {
-            this.content = "[내용 없음]";
-        } else {
-            this.content = book.getContent();
-        }
+        this.content =  book.getContent().isEmpty() ? "[내용 없음]" : book.getContent();
         this.author = book.getAuthor();
         this.isbn = book.getIsbn();
-        this.bookImg =book.getBookImg();
-        this.lonaCnt = book.getLoanCnt();
+        this.bookImg = book.getBookImg().isEmpty() ?
+            "https://someone-be-bucket.s3.ap-northeast-2.amazonaws.com/mapbook+logo.png"
+            : book.getBookImg();
+        this.loanCnt = book.getLoanCnt();
     }
-
 
 
     public BookDto(@NonNull JSONObject json) {

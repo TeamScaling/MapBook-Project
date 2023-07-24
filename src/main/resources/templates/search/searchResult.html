@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <title>검색 결과 - 책있나?</title>
-  <link rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="shortcut icon" href="../../static/images/mapbook.png">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+  <meta name="description" content=""/>
+  <meta name="author" content=""/>
+  <title>MapBook - 책있나?</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="css/styles.css" rel="stylesheet"/>
+  <link type="text/css" th:href="@{/css/styles.css}" rel="stylesheet">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.1/bignumber.min.js"></script>
@@ -13,333 +18,323 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <link type="text/css" th:href="@{/css/searchResult.css}" rel="stylesheet">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+      href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Noto+Sans+KR:wght@500;700&display=swap"
+      rel="stylesheet">
 </head>
 <body>
 <header>
-  <div class="search-box">
-    <form id="search-form" action="/books/search">
-      <select name="target" aria-label="선택">
-        <option value="title">도서명</option>
-      </select>
-      <label>
-        <input id="query-input" type="text" name="query" placeholder="검색어를 입력하세요">
-      </label>
-      <button id="search-button" type="submit">검색</button>
-      <p>
-        '<span id="query"></span>' 에 대한 자료검색 결과 <br>
-        (검색 속도: <span th:text="${searchTime}"></span> 초)
-      </p><br>
-      <P>대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수</P>
-    </form>
-    <div>
-      <a href="/" class="home-button">
-        <span>Home</span>
-      </a>
+  <nav class="navbar navbar-expand bg-body fixed-top">
+    <div class="container-fluid" style="background-color: white; height: 50px">
+      <a class="navbar-brand" href="https://mapbook.pro"
+         style="color: #00b74a; font-size: 30px; font-weight: bold; margin-left: 10%;">MapBook</a>
+      <a class="navbar-brand" style="margin-left: 30pt"> 전국 모든 도서관 도서 검색 & 지도</a>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <div class="d-flex" role="search" style="padding-right: 400pt">
+            <div class="input-group rounded">
+              <input id="search-input" type="search" class="form-control rounded"
+                     placeholder="Search" aria-label="Search" aria-describedby="search-addon"/>
+              <span class="input-group-text border-0" id="search-addon">
+                            <i class="fas fa-search"></i>
+                  </span>
+            </div>
+          </div>
+        </ul>
+      </div>
     </div>
-  </div>
-
+  </nav>
 </header>
 
-<main>
-  <div>
-    <table>
-      <thead>
-      <tr>
-        <th class="hidden">ISBN</th>
-        <th>도서 제목</th>
-        <th>작가</th>
-        <th>내용</th>
-        <th>이미지</th>
-        <th>대출 가능한 <br>주변 도서관</th>
-        <th>제목<br>복사</th>
-        <th>대출<br>횟수</th>
-      </tr>
-      </thead>
-      <tbody id="book-info-column">
-      <tr th:each="book : ${searchResult.documents}">
-        <td class="hidden" th:text="${book.getIsbn()}"></td>
-        <td>
-          <span th:text="${book.title}"></span>
-        </td>
-        <td th:text="${book.author}"></td>
-        <td th:text="${book.content}"></td>
-        <td>
-          <img class="book-image"
-               th:attr="src=${!book.bookImg.isEmpty() ? book.bookImg : 'https://someone-be-bucket.s3.ap-northeast-2.amazonaws.com/mapbook+logo.png'}"
-               alt="준비중"/>
-        </td>
-        <td>
-          <button class="loan-check-btn" th:data-isbn="${book.isbn}"
-                  onsubmit="return openPopup_MapBook()">
-            도서관<br>찾기
-          </button>
-        </td>
-        <td>
-          <button class="copy-btn" th:data-title="${book.title}">복사</button>
-        </td>
-        <td th:text="${book.lonaCnt}"></td>
-      </tr>
 
-      </tbody>
-    </table>
+<!-- Page Content-->
+<div class="container px-4 px-lg-6 p-5" id="book_container" style="margin-top: 20pt">
+  <div class="container px-4 px-lg-6 p-5" id="book_container" style="margin-top: 20pt">
+    <div id="meta-box">
+      <p>[사랑] 에 대한 도서 검색결과 (검색 속도: 0.041초)</p>
+      <p style="color: #636464">[대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수]</p>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <!-- default page-->
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/8679/31/cover/k372535696_1.jpg"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">자존감 수업</h2>
+        <p>대출 횟수 : 24270</p>
+        <p>저자 : 윤홍균 지음</p>
+        <p>정신과 의사 '윤답장' 선생의 자존감 셀프 코칭법. 자존감 전문가이자 정신과 의사인 윤홍균 원장이 2년 넘게 심혈을 기울여 쓴 책으로, 자존감이 우리 삶에
+          미치는 영향을 친절하게 알려주고, 자존감을 끌어올리는 실질적인 방법을 알려주고 있다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9791186757093">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/030/257/03025716.jpg?type=m1&amp;udate=20180227"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">왜 나는 너를 사랑하는가</h2>
+        <p>대출 횟수 : 20817</p>
+        <p>저자 : 알랭 드 보통 [지음];정영목 옮김</p>
+        <p>2005년 4월 14일 'TV 책을 말하다' 추천도서. 남녀가 만나 사랑에 빠지는 그 놀랍도록 기이한 첫 만남에서부터, 점차 시들해지고 서로를 더이상 운명으로
+          느끼지 않게 되는 이별까지. 연애에 든 남녀의 심리와 그 메카니즘이 아주 흥미진진한 철학적 사유와 함께 기술되어 있다.
 
-    <div class="alert alert-success" role="alert"
-         style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999;">
-      도서 제목이 클립보드에 복사되었습니다.
+          파리에서 런던으로 가는... </p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788986836240">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/101/63/cover/898437086x_1.jpg" alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">사랑하기 때문에</h2>
+        <p>대출 횟수 : 19525</p>
+        <p>저자 : 기욤 뮈소 [지음] ;전미연 옮김</p>
+        <p>&lt;구해줘&gt;. &lt;당신, 거기 있어 줄래요?&gt;의 작가 기욤 뮈소의 장편소설. 가해자와 피해자, 상처를 입힌 자와 상처받은 자들이 화해와 용서를
+          통해 상처를 딛고 일어서는 이야기이다. 기욤 뮈소의 전작들에서와 마찬가지로, 영화의 한 컷 한 컷을 연상시키는 서사구조가 특징이다. 긴박감 넘치는 구성과 속도감
+          넘치는 전개가 소설의 표피를 이룬다면 사랑 즉, 따스한 인간애는 소설의 내용을 이루는 주된 원료라 할 수 있다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788984370869">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/8123/68/cover/k782434140_2.jpg"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">미움받을 용기</h2>
+        <p>대출 횟수 : 19157</p>
+        <p>저자 : 기시미 이치로,전경아 옮김</p>
+        <p>&lt;미움받을 용기&gt; 2권. 3년 전 홀가분하고 희망 찬 마음으로 철학자의 서재를 떠났던 청년이 '중대한 고민'이 있다며 다시 철학자의 서재를 찾았다.
+          '행복으로 가는 길'을 제시했던 전작에 이어 '행복으로 가는 구체적인 방법'에 대해서 다루고 있다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9791186560129">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/13707/57/cover/k002532728_1.jpg"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">우리는 사랑일까</h2>
+        <p>대출 횟수 : 16803</p>
+        <p>저자 : 알랭 드 보통 지음;공경희 옮김</p>
+        <p> 등 남녀 간의 연애심리를 독특한 방식으로 분석한 작품으로 많은 사랑을 받아온 알랭 드 보통. 그의 사랑과 인간관계 시리즈 3부작 가운데 남은 한 편이 새로운
+          모습으로 선보인다. 예전에 이라는 제목으로 출간되었던 것을 공경희씨의 번역으로 새롭게 선보이게 된 것. 원제 'The Romantic Movement'.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788956601373">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/019/954/01995442.jpg?type=m1&amp;udate=20140114"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">사랑 후에 오는 것들</h2>
+        <p>대출 횟수 : 16438</p>
+        <p>저자 : 지은이: 공지영</p>
+        <p>2005년 5월 16일부터 12월 1일까지, 서울과 파리에 있는 두 작가가 서로 이메일을 주고받으며 '한겨레신문'에 '먼 하늘 가까운 바다'라는 제목으로 연재한
+          글을, 제목을 바꿔 단행본으로 펴냈다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788973818693">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/50/20/cover/8957090258_1.gif" alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">박사가 사랑한 수식</h2>
+        <p>대출 횟수 : 15804</p>
+        <p>저자 : 오가와 요코 지음;김난주 옮김</p>
+        <p>천재 수학자인 박사는 1975년 불의의 교통사고를 당해 뇌를 다친 후 기억력이 80분간만 지속되는 희귀병에 걸린다. 사고 이전의 기억은 고스란히 남아 있으나
+          사고를 당한 이후로는 모든 일을 80분이 지나면 까맣게 잊어버리는 것.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788957090251">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/033/094/03309408.jpg?type=m1&amp;udate=20150715"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">책벌레</h2>
+        <p>대출 횟수 : 15391</p>
+        <p>저자 : 글: 김현태;그림: 박영미</p>
+        <p>책이 싫다구요? 거실을 서재로 바꿔보세요~!『엄마가 사랑하는 책벌레』는 책을 싫어하는 독서 반장 민호와 문학 소녀였던 엄마가 거실 도서관을 만들면서 겪게 되는
+          갈등과 화해를 그린 작품입니다. 더 나아가 책을 낯설고 어렵게 느끼는 아이들에게 진정한 독서의 의미를 짚어주고 있습니다. 글에 어울리는... </p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788992830027">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/060/376/06037660.jpg?type=m1&amp;udate=20170808"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">그건, 사랑이었네</h2>
+        <p>대출 횟수 : 14958</p>
+        <p>저자 : 지은이: 한비야</p>
+        <p>'바람의 딸' 한비야가 2009년 7월, 8년 6개월간 긴급구호 팀장으로 일해온 국제 NGO 월드비전을 그만두며 펴내는 책. 이번 책에서 한비야는 자신만의
+          공간인 집으로 독자들을 초대하여 따뜻한 차 한 잔을 나누면서 서로의 고민을 이야기하고 현장에서의 자신을 돌아본다. 한비야의 맨얼굴이 드러나는 책이다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788971848173">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/7543/64/cover/k522434013_2.jpg"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">완벽하지 않은 것들에 대한 사랑</h2>
+        <p>대출 횟수 : 14781</p>
+        <p>저자 : 혜민 지음 ;이응견 그림</p>
+        <p>&lt;멈추면, 비로소 보이는 것들&gt;의 저자 혜민 스님의 4년 만의 신작. 완벽하지 않은 것들로 가득한 나 자신과 가족, 친구, 동료, 나아가 이 세상을
+          향한 온전한 사랑의 메시지를 담고 있다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9791195322183">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/060/829/06082927.jpg?type=m1&amp;udate=20141122"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">자존감</h2>
+        <p>대출 횟수 : 9336</p>
+        <p>저자 : 이무석 지음</p>
+        <p>&lt;30년만의 휴식&gt;, &lt;친밀함&gt;으로 마음의 평안을 누릴 수 있는 길을 제시했던 이무석 교수가 열등감의 감옥에 갇힌 사람들에게 그 감옥을
+          벗어날 수 있는 길을 제시한다. 저자는 '자존감은 자신을 바라보는 관점의 문제'라고 말하며, 고통스러운 열등감에서 빠져 나와 당당하게 사는 방법을 따뜻한 시선으로
+          알려준다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788990984616">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/10189/11/cover/k852536383_2.jpg"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">랩걸</h2>
+        <p>대출 횟수 : 9332</p>
+        <p>저자 : 지은이: 호프 자런 ;옮긴이: 김희정</p>
+        <p>2016년 출간과 함께 베스트셀러에 오르며 뜨거운 관심을 받은 &lt;랩걸-나무, 과학 그리고 사랑&gt;이 출간되었다. 올리버 색스와 제이 굴드의 부재를
+          아쉬워하던 독자들에게 호프 자런이라는 ‘좋은 글을 쓰는 과학자의 등장’은 무엇보다 반가운 소식이다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9791159920967">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="http://image.aladin.co.kr/product/1204/75/cover/8959980951_1.jpg"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">영원히 널 사랑할 거란다</h2>
+        <p>대출 횟수 : 9208</p>
+        <p>저자 : 미야니시 타츠야 글·그림 ;허경실 옮김</p>
+        <p>고 녀석 맛있겠다 시리즈 4권. 아주 먼 옛날 폭풍이 지나간 다음날 아침, 엄마 마이아사우라는 작은 알 하나를 발견하고, 작은 알을 주워 집으로 돌아왔다. 주워
+          온 알에서 태어난 건 무시무시한 티라노사우루스였지만, 엄마는 아기 티라노사우루스를 정성껏 돌본다. 그러던 어느 날, 하트는 숲에서 티라노사우루스를 만나 자기가
+          티라노사우루스라는 걸 알게 되고 마는데….</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788959980956">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/019/954/01995443.jpg?type=m1&amp;udate=20141125"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">사랑 후에 오는 것들</h2>
+        <p>대출 횟수 : 9067</p>
+        <p>저자 : 지은이: 츠지 히토나리;옮김이: 김훈아</p>
+        <p>홍이와 준고, 한국과 일본 두 젊은 남녀의 사랑 이야기로, 처럼 츠지 히토나리는 남자의 시선으로, 공지영은 여자의 시선으로 내면과 상황을 이야기한다. 두 권의
+          소설을 읽고 난 후에야 비로소 하나의 사랑이 완성된 듯한 느낌을 받을 수 있는 형식이다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788973818709">대출 가능 <br>도서관 찾기!</a>
+      </div>
+    </div>
+    <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+      <div class="col-lg-2">
+        <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+             src="https://bookthumb-phinf.pstatic.net/cover/015/293/01529381.jpg?type=m1&amp;udate=20160308"
+             alt="Book image">
+      </div>
+      <div class="col-lg-5">
+        <h2 class="font-weight-light">사랑하라 한번도 상처받지 않은 것처럼</h2>
+        <p>대출 횟수 : 9051</p>
+        <p>저자 : 류시화 엮음</p>
+        <p>류시화 시인이 잠언 시집 이후 '치유와 깨달음'이라는 주제 하에 8년 동안 모은 시를 책으로 펴냈다. 메리 올리버, 비슬라바 쉼보르스카, 옥타비오 빠스,
+          잘랄루딘 루미, 오마르 카이얌, 이누이트 족 인디언들, 티베트의 현자 등이 쓴 시 77편이 실려있다.</p>
+      </div>
+      <div class="col-lg-2">
+        <a class="btn btn-outline-success" data-isbn="9788995501474">대출 가능 <br>도서관 찾기!</a>
+      </div>
     </div>
   </div>
-</main>
-<footer>
-  <div class="pagination">
-    <button id="prevBtn">Prev</button>
-    <span aria-hidden="true">&laquo;</span>
-    <span class="sr-only">Previous</span>
-    <ul id="pages" class="pages">
-    </ul>
-    <button id="nextBtn">Next</button>
-    <span aria-hidden="true">&raquo;</span>
-    <span class="sr-only">Next</span>
+</div>
+<!-- Footer-->
+<footer class="py-5 bg-dark">
+  <div class="container px-4 px-lg-5">
+    <p class="m-0 text-center text-white">Copyright &copy; Team MapBook 2023 / 이미지 출처 : 알라딘
+      http://image.aladin.co.kr</p>
+    <p class="m-0 text-center text-white">Contact US</p>
+    <p class="m-0 text-center text-white">
+      [Ryan J : jgfkdlzh@gmail.com]
+      [SLIPPECAT : ryjun91@gmail.com]
+      [Sara : zbd0329@gmail.com]
+      [zs12341 : ]
+    </p>
   </div>
 </footer>
-
-<script th:inline="javascript">
-
-  const form = document.getElementById('search-form');
-  const queryInput = document.getElementById('query-input');
-
-  form.addEventListener('submit', function (event) {
-    if (queryInput.value.trim().length < 2) {
-      event.preventDefault(); // 검색을 실행하지 않음
-      alert('검색어를 두글자 이상 입력해주세요.');
-    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30) {
-      event.preventDefault(); // 검색을 실행하지 않음
-      alert('검색어를 30글자 이하로 입력해주세요.');
-    }
-  });
-
-  queryInput.addEventListener('keypress', function (event) {
-    if (event.keyCode === 13 && queryInput.value.trim().length < 2) {
-      event.preventDefault(); // 검색을 실행하지 않음
-      alert('검색어를 2글자 이상 입력해주세요.');
-    } else if (event.keyCode === 13 && queryInput.value.trim().length > 30) {
-      event.preventDefault(); // 검색을 실행하지 않음
-      alert('검색어를 30글자 이하로 입력해주세요.');
-    }
-  });
-
-  const query = new URLSearchParams(window.location.search).get('query');
-  document.getElementById('query').textContent = query;
-
-  let copyBtns = document.querySelectorAll('.copy-btn');
-  let alertBox = document.querySelector('.alert');
-  copyBtns.forEach(function (btn) {
-    btn.addEventListener('click', function (event) {
-      // 이벤트 버블링 방지
-      event.stopPropagation();
-
-      // 클립보드에 복사할 텍스트 가져오기
-      let text = event.target.dataset.title;
-
-      // 클립보드에 복사
-      navigator.clipboard.writeText(text)
-      .then(function () {
-        console.log('제목이 클립보드에 복사되었습니다.');
-        // 알람 띄우기
-        alertBox.style.display = 'block';
-        setTimeout(function () {
-          alertBox.style.display = 'none';
-        }, 500); // 0.5초 후 알람 닫기
-      })
-      .catch(function (err) {
-        console.error('클립보드 복사에 실패하였습니다.', err);
-      });
-    });
-  });
-
-  function openPopup() {
-    const areaCd = document.getElementById('search-input').value;
-    const url = `/library/mapSearch?areaCd=${areaCd}`;
-    window.open(url, 'areaCdInfo', 'width=1200,height=800');
-    return false;
-  }
-</script>
-
-<script th:inline="javascript">
-  /*<![CDATA[*/
-  let searchResultData = /*[[${searchResult}]]*/ [];
-  /*]]>*/
-</script>
-
-<script th:inline="javascript">
-  $(document).ready(function () {
-    let urlParams = new URLSearchParams(window.location.search);
-    let size = [[${size}]];
-
-    let endPage;
-    if (size % 10 === 0) {
-      endPage = size / 10
-    } else {
-      endPage = Math.ceil(size / 10);
-    }
-    let startPage;
-
-    let query = urlParams.get('query');
-    let currentPage = parseInt(urlParams.get('page') || 1);
-
-    // 페이지 링크 생성 및 할당
-    let totalPages;
-    const url = "/books/search?query=" + query + "&page=";
-
-    function generatePageLinks(currentPage) {
-      let pages = $(".pages");
-      pages.empty();
-
-      totalPages = currentPage + 4;
-      let startPage = Math.floor((currentPage - 1) / 5) * 5 + 1;
-
-      if (endPage > 5) {
-        totalPages = startPage + 4;
-      }
-
-      for (let i = startPage; i <= totalPages; i++) {
-        let pageLink = $("<a>").attr("href", url + i).addClass("page-link").text(i);
-        let pageItem = $("<li>").addClass("page-item").append(pageLink);
-        if (i === currentPage || (currentPage >= startPage && currentPage <= endPage && i
-            === currentPage)) {
-          pageItem.addClass("current");
-        }
-        pages.append(pageItem);
-      }
-    }
-
-    generatePageLinks(currentPage);
-
-    // 이전 페이지 버튼 클릭 시 이벤트 처리
-    $("#prevBtn").on("click", function (event) {
-      if (currentPage === 1) {
-        alert("현재 페이지는 1페이지입니다. 이전 페이지는 없습니다.")
-        event.preventDefault();
-      } else if (currentPage > 1) {
-        window.location.href = url + (currentPage - 1);
-      }
-    });
-
-    // 다음 페이지 버튼 클릭 시 이벤트 처리
-    $("#nextBtn").on("click", function (event) {
-      const nextPage = currentPage + 1;
-      if (currentPage === endPage) {
-        alert("현재 페이지는 마지막 페이지입니다. 다음 페이지는 없습니다.")
-        event.preventDefault();
-      } else if (nextPage <= totalPages) {
-        window.location.href = url + (currentPage + 1);
-      } else {
-        currentPage = nextPage; // 현재 페이지를 다음 페이지로 업데이트
-        generatePageLinks(nextPage); // 페이지 링크 다시 생성
-        window.location.href = url + nextPage;
-      }
-    });
-
-    const pageLinks = $(".page-link");
-    pageLinks.each(function (index) {
-      const pageItem = $(this).parent();
-      const pageNum = parseInt($(this).text());
-      if (pageNum === currentPage) {
-        pageItem.addClass("current");
-      } else {
-        pageItem.removeClass("current");
-      }
-      if (pageNum < startPage || pageNum > endPage) {
-        pageItem.hide();
-      } else {
-        pageItem.show();
-      }
-    });
-  });
-
-  $('.loan-check-btn').on('click', function () {
-    let isbn = $(this).attr('data-isbn');
-    let bigNumberIsbn = new BigNumber(isbn);
-    isbn = bigNumberIsbn.toFixed();
-    console.log(isbn);
-  });
-  document.addEventListener("DOMContentLoaded", function () {
-    const loanCheckButtons = document.querySelectorAll(".loan-check-btn");
-
-    loanCheckButtons.forEach((button) => {
-      button.addEventListener("click", function (event) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-          var lat = position.coords.latitude, // 위도
-              lon = position.coords.longitude; // 경도
-
-          const isbn2 = event.target.getAttribute("data-isbn");
-          const isbn = BigInt(Number(isbn2));
-          openPopup_MapBook(isbn.toString(), lat, lon);
-
-        });
-      });
-    });
-  });
-
-  function openPopup_MapBook(isbn, lat, lon) {
-
-    // 데이터 객체에 isbn, lat, lon 값을 추가
-    const data = {
-      isbn: isbn,
-      lat: lat,
-      lon: lon
-    };
-
-    $.ajax({
-      type: 'POST',
-      url: `/books/mapBook/search`,
-      contentType: "application/json",
-      data: JSON.stringify(data), // 수정된 data 객체를 JSON 형태로 변환하여 전송
-      success: function (response) {
-        // 새로운 팝업 창을 열고 응답을 받은 HTML로 내용을 채움
-        const popupWindow = window.open('', 'areaCdInfo', 'width=1200,height=800');
-        popupWindow.document.write(response);
-        popupWindow.document.close();
-      },
-      error(error) {
-        console.error(error);
-      }
-    });
-
-    return false;
-  }
-</script>
-<script>
-  $('#query-input').autocomplete({
-    source: function (request, response) { //source: 입력시 보일 목록
-      $.ajax({
-        url: "/books/autocomplete"
-        , type: "POST"
-        , dataType: "JSON"
-        , data: {value: request.term} // 검색 키워드
-        , success: function (data) {  // 성공
-          response(
-              $.map(data.resultList, function (item) {
-                return {
-                  label: item.title   // 목록에 표시되는 값
-                };
-              })
-          );    //response
-        }
-        , error: function () { //실패
-          console.log("오류가 발생했습니다.")
-        }
-      });
-    }
-    , focus: function (event, ui) { // 방향키로 자동완성단어 선택 가능하게 만들어줌
-      return false;
-    }
-    , minLength: 2// 최소 글자수
-    , autoFocus: false // true == 첫 번째 항목에 자동으로 초점이 맞춰짐
-    , delay: 300  //autocomplete 딜레이 시간(ms)
-  });
-</script>
-
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
 </body>
 </html>
