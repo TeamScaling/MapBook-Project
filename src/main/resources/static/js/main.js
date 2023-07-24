@@ -3,7 +3,14 @@ document.querySelector('#search-input').addEventListener('keydown',
       if (event.keyCode === 13) {
         searchBook();
       }
-    });
+});
+
+document.querySelector('#search-input-btn').addEventListener('click',
+    function (event) {
+      searchBook();
+});
+
+
 
 function addMetaHtml(meta) {
   return `<div id="meta-box">
