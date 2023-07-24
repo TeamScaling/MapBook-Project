@@ -17,6 +17,8 @@ import com.scaling.libraryservice.search.util.SearchMode;
 import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.util.TitleTrimmer;
 import com.scaling.libraryservice.search.util.TitleType;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
+
 public class BookRepoQueryDsl implements BookRepository {
 
     private final JPAQueryFactory factory;
@@ -36,13 +39,11 @@ public class BookRepoQueryDsl implements BookRepository {
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
-        System.out.println(titleQuery);
-
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
 
         // 최종적으로 페이징 처리된 도서 검색 결과를 반환.
         return PageableExecutionUtils.getPage(
-            books.fetch().stream().map(BookDto::new).toList(),
+            books.fetch().stream().map(BookDto::new).collect(Collectors.toList()),
             pageable, () -> LIMIT_CNT);
     }
 

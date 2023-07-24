@@ -43,6 +43,11 @@ public class BookDto {
         this.loanCnt = book.getLoanCnt();
     }
 
+    public static BookDto emptyDto(){
+
+        return new BookDto(0L,"","","","","",0);
+    }
+
 
     public BookDto(@NonNull JSONObject json) {
         this.id = json.getLong("id");

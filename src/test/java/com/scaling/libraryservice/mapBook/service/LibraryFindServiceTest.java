@@ -65,7 +65,7 @@ class LibraryFindServiceTest {
 
         /* then */
         assertEquals(2,result.size());
-        assertTrue(result.stream().allMatch(LibraryDto::hasBook));
+        assertTrue(result.stream().allMatch(LibraryDto::isHasBook));
         assertTrue(result.stream().allMatch(LibraryDto::isHasBookSupport));
     }
 
@@ -92,7 +92,7 @@ class LibraryFindServiceTest {
 
         /* then */
         assertEquals(2,result.size());
-        assertFalse(result.stream().allMatch(LibraryDto::hasBook));
+        assertFalse(result.stream().allMatch(LibraryDto::isHasBook));
         assertFalse(result.stream().allMatch(LibraryDto::isHasBookSupport));
     }
 
@@ -117,7 +117,7 @@ class LibraryFindServiceTest {
         /* then */
 
         assertEquals(result.size(),2);
-        assertTrue(result.stream().allMatch(LibraryDto::hasBook));
+        assertTrue(result.stream().allMatch(LibraryDto::isHasBook));
     }
 
     @Test
