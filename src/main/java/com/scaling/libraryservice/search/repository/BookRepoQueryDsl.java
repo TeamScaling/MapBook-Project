@@ -7,6 +7,7 @@ import static com.scaling.libraryservice.search.util.TitleType.TOKEN_COMPLEX;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -38,6 +39,8 @@ public class BookRepoQueryDsl implements BookRepository {
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
+
+        System.out.println(titleQuery);
 
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
 
@@ -133,10 +136,10 @@ public class BookRepoQueryDsl implements BookRepository {
             function, colum, name);
     }
 
-    private JPAQuery<Long> countQueryAll() {
+    private JPAQuery<Long> countQueryAll(NumberExpression<Long> expression) {
 
         return factory
-            .select(book.count())
+            .select(expression)
             .from(book);
     }
 
@@ -151,7 +154,20 @@ public class BookRepoQueryDsl implements BookRepository {
 
         return PageableExecutionUtils.getPage(
             books.fetch(),
-            pageable, () -> countQueryAll().fetchOne());
+            pageable, () -> countQueryAll(book.count()).fetchOne());
+    }
+
+    public Page<String> findTitleToken(Pageable pageable){
+
+        JPAQuery<String> books = factory
+            .select(book.titleToken)
+            .from(book)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize());
+
+        return PageableExecutionUtils.getPage(
+            books.fetch(),
+            pageable, () -> countQueryAll(book.titleToken.count()).fetchOne());
     }
 
 }

@@ -225,7 +225,7 @@ public class KeyboardUtil {
     
     /**
      * 키보드상에 매칭된 유니코드값 Index를 리턴한다.
-     * 
+     *
      * @return
      */
     private static int makeUnicodeIndex(CodeType type, String subStr) {

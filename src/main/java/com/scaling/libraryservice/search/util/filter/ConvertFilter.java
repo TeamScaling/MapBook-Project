@@ -1,48 +1,55 @@
 package com.scaling.libraryservice.search.util.filter;
 
+import com.scaling.libraryservice.search.service.KeywordService;
+import com.scaling.libraryservice.search.util.EunjeonTokenizer;
 import com.scaling.libraryservice.search.util.converter.EngToKorConverter;
 import java.util.Arrays;
 import java.util.StringJoiner;
-import org.bitbucket.eunjeon.seunjeon.Analyzer;
-import org.bitbucket.eunjeon.seunjeon.LNode;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-public class ConvertFilter extends AbstractTileFilter implements TitleFilter{
+//한글을 영어로 잘못 쳤을 때 변환 해주는 역할을 한다.
+@RequiredArgsConstructor
+public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
+
     private final TitleFilter nextFilter;
-
-    public ConvertFilter(TitleFilter nextFilter) {
-        this.nextFilter = nextFilter;
-    }
+    private final KeywordService keywordService;
 
 
     @Override
-    public String filtering(String query){
+    public String filtering(String query) {
 
         StringJoiner joiner = new StringJoiner(" ");
 
-        Arrays.stream(query.split(" ")).forEach(
+        Arrays.stream(query.split(" "))
+            .forEach(word -> {
+                if (isEnglishWord(word) && !keywordService.isExistKeyword(word)) {
+                    convertAndAddKoreanWord(word, joiner);
+                } else {
+                    joiner.add(word);
+                }
+            });
 
-            splitToken -> {
-                String convertedWord = EngToKorConverter.convert(splitToken);
-
-                Analyzer.parseJava(convertedWord).forEach(
-                    node -> {
-                        if (isNotQualifiedToken(node)){
-
-                            joiner.add(splitToken);
-                        }else{
-                            joiner.add(node.copy$default$1().surface());
-                        }
-                    }
-                );
-            }
-        );
-
-        return progressFilter(joiner.toString(),this.nextFilter);
+        return progressFilter(joiner.toString(), this.nextFilter);
     }
 
-    private boolean isNotQualifiedToken(LNode node){
-        return node.copy$default$1().feature().head().equals("UNKNOWN") ||
-            node.copy$default$1().feature().head().equals("SP");
+    private void convertAndAddKoreanWord(String word, StringJoiner joiner) {
+
+        String convertedWord = EngToKorConverter.convert(word);
+
+        EunjeonTokenizer
+            .getQualifiedNnTokens(convertedWord)
+            .stream()
+            .filter(keywordService::isExistKeyword)
+            .forEach(joiner::add);
+    }
+
+    public static boolean isEnglishWord(String input) {
+        Pattern pattern = Pattern.compile("^[a-zA-Z]+$"); // 영어 단어를 확인하는 정규 표현식
+        Matcher matcher = pattern.matcher(input);
+        return matcher.matches();
     }
 
 

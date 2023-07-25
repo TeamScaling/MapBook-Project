@@ -4,6 +4,7 @@ import static com.scaling.libraryservice.search.util.Token.ETC_TOKEN;
 import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
 
 import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
 import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
 import com.scaling.libraryservice.search.util.filter.FilterStream;
 import java.util.List;
@@ -29,7 +30,7 @@ public class TitleAnalyzer {
     private static final int TOKEN_MAX_SIZE = 3;
 
     @Timer
-    public TitleQuery analyze(String query) {
+    public TitleQuery analyze(String query) throws NotQualifiedQueryException {
 
         query = filterStream.doFiltering(query);
 

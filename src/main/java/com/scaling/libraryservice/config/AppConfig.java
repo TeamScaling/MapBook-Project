@@ -6,6 +6,7 @@ import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.QuerySendChecker;
 import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
+import com.scaling.libraryservice.search.service.KeywordService;
 import com.scaling.libraryservice.search.util.filter.ConvertFilter;
 import com.scaling.libraryservice.search.util.filter.FilterStream;
 import com.scaling.libraryservice.search.util.filter.SimpleFilter;
@@ -74,8 +75,8 @@ public class AppConfig {
     }
 
     @Bean
-    public FilterStream filterStream(){
-       return new FilterStream(new SimpleFilter(new ConvertFilter(null)));
+    public FilterStream filterStream(KeywordService keywordService){
+       return new FilterStream(new SimpleFilter(new ConvertFilter(null,keywordService)));
     }
 
 
