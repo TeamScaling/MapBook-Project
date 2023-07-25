@@ -59,6 +59,7 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 - Spring Boot
 - Spring JPA
 - Thymeleaf
+- QueryDsl
 - eunjeon (자연어 분석)
 - Junit5
 - WireMock
