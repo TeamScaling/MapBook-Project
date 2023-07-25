@@ -1,30 +1,40 @@
 # MapBook
-> No more searching each library separately, search them all at once with MapBook! <br>
-> Don't bother finding where to borrow books, let MapBook automatically search the libraries around you!
 
+> 도서관 책 찾을려고 일일이 도서관 사이트 들어가서 검색 하지 마세요!  <br><br>
+> 열심히 찾았는데, 대출 가능한 도서관 어딨는지 또 찾지 마세요!
 
 ### Service Goals
-- Improve the usability of public library web services.
-    - Allow users to search for books and check their availability in one stop.
-    - Enable search functions supported by bookstore sites (such as Kyobo Bookstore and Yes24) to be used in public libraries.
-    - Ensure the service is available even in the event of an OpenAPI failure.
+
+1. 도서관 도서 통합 검색 플랫폼
+2. 지도 기반 대출 가능한 도서관 찾기 서비스
 
 ### Challenge Goals
-- Improve understanding of Java, Spring, and MySQL by avoiding the use of external services and implementing them directly.
-    - Implement a fast and flexible search without using ElasticSearch, and compare with external services later.
-    - Implement caching without using Redis.
-    - Implement circuit breakers without using libraries.
+
+ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 
 ### Explore the Project
+
 - [Try MapBook](https://mapbook.pro/)
-- [MapBook Notion](https://www.notion.so/TeamScaling-MapBook-9bfd3aadc2a54a2e9c32a7ebd08409e6)
-
-
 
 <p align = "center">
-<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/Untitled2.png" >
-<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/Untitled3.png" >
+<img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/indexImg.png" >
 </p>
+
+## 기능 소개
+
+1. 0.2s 이내 빠른 검색 속도 및 대출 횟수 기반 결과 <br>
+   <br><p align = "center"><img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/result2.png" ></p>
+
+2. 검색어 자동 완성 <br>
+   <br> <p align = "center"> <img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/autoComplete.png" ></p>
+
+3. 한영 오타 자동 전환 검색 기능 <br>
+   <br> <p align = "center"><img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/convert.png" ></p>
+
+4. 한영 오타 자동 전환 검색 기능 <br>
+   <br> <p align = "center"><img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/resultSwitch.png" ></p>
+5. 클릭 한번에 내 주변 대출 가능 도서관 찾기 <br>
+   <br> <p align = "center"><img width="30%" height = "30%" alt="mapbook" src="src/main/resources/static/images/mapResult.png" ></p>
 
 <div align=center><h1>📚 STACKS</h1></div>
 <div align=center> 
@@ -39,46 +49,33 @@
 </div>
 
 ### Project Duration & Team
-- Duration: 2023.03.31 - 2023.05.12 (6 weeks)
+
+- Duration: 2023.03.31 - 2023.07.26
 - Team: 4 Backend Developers
 
 ### Backend Technology
+
 - Java
 - Spring Boot
 - Spring JPA
 - Thymeleaf
-- Komoran
+- eunjeon (자연어 분석)
 - Junit5
 - WireMock
 - Mockito
 
 ### Infrastructure
+
 - AWS EC2
 - Github CI/CD
 - AWS RDS (Mysql 8.0)
 
 ### Open API
+
 - Kakao Map
 - Library Information System (for book availability check)
 
-### Project Characteristics
-- This is a 'challenge project' consisting of backend developers only.
-- We focused on implementing essential UI and mainly concentrated on backend technologies.
+### Book Data
 
-
-<div align=center><h1>📝 Class Diagram</h1></div>
-<p align = "center">
-<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/bookSearch.png" >
-<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/mapBook.png" >
-<img width="100%" height = "100%" alt="mapbook" src="src/main/resources/static/images/CircuitBreaker.png" >
-</p>
-<div align=center><h1>📝 Sequence Diagram</h1></div>
-<p align = "center">
-<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/BookSearch.png" >
-<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/BookSearch2.png" >
-<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/mapbook2.png" >
-<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/mapbook3.png" >
-<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/circuitBreaker.png" >
-<img width="80%" height = "80%" alt="mapbook" src="src/main/resources/static/images/sequence/circuitBreaker2.png" >
-</p>
-
+- 3,740,754 raws
+- ~ 23년 4월 도서 데이터 최신화 완료
