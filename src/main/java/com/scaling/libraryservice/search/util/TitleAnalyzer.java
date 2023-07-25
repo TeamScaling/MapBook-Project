@@ -5,6 +5,7 @@ import static com.scaling.libraryservice.search.util.Token.NN_TOKEN;
 
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
+import com.scaling.libraryservice.search.util.filter.FilterStream;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ public class TitleAnalyzer {
 
     private final EunjeonTokenizer tokenizer;
 
+    private final FilterStream filterStream;
+
     private static final int TOKEN_MIN_SIZE = 1;
 
     private static final int TOKEN_MAX_SIZE = 3;
@@ -28,14 +31,15 @@ public class TitleAnalyzer {
     @Timer
     public TitleQuery analyze(String query) {
 
-        query = TitleFilter.filtering(query);
+        query = filterStream.doFiltering(query);
 
         // tokenizer를 거치면 원본 검색어가 수정되기 때문에 필요 모드에서 사용하기 위해 원본을 저장 한다.
         String originalQuery = query;
 
         Map<Token, List<String>> titleMap = tokenizer.tokenize(query);
 
-        TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder();
+        TitleQueryBuilder titleQueryBuilder
+            = new TitleQueryBuilder().originalQuery(originalQuery);
 
         // 형태소 분석을 마친 결과를 TitleQuery의 멤버 변수에 맞게 각각 담는다.
         titleMap.forEach((key, tokens) -> {

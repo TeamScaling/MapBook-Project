@@ -62,18 +62,20 @@ public class BookSearchService {
 
         stopWatch.stop();
 
-        String searchTime = String.format("%.3f",stopWatch.getTotalTimeSeconds());
+        String searchTime = String.format("%.3f", stopWatch.getTotalTimeSeconds());
 
-        return new RespBooksDto(new MetaDto(booksPage, reqBookDto, searchTime), booksPage);
+        return new RespBooksDto(
+            new MetaDto(booksPage, reqBookDto, searchTime, titleQuery.getOriginalQuery())
+            , booksPage);
     }
 
-    public RespBooksDto bookAutoComplete(ReqBookDto reqBookDto,int timeout){
+    public RespBooksDto bookAutoComplete(ReqBookDto reqBookDto, int timeout) {
 
-        RespBooksDto respBooksDto = searchBooks(reqBookDto,timeout);
+        RespBooksDto respBooksDto = searchBooks(reqBookDto, timeout);
 
         //맨위에 결과값이 front에서 짤려 보이는 문제 해결하기 위해 빈 제목을 넣는다.
         List<BookDto> books = respBooksDto.getDocuments();
-        books.add(0,BookDto.emptyDto());
+        books.add(0, BookDto.emptyDto());
 
         return respBooksDto;
     }

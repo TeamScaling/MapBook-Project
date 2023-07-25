@@ -6,6 +6,9 @@ import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.QuerySendChecker;
 import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
+import com.scaling.libraryservice.search.util.filter.ConvertFilter;
+import com.scaling.libraryservice.search.util.filter.FilterStream;
+import com.scaling.libraryservice.search.util.filter.SimpleFilter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
@@ -68,6 +71,11 @@ public class AppConfig {
     public JPAQueryFactory jpaQueryFactory(EntityManager em){
 
         return new JPAQueryFactory(em);
+    }
+
+    @Bean
+    public FilterStream filterStream(){
+       return new FilterStream(new SimpleFilter(new ConvertFilter(null)));
     }
 
 
