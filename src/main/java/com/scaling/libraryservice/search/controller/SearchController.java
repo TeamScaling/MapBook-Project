@@ -27,6 +27,13 @@ public class SearchController {
 
     private final BookSearchService bookSearchService;
 
+    private static final int AUTO_COMPLETE_SIZE = 6;
+    private static final int DEFAULT_TIMEOUT = 3;
+
+    private static final int DEFAULT_PAGE = 1;
+
+    private static final int DEFAULT_SIZE = 10;
+
     /**
      * 메인 홈페이지를 반환하는 메서드입니다.
      *
@@ -41,8 +48,8 @@ public class SearchController {
     @PostMapping(value = "/books/autocomplete")
     public ResponseEntity<List<BookDto>> autocomplete(@RequestParam(value = "query") String query) {
 
-        RespBooksDto result = bookSearchService.searchBooks(
-            new ReqBookDto(query, 1, 5), 3);
+        RespBooksDto result = bookSearchService.bookAutoComplete(
+            new ReqBookDto(query, DEFAULT_PAGE, AUTO_COMPLETE_SIZE), DEFAULT_TIMEOUT);
 
         return ResponseEntity.ok(result.getDocuments());
     }
@@ -54,7 +61,8 @@ public class SearchController {
         @RequestParam(value = "size", defaultValue = "10") int size) {
 
         RespBooksDto searchResult
-            = bookSearchService.searchBooks(new ReqBookDto(query, page, size), 3);
+            = bookSearchService.searchBooks(
+                new ReqBookDto(query, page, size), DEFAULT_TIMEOUT,true);
 
         return ResponseEntity.ok(searchResult);
     }
@@ -63,7 +71,7 @@ public class SearchController {
     public ResponseEntity<RespBooksDto> restSearchBook(@NonNull @RequestBody TestingBookDto testingBookDto) {
 
         RespBooksDto result = bookSearchService.searchBooks(
-            new ReqBookDto(testingBookDto.getBookName(), 1,10),3);
+            new ReqBookDto(testingBookDto.getBookName(), DEFAULT_PAGE,DEFAULT_SIZE),DEFAULT_TIMEOUT,true);
 
         if (result.getDocuments().isEmpty()) {
             log.info("[Not Found]This book is Not Found");

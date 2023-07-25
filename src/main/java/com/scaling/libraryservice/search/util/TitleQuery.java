@@ -28,19 +28,23 @@ public class TitleQuery {
      */
     private final String nnToken;
 
+    private final String originalQuery;
+
 
     private TitleQuery(@NonNull TitleType titleType, @Nullable String etcToken,
-        @Nullable String nnToken) {
+        @Nullable String nnToken, String originalQuery) {
 
         this.titleType = titleType;
         this.etcToken = etcToken;
         this.nnToken = nnToken;
+        this.originalQuery = originalQuery;
     }
 
     public static class TitleQueryBuilder {
         private TitleType titleType;
         private String etcToken;
         private String nnToken;
+        private String originalQuery;
 
         public TitleQueryBuilder titleType(TitleType titleType) {
             this.titleType = titleType;
@@ -57,8 +61,14 @@ public class TitleQuery {
             return this;
         }
 
+        public TitleQueryBuilder originalQuery(String originalQuery) {
+            this.originalQuery = originalQuery;
+            return this;
+        }
+
+
         public TitleQuery build() {
-            return new TitleQuery(titleType, etcToken, nnToken);
+            return new TitleQuery(titleType, etcToken, nnToken,originalQuery);
         }
     }
 }

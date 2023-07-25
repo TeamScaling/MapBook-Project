@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Component;
  * 사용자가 원하는 도서와 사용자 주변의 도서관을 연결하여 대출 가능한 도서관의 정보를 제공하는 서비스 클래스입니다.
  *
  * <p>이 클래스는 {@link DataProvider<ApiBookExistDto>}를 사용하여 도서의 대출 가능 여부 데이터를 가져옵니다.</p>
- *
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 public class MapBookService implements ApiRelatedService {
 
     private final DataProvider<ApiBookExistDto> dataProvider;
+
+    private static final int DEFAULT_THREAD = 10;
 
     /**
      * 사용자가 원하는 도서와 사용자 주변의 도서관을 조합하여 대출 가능한 도서관들의 정보를 반환 한다.
@@ -43,14 +45,23 @@ public class MapBookService implements ApiRelatedService {
     public List<RespMapBookDto> matchLibraryBooks(@NonNull List<BExistConn> bExistConns,
         List<LibraryDto> nearByLibraries, ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
-        if (bExistConns.isEmpty()) {
-            return nearByLibraries.stream().map(l -> new RespMapBookDto(reqMapBookDto, l, "NN_TOKEN"))
-                .toList();
-        }
+        // 대출 가능 데이터를 전달 받는다.
+        List<ApiBookExistDto> apiResults =
+            dataProvider.provideDataList(bExistConns, DEFAULT_THREAD);
 
-        List<ApiBookExistDto> apiResults = dataProvider.provideDataList(bExistConns,10);
+        return bExistConns.isEmpty() ?
+            emptyResult(nearByLibraries, reqMapBookDto) :
+            mappingLoanableLib(nearByLibraries, apiResults);
+    }
 
-        return mappingLoanableLib(nearByLibraries, apiResults);
+    private List<RespMapBookDto> emptyResult(List<LibraryDto> nearByLibraries,
+        ReqMapBookDto reqMapBookDto) {
+
+        return nearByLibraries.stream()
+            .map(
+                libraryDto
+                    -> new RespMapBookDto(reqMapBookDto, libraryDto, false))
+            .toList();
     }
 
 
@@ -93,13 +104,13 @@ public class MapBookService implements ApiRelatedService {
 
         Map<Integer, ApiBookExistDto> bookExistMap = new HashMap<>();
 
-        for (ApiBookExistDto dto : apiResults) {
-
-            if (dto.isLoanAble()) {
-
-                bookExistMap.put(Integer.valueOf(dto.getLibCode()), dto);
-            }
-        }
+        apiResults.stream()
+            .filter(ApiBookExistDto::isLoanAble)
+            .forEach(
+                bookExistDto ->
+                    bookExistMap.put(
+                        Integer.valueOf(bookExistDto.getLibCode()),
+                        bookExistDto));
 
         return bookExistMap;
     }

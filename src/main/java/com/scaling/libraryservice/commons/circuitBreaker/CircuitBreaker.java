@@ -19,6 +19,10 @@ public class CircuitBreaker {
     private final Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private final RestorationChecker checker;
 
+    private static final int INITIAL_DELAY = 1;
+
+    private static final int RECOVERY_INTERVAL = 60 * 30;
+
 
     /**
      * {@link ApiObserver} 인스턴스의 API 액세스 상태를 확인하는 메소드입니다. {@link ApiObserver}가 현재 접근 가능한 API를 가리키고
@@ -60,12 +64,12 @@ public class CircuitBreaker {
     private synchronized void closeApi(ApiObserver observer) {
 
         ApiStatus status = observer.getApiStatus();
-
         status.closeAccess();
+
         log.info(status.getApiUri() + " is closed by nested api server error at [{}]",
             status.getClosedTime());
 
-        startScheduledRestoration(observer,60*30,TimeUnit.SECONDS);
+        startScheduledRestoration(observer,RECOVERY_INTERVAL,TimeUnit.SECONDS);
     }
 
     /**
@@ -82,7 +86,7 @@ public class CircuitBreaker {
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
                 if (checker.isRestoration(observer)) {
                     stopScheduledRestoration(observer);
-                }}, 1, period, timeUnit);
+                }}, INITIAL_DELAY, period, timeUnit);
 
         scheduledTasks.put(observer, scheduledFuture);
     }

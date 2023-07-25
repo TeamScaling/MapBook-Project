@@ -13,17 +13,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CsvFileMerger {
 
-    public static void main(String[] args) {
-
-        // 입력 파일 경로와 패턴 입력
-        String inputFolder = "C:\\teamScaling\\libBooks";
-        // 출력 파일명 입력
-        String outputFileName = "lib_books.csv";
-
-        mergeCsvFile(inputFolder, outputFileName);
-    }
-
-
     public static void mergeCsvFile(String inputFolder, String outputFileName) {
 
         File[] files = new File(inputFolder)

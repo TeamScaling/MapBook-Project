@@ -75,7 +75,7 @@ public class LibraryFindService {
 
         return libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)
             .stream()
-            .map(l -> new LibraryDto(l, "Y",true))
+            .map(l -> new LibraryDto(l, true,true))
             .toList();
     }
 

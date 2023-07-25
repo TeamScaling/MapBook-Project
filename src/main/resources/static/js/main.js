@@ -3,20 +3,27 @@ document.querySelector('#search-input').addEventListener('keydown',
       if (event.keyCode === 13) {
         searchBook();
       }
-});
+    });
 
 document.querySelector('#search-input-btn').addEventListener('click',
     function (event) {
       searchBook();
-});
+    });
 
+document.querySelector('#search-input').addEventListener('focus',
+    function (event) {
+      this.value = '';
+    });
 
 
 function addMetaHtml(meta) {
-  return `<div id="meta-box">
-            <p>[${meta.query}] 에 대한 도서 검색결과  (검색 속도: ${meta.searchTime}초)</p>
-            <p style="color: #636464">[대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수]</p>  
-          </div>`
+  return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+                <div class="col-lg-7">
+                    <p>[${meta.query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)</p>
+                    <p style="color: #636464">[대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수]</p>  
+                </div>
+       
+            </div>`
 }
 
 function addHTML(book) {
@@ -65,12 +72,13 @@ function openPopup_MapBook(isbn, lat, lon) {
 }
 
 function searchBook() {
-  let query = $('#search-input').val();
+
+  let query = $('#search-input').val().trim();
 
   // 2. 검색창 입력값을 검사하고, 입력하지 않았을 경우 focus.
   if (query == '') {
     alert('검색어를 입력해주세요');
-    $('#query').focus();
+    $('#search-input').focus();
     return;
   }
   $.ajax({
@@ -78,6 +86,7 @@ function searchBook() {
     url: `/books/search?query=${query}`,
     success: function (response) {
       $('#book_container').empty();
+
       let meta = response.meta;
       let tempMetaHtml = addMetaHtml(meta);
       $('#book_container').append(tempMetaHtml);
@@ -90,8 +99,13 @@ function searchBook() {
         $('#book_container').append(tempHtml);
       }
     },
-    error(error, status, request) {
-      console.error(error);
+    error(error) {
+      if (error.status === 400) {
+        alert("잘못된 검색어입니다. 다시 입력해 주세요.");
+        $('#search-input').focus();
+      } else {
+        console.error(error);
+      }
     }
   })
 }

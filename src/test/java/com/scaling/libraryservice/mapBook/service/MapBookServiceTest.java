@@ -50,8 +50,8 @@ class MapBookServiceTest {
     void matchMapBooks_when_bExistConns_isEmpty() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook("Y").isHasBookSupport(true).libNo(1).build();
-        LibraryDto library2 = LibraryDto.builder().hasBook("Y").isHasBookSupport(true).libNo(2).build();
+        LibraryDto library1 = LibraryDto.builder().hasBook(true).isHasBookSupport(true).libNo(1).build();
+        LibraryDto library2 = LibraryDto.builder().hasBook(true).isHasBookSupport(true).libNo(2).build();
 
         List<LibraryDto> libraries = Arrays.asList(library1, library2);
 
@@ -70,8 +70,8 @@ class MapBookServiceTest {
     void matchMapBooks_when_bExistConns_non_isEmpty() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook("Y").isHasBookSupport(false).libNo(1).build();
-        LibraryDto library2 = LibraryDto.builder().hasBook("Y").isHasBookSupport(false).libNo(2).build();
+        LibraryDto library1 = LibraryDto.builder().hasBook(true).isHasBookSupport(false).libNo(1).build();
+        LibraryDto library2 = LibraryDto.builder().hasBook(true).isHasBookSupport(false).libNo(2).build();
 
         List<LibraryDto> libraries = List.of(library1, library2);
 
@@ -94,22 +94,4 @@ class MapBookServiceTest {
         assertTrue(result.stream().allMatch(RespMapBookDto::getAvailable));
     }
 
-
-    @Test
-    void mappingLoanableLib() {
-        /* given */
-
-        /* when */
-
-        /* then */
-    }
-
-    @Test
-    void changeToMap() {
-        /* given */
-
-        /* when */
-
-        /* then */
-    }
 }

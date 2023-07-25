@@ -27,12 +27,13 @@
 <body>
 <header>
   <nav class="navbar fixed-top navbar-light bg-light">
-    <div class="container-fluid">
+    <div class="container-fluid" style="margin-left: 20%">
       <a class="navbar-brand" href="https://mapbook.pro"
          style="color: #00b74a; font-size: 30px; font-weight: bold; margin-left: 15%;">MapBook</a>
       <div class="d-flex" style="margin-right: 30%">
-        <input id="search-input" class="form-control me-2" type="search" placeholder="전국 모든 도서관 책 찾기" aria-label="Search">
-        <button id="search-input-btn"  class="btn btn-success" type="button">Search</button>
+        <input id="search-input" class="form-control me-2" type="search"
+               placeholder="전국 모든 도서관 책 찾기" aria-label="Search">
+        <button id="search-input-btn" class="btn btn-success" type="button">Search</button>
       </div>
     </div>
   </nav>
@@ -40,12 +41,18 @@
 </header>
 
 <!-- Page Content-->
+
 <div class="container px-4 px-lg-6 p-5" id="book_container" style="margin-top: 20pt">
-  <div class="container px-4 px-lg-6 p-5" id="book_container" style="margin-top: 20pt">
-    <div id="meta-box">
-      <p>[사랑] 에 대한 도서 검색결과 (검색 속도: 0.041초)</p>
-      <p style="color: #636464">[대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수]</p>
+  <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
+    <div class="col-lg-7">
+      <p>안녕하세요! MapBook 이에요!🤗🤗 </p>
+      <p style="color: #636464">[전국 도서관 책을 한번에 찾고, 지도로 도서관을 찾으세요!]<br>
+        전체 도서관 대출 횟수를 기반으로 원하는 도서를 찾는데 도와 드릴게요!🚀🚀
+      </p>
+      <p>문의나 건의는 [jgfkdlzh@gmail.com]으로 해주세요!📢📢</p>
     </div>
+
+  </div>
     <div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
       <!-- default page-->
       <div class="col-lg-2">
@@ -305,7 +312,6 @@
         <a class="btn btn-outline-success" data-isbn="9788995501474">대출 가능 <br>도서관 찾기!</a>
       </div>
     </div>
-  </div>
 </div>
 <!-- Footer-->
 <footer class="py-5 bg-dark">

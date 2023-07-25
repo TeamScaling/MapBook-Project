@@ -20,6 +20,7 @@ public class LoanItemBinding extends Data4LibraryBinding implements BindingStrat
         for (int i = 0; i < jsonArray.length(); i++) {
             result.add(new LoanItemDto(jsonArray.getJSONObject(i).getJSONObject("doc")));
         }
+
         return result;
     }
 }

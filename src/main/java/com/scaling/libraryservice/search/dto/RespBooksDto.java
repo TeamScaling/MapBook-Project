@@ -1,6 +1,7 @@
 package com.scaling.libraryservice.search.dto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,7 +23,7 @@ public class RespBooksDto {
 
     public RespBooksDto(MetaDto metaDto, @NonNull Page<BookDto> booksPage) {
         this.meta = metaDto;
-        this.documents = booksPage.stream().toList();
+        this.documents = booksPage.stream().collect(Collectors.toList());
     }
 
     public RespBooksDto(@NonNull JSONObject jsonObject){

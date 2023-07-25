@@ -34,8 +34,8 @@ class BExistConnGeneratorTest {
     void generateNecessaryConns_when_Support_Area() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook("Y").libNo(1).isHasBookSupport(true).build();
-        LibraryDto library2 = LibraryDto.builder().hasBook("NN_TOKEN").libNo(2).isHasBookSupport(true).build();
+        LibraryDto library1 = LibraryDto.builder().hasBook(true).libNo(1).isHasBookSupport(true).build();
+        LibraryDto library2 = LibraryDto.builder().hasBook(false).libNo(2).isHasBookSupport(true).build();
 
         List<LibraryDto> libraries = Arrays.asList(library1, library2);
 
@@ -54,9 +54,9 @@ class BExistConnGeneratorTest {
     void generateNecessaryConns_when_Area_IsNotSupported() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook("NN_TOKEN").isHasBookSupport(false).libNo(1).build();
+        LibraryDto library1 = LibraryDto.builder().hasBook(false).isHasBookSupport(false).libNo(1).build();
 
-        LibraryDto library2 = LibraryDto.builder().hasBook("NN_TOKEN").isHasBookSupport(false).libNo(2).build();
+        LibraryDto library2 = LibraryDto.builder().hasBook(false).isHasBookSupport(false).libNo(2).build();
 
         List<LibraryDto> libraries = Arrays.asList(library1, library2);
 

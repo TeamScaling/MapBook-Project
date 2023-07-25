@@ -46,28 +46,28 @@ public class EunjeonTokenizer {
         resultMap.put(ETC_TOKEN,
             Arrays.stream(
                 target.split(" "))
-                .filter(this::isQualifiedToken)
+                .filter(EunjeonTokenizer::isQualifiedToken)
                 .toList());
     }
 
     // 형태소 분석기로 분석 한 뒤 적합한 어절을 최소 사이즈 이상만 List에 담아 반환
-    private List<String> getQualifiedNnTokens(String target) {
+    public static List<String> getQualifiedNnTokens(String target) {
 
         return Analyzer.parseJava(target)
             .stream()
-            .filter(this::isQualifiedNode)
+            .filter(EunjeonTokenizer::isQualifiedNode)
             .map(node -> node.copy$default$1().surface())
-            .filter(this::isQualifiedToken)
+            .filter(EunjeonTokenizer::isQualifiedToken)
             .toList();
     }
 
 
     // 최소 사이즈를 넘는 토큰과 영어,한글,숫자만 유효한 토큰으로 결정
-    private boolean isQualifiedToken(String token) {
+    static boolean isQualifiedToken(String token) {
         return token.length() >= TOKEN_MIN_SIZE;
     }
 
-    private boolean isQualifiedNode(LNode node) {
+    static boolean isQualifiedNode(LNode node) {
         return isNNP(node) || isNNG(node) || isSL(node);
     }
 
@@ -81,20 +81,20 @@ public class EunjeonTokenizer {
         return target;
     }
 
-    private boolean hasFeatureHead(LNode node, String feature) {
+    private static boolean hasFeatureHead(LNode node, String feature) {
 
         return node.copy$default$1().feature().head().equals(feature);
     }
 
-    private boolean isSL(LNode node) {
+    private static boolean isSL(LNode node) {
         return hasFeatureHead(node, ENG_FEATURE);
     }
 
-    private boolean isNNP(LNode node) {
+    private static boolean isNNP(LNode node) {
         return hasFeatureHead(node, KOR_NNP_FEATURE);
     }
 
-    private boolean isNNG(LNode node) {
+    private static boolean isNNG(LNode node) {
         return hasFeatureHead(node, KOR_NNG_FEATURE);
     }
 

@@ -16,8 +16,7 @@ public class KakaoBookBinding implements BindingStrategy<BookApiDto> {
      * @throws OpenApiException API 응답을 처리하는 도중 에러가 발생하면 예외를 던집니다.
      */
     @Override
-    public BookApiDto bind(ResponseEntity<String> apiResponse)
-        throws OpenApiException {
+    public BookApiDto bind(ResponseEntity<String> apiResponse) {
 
         if (apiResponse == null) {
             return null;
@@ -26,10 +25,8 @@ public class KakaoBookBinding implements BindingStrategy<BookApiDto> {
         JSONArray jsonArray =
             new JSONObject(apiResponse.getBody()).getJSONArray("documents");
 
-        if (jsonArray.length() != 0) {
-            return new BookApiDto(jsonArray.getJSONObject(0));
-        } else {
-            return new BookApiDto();
-        }
+        return jsonArray.length() != 0 ?
+            new BookApiDto(jsonArray.getJSONObject(0)) :
+            new BookApiDto();
     }
 }
