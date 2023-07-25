@@ -2,15 +2,19 @@ document.querySelector('#search-input').addEventListener('keydown',
     function (event) {
       if (event.keyCode === 13) {
         searchBook();
+        clearValue();
       }
-});
+    });
 
 document.querySelector('#search-input-btn').addEventListener('click',
     function (event) {
       searchBook();
-});
+      clearValue();
+    });
 
-
+function clearValue() {
+  document.querySelector('#search-input').value = '';
+}
 
 function addMetaHtml(meta) {
   return `<div id="meta-box">
@@ -65,12 +69,13 @@ function openPopup_MapBook(isbn, lat, lon) {
 }
 
 function searchBook() {
+
   let query = $('#search-input').val();
 
   // 2. 검색창 입력값을 검사하고, 입력하지 않았을 경우 focus.
   if (query == '') {
     alert('검색어를 입력해주세요');
-    $('#query').focus();
+    $('#search-input').focus();
     return;
   }
   $.ajax({
@@ -90,8 +95,13 @@ function searchBook() {
         $('#book_container').append(tempHtml);
       }
     },
-    error(error, status, request) {
-      console.error(error);
+    error(error) {
+      if (error.status === 400) {
+        alert("잘못된 검색어입니다. 다시 입력해 주세요.");
+        $('#search-input').focus();
+      } else {
+        console.error(error);
+      }
     }
   })
 }

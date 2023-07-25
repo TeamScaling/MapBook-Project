@@ -61,7 +61,8 @@ public class SearchController {
         @RequestParam(value = "size", defaultValue = "10") int size) {
 
         RespBooksDto searchResult
-            = bookSearchService.searchBooks(new ReqBookDto(query, page, size), DEFAULT_TIMEOUT);
+            = bookSearchService.searchBooks(
+                new ReqBookDto(query, page, size), DEFAULT_TIMEOUT,true);
 
         return ResponseEntity.ok(searchResult);
     }
@@ -70,7 +71,7 @@ public class SearchController {
     public ResponseEntity<RespBooksDto> restSearchBook(@NonNull @RequestBody TestingBookDto testingBookDto) {
 
         RespBooksDto result = bookSearchService.searchBooks(
-            new ReqBookDto(testingBookDto.getBookName(), DEFAULT_PAGE,DEFAULT_SIZE),DEFAULT_TIMEOUT);
+            new ReqBookDto(testingBookDto.getBookName(), DEFAULT_PAGE,DEFAULT_SIZE),DEFAULT_TIMEOUT,true);
 
         if (result.getDocuments().isEmpty()) {
             log.info("[Not Found]This book is Not Found");

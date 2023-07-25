@@ -48,13 +48,18 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
      * @return 도서 검색 결과를 담은 Page<BookDto> 객체
      */
     @Override
-    public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto,int timeout) {
+    public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto,int timeout, boolean isAsync) {
 
         Page<BookDto> booksPage = Page.empty();
 
         try{
-            booksPage = CompletableFuture.supplyAsync(supplier)
-                .get(timeout, TimeUnit.SECONDS);
+
+            if(isAsync){
+                booksPage = CompletableFuture.supplyAsync(supplier)
+                    .get(timeout, TimeUnit.SECONDS);
+            }else{
+                booksPage = supplier.get();
+            }
 
         }catch (TimeoutException | InterruptedException | ExecutionException e) {
             log.error("Query execution exceeded 3 seconds. Returning an empty result.");
@@ -73,6 +78,7 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
     void asyncSearchBook(Supplier<Page<BookDto>> supplier, @NonNull ReqBookDto reqBookDto) {
 
         log.info("[{}] async Search Book start.....", reqBookDto.getQuery());
+
         CompletableFuture.runAsync(() -> {
             Page<BookDto> fetchedBooks = supplier.get();
 

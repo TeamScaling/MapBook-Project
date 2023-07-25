@@ -11,9 +11,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CsvWriter {
+public class CsvWriter<V> {
 
-    public void writeAnalyzedBooksToCsv(List<BookVo2> books, String outputPath) {
+    public void writeToCsv(List<V> target, String outputPath) {
         try {
             Path path = Paths.get(outputPath);
             Writer writer;
@@ -26,11 +26,11 @@ public class CsvWriter {
                 writer = Files.newBufferedWriter(path);
             }
 
-            StatefulBeanToCsv<BookVo2> beanToCsv = new StatefulBeanToCsvBuilder<BookVo2>(writer)
+            StatefulBeanToCsv<V> beanToCsv = new StatefulBeanToCsvBuilder<V>(writer)
                 .withQuotechar('"')
                 .build();
 
-            beanToCsv.write(books);
+            beanToCsv.write(target);
             writer.close();
 
         } catch (Exception e) {

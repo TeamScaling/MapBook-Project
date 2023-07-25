@@ -1,7 +1,8 @@
-package com.scaling.libraryservice.commons.data;
+package com.scaling.libraryservice.commons.data.vo;
 
 
 import com.opencsv.bean.CsvBindByName;
+import com.scaling.libraryservice.search.entity.Book;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,10 +26,6 @@ public class BookVo {
     @CsvBindByName(column = "AUTHR_NM")
     private String authrNm;
 
-    // 출판사 이름
-    @CsvBindByName(column = "PUBLISHER_NM")
-    private String publisherNm;
-
     // 출판일
     @CsvBindByName(column = "PBLICTE_DE")
     private String pblicteDe;
@@ -41,22 +38,22 @@ public class BookVo {
     @CsvBindByName(column = "BOOK_INTRCN_CN")
     private String bookIntrcnCn;
 
-    // KDC(한국십진분류법) 이름
-    @CsvBindByName(column = "KDC_NM")
-    private String kdcNm;
-
-    // 두 번째 출판일
-    @CsvBindByName(column = "TWO_PBLICTE_DE")
-    private String twoPblicteDe;
-
-    // ID 번호
-    @CsvBindByName(column = "id_no")
-    private String idNo;
 
     // 대출 횟수
     @CsvBindByName(column = "loan_cnt")
     private Integer loanCnt;
 
+    // 영문 제목 토큰
+    @CsvBindByName(column = "ENG_TITLE_TOKEN")
+    private String engTitleToken;
 
-
+    public BookVo(Book book,String engTitleToken) {
+        this.isbnThirteenNo = book.getIsbn();
+        this.titleNm = book.getTitle();
+        this.authrNm = book.getAuthor();
+        this.imageUrl = book.getBookImg();
+        this.bookIntrcnCn = book.getContent();
+        this.loanCnt = book.getLoanCnt();
+        this.engTitleToken = engTitleToken;
+    }
 }

@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.search.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,9 @@ import org.springframework.lang.NonNull;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString
+@Builder
 public class MetaDto {
 
     private String query;
@@ -23,7 +26,8 @@ public class MetaDto {
 
     private String searchTime;
 
-    public MetaDto(long totalPages, long totalElements, long currentPage, long pageSize,String searchTime) {
+    public MetaDto(long totalPages, long totalElements, long currentPage, long pageSize,
+        String searchTime) {
         this.totalPages = totalPages;
         this.totalElements = totalElements;
         this.currentPage = currentPage;
@@ -31,26 +35,22 @@ public class MetaDto {
         this.searchTime = searchTime;
     }
 
-    public MetaDto(@NonNull Page<BookDto> books,@NonNull ReqBookDto reqBookDto,String searchTime) {
-        this.query = reqBookDto.getQuery();
+    public MetaDto(@NonNull Page<BookDto> books, @NonNull ReqBookDto reqBookDto, String searchTime,
+        String originalQuery) {
+
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
         this.searchTime = searchTime;
+        this.query = originalQuery;
     }
 
-    public MetaDto(@NonNull Page<BookDto> books,@NonNull ReqBookDto reqBookDto) {
+    public MetaDto(@NonNull Page<BookDto> books, @NonNull ReqBookDto reqBookDto) {
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
     }
 
-    public MetaDto(@NonNull JSONObject jsonObject) {
-        this.totalPages = jsonObject.getLong("totalPages");
-        this.totalElements = jsonObject.getLong("totalElements");
-        this.currentPage = jsonObject.getLong("currentPage");
-        this.pageSize = jsonObject.getLong("pageSize");
-    }
 }

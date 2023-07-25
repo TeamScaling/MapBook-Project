@@ -20,5 +20,5 @@ public interface AsyncExecutor<T,V> {
      * @param timeout 작업의 최대 실행 시간(단위: 초)
      * @return 작업의 실행 결과
      */
-    T execute(Supplier<T> supplier,V value,int timeout);
+    T execute(Supplier<T> supplier,V value,int timeout,boolean isAsync);
 }

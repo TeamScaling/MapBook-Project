@@ -21,14 +21,9 @@ public class TesterRestController {
     @PostMapping("/books/search/tester")
     public String SearchBook(@RequestParam(value = "query", required = false) String query,
         @RequestParam(value = "page", defaultValue = "1") int page,
-        @RequestParam(value = "size", defaultValue = "10") int size,
-        @RequestParam(value = "target", defaultValue = "title") String target, ModelMap model) {
+        @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        if (!query.isEmpty()) {
-            RespBooksDto searchResult = searchService.searchBooks(new ReqBookDto(query,page,size),3);
-
-        }
-        //fixme : query가 empty일 때, 사용자가 공백 검색을 못하게 alert를 띄운다.
+        RespBooksDto searchResult = searchService.searchBooks(new ReqBookDto(query,page,size),3,true);
 
         return "search/searchResult";
     }

@@ -42,15 +42,15 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체. 만약 검색이 3초를 초과하면 빈 결과가 반환됩니다.
      */
     @CustomCacheable
-    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout) {
+    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout, boolean isAsync)
+        throws IllegalArgumentException {
 
         String query = reqBookDto.getQuery();
-        int page = reqBookDto.getPage();
-        int size = reqBookDto.getSize();
 
         log.info("-------------query : [{}]-------------------------------", query);
 
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable
+            = PageRequest.of(reqBookDto.getPage() - 1, reqBookDto.getSize());
 
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -58,22 +58,24 @@ public class BookSearchService {
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
         Page<BookDto> booksPage = asyncExecutor.execute(
-            () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout);
+            () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout, isAsync);
 
         stopWatch.stop();
 
-        String searchTime = String.format("%.3f",stopWatch.getTotalTimeSeconds());
+        String searchTime = String.format("%.3f", stopWatch.getTotalTimeSeconds());
 
-        return new RespBooksDto(new MetaDto(booksPage, reqBookDto, searchTime), booksPage);
+        return new RespBooksDto(
+            new MetaDto(booksPage, reqBookDto, searchTime, titleQuery.getOriginalQuery())
+            , booksPage);
     }
 
-    public RespBooksDto bookAutoComplete(ReqBookDto reqBookDto,int timeout){
+    public RespBooksDto bookAutoComplete(ReqBookDto reqBookDto, int timeout) {
 
-        RespBooksDto respBooksDto = searchBooks(reqBookDto,timeout);
+        RespBooksDto respBooksDto = searchBooks(reqBookDto, timeout, false);
 
         //맨위에 결과값이 front에서 짤려 보이는 문제 해결하기 위해 빈 제목을 넣는다.
         List<BookDto> books = respBooksDto.getDocuments();
-        books.add(0,BookDto.emptyDto());
+        books.add(0, BookDto.emptyDto());
 
         return respBooksDto;
     }

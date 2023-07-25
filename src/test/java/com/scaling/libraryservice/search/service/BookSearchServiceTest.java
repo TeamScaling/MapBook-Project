@@ -2,6 +2,7 @@ package com.scaling.libraryservice.search.service;
 
 import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
@@ -42,11 +43,11 @@ class BookSearchServiceTest {
             .etcToken("java").nnToken("정석").build();
 
         when(titleAnalyzer.analyze(query)).thenReturn(titleQuery);
-        when(asyncExecutor.execute(any(), any(), anyInt())).thenReturn(Page.empty());
+        when(asyncExecutor.execute(any(), any(), anyInt(),anyBoolean())).thenReturn(Page.empty());
 
         /* when */
 
-        var result = bookSearchService.searchBooks(reqBookDto, 3);
+        var result = bookSearchService.searchBooks(reqBookDto, 3,false);
 
         /* then */
         assertNotNull(result);

@@ -59,7 +59,7 @@ class SearchAsyncExecutorTest {
         /* when */
 
         var result = executor.execute(() -> bookFinder.findBooks(titleQuery, pageable),
-            reqBookDto, 3);
+            reqBookDto, 3,true);
 
         /* then */
 
@@ -84,7 +84,7 @@ class SearchAsyncExecutorTest {
         /* when */
 
         var result = executor.execute(() -> bookFinder.findBooks(titleQuery, pageable),
-            reqBookDto, 1);
+            reqBookDto, 1,true);
 
         /* then */
 
