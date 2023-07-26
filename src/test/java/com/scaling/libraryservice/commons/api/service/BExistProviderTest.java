@@ -19,10 +19,8 @@ class BExistProviderTest {
 
     @BeforeEach
     public void setUp() {
-
     }
 
-    @Test
     public void provideDataList() {
         /* given */
 
@@ -36,7 +34,6 @@ class BExistProviderTest {
         var result = bExistProvider.provideDataList(connections, 3);
 
         /* then */
-
         assertEquals(2, result.size());
         assertTrue(result.stream()
             .anyMatch(r -> r.getIsbn13().equals("9788965700036")));

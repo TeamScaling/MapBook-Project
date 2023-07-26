@@ -21,6 +21,7 @@ import com.scaling.libraryservice.search.util.TitleType;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
-
+@Slf4j
 public class BookRepoQueryDsl implements BookRepository {
 
     private final JPAQueryFactory factory;
@@ -39,8 +40,6 @@ public class BookRepoQueryDsl implements BookRepository {
     @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
-
-        System.out.println(titleQuery);
 
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
 

@@ -55,22 +55,20 @@ public class CustomCacheAspect<K, I> {
 
         // caching을 사용하고 있지 않다면, 먼저 등록을 한다. 그리고 마지막에 등록된 캐싱 객체에 캐시 데이터를 넣음
         if (!cacheManager.isUsingCaching(customer)) {
+            cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(), customer);
+            return patchCacheManager(joinPoint, customer, cacheKey);
+        }
 
-            cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(),
-                customer);
-        } else {
-
-            if (cacheManager.isContainItem(customer, cacheKey)) {
-                log.info("Cache Manager find this item ");
-                return cacheManager.get(customer, cacheKey);
-            }
+        if (cacheManager.isContainItem(customer, cacheKey)) {
+            log.info("Cache Manager find this item ");
+            return cacheManager.get(customer, cacheKey);
         }
 
         return patchCacheManager(joinPoint, customer, cacheKey);
     }
 
     /**
-     * 이 메서드는 캐시 관리자(CacheManager)를 수정하여 메서드의 실행 결과를 캐시에 저장합니다. 실행 시간이 2초를 초과하거나 ApiRelatedService에
+     * 이 메서드는 캐시 관리자(CacheManager)를 수정하여 메서드의 실행 결과를 캐시에 저장합니다. ApiRelatedService에
      * 관련된 경우에만 결과를 캐시에 저장합니다.
      *
      * @param joinPoint 프록시된 메서드에 대한 정보를 제공하는 객체
@@ -82,19 +80,12 @@ public class CustomCacheAspect<K, I> {
     public I patchCacheManager(ProceedingJoinPoint joinPoint, Class<?> customer,
         CacheKey<K, I> cacheKey)
         throws Throwable {
-        StopWatch stopWatch = new StopWatch();
 
-        // 캐싱이 필요한지를 판별하기 위해 해당 메소드의 시작과 끝나는 시간을 측정
-        stopWatch.start();
         I result = (I) joinPoint.proceed();
-        stopWatch.stop();
 
-        // 메소드가 2초를 초과하거나 api 관련한 클래스면 caching 처리 한다.
-        if (stopWatch.getTotalTimeSeconds() > CACHE_SEC_THRESHOLD
-            | ApiRelatedService.class.isAssignableFrom(customer)) {
-
+        // api 관련한 클래스면 caching 처리 한다.
+        if (ApiRelatedService.class.isAssignableFrom(customer)) {
             log.info("This task is related ApiRelatedService then CacheManger put this item");
-
             cacheManager.put(customer, cacheKey, result);
         }
 
