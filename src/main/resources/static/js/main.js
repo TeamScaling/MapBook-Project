@@ -17,9 +17,11 @@ document.querySelector('#search-input').addEventListener('focus',
 
 
 function addMetaHtml(meta) {
+  let query = $('#search-input').val()
+
   return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
                 <div class="col-lg-7">
-                    <p>[${meta.query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)</p>
+                    <p>[${query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)</p>
                     <p style="color: #636464">[대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수]</p>  
                 </div>
        
@@ -98,6 +100,9 @@ function searchBook() {
         let tempHtml = addHTML(book);
         $('#book_container').append(tempHtml);
       }
+
+      // Ajax 호출이 성공적으로 끝나고 책의 목록을 화면에 그린 후에 스크롤을 맨 위로 이동
+      window.scrollTo(0, 0);
     },
     error(error) {
       if (error.status === 400) {
