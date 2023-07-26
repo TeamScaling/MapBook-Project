@@ -1,13 +1,15 @@
 document.querySelector('#search-input').addEventListener('keydown',
     function (event) {
       if (event.keyCode === 13) {
-        searchBook();
+        let query = $('#search-input').val().trim();
+        searchBook(query);
       }
     });
 
 document.querySelector('#search-input-btn').addEventListener('click',
     function (event) {
-      searchBook();
+      let query = $('#search-input').val().trim();
+      searchBook(query);
     });
 
 document.querySelector('#search-input').addEventListener('focus',
@@ -73,16 +75,14 @@ function openPopup_MapBook(isbn, lat, lon) {
   return false;
 }
 
-function searchBook() {
+function searchBook(query) {
 
-  let query = $('#search-input').val().trim();
-
-  // 2. 검색창 입력값을 검사하고, 입력하지 않았을 경우 focus.
-  if (query == '') {
-    alert('검색어를 입력해주세요');
+  if (query === '' || query.length < 2) {
+    alert('공백이나 1글자는 못 찾아요😅😅');
     $('#search-input').focus();
     return;
   }
+
   $.ajax({
     type: 'GET',
     url: `/books/search?query=${query}`,
@@ -106,7 +106,7 @@ function searchBook() {
     },
     error(error) {
       if (error.status === 400) {
-        alert("잘못된 검색어입니다. 다시 입력해 주세요.");
+        alert(error.responseJSON.message);
         $('#search-input').focus();
       } else {
         console.error(error);
@@ -116,33 +116,37 @@ function searchBook() {
 }
 
 $('#search-input').autocomplete({
-  source: function (request, response) { //source: 입력시 보일 목록
+  source: function (request, response) {
     $.ajax({
-      url: "/books/autocomplete"
-      , type: "POST"
-      , dataType: "JSON"
-      , data: {query: request.term} // 검색 키워드
-      , success: function (books) {  // 성공
+      url: "/books/autocomplete",
+      type: "POST",
+      dataType: "JSON",
+      data: {query: request.term}, // 검색 키워드
+      success: function (books) {
         response(
             $.map(books, function (book) {
               return {
                 label: book.title   // 목록에 표시되는 값
               };
             })
-        );    //response
-      }
-      , error: function () { //실패
+        );
+      },
+      error: function () {
         console.log("오류가 발생했습니다.");
       }
     });
-  }
-  , focus: function (event, ui) { // 방향키로 자동완성단어 선택 가능하게 만들어줌
+  },
+  focus: function (event, ui) {
     return false;
-  }
-  , minLength: 2// 최소 글자수
-  , autoFocus: false // true == 첫 번째 항목에 자동으로 초점이 맞춰짐
-  , delay: 300  //autocomplete 딜레이 시간(ms)
-  , select: function (evt, ui) {
+  },
+  minLength: 2,
+  autoFocus: false,
+  delay: 300,
+  select: function (evt, ui) {
+    // 선택한 값으로 검색창의 값을 갱신하고 검색 함수를 호출
+    $('#search-input').val(ui.item.label);
+    searchBook(ui.item.label);
+    return false;
   }
 });
 
