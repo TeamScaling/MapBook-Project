@@ -55,17 +55,14 @@ public class CustomCacheAspect<K, I> {
 
         // caching을 사용하고 있지 않다면, 먼저 등록을 한다. 그리고 마지막에 등록된 캐싱 객체에 캐시 데이터를 넣음
         if (!cacheManager.isUsingCaching(customer)) {
-
-            cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(),
-                customer);
-        } else {
-
-            if (cacheManager.isContainItem(customer, cacheKey)) {
-                log.info("Cache Manager find this item ");
-                return cacheManager.get(customer, cacheKey);
-            }
+            cacheManager.registerCaching((Cache<CacheKey<K, I>, I>) cacheKey.configureCache(), customer);
+            return patchCacheManager(joinPoint, customer, cacheKey);
         }
 
+        if (cacheManager.isContainItem(customer, cacheKey)) {
+            log.info("Cache Manager find this item ");
+            return cacheManager.get(customer, cacheKey);
+        }
 
         return patchCacheManager(joinPoint, customer, cacheKey);
     }
