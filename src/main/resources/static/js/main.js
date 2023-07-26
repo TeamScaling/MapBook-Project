@@ -17,7 +17,6 @@ document.querySelector('#search-input').addEventListener('focus',
       this.value = '';
     });
 
-
 function addMetaHtml(meta) {
   let query = $('#search-input').val()
 
@@ -46,34 +45,23 @@ function addHTML(book) {
               </div>
             </div>`
 }
-//
-// function openPopup_MapBook(isbn, lat, lon) {
-//   // 데이터 객체에 isbn, lat, lon 값을 추가
-//   const data = {
-//     isbn: isbn,
-//     lat: lat,
-//     lon: lon
-//   };
-//
-//   $.ajax({
-//     type: 'POST',
-//     url: `/books/mapBook/search`,
-//     contentType: "application/json",
-//     data: JSON.stringify(data), // 수정된 data 객체를 JSON 형태로 변환하여 전송
-//     success: function (response) {
-//       // 새로운 팝업 창을 열고 응답을 받은 HTML로 내용을 채움
-//       const popupWindow = window.open('', 'areaCdInfo',
-//           'width=1200,height=800');
-//       popupWindow.document.write(response);
-//       popupWindow.document.close();
-//     },
-//     error(error) {
-//       console.error(error);
-//     }
-//   });
-//
-//   return false;
-// }
+
+function addNotFoundHTML(query) {
+  return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5" style="padding-top: 100pt; padding-bottom: 300pt">
+    <!-- default page-->
+    <div class="col-lg-2">
+      <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0"
+           src="https://image.yes24.com/goods/5703744/L"
+           alt="Book image">
+    </div>
+    <div class="col-lg-5">
+      <h2 class="font-weight-light"> [${query}] <br>라는 책을 못 찾겠네요...😲😲</h2><br>
+      <h4>다음엔 찾을 수 있도록 업데이트 하고 있을게요</h4>
+      <p style="color: #636464">(명사를 많이 넣으면 더 잘 찾아요)</p><br>
+      <p style="color: #636464">최근 도서 업데이트 : 23년 5월</p>
+    </div>
+  </div>`
+}
 
 function openPopup_MapBook(isbn, lat, lon) {
   // 데이터 객체에 isbn, lat, lon 값을 추가
@@ -116,8 +104,6 @@ function openPopup_MapBook(isbn, lat, lon) {
   return false;
 }
 
-
-
 function searchBook(query) {
 
   if (query === '' || query.length < 2) {
@@ -130,6 +116,19 @@ function searchBook(query) {
     type: 'GET',
     url: `/books/search?query=${query}`,
     success: function (response) {
+
+      if (response.meta.totalPages === 0) {
+
+        let message = addNotFoundHTML(query);
+
+        $('#book_container').empty();
+        $('#book_container').append(message);
+
+        // alert('원하는 도서를 못 찾았어요😭😭 우리가 못 찾고 있을 수 있으니 저희에게 알려주세요');
+        // $('#search-input').focus();
+        return;
+      }
+
       $('#book_container').empty();
 
       let meta = response.meta;

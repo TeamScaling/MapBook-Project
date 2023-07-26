@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.search.dto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -29,6 +30,11 @@ public class RespBooksDto {
     public RespBooksDto(@NonNull JSONObject jsonObject){
         this.meta = (MetaDto) jsonObject.get("meta");
         this.documents = jsonObject.getJSONArray("documents").toList().stream().map(o -> (BookDto)o).toList();
+    }
+
+    public static RespBooksDto emptyDto(){
+
+        return new RespBooksDto(MetaDto.emptyDto(), Collections.emptyList());
     }
 
 
