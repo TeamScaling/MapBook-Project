@@ -1,228 +1,173 @@
-@import url(https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300);
-*, *:before, *:after {
-  margin:0;
-  padding:0;
-  -webkit-box-sizing:border-box;
-  -moz-box-sizing:border-box;
-  box-sizing:border-box;
-}
-body {
-  background:#58585A;
-  -webkit-transform:translateZ(0);
-}
-html, body {
-  width:100%;
-  height:100%;
-}
-/*
-----------------------------------------------
-Wrapper
-----------------------------------------------
+/* Loader #1 by Sam Lillicrap
+   https://www.samueljwebdesign.co.uk
+   https://codepen.io/samueljweb/pen/LbGxi
 */
-#loader {
-  position:absolute;
-  top:0;
-  right:0;
-  bottom:0;
-  left:0;
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:#E9E8E3;
-  z-index:99;
-  -webkit-animation:offscreen .5s 15s forwards;
-  animation:offscreen .5s 15s forwards;
+@import url(https://fonts.googleapis.com/css?family=Lato:100,300,700);
+
+html {
+  background-color: #DC554F;
 }
-#refresher {
-  position:absolute;
-  top:0;
-  right:0;
-  bottom:0;
-  left:0;
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:1;
-  opacity:0;
-  -webkit-animation:show .15s 16s forwards;
-  animation:show .15s 16s forwards;
+
+h1 {
+  font-family: "Lato";
+  color: white;
+  text-transform: uppercase;
+  font-size: 1em;
+  letter-spacing: 1.5px;
+  text-align: center;
+  width: 155px;
+  margin-top: 20px;
+  -webkit-animation: fade 2s infinite;
+  -moz-animation: fade 2s infinite;
 }
-.refresh {
-  color:#E9E8E3;
-  font-family:'Open Sans Condensed', sans-serif;
-  font-size:2rem;
-  text-transform:uppercase;
-  letter-spacing:.1rem;
+
+#container {
+  width: 180px;
+  padding-top: 180px;
+  margin: auto;
+  vertical-align: middle;
 }
-.face {
-  width:270px;
-  height:270px;
+
+.stick {
+  width: 30px;
+  height: 3px;
+  background: white;
+  display: inline-block;
+  margin-left: -8px;
 }
-/*
-----------------------------------------------
-SVG
-----------------------------------------------
-*/
-.head {
-  transform-origin: 135px 135px;
-  transform:scale(0);
-  -webkit-animation:popup .6s 1s cubic-bezier(0.95, 0.05, 0.795, 0.035) forwards;
-  animation:popup .6s 1s cubic-bezier(0.95, 0.05, 0.795, 0.035) forwards;
+
+.stick:nth-child(n) {
+  transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  /* IE 9 */
+  -webkit-transform: rotate(30deg);
+  /* Safari and Chrome */
+  -moz-transform: rotate(30deg);
+  -webkit-animation: fall 2s infinite;
+  -moz-animation: fall 2s infinite;
 }
-#eyeLeft, #eyeRight {
-  transform:scale(0);
+
+.stick:nth-child(2n) {
+  transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  /* IE 9 */
+  -webkit-transform: rotate(-30deg);
+  /* Safari and Chrome */
+  -moz-transform: rotate(-30deg);
+  -webkit-animation: rise 2s infinite;
+  -moz-animation: rise 2s infinite;
 }
-#eyeLeft {
-  transform-origin:66px 127px;
-  -webkit-animation:popup .5s 1.2s cubic-bezier(0.95, 0.05, 0.795, 0.035) forwards;
-  animation:popup .5s 1.2s cubic-bezier(0.95, 0.05, 0.795, 0.035) forwards;
+
+@-webkit-keyframes rise {
+  50% {
+    transform: rotate(30deg);
+    -ms-transform: rotate(30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-#eyeRight {
-  transform-origin:203px 127px;
-  -webkit-animation:popup .5s 1.25s cubic-bezier(0.95, 0.05, 0.795, 0.035) forwards;
-  animation:popup .5s 1.25s cubic-bezier(0.95, 0.05, 0.795, 0.035) forwards;
+
+@-moz-keyframes rise {
+  50% {
+    transform: rotate(30deg);
+    -ms-transform: rotate(30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-.eyeLeft {
-  transform-origin:66px 127px;
-  -webkit-animation:downup 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
-  animation:downup 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
+
+@-o-keyframes rise {
+  50% {
+    transform: rotate(30deg);
+    -ms-transform: rotate(30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-.eyeRight {
-  transform-origin:203px 127px;
-  -webkit-animation:downup 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
-  animation:downup 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
+
+@keyframes rise {
+  50% {
+    transform: rotate(30deg);
+    -ms-transform: rotate(30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-.eyeLeft > .pupil {
-  transform-origin:66px 127px;
-  -webkit-animation:follow 12.1s 1.6s forwards;
-  animation:follow 12.1s 1.6s forwards;
+@-webkit-keyframes fall {
+  50% {
+    transform: rotate(-30deg);
+    -ms-transform: rotate(-30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(-30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-.eyeRight > .pupil {
-  transform-origin:203px 127px;
-  -webkit-animation:follow 12.1s 1.6s forwards;
-  animation:follow 12.1s 1.6s forwards;
+
+@-moz-keyframes fall {
+  50% {
+    transform: rotate(-30deg);
+    -ms-transform: rotate(-30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(-30deg);
+    -moz-transform: rotate(-30deg);
+  }
 }
-.closedLeft {
-  transform-origin:66px 127px;
-  -webkit-animation:blink 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
-  animation:blink 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
+
+@-o-keyframes fall {
+  50% {
+    transform: rotate(-30deg);
+    -ms-transform: rotate(-30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(-30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-.closedRight {
-  transform-origin:203px 127px;
-  -webkit-animation:blink 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
-  animation:blink 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
+
+@keyframes fall {
+  50% {
+    transform: rotate(-30deg);
+    -ms-transform: rotate(-30deg);
+    /* IE 9 */
+    -webkit-transform: rotate(-30deg);
+    -moz-transform: rotate(30deg);
+  }
 }
-.mouth {
-  transform-origin:135px 233px;
-  -webkit-animation:mouth 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
-  animation:mouth 12.1s 1.6s cubic-bezier(.44,0,.01,.99) forwards;
+@-webkit-keyframes fade {
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-.bar {
-  transform-origin:135px 233px;
-  transform:scale(0);
-  -webkit-animation:patient 12.8s 1s ease-in forwards;
-  animation:patient 12.8s 1s ease-in forwards;
+
+@-moz-keyframes fade {
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-.smile {
-  transform-origin:135px 233px;
-  transform:scale(0);
-  -webkit-animation:happy 12.9s 1s ease-in forwards;
-  animation:happy 12.9s 1s ease-in forwards;
+
+@-o-keyframes fade {
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
-/*
-----------------------------------------------
-LOADING BAR
-----------------------------------------------
-*/
-.loading-bar {
-  position:relative;
-  margin-top:4rem;
-  width:250px;
-  background:#C1C0BC;
-}
-.loading-bar:before {
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  width:0;
-  background:#58585A;
-  -webkit-animation:load 12.4s 1s forwards;
-  animation:load 12.4s 1s forwards;
-}
-.loading-bar, .loading-bar:before {
-  height:4px;
-  border-radius:5px;
-}
-/*
-----------------------------------------------
-ANIMATIONS
-----------------------------------------------
-*/
-@keyframes popup {
-  0% {transform:scale(0);}
-  80% {transform:scale(1);}
-  90% {transform:scale(0.75);}
-  100% {transform:scale(1);}
-}
-@keyframes downup {
-  0% {transform: translateY(0);}
-  15% {transform: translateY(40px);}
-  50% {opacity:1;}
-  50.7% {opacity:0;}
-  51.4% {opacity:1;}
-  98% {transform: translateY(40px);}
-  100% {transform: translateY(0);}
-}
-@keyframes mouth {
-  0% {transform: translateY(-20px);}
-  15% {transform: translateY(0px);}
-  100% {transform: translateY(0px);}
-}
-@keyframes blink {
-  0% {transform: translateY(0);}
-  15% {transform: translateY(40px);}
-  50% {opacity:1;}
-  98% {transform: translateY(40px);}
-  100% {transform: translateY(0);}
-}
-@keyframes follow {
-  0% {transform: translate(0, 0);}
-  15% {transform: translate(-4px, 8px);}
-  95.5% {transform: translate(-2px, 10px);}
-  98% {transform: translate(8px, 10px);}
-  100% {transform: translate(0, 0);}
-}
-@keyframes patient {
-  0% {transform:scale(0);}
-  3% {transform:scale(0);}
-  3.5% {transform:scale(1);}
-  4% {transform:scale(0.75);}
-  4.5% {transform:scale(1);}
-  99% {transform:scale(1);}
-  100% {transform:scale(0);}
-}
-@keyframes happy {
-  0% {transform:scale(0);}
-  98% {transform:scale(0);}
-  100% {transform:scale(1);}
-}
-@keyframes load {
-  0% {width:0;}
-  97% {width:50px;}
-  100% {width:250px;}
-}
-@keyframes offscreen {
-  0% {transform:translateY(0);}
-  100% {transform:translateY(-200%);}
-}
-@keyframes show {
-  0% {opacity:0;}
-  100% {opacity:1;}
+@keyframes fade {
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+
 }
