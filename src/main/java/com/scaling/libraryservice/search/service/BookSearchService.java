@@ -57,6 +57,10 @@ public class BookSearchService {
 
         TitleQuery titleQuery = titleAnalyzer.analyze(query);
 
+        if (titleQuery.isEmptyTitleQuery()) {
+            return RespBooksDto.emptyDto();
+        }
+
         Page<BookDto> booksPage = asyncExecutor.execute(
             () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout, isAsync);
 
@@ -73,9 +77,11 @@ public class BookSearchService {
 
         RespBooksDto respBooksDto = searchBooks(reqBookDto, timeout, false);
 
-        //맨위에 결과값이 front에서 짤려 보이는 문제 해결하기 위해 빈 제목을 넣는다.
-        List<BookDto> books = respBooksDto.getDocuments();
-        books.add(0, BookDto.emptyDto());
+        if(respBooksDto.getDocuments().size() > 0){
+            //맨위에 결과값이 front에서 짤려 보이는 문제 해결하기 위해 빈 제목을 넣는다.
+            List<BookDto> books = respBooksDto.getDocuments();
+            books.add(0, BookDto.emptyDto());
+        }
 
         return respBooksDto;
     }

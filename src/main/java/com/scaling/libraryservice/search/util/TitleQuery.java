@@ -31,6 +31,7 @@ public class TitleQuery {
     private final String originalQuery;
 
 
+
     private TitleQuery(@NonNull TitleType titleType, @Nullable String etcToken,
         @Nullable String nnToken, String originalQuery) {
 
@@ -38,6 +39,13 @@ public class TitleQuery {
         this.etcToken = etcToken;
         this.nnToken = nnToken;
         this.originalQuery = originalQuery;
+    }
+
+    public boolean isEmptyTitleQuery(){
+        assert nnToken != null;
+        assert etcToken != null;
+
+        return nnToken.isBlank() && etcToken.isBlank();
     }
 
     public static class TitleQueryBuilder {

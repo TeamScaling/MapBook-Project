@@ -4,7 +4,11 @@ import java.util.Map;
 
 public class EngToKorConverter {
 
+    public static void main(String[] args) {
 
+        System.out.println(EngToKorConverter.convert("wkqk"));
+
+    }
     /**
      * 토큰을 영문 키보드 기준으로 변환한다.
      * 

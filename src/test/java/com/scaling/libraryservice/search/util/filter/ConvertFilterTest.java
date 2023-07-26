@@ -61,4 +61,21 @@ class ConvertFilterTest {
 
     }
 
+    @DisplayName("변환이 필요 없는 단어는 원형이 유지가 된다. 순서는 상관 없다")
+    public void filtering3(){
+        /* given */
+
+        String word = "네갸ㅜㅎ";
+        String target = "spring";
+
+        /* when */
+
+
+        String result = convertFilter.filtering(word);
+
+        /* then */
+        assertEquals(result, target);
+
+    }
+
 }

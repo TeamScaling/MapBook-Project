@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 
@@ -51,6 +50,18 @@ public class MetaDto {
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
+    }
+
+    public static MetaDto emptyDto() {
+
+        return MetaDto.builder()
+            .query("")
+            .totalPages(0)
+            .totalElements(0)
+            .currentPage(0)
+            .pageSize(0)
+            .searchTime("")
+            .build();
     }
 
 }
