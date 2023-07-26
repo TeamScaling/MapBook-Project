@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -14,7 +15,6 @@ import lombok.ToString;
  */
 @ToString @Getter
 public class ReqBookDto implements CacheKey<ReqBookDto,RespBooksDto>{
-
     private final String query;
     private final int page;
     private final int size;
