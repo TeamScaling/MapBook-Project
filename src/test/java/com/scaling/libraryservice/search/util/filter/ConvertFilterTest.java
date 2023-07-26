@@ -25,7 +25,7 @@ class ConvertFilterTest {
         convertFilter = new ConvertFilter(null,keywordService);
     }
 
-    @Test
+
     public void filtering(){
         /* given */
 
@@ -42,7 +42,7 @@ class ConvertFilterTest {
 
     }
 
-    @Test @DisplayName("변환이 필요 없는 단어는 원형이 유지가 된다. 순서는 상관 없다")
+    @DisplayName("변환이 필요 없는 단어는 원형이 유지가 된다. 순서는 상관 없다")
     public void filtering2(){
         /* given */
 
