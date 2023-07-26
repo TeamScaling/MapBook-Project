@@ -46,6 +46,34 @@ function addHTML(book) {
               </div>
             </div>`
 }
+//
+// function openPopup_MapBook(isbn, lat, lon) {
+//   // 데이터 객체에 isbn, lat, lon 값을 추가
+//   const data = {
+//     isbn: isbn,
+//     lat: lat,
+//     lon: lon
+//   };
+//
+//   $.ajax({
+//     type: 'POST',
+//     url: `/books/mapBook/search`,
+//     contentType: "application/json",
+//     data: JSON.stringify(data), // 수정된 data 객체를 JSON 형태로 변환하여 전송
+//     success: function (response) {
+//       // 새로운 팝업 창을 열고 응답을 받은 HTML로 내용을 채움
+//       const popupWindow = window.open('', 'areaCdInfo',
+//           'width=1200,height=800');
+//       popupWindow.document.write(response);
+//       popupWindow.document.close();
+//     },
+//     error(error) {
+//       console.error(error);
+//     }
+//   });
+//
+//   return false;
+// }
 
 function openPopup_MapBook(isbn, lat, lon) {
   // 데이터 객체에 isbn, lat, lon 값을 추가
@@ -55,25 +83,40 @@ function openPopup_MapBook(isbn, lat, lon) {
     lon: lon
   };
 
-  $.ajax({
-    type: 'POST',
-    url: `/books/mapBook/search`,
-    contentType: "application/json",
-    data: JSON.stringify(data), // 수정된 data 객체를 JSON 형태로 변환하여 전송
-    success: function (response) {
-      // 새로운 팝업 창을 열고 응답을 받은 HTML로 내용을 채움
-      const popupWindow = window.open('', 'areaCdInfo',
-          'width=1200,height=800');
-      popupWindow.document.write(response);
-      popupWindow.document.close();
-    },
-    error(error) {
-      console.error(error);
-    }
+  // 팝업 창을 엽니다.
+  const popupWindow = window.open('', 'areaCdInfo', 'width=1200,height=800');
+
+  // 먼저 로딩 페이지를 불러옵니다.
+  $.get("/books/mapBook/loading", function (loadingPage) {
+    // 로딩 페이지가 돌아오면 팝업 창에 렌더링합니다.
+    popupWindow.document.write(loadingPage);
+    popupWindow.document.close();
+
+    // 이제 본래의 요청을 수행합니다.
+    $.ajax({
+      type: 'POST',
+      url: `/books/mapBook/search`,
+      contentType: "application/json",
+      data: JSON.stringify(data), // 수정된 data 객체를 JSON 형태로 변환하여 전송
+      success: function (response) {
+        // 응답이 돌아오면 팝업 창의 내용을 응답으로 대체합니다.
+        popupWindow.document.open();
+        popupWindow.document.write(response);
+        popupWindow.document.close();
+      },
+      error(error) {
+        // 에러가 발생하면 팝업 창에 에러 메시지를 표시합니다.
+        popupWindow.document.open();
+        popupWindow.document.write("<p>An error occurred: " + error + "</p>");
+        popupWindow.document.close();
+      }
+    });
   });
 
   return false;
 }
+
+
 
 function searchBook(query) {
 
