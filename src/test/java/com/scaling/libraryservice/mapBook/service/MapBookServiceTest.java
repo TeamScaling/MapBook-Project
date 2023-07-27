@@ -3,6 +3,7 @@ package com.scaling.libraryservice.mapBook.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
@@ -83,7 +84,7 @@ class MapBookServiceTest {
         List<ApiBookExistDto> bookExists = List.of(apiBookExistDto1, apiBookExistDto2);
 
         when(bExistConns.isEmpty()).thenReturn(false);
-        when(dataProvider.provideDataList(bExistConns,10)).thenReturn(bookExists);
+        when(dataProvider.provideDataList(bExistConns,bExistConns.size())).thenReturn(bookExists);
 
         /* when */
 

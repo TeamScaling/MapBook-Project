@@ -13,10 +13,7 @@ public abstract class AbstractTileFilter implements TitleFilter {
     protected String progressFilter(String query, TitleFilter nextFilter)
         throws NotQualifiedQueryException {
 
-        if (query.isEmpty()) {
-            throw new NotQualifiedQueryException("잘못된 검색어입니다");
-        }
-
         return nextFilter != null ? nextFilter.filtering(query) : query;
     }
+
 }

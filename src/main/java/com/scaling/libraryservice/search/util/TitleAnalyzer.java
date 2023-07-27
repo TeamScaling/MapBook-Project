@@ -30,9 +30,11 @@ public class TitleAnalyzer {
     private static final int TOKEN_MAX_SIZE = 3;
 
     @Timer
-    public TitleQuery analyze(String query) throws NotQualifiedQueryException {
+    public TitleQuery analyze(String query,boolean filterOn) throws NotQualifiedQueryException {
 
-        query = filterStream.doFiltering(query);
+        if(filterOn){
+            query = filterStream.doFiltering(query);
+        }
 
         // tokenizer를 거치면 원본 검색어가 수정되기 때문에 필요 모드에서 사용하기 위해 원본을 저장 한다.
         String originalQuery = query;

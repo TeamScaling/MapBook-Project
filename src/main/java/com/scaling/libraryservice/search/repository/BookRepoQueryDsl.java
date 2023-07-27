@@ -17,8 +17,6 @@ import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.util.SearchMode;
 import com.scaling.libraryservice.search.util.TitleQuery;
 import com.scaling.libraryservice.search.util.TitleTrimmer;
-import com.scaling.libraryservice.search.util.TitleType;
-import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +40,8 @@ public class BookRepoQueryDsl implements BookRepository {
         // match..against 문을 활용하여 Full text search를 수행
 
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
+
+        log.info(titleQuery.toString());
 
         // 최종적으로 페이징 처리된 도서 검색 결과를 반환.
         return PageableExecutionUtils.getPage(
@@ -90,32 +90,6 @@ public class BookRepoQueryDsl implements BookRepository {
                 SCORE_OF_MATCH));
     }
 
-
-//    private long getTotalSizeForPaging(TitleQuery titleQuery) {
-//
-//        // 1.키워드가 하나인 포괄적 키워드는 count query 성능을 위해 size를 제한 한다.
-//        // 2.그럼에도 결과값은 전체 대출 횟수를 기준으로 내림 차순으로 보여주기 때문에 검색 품질은 보장한다.
-//
-//        if (titleQuery.getTitleType() == TitleType.TOKEN_ONE) {
-//            return LIMIT_CNT;
-//        } else {
-//            //키워드가 2개 이상일 땐, countQuery 메소드를 호출한다.
-//            return countQuery(titleQuery, book.titleToken).fetchOne();
-//        }
-//    }
-
-
-    private JPAQuery<Long> countQuery(TitleQuery titleQuery, StringPath colum) {
-
-        return factory
-            .select(book.count())
-            .from(book)
-            .where(
-                getTemplate(
-                    titleQuery.getTitleType().getMode(),
-                    titleQuery.getNnToken(),
-                    colum).gt(SCORE_OF_MATCH));
-    }
 
     // 사용자가 입력한 제목 쿼리를 분석한 결과를 바탕으로 boolean or natural 모드를 동적으로 선택
     NumberTemplate<Double> getTemplate(SearchMode mode, String name, StringPath colum) {

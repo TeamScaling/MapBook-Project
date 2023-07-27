@@ -30,7 +30,8 @@ public class CustomCacheAspect<K, I> {
 
     private final double CACHE_SEC_THRESHOLD = 2.0;
 
-    @Pointcut("@annotation(com.scaling.libraryservice.commons.caching.CustomCacheable)")
+    @Pointcut("@annotation(co"
+        + "m.scaling.libraryservice.commons.caching.CustomCacheable)")
     private void customCacheablePointcut() {
     }
 

@@ -1,16 +1,14 @@
 package com.scaling.libraryservice.search.util.filter;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.scaling.libraryservice.search.service.KeywordService;
-import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class ConvertFilterTest {
@@ -25,7 +23,7 @@ class ConvertFilterTest {
         convertFilter = new ConvertFilter(null,keywordService);
     }
 
-
+    @Test
     public void filtering(){
         /* given */
 
@@ -42,6 +40,7 @@ class ConvertFilterTest {
 
     }
 
+    @Test
     @DisplayName("변환이 필요 없는 단어는 원형이 유지가 된다. 순서는 상관 없다")
     public void filtering2(){
         /* given */
@@ -60,5 +59,4 @@ class ConvertFilterTest {
         assertTrue(result.contains(target2));
 
     }
-
 }

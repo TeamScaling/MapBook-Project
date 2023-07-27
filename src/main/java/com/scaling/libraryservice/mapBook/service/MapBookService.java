@@ -31,8 +31,6 @@ public class MapBookService implements ApiRelatedService {
 
     private final DataProvider<ApiBookExistDto> dataProvider;
 
-    private static final int DEFAULT_THREAD = 10;
-
     /**
      * 사용자가 원하는 도서와 사용자 주변의 도서관을 조합하여 대출 가능한 도서관들의 정보를 반환 한다.
      *
@@ -47,7 +45,7 @@ public class MapBookService implements ApiRelatedService {
 
         // 대출 가능 데이터를 전달 받는다.
         List<ApiBookExistDto> apiResults =
-            dataProvider.provideDataList(bExistConns, DEFAULT_THREAD);
+            dataProvider.provideDataList(bExistConns, bExistConns.size());
 
         return bExistConns.isEmpty() ?
             emptyResult(nearByLibraries, reqMapBookDto) :

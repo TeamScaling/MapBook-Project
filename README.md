@@ -15,6 +15,7 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 ### Explore the Project
 
 - [Try MapBook](https://mapbook.pro/)
+- 서비스 피드백 및 건의 적극적으로 기다리는 중
 
 <p align = "center">
 <img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/indexImg.png" >
@@ -31,7 +32,7 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 3. 한영 오타 자동 전환 검색 기능 <br>
    <br> <p align = "center"><img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/convert.png" ></p>
 
-4. 한영 오타 자동 전환 검색 기능 <br>
+4. 한글 영어 상호 보완 검색 기능 <br>
    <br> <p align = "center"><img width="60%" height = "60%" alt="mapbook" src="src/main/resources/static/images/resultSwitch.png" ></p>
 5. 클릭 한번에 내 주변 대출 가능 도서관 찾기 <br>
    <br> <p align = "center"><img width="30%" height = "30%" alt="mapbook" src="src/main/resources/static/images/mapResult.png" ></p>
@@ -48,9 +49,44 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
   <br>
 </div>
 
+### 📁 Foldering
+
+```
+
+📁 libraryService _ 
+                    |_ 📁 commons _ 
+                    |              |_ 📁 api (Open API 관련) ⭐
+                    |              |_ 📁 async (비동기 처리 support)
+                    |              |_ 📁 caching (통합 Caching 관리)
+                    |              |_ 📁 circuitBreaker (Open Api 장애 대책) ⭐
+                    |              |_ 📁 data (csv exporter 및 csv merger) ⭐
+                    |              |_ 📁 reporter (slack bot을 통한 slow query 보고)
+                    |              |_ 📁 tester (search 성능 테스트)
+                    |              |_ 📁 timer (내부 응답 속도 체크)
+                    |              |_ 📁 updater (도서 최신화)
+                    |_ 📁 mapBook_ _
+                    |              |_ 📁 cacheKey
+                    |              |_ 📁 controller
+                    |              |_ 📁 dto
+                    |              |_ 📁 entity
+                    |              |_ 📁 exception
+                    |              |_ 📁 repository
+                    |              |_ 📁 service (도서관 찾기 및 매핑) ⭐
+                    |_ 📋 search _ _
+                    |              |_ 📁 advice (exception handler)
+                    |              |_ 📁 controller
+                    |              |_ 📁 dto
+                    |              |_ 📁 entity
+                    |              |_ 📁 exception
+                    |              |_ 📁 repository ⭐
+                    |              |_ 📁 service (책 찾기 & 단어 유효성 검사) ⭐
+                    |              |_ 📁 util (도서 검색 알고리즘 및 filter,converter)  ⭐
+
+```
+
 ### Project Duration & Team
 
-- Duration: 2023.03.31 - 2023.07.26
+- Duration: 2023.03.31 - 2023.05.12
 - Team: 4 Backend Developers
 
 ### Backend Technology
@@ -75,6 +111,9 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 
 - Kakao Map
 - Library Information System (for book availability check)
+
+### Thanks
+- convert 코드 : https://github.com/javacafe-project/elasticsearch-plugin
 
 ### Book Data
 
