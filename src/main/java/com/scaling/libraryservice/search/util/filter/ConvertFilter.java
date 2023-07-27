@@ -29,7 +29,7 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
                 if (isEnglishWord(word)) {
                     convertAddEngCheckList(word, requiredCheckList);
                 } else {
-                    convertAddKorCheckList(word,requiredCheckList);
+                    joiner.add(word);
                 }
             });
 
@@ -46,6 +46,7 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
         requiredCheckList.addAll(EunjeonTokenizer.getQualifiedNnTokens(convertedWord));
     }
 
+    // 'ㅓㅁㅍㅁ' -> '자바'로 변환 해주는 메소드 (버그로 인해 일단 사용 X)
     private void convertAddKorCheckList(String originalWord, List<String> requiredCheckList) {
 
         String convertedWord = KorToEngConverter.convert(originalWord);

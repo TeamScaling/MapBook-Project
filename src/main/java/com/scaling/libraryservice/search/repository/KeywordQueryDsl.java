@@ -4,7 +4,6 @@ import static com.scaling.libraryservice.search.entity.QKeyword.keyword1;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.entity.Keyword;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
