@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.data.exporter;
 
-import com.scaling.libraryservice.commons.data.vo.KeywordVo;
 import com.scaling.libraryservice.commons.data.CsvWriter;
+import com.scaling.libraryservice.commons.data.vo.KeywordVo;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
 import com.scaling.libraryservice.search.util.filter.SimpleFilter;
 import java.util.Arrays;
@@ -19,16 +19,19 @@ public class KeywordExporter extends ExporterService<KeywordVo, String> {
 
     private final SimpleFilter simpleFilter;
 
+    private Page<String> page;
+
     public KeywordExporter(CsvWriter<KeywordVo> csvWriter, BookRepoQueryDsl bookRepository) {
         super(csvWriter);
         this.bookRepository = bookRepository;
         this.simpleFilter = new SimpleFilter(null);
+        this.page = Page.empty();
     }
 
     @Override
-    List<KeywordVo> analyzeAndExportBooks(Page<String> page, Pageable pageable, String outputName) {
+    List<KeywordVo> analyzeAndExportVo(Pageable pageable, String outputName) {
 
-        page = bookRepository.findTitleToken(pageable);
+        this.page = bookRepository.findTitleToken(pageable);
 
         Set<KeywordVo> bookTokens = new HashSet<>();
 
@@ -41,5 +44,10 @@ public class KeywordExporter extends ExporterService<KeywordVo, String> {
                     bookTokens.add(new KeywordVo(token))));
 
         return bookTokens.stream().toList();
+    }
+
+    @Override
+    Page<String> renewPage() {
+        return page;
     }
 }

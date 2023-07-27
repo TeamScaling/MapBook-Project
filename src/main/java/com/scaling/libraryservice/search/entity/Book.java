@@ -39,6 +39,9 @@ public class Book {
     @Column(name = "title_token")
     private String titleToken;
 
+//    @Column(name = "TWO_PBLICTE_DE")
+//    private String publishDate;
+
 
     public Integer getLoanCnt() {
         return loanCnt == null ? 0 : this.loanCnt;
