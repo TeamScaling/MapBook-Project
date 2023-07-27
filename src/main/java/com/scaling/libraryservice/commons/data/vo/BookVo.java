@@ -28,7 +28,7 @@ public class BookVo {
 
     // 출판일
     @CsvBindByName(column = "PBLICTE_DE")
-    private String pblicteDe;
+    private String publishDate;
 
     // 이미지 URL
     @CsvBindByName(column = "IMAGE_URL")
@@ -44,16 +44,17 @@ public class BookVo {
     private Integer loanCnt;
 
     // 영문 제목 토큰
-    @CsvBindByName(column = "ENG_TITLE_TOKEN")
-    private String engTitleToken;
+    @CsvBindByName(column = "TITLE_TOKEN")
+    private String titleToken;
 
-    public BookVo(Book book,String engTitleToken) {
+    public BookVo(Book book,String titleToken) {
         this.isbnThirteenNo = book.getIsbn();
         this.titleNm = book.getTitle();
         this.authrNm = book.getAuthor();
         this.imageUrl = book.getBookImg();
         this.bookIntrcnCn = book.getContent();
         this.loanCnt = book.getLoanCnt();
-        this.engTitleToken = engTitleToken;
+        this.titleToken = titleToken;
+//        this.publishDate = book.getPublishDate();
     }
 }

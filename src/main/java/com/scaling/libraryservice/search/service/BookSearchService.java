@@ -55,7 +55,7 @@ public class BookSearchService {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        TitleQuery titleQuery = titleAnalyzer.analyze(query);
+        TitleQuery titleQuery = titleAnalyzer.analyze(query,true);
 
         if (titleQuery.isEmptyTitleQuery()) {
             return RespBooksDto.emptyDto();

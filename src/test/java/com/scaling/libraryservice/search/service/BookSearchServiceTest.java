@@ -42,7 +42,7 @@ class BookSearchServiceTest {
         TitleQuery titleQuery = new TitleQueryBuilder().titleType(TOKEN_TWO_OR_MORE)
             .etcToken("java").nnToken("정석").build();
 
-        when(titleAnalyzer.analyze(query)).thenReturn(titleQuery);
+        when(titleAnalyzer.analyze(query,true)).thenReturn(titleQuery);
         when(asyncExecutor.execute(any(), any(), anyInt(),anyBoolean())).thenReturn(Page.empty());
 
         /* when */

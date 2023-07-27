@@ -46,10 +46,11 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
         requiredCheckList.addAll(EunjeonTokenizer.getQualifiedNnTokens(convertedWord));
     }
 
-    // 'ㅓㅁㅍㅁ' -> '자바'로 변환 해주는 메소드 (버그로 인해 일단 사용 X)
-    private void convertAddKorCheckList(String originalWord, List<String> requiredCheckList) {
+    // 'ㅓㅁㅍㅁ' -> 'java'로 변환 해주는 메소드 (버그로 인해 일단 사용 X)
+    void convertAddKorCheckList(String originalWord, List<String> requiredCheckList) {
 
         String convertedWord = KorToEngConverter.convert(originalWord);
+
         requiredCheckList.add(originalWord);
         requiredCheckList.add(convertedWord);
     }

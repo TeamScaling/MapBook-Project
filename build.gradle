@@ -94,6 +94,10 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+test {
+    maxHeapSize = "1024m"
+}
+
 
 // CICD : plain jar 파일 중복생성 방지
 jar {
