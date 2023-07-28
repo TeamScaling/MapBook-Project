@@ -1,18 +1,18 @@
 package com.scaling.libraryservice.search.dto;
 
+import com.scaling.libraryservice.commons.timer.TimeMeasurable;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 
 @Getter
 @Setter @ToString
-public class RespBooksDto {
+public class RespBooksDto implements TimeMeasurable<MetaDto> {
 
     private MetaDto meta;
     private List<BookDto> documents;
@@ -27,15 +27,17 @@ public class RespBooksDto {
         this.documents = booksPage.stream().collect(Collectors.toList());
     }
 
-    public RespBooksDto(@NonNull JSONObject jsonObject){
-        this.meta = (MetaDto) jsonObject.get("meta");
-        this.documents = jsonObject.getJSONArray("documents").toList().stream().map(o -> (BookDto)o).toList();
+    public static RespBooksDto emptyDto(String userQeury){
+
+        return new RespBooksDto(MetaDto.emptyDto(userQeury), Collections.emptyList());
     }
 
-    public static RespBooksDto emptyDto(){
-
-        return new RespBooksDto(MetaDto.emptyDto(), Collections.emptyList());
+    public boolean isEmptyResult(){
+        return this.meta.getTotalElements() == 0;
     }
 
-
+    @Override
+    public void addMeasuredTime(String time) {
+        this.getMeta().addSearchTime(time);
+    }
 }

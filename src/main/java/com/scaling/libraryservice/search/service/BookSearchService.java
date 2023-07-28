@@ -7,10 +7,12 @@ import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
 import com.scaling.libraryservice.search.repository.BookRepository;
-import com.scaling.libraryservice.search.util.TitleAnalyzer;
-import com.scaling.libraryservice.search.util.TitleQuery;
+import com.scaling.libraryservice.search.engine.TitleAnalyzer;
+import com.scaling.libraryservice.search.engine.TitleQuery;
 import java.util.List;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 /**
  * 도서 검색 기능을 제공하는 서비스 클래스입니다. 입력된 검색어에 따라 적절한 검색 쿼리를 선택하여 도서를 검색하고, 결과를 반환합니다.
@@ -42,48 +43,43 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체. 만약 검색이 3초를 초과하면 빈 결과가 반환됩니다.
      */
     @CustomCacheable
-    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout, boolean isAsync)
-        throws IllegalArgumentException {
+    @Timer
+    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout,
+        boolean isAsyncSupport) throws NotQualifiedQueryException {
 
-        String query = reqBookDto.getQuery();
+        String userQuery = reqBookDto.getQuery();
 
-        log.info("-------------query : [{}]-------------------------------", query);
+        TitleQuery titleQuery = titleAnalyzer.analyze(userQuery, true);
 
-        Pageable pageable
-            = PageRequest.of(reqBookDto.getPage() - 1, reqBookDto.getSize());
-
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-
-        TitleQuery titleQuery = titleAnalyzer.analyze(query,true);
-
-        if (titleQuery.isEmptyTitleQuery()) {
-            return RespBooksDto.emptyDto();
-        }
-
-        Page<BookDto> booksPage = asyncExecutor.execute(
-            () -> bookRepository.findBooks(titleQuery, pageable), reqBookDto, timeout, isAsync);
-
-        stopWatch.stop();
-
-        String searchTime = String.format("%.3f", stopWatch.getTotalTimeSeconds());
-
-        return new RespBooksDto(
-            new MetaDto(booksPage, reqBookDto, searchTime, titleQuery.getOriginalQuery())
-            , booksPage);
+        return titleQuery.isEmptyTitleQuery() ?
+            RespBooksDto.emptyDto(userQuery)
+            : searchBookWithAsync(titleQuery, reqBookDto, timeout, isAsyncSupport);
     }
 
-    public RespBooksDto bookAutoComplete(ReqBookDto reqBookDto, int timeout) {
 
-        RespBooksDto respBooksDto = searchBooks(reqBookDto, timeout, false);
+    private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto,
+        int timeout, boolean isAsyncSupport) {
 
-        if(respBooksDto.getDocuments().size() > 0){
-            //맨위에 결과값이 front에서 짤려 보이는 문제 해결하기 위해 빈 제목을 넣는다.
-            List<BookDto> books = respBooksDto.getDocuments();
-            books.add(0, BookDto.emptyDto());
-        }
+        Page<BookDto> booksPage =
+            asyncExecutor.execute(
+                createFindBooksTask(titleQuery, createPageableFromRequest(reqBookDto))
+                , reqBookDto, timeout, isAsyncSupport);
 
-        return respBooksDto;
+        return new RespBooksDto(new MetaDto(booksPage, reqBookDto), booksPage);
+    }
+
+    private Supplier<Page<BookDto>> createFindBooksTask(TitleQuery titleQuery, Pageable pageable) {
+        return () -> bookRepository.findBooks(titleQuery, pageable);
+    }
+
+    private Pageable createPageableFromRequest(ReqBookDto reqBookDto) {
+        return PageRequest.of(reqBookDto.getPage() - 1, reqBookDto.getSize());
+    }
+
+    public List<BookDto> autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
+        boolean isAsyncSupport) {
+
+        return searchBooks(reqBookDto, timeout, isAsyncSupport).getDocuments();
     }
 
 }

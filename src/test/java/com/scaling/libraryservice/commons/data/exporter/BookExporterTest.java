@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.commons.data.exporter;
 
-import org.junit.jupiter.api.Test;
+import com.scaling.libraryservice.data.exporter.BookExporter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

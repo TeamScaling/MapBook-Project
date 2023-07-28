@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.search.service;
 
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_TWO_OR_MORE;
+import static com.scaling.libraryservice.search.engine.TitleType.TOKEN_TWO_OR_MORE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
-import com.scaling.libraryservice.search.util.TitleAnalyzer;
-import com.scaling.libraryservice.search.util.TitleQuery;
-import com.scaling.libraryservice.search.util.TitleQuery.TitleQueryBuilder;
+import com.scaling.libraryservice.search.engine.TitleAnalyzer;
+import com.scaling.libraryservice.search.engine.TitleQuery;
+import com.scaling.libraryservice.search.engine.TitleQuery.TitleQueryBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
