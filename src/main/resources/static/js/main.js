@@ -165,6 +165,7 @@ $('#search-input').autocomplete({
       dataType: "JSON",
       data: {query: request.term}, // 검색 키워드
       success: function (books) {
+        books.unshift({title: ""});
         response(
             $.map(books, function (book) {
               return {

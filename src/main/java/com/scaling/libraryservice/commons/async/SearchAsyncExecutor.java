@@ -1,7 +1,6 @@
 package com.scaling.libraryservice.commons.async;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.commons.reporter.TaskReporter;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
@@ -33,10 +32,6 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
      */
     private final CustomCacheManager<ReqBookDto,RespBooksDto> cacheManager;
 
-    /**
-     * 비동기 작업의 상태를 보고하는 TaskReporter입니다.
-     */
-    private final TaskReporter taskReporter;
 
     /**
      * 비동기적으로 도서 검색을 수행하고, 결과를 반환합니다.
@@ -53,7 +48,6 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
         Page<BookDto> booksPage = Page.empty();
 
         try{
-
             if(isAsync){
                 booksPage = CompletableFuture.supplyAsync(supplier)
                     .get(timeout, TimeUnit.SECONDS);
@@ -61,9 +55,9 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
                 booksPage = supplier.get();
             }
 
+
         }catch (TimeoutException | InterruptedException | ExecutionException e) {
             log.error("Query execution exceeded 3 seconds. Returning an empty result.");
-            taskReporter.report(reqBookDto.getQuery());
             asyncSearchBook(supplier,reqBookDto);
         }
 

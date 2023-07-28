@@ -1,8 +1,7 @@
 package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.entity.Book;
-import com.scaling.libraryservice.search.util.TitleTrimmer;
-import java.util.Optional;
+import com.scaling.libraryservice.search.engine.util.TitleTrimmer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

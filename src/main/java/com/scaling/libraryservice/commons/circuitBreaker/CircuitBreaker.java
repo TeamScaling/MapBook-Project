@@ -1,9 +1,11 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import com.scaling.libraryservice.logging.logger.OpenApiLogger;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -15,14 +17,13 @@ import org.springframework.lang.NonNull;
 @Slf4j
 @RequiredArgsConstructor
 public class CircuitBreaker {
+
     private final ScheduledExecutorService scheduler;
     private final Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private final RestorationChecker checker;
-
     private static final int INITIAL_DELAY = 1;
-
     private static final int RECOVERY_INTERVAL = 60 * 30;
-
+    private final OpenApiLogger openApiLogger;
 
     /**
      * {@link ApiObserver} 인스턴스의 API 액세스 상태를 확인하는 메소드입니다. {@link ApiObserver}가 현재 접근 가능한 API를 가리키고
@@ -44,14 +45,11 @@ public class CircuitBreaker {
     synchronized void receiveError(@NonNull ApiObserver observer) {
 
         ApiStatus status = observer.getApiStatus();
+        status.upErrorCnt();
 
-        if (status.apiAccessible()){
-            status.upErrorCnt();
-
-            if (status.isMaxError()) closeApi(observer);
-
-            log.error("Api Error - request api url : [{}] , current error cnt : [{}]"
-                , status.getApiUri(), status.getErrorCnt());
+        if (status.apiAccessible() && status.isMaxError()) {
+            closeApi(observer);
+            openApiLogger.sendLogToSlack(status);
         }
     }
 
@@ -66,41 +64,44 @@ public class CircuitBreaker {
         ApiStatus status = observer.getApiStatus();
         status.closeAccess();
 
-        log.info(status.getApiUri() + " is closed by nested api server error at [{}]",
-            status.getClosedTime());
-
-        startScheduledRestoration(observer,RECOVERY_INTERVAL,TimeUnit.SECONDS);
+        startScheduledRestoration(observer);
     }
 
     /**
-     * 주어진 {@link ApiObserver}에 대해 주기적인 복구 작업을 스케줄링하는 메소드입니다.
-     * 이 메소드는 {@link ApiObserver}가 가리키는 API 서버의 가용성을 정기적으로 확인합니다.
-     * 복구 가능한 경우 (즉, API 서버가 다시 사용 가능해질 경우), 스케줄링된 복구 작업을 중지합니다.
+     * 주어진 {@link ApiObserver}에 대해 주기적인 복구 작업을 스케줄링하는 메소드입니다. 이 메소드는 {@link ApiObserver}가 가리키는 API
+     * 서버의 가용성을 정기적으로 확인합니다. 복구 가능한 경우 (즉, API 서버가 다시 사용 가능해질 경우), 스케줄링된 복구 작업을 중지합니다.
      *
      * @param observer 복구 작업을 스케줄링할 {@link ApiObserver} 인스턴스
-     * @param period 복구 작업을 반복할 시간 간격 (주기)
-     * @param timeUnit 주기의 시간 단위
      */
-    void startScheduledRestoration(ApiObserver observer,int period,TimeUnit timeUnit){
+    void startScheduledRestoration(ApiObserver observer) {
 
-        ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
-                if (checker.isRestoration(observer)) {
-                    stopScheduledRestoration(observer);
-                }}, INITIAL_DELAY, period, timeUnit);
+        scheduledTasks.put(observer, scheduleRestorationTask(observer));
+    }
 
-        scheduledTasks.put(observer, scheduledFuture);
+    private ScheduledFuture<?> scheduleRestorationTask(ApiObserver observer) {
+        return scheduler.scheduleAtFixedRate(
+            createRestorationRunnable(observer), INITIAL_DELAY, RECOVERY_INTERVAL, SECONDS);
+    }
+
+    private Runnable createRestorationRunnable(ApiObserver observer) {
+        return () -> {
+            if (checker.isRestoration(observer)) {
+                stopScheduledRestoration(observer);
+            }
+        };
     }
 
     /**
-     * 주어진 {@link ApiObserver}에 대한 스케줄링된 복구 작업을 중지하는 메소드입니다.
-     * 이 메소드는 {@link ApiObserver}가 가리키는 API 서버에 대한 접근을 다시 허용합니다.
+     * 주어진 {@link ApiObserver}에 대한 스케줄링된 복구 작업을 중지하는 메소드입니다. 이 메소드는 {@link ApiObserver}가 가리키는 API
+     * 서버에 대한 접근을 다시 허용합니다.
      *
      * @param observer 복구 작업을 중지할 {@link ApiObserver} 인스턴스
      */
-    void stopScheduledRestoration(ApiObserver observer){
+    void stopScheduledRestoration(ApiObserver observer) {
 
         scheduledTasks.get(observer).cancel(false);
         scheduledTasks.remove(observer);
+
         observer.getApiStatus().openAccess();
     }
 

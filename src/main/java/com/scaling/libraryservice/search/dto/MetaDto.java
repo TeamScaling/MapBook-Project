@@ -4,58 +4,42 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 
-@Setter
+
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString
-@Builder
+@Builder @AllArgsConstructor
 public class MetaDto {
-
-    private String query;
     private long totalPages;
     private long totalElements;
     private long currentPage;
     private long pageSize;
-
     private String searchTime;
 
-    public MetaDto(long totalPages, long totalElements, long currentPage, long pageSize,
-        String searchTime) {
-        this.totalPages = totalPages;
-        this.totalElements = totalElements;
-        this.currentPage = currentPage;
-        this.pageSize = pageSize;
-        this.searchTime = searchTime;
-    }
+    private String userQuery;
 
-    public MetaDto(@NonNull Page<BookDto> books, @NonNull ReqBookDto reqBookDto, String searchTime,
-        String originalQuery) {
-
-        this.totalPages = books.getTotalPages();
-        this.totalElements = books.getTotalElements();
-        this.currentPage = reqBookDto.getPage();
-        this.pageSize = reqBookDto.getSize();
+    public void addSearchTime(String searchTime) {
         this.searchTime = searchTime;
-        this.query = originalQuery;
     }
 
     public MetaDto(@NonNull Page<BookDto> books, @NonNull ReqBookDto reqBookDto) {
+
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
+        this.userQuery = reqBookDto.getQuery();
     }
 
-    public static MetaDto emptyDto() {
+
+    public static MetaDto emptyDto(String userQuery) {
 
         return MetaDto.builder()
-            .query("")
+            .userQuery(userQuery)
             .totalPages(0)
             .totalElements(0)
             .currentPage(0)
