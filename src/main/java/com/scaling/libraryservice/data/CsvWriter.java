@@ -19,18 +19,14 @@ public class CsvWriter<V> {
             Writer writer;
 
             // file이 이미 존재하면 이어쓰기를 실시 한다.
-            if (Files.exists(path)) {
-                writer = Files.newBufferedWriter(path, StandardOpenOption.APPEND);
-            } else {
-                //file이 없으면 새로 파일을 만들고 시작 한다.
-                writer = Files.newBufferedWriter(path);
-            }
+            writer = Files.exists(path) ?
+                Files.newBufferedWriter(path, StandardOpenOption.APPEND)
+                : Files.newBufferedWriter(path);
 
-            StatefulBeanToCsv<V> beanToCsv = new StatefulBeanToCsvBuilder<V>(writer)
+            new StatefulBeanToCsvBuilder<V>(writer)
                 .withQuotechar('"')
-                .build();
+                .build().write(target);
 
-            beanToCsv.write(target);
             writer.close();
 
         } catch (Exception e) {

@@ -36,12 +36,10 @@ public class KeywordExporter extends ExporterService<KeywordVo, String> {
         Set<KeywordVo> bookTokens = new HashSet<>();
 
         page.getContent()
-            .forEach(str -> Arrays.stream(
-                    str.split(" "))
+            .forEach(str -> Arrays.stream(str.split(" "))
                 .map(simpleFilter::filtering)
                 .filter(s -> !s.isBlank())
-                .forEach(token ->
-                    bookTokens.add(new KeywordVo(token))));
+                .forEach(keyword -> bookTokens.add(new KeywordVo(keyword))));
 
         return bookTokens.stream().toList();
     }
