@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
-import com.scaling.libraryservice.mapBook.entity.HsAreaCd;
-import com.scaling.libraryservice.mapBook.entity.Library;
+import com.scaling.libraryservice.mapBook.entity.PreCheckingAreaCd;
+import com.scaling.libraryservice.mapBook.entity.LibraryInfo;
 import com.scaling.libraryservice.mapBook.repository.HasBookAreaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryHasBookRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
@@ -24,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class LibraryFindServiceTest {
+class LibraryInfoFindServiceTest {
 
     @InjectMocks
     private LibraryFindService libraryFindService;
@@ -49,24 +49,24 @@ class LibraryFindServiceTest {
     public void getNearByLibraries_SupportedArea(){
         /* given */
 
-        Library library1 = Library.builder().libNm("1").areaCd(areaCd).build();
-        Library library2 = Library.builder().libNm("2").areaCd(areaCd).build();
+        LibraryInfo libraryInfo1 = LibraryInfo.builder().libNm("1").areaCd(areaCd).build();
+        LibraryInfo libraryInfo2 = LibraryInfo.builder().libNm("2").areaCd(areaCd).build();
 
-        List<Library> libraries = List.of(library1, library2);
+        List<LibraryInfo> libraries = List.of(libraryInfo1, libraryInfo2);
 
-        Optional<HsAreaCd> optional = Optional.of(new HsAreaCd());
+        Optional<PreCheckingAreaCd> optional = Optional.of(new PreCheckingAreaCd());
 
         when(hasBookAreaRepo.findById(areaCd)).thenReturn(optional);
         when(libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)).thenReturn(libraries);
 
         /* when */
 
-        var result = libraryFindService.getNearByLibraries(isbn13,areaCd);
+        var result = libraryFindService.getNearByLibInfoByAreaCd(isbn13,areaCd);
 
         /* then */
         assertEquals(2,result.size());
-        assertTrue(result.stream().allMatch(LibraryDto::isHasBook));
-        assertTrue(result.stream().allMatch(LibraryDto::isHasBookSupport));
+        assertTrue(result.stream().allMatch(LibraryInfoDto::isHasBook));
+        assertTrue(result.stream().allMatch(LibraryInfoDto::isHasBookSupport));
     }
 
     @Test @DisplayName("소장 서비스 지역이 아닐 때 주변 도서관 목록을 반환 할 수 있다")
@@ -76,24 +76,24 @@ class LibraryFindServiceTest {
         String isbn13 = "9788089365210";
         int areaCd = 26000;
 
-        Library library1 = Library.builder().libNm("1").areaCd(areaCd).build();
-        Library library2 = Library.builder().libNm("2").areaCd(areaCd).build();
+        LibraryInfo libraryInfo1 = LibraryInfo.builder().libNm("1").areaCd(areaCd).build();
+        LibraryInfo libraryInfo2 = LibraryInfo.builder().libNm("2").areaCd(areaCd).build();
 
-        List<Library> libraries = List.of(library1, library2);
+        List<LibraryInfo> libraries = List.of(libraryInfo1, libraryInfo2);
 
-        Optional<HsAreaCd> optional = Optional.empty();
+        Optional<PreCheckingAreaCd> optional = Optional.empty();
 
         when(hasBookAreaRepo.findById(26000)).thenReturn(optional);
         when(libraryRepo.findAllByAreaCd(areaCd)).thenReturn(libraries);
 
         /* when */
 
-        var result = libraryFindService.getNearByLibraries(isbn13,26000);
+        var result = libraryFindService.getNearByLibInfoByAreaCd(isbn13,26000);
 
         /* then */
         assertEquals(2,result.size());
-        assertFalse(result.stream().allMatch(LibraryDto::isHasBook));
-        assertFalse(result.stream().allMatch(LibraryDto::isHasBookSupport));
+        assertFalse(result.stream().allMatch(LibraryInfoDto::isHasBook));
+        assertFalse(result.stream().allMatch(LibraryInfoDto::isHasBookSupport));
     }
 
 
@@ -103,10 +103,10 @@ class LibraryFindServiceTest {
 
         ReqMapBookDto reqMapBookDto = ReqMapBookDto.builder().isbn("1234").areaCd(123).build();
 
-        Library library1 = Library.builder().libNm("1").build();
-        Library library2 = Library.builder().libNm("2").build();
+        LibraryInfo libraryInfo1 = LibraryInfo.builder().libNm("1").build();
+        LibraryInfo libraryInfo2 = LibraryInfo.builder().libNm("2").build();
 
-        List<Library> libraries = List.of(library1, library2);
+        List<LibraryInfo> libraries = List.of(libraryInfo1, libraryInfo2);
 
         when(libraryHasBookRepo.findHasBookLibraries("1234",123)).thenReturn(libraries);
 
@@ -117,7 +117,7 @@ class LibraryFindServiceTest {
         /* then */
 
         assertEquals(result.size(),2);
-        assertTrue(result.stream().allMatch(LibraryDto::isHasBook));
+        assertTrue(result.stream().allMatch(LibraryInfoDto::isHasBook));
     }
 
     @Test
@@ -129,10 +129,10 @@ class LibraryFindServiceTest {
 
         ReqMapBookDto reqMapBookDto = ReqMapBookDto.builder().isbn(isbn13).areaCd(areaCd).build();
 
-        Library library1 = Library.builder().libNm("1").build();
-        Library library2 = Library.builder().libNm("2").build();
+        LibraryInfo libraryInfo1 = LibraryInfo.builder().libNm("1").build();
+        LibraryInfo libraryInfo2 = LibraryInfo.builder().libNm("2").build();
 
-        List<Library> libraries = List.of(library1, library2);
+        List<LibraryInfo> libraries = List.of(libraryInfo1, libraryInfo2);
 
         when(libraryHasBookRepo.findHasBookLibraries(isbn13,areaCd)).thenReturn(Collections.emptyList());
 

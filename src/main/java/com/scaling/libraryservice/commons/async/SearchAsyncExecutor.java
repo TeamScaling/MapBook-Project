@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Component;
  * @param <V> 실행에 필요한 값의 타입. 이 클래스에서는 ReqBookDto.
  */
 @RequiredArgsConstructor
+
 @Component
 public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,ReqBookDto>{
 

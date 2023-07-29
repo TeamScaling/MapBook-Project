@@ -8,7 +8,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-class Data4LibraryBindingTest {
+class Data4LibraryBindingTestInfo {
 
 
     @Test

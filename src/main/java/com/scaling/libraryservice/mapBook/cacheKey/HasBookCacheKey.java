@@ -3,7 +3,7 @@ package com.scaling.libraryservice.mapBook.cacheKey;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +14,7 @@ import lombok.ToString;
  * 이 클래스는 ISBN-13과 지역 코드를 사용하여 도서 정보를 식별하며, 캐시에서 해당 도서 정보를 조회하거나 저장할 때 사용됩니다.
  */
 @ToString
-public class HasBookCacheKey implements CacheKey<HasBookCacheKey, List<LibraryDto>> {
+public class HasBookCacheKey implements CacheKey<HasBookCacheKey, List<LibraryInfoDto>> {
 
     private final String isbn13;
 
@@ -26,7 +26,7 @@ public class HasBookCacheKey implements CacheKey<HasBookCacheKey, List<LibraryDt
     }
 
     @Override
-    public Cache<HasBookCacheKey, List<LibraryDto>> configureCache() {
+    public Cache<HasBookCacheKey, List<LibraryInfoDto>> configureCache() {
         return Caffeine.newBuilder()
             .expireAfterWrite(1, TimeUnit.DAYS)
             .maximumSize(1000)

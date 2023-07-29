@@ -2,7 +2,7 @@ package com.scaling.libraryservice.search.service;
 
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
-import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Timer
+@MeasureTaskTime
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
@@ -43,7 +43,7 @@ public class BookSearchService {
      * @return 검색 결과를 담은 RespBooksDto 객체. 만약 검색이 3초를 초과하면 빈 결과가 반환됩니다.
      */
     @CustomCacheable
-    @Timer
+    @MeasureTaskTime
     public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout,
         boolean isAsyncSupport) throws NotQualifiedQueryException {
 

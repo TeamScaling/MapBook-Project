@@ -3,9 +3,8 @@ package com.scaling.libraryservice.commons.api.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
-import com.scaling.libraryservice.commons.api.service.provider.BExistProvider;
-import com.scaling.libraryservice.commons.api.util.binding.BookExistBinding;
-import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
+import com.scaling.libraryservice.commons.api.service.provider.LoanableLibProvider;
+import com.scaling.libraryservice.mapBook.dto.ApiLoanableLibDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class ApiQueryBinderTest {
-    private ApiQueryBinder<ApiBookExistDto> apiQueryBinder;
+    private ApiQueryBinder<ApiLoanableLibDto> apiQueryBinder;
     @Mock
     private ApiQuerySender apiQuerySender;
     @Mock
@@ -59,7 +58,7 @@ class ApiQueryBinderTest {
 
         var response = apiQuerySender.sendSingleQuery(apiConnection,HttpEntity.EMPTY);
 
-        var result = apiQueryBinder.bind(response, BExistProvider.class);
+        var result = apiQueryBinder.bind(response, LoanableLibProvider.class);
 
         /* then */
 

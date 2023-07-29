@@ -1,14 +1,14 @@
 document.querySelector('#search-input').addEventListener('keydown',
     function (event) {
       if (event.keyCode === 13) {
-        let query = $('#search-input').val().trim();
+        const query = $('#search-input').val().trim();
         searchBook(query);
       }
     });
 
 document.querySelector('#search-input-btn').addEventListener('click',
     function (event) {
-      let query = $('#search-input').val().trim();
+      const query = $('#search-input').val().trim();
       searchBook(query);
     });
 
@@ -18,7 +18,7 @@ document.querySelector('#search-input').addEventListener('focus',
     });
 
 function addMetaHtml(meta) {
-  let query = $('#search-input').val()
+  const query = $('#search-input').val()
 
   return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
                 <div class="col-lg-7">
@@ -41,7 +41,7 @@ function addHTML(book) {
                     <p>${book.content}</p>
                 </div>
               <div class="col-lg-2">
-                <a class="btn btn-outline-success" data-isbn="${book.isbn}">대출 가능 <br>도서관 찾기!</a>
+                <a class="btn btn-outline-success" data-isbn="${book.isbn}" data-title="${book.title}">대출 가능 <br>도서관 찾기!</a>
               </div>
             </div>`
 }
@@ -63,12 +63,13 @@ function addNotFoundHTML(query) {
   </div>`
 }
 
-function openPopup_MapBook(isbn, lat, lon) {
-  // 데이터 객체에 isbn, lat, lon 값을 추가
+function openPopup_MapBook(isbn, lat, lon, title) {
+  // 데이터 객체에 isbn, lat, lon,title 값을 추가
   const data = {
     isbn: isbn,
     lat: lat,
-    lon: lon
+    lon: lon,
+    title: title
   };
 
   // 팝업 창을 엽니다.
@@ -104,6 +105,20 @@ function openPopup_MapBook(isbn, lat, lon) {
   return false;
 }
 
+const $bookContainer = $('#book_container');
+
+function notFoundBooks(query){
+  const message = addNotFoundHTML(query);
+  $bookContainer.empty();
+  $bookContainer.append(message);
+}
+
+function renewMetaData(response){
+  const meta = response.meta;
+  const tempMetaHtml = addMetaHtml(meta);
+  $bookContainer.append(tempMetaHtml);
+}
+
 function searchBook(query) {
 
   if (query === '' || query.length < 2) {
@@ -118,32 +133,18 @@ function searchBook(query) {
     success: function (response) {
 
       if (response.meta.totalPages === 0) {
-
-        let message = addNotFoundHTML(query);
-
-        $('#book_container').empty();
-        $('#book_container').append(message);
-
-        // alert('원하는 도서를 못 찾았어요😭😭 우리가 못 찾고 있을 수 있으니 저희에게 알려주세요');
-        // $('#search-input').focus();
+        notFoundBooks(query);
         return;
       }
 
-      $('#book_container').empty();
+      $bookContainer.empty();
+      renewMetaData(response);
 
-      let meta = response.meta;
-      let tempMetaHtml = addMetaHtml(meta);
-      $('#book_container').append(tempMetaHtml);
-
-      let books = response.documents;
-
-      for (let i = 0; i < books.length; i++) {
-        let book = books[i];
+      response.documents.forEach(book => {
         let tempHtml = addHTML(book);
         $('#book_container').append(tempHtml);
-      }
+      });
 
-      // Ajax 호출이 성공적으로 끝나고 책의 목록을 화면에 그린 후에 스크롤을 맨 위로 이동
       window.scrollTo(0, 0);
     },
     error(error) {
@@ -156,6 +157,7 @@ function searchBook(query) {
     }
   })
 }
+
 
 $('#search-input').autocomplete({
   source: function (request, response) {
@@ -194,27 +196,13 @@ $('#search-input').autocomplete({
   }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelector('body').addEventListener('click', function (event) {
-    if (event.target.classList.contains('btn-outline-success')) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        var lat = position.coords.latitude, // 위도
-            lon = position.coords.longitude; // 경도
-
-        const isbn2 = event.target.getAttribute("data-isbn");
-        const isbn = BigInt(Number(isbn2));
-        openPopup_MapBook(isbn.toString(), lat, lon);
-      });
-    }
-  });
-});
 
 let page = 1;
 let isLastPage = false;
 let perPage = 10; // 한 페이지당 데이터 개수
 
 $(window).scroll(function () {
-  if ($(window).scrollTop() == $(document).height() - $(window).height()) {
+  if ($(window).scrollTop() === $(document).height() - $(window).height()) {
     if (!isLastPage) {
       loadMoreData(++page);
     }
@@ -222,29 +210,45 @@ $(window).scroll(function () {
 });
 
 function loadMoreData(page) {
-  let query = $('#search-input').val();
+  const query =["#search_input"].val();
 
   $.ajax({
     type: 'GET',
     url: `/books/search?query=${query}&page=${page}`,
     success: function (response) {
-      let books = response.documents;
-      let meta = response.meta;
+      const books = response.documents;
+      const meta = response.meta;
 
       // 페이지당 데이터 개수보다 적게 받았다면 마지막 페이지로 판단
       if (meta.totalElements < perPage) {
         isLastPage = true;
       }
 
-      for (let i = 0; i < books.length; i++) {
-        let book = books[i];
+      books.forEach(book => {
         let tempHtml = addHTML(book);
         $('#book_container').append(tempHtml);
-      }
+      });
+
     },
-    error: function (error, status, request) {
+    error: function (error) {
       console.error(error);
     }
   });
 }
+
+/* 내 주변 도서관 버튼 관련*/
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelector('body').addEventListener('click', function (event) {
+    if (event.target.classList.contains('btn-outline-success')) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude, // 위도
+            lon = position.coords.longitude; // 경도
+
+        const title = event.target.getAttribute("data-title");
+        const isbn = BigInt(Number(event.target.getAttribute("data-isbn")));
+        openPopup_MapBook(isbn.toString(), lat, lon, title);
+      });
+    }
+  });
+});
 

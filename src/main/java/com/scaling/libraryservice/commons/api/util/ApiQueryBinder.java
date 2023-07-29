@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.commons.api.util;
 
-import com.scaling.libraryservice.commons.api.service.provider.BExistProvider;
+import com.scaling.libraryservice.commons.api.service.provider.LoanableLibProvider;
 import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
 import com.scaling.libraryservice.commons.api.util.binding.BindingStrategy;
 import com.scaling.libraryservice.commons.api.util.binding.BookExistBinding;
@@ -23,7 +23,7 @@ public class ApiQueryBinder<T> {
         this.bindingStrategyMap = new HashMap<>();
 
         bindingStrategyMap.put(KakaoBookProvider.class,new KakaoBookBinding());
-        bindingStrategyMap.put(BExistProvider.class,new BookExistBinding());
+        bindingStrategyMap.put(LoanableLibProvider.class,new BookExistBinding());
     }
 
     public T bind(ResponseEntity<String> apiResponse,Class<?> provider) throws OpenApiException {

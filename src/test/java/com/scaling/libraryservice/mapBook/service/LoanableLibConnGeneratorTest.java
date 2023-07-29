@@ -2,8 +2,8 @@ package com.scaling.libraryservice.mapBook.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.scaling.libraryservice.commons.api.service.BExistConnGenerator;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.commons.api.service.LoanableLibConnGenerator;
+import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,10 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class BExistConnGeneratorTest {
+class LoanableLibConnGeneratorTest {
 
     @InjectMocks
-    private BExistConnGenerator generator;
+    private LoanableLibConnGenerator generator;
 
     String isbn13 = "1234567890";
     int areaCd = 26000;
@@ -34,10 +34,10 @@ class BExistConnGeneratorTest {
     void generateNecessaryConns_when_Support_Area() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook(true).libNo(1).isHasBookSupport(true).build();
-        LibraryDto library2 = LibraryDto.builder().hasBook(false).libNo(2).isHasBookSupport(true).build();
+        LibraryInfoDto library1 = LibraryInfoDto.builder().hasBook(true).libNo(1).isHasBookSupport(true).build();
+        LibraryInfoDto library2 = LibraryInfoDto.builder().hasBook(false).libNo(2).isHasBookSupport(true).build();
 
-        List<LibraryDto> libraries = Arrays.asList(library1, library2);
+        List<LibraryInfoDto> libraries = Arrays.asList(library1, library2);
 
 
 
@@ -54,11 +54,11 @@ class BExistConnGeneratorTest {
     void generateNecessaryConns_when_Area_IsNotSupported() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook(false).isHasBookSupport(false).libNo(1).build();
+        LibraryInfoDto library1 = LibraryInfoDto.builder().hasBook(false).isHasBookSupport(false).libNo(1).build();
 
-        LibraryDto library2 = LibraryDto.builder().hasBook(false).isHasBookSupport(false).libNo(2).build();
+        LibraryInfoDto library2 = LibraryInfoDto.builder().hasBook(false).isHasBookSupport(false).libNo(2).build();
 
-        List<LibraryDto> libraries = Arrays.asList(library1, library2);
+        List<LibraryInfoDto> libraries = Arrays.asList(library1, library2);
 
         /* when */
 
@@ -73,7 +73,7 @@ class BExistConnGeneratorTest {
     void generateNecessaryConns_empty_library() {
         /* given */
 
-        List<LibraryDto> libraries = Collections.emptyList();
+        List<LibraryInfoDto> libraries = Collections.emptyList();
 
         /* when */
 

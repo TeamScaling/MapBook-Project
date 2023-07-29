@@ -2,7 +2,7 @@ package com.scaling.libraryservice.commons.circuitBreaker;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -10,7 +10,7 @@ class CircuitBreakerSupporterTest {
 
     private final CircuitBreakerSupporter circuitBreakerSupporter = new CircuitBreakerSupporter();
 
-    @ApiMonitoring(api = BExistConn.class, substitute = "fallBackMethod")
+    @ApiMonitoring(api = LoanableLibConn.class, substitute = "fallBackMethod")
     public void targetApiMonitoring() {
 
     }
@@ -18,7 +18,7 @@ class CircuitBreakerSupporterTest {
     public void fallBackMethod() {
 
     }
-    @ApiMonitoring(api = BExistConn.class, substitute = "notFoundMethod")
+    @ApiMonitoring(api = LoanableLibConn.class, substitute = "notFoundMethod")
     public void targetApiMonitoring2(){}
 
     @Test

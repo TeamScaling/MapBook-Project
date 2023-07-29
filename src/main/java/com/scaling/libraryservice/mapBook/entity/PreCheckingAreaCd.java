@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Entity
 @Getter @Table(name = "hasbook_area")
-public class HsAreaCd {
+public class PreCheckingAreaCd {
 
     @Id
     private Integer areaCd;

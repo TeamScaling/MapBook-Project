@@ -3,7 +3,6 @@ package com.scaling.libraryservice.mapBook.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
 /**
@@ -17,62 +16,47 @@ public class RespMapBookDto {
     private String libCode;
     private String libNm;
     private boolean hasBook;
-    private String loanAvailable;
     private Double libLo;
     private Double libLa;
     private String libArea;
     private String libUrl;
     private Integer areaCd;
-    private Boolean available;
+    private boolean available;
 
-    public RespMapBookDto(@NonNull ApiBookExistDto dto, @NonNull LibraryDto libraryDto) {
+    public RespMapBookDto(@NonNull ApiLoanableLibDto dto, @NonNull LibraryInfoDto libraryInfoDto) {
 
         this.isbn13 = dto.getIsbn13();
         this.libCode = dto.getLibCode();
         this.hasBook = dto.isLoanAble();
-        this.loanAvailable = dto.getLoanAvailable();
-
-        this.libLo = libraryDto.getLibLon();
-        this.libLa = libraryDto.getLibLat();
-        this.libArea = libraryDto.getLibArea();
-        this.libNm = libraryDto.getLibNm();
-        this.libUrl = libraryDto.getLibUrl();
-        this.areaCd = libraryDto.getAreaCd();
-
-        this.available = true;
+        this.libLo = libraryInfoDto.getLibLon();
+        this.libLa = libraryInfoDto.getLibLat();
+        this.libArea = libraryInfoDto.getLibArea();
+        this.libNm = libraryInfoDto.getLibNm();
+        this.libUrl = libraryInfoDto.getLibUrl();
+        this.areaCd = libraryInfoDto.getAreaCd();
+        this.available = String.valueOf(dto.getLoanAvailable()).equals("Y");
     }
 
-    public RespMapBookDto(@NonNull ReqMapBookDto reqMapBookDto,@NonNull LibraryDto libraryDto,boolean loanAvailable) {
+    public static RespMapBookDto responseWithLoanable(ApiLoanableLibDto dto, @NonNull LibraryInfoDto libraryInfoDto){
+        return new RespMapBookDto(dto, libraryInfoDto);
+    }
+
+
+    public RespMapBookDto(@NonNull ReqMapBookDto reqMapBookDto,@NonNull LibraryInfoDto libraryInfoDto,boolean loanAvailable) {
 
         this.isbn13 = reqMapBookDto.getIsbn();
-        this.libCode = String.valueOf(libraryDto.getLibNo());
-        this.hasBook = libraryDto.isHasBook();
-        this.libLo = libraryDto.getLibLon();
-        this.libLa = libraryDto.getLibLat();
-        this.libArea = libraryDto.getLibArea();
-        this.libNm = libraryDto.getLibNm();
-        this.libUrl = libraryDto.getLibUrl();
-        this.areaCd = libraryDto.getAreaCd();
+        this.libCode = String.valueOf(libraryInfoDto.getLibNo());
+        this.hasBook = libraryInfoDto.isHasBook();
+        this.libLo = libraryInfoDto.getLibLon();
+        this.libLa = libraryInfoDto.getLibLat();
+        this.libArea = libraryInfoDto.getLibArea();
+        this.libNm = libraryInfoDto.getLibNm();
+        this.libUrl = libraryInfoDto.getLibUrl();
+        this.areaCd = libraryInfoDto.getAreaCd();
 
         this.available = loanAvailable;
     }
 
-    public RespMapBookDto(@NonNull JSONObject jsonObject){
-
-        this.isbn13 = jsonObject.getString("isbn13");
-        this.libCode = jsonObject.getString("libCode");
-        this.hasBook = jsonObject.getString("hasBook").equals("Y");
-        this.loanAvailable = jsonObject.getString("loanAvailable");
-
-        this.libLo = jsonObject.getDouble("libLo");
-        this.libLa = jsonObject.getDouble("libLa");
-        this.libArea = jsonObject.getString("libArea");
-        this.libNm = jsonObject.getString("libNm");
-        this.libUrl = jsonObject.getString("libUrl");
-        this.areaCd = jsonObject.getInt("areaCd");
-
-        this.available = jsonObject.getBoolean("available");
-    }
 
 
 

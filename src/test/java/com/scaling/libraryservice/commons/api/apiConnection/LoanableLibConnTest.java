@@ -6,7 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.util.UriComponentsBuilder;
 
-class BExistConnTest {
+class LoanableLibConnTest {
 
     private final Integer libNo = 141258;
 
@@ -44,11 +44,11 @@ class BExistConnTest {
     void getApiStatus() {
         /* given */
 
-        BExistConn bExistConn = new BExistConn(libNo, isbn);
+        LoanableLibConn loanableLibConn = new LoanableLibConn(libNo, isbn);
 
         /* when */
 
-        var result = bExistConn.getApiStatus();
+        var result = loanableLibConn.getApiStatus();
 
         /* then */
 
@@ -60,13 +60,13 @@ class BExistConnTest {
     public void equals_apiStatus() {
         /* given */
 
-        BExistConn bExistConn1 = new BExistConn(libNo, isbn);
-        BExistConn bExistConn2 = new BExistConn(libNo, isbn);
+        LoanableLibConn loanableLibConn1 = new LoanableLibConn(libNo, isbn);
+        LoanableLibConn loanableLibConn2 = new LoanableLibConn(libNo, isbn);
 
         /* when */
 
-        var apiStatus1 = bExistConn1.getApiStatus();
-        var apiStatus2 = bExistConn2.getApiStatus();
+        var apiStatus1 = loanableLibConn1.getApiStatus();
+        var apiStatus2 = loanableLibConn2.getApiStatus();
 
         /* then */
 
