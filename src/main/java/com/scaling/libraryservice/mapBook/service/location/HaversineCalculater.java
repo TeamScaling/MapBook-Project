@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.service.location;
 
-import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 
 
 
@@ -20,7 +20,7 @@ public class HaversineCalculater {
      * @param lon2 2번 위치의 경도 double 값
      * @return 두 위치 간의 거리
      */
-    @Timer
+    @MeasureTaskTime
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int earthRadiusKm = 6371;
         double latDiff = Math.toRadians(lat2 - lat1);

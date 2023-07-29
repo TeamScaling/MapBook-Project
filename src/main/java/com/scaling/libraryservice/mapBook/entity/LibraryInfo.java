@@ -16,7 +16,7 @@ import lombok.ToString;
 @Table(name = "lib_info")
 @ToString @Getter
 @Builder @AllArgsConstructor
-public class Library {
+public class LibraryInfo {
 
     @Id @Column(name = "LBRRY_NO")
     private Integer libNo;
@@ -45,7 +45,7 @@ public class Library {
     @Column(name = "AREA_CD")
     private Integer areaCd;
 
-    public Library() {
+    public LibraryInfo() {
 
     }
 

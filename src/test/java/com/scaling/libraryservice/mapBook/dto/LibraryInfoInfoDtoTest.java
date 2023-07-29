@@ -1,11 +1,11 @@
 package com.scaling.libraryservice.mapBook.dto;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
-import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
 import org.junit.jupiter.api.Test;
 
-class LibraryDtoTest {
+class LibraryInfoInfoDtoTest {
 
     private final Integer libNo = 141258;
 
@@ -14,7 +14,7 @@ class LibraryDtoTest {
     @Test
     public void load(){
 
-        ApiConnection builder = new BExistConn(libNo,isbn);
+        ApiConnection builder = new LoanableLibConn(libNo,isbn);
 
         ApiObserver api = (ApiObserver) builder;
 

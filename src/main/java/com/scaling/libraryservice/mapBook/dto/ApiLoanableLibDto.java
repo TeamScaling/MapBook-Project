@@ -13,7 +13,7 @@ import org.springframework.lang.NonNull;
 @Getter @ToString
 @Builder @AllArgsConstructor
 
-public class ApiBookExistDto {
+public class ApiLoanableLibDto {
 
     private final String isbn13;
 
@@ -23,7 +23,7 @@ public class ApiBookExistDto {
 
     private final String loanAvailable;
 
-    public ApiBookExistDto(@NonNull JSONObject req,@NonNull JSONObject result) {
+    public ApiLoanableLibDto(@NonNull JSONObject req,@NonNull JSONObject result) {
 
         this.isbn13 = req.getString("isbn13");
         this.libCode = req.getString("libCode");

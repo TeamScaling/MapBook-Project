@@ -17,9 +17,11 @@ public enum TaskType {
     NOTFOUND_TASK("0003", "notFoundTask", "#search_log"),
 
     // 지도 기반 서비스 관련해서 circuitBreaker가 체크하는 에러를 기록.
-    MAPBOOK_TASK("0004", "ApiErrorTask", "#map_book"),
+    API_ERROR_TASK("0004", "ApiErrorTask", "#map_book"),
 
     ERROR_TASK("0005","serverError","#error_log"),
+
+    MAP_BOOK_TASK("0006","mapbookTask","#map_book"),
 
     NO_LOGGING_TASK("","","");
 

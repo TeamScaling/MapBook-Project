@@ -3,16 +3,13 @@ package com.scaling.libraryservice.commons.api.apiConnection;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * 도서관 책 보유 정보를 확인하는 API와 연결하는 클래스입니다.
  */
 @Getter
-public class BExistConn implements ApiConnection, ApiObserver {
+public class LoanableLibConn implements ApiConnection, ApiObserver {
 
     private Integer libNo;
 
@@ -21,15 +18,14 @@ public class BExistConn implements ApiConnection, ApiObserver {
     private static String API_AUTH_KEY;
     private static final ApiStatus apiStatus = new ApiStatus(API_URL, 10);
 
-    private BExistConn() {
+    private LoanableLibConn() {
     }
 
     public static void setApiAuthKey(String apiAuthKey) {
         API_AUTH_KEY = apiAuthKey;
     }
 
-    public
-    BExistConn(Integer libNo, String isbn13) {
+    public LoanableLibConn(Integer libNo, String isbn13) {
         this.libNo = libNo;
         this.isbn13 = isbn13;
     }

@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.mapBook.service.location;
 
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
  * {@link LocationResolver} 인터페이스를 구현하며, 입력 값으로 {@link ReqMapBookDto}를 받고 출력 값으로 해당 도서관의 지역 코드를 반환합니다.
  *
  * <p>이 클래스는 사용자의 위치 정보와 모든 도서관의 위치 정보를 비교하여 가장 가까운 도서관을 찾는 방식으로 작동합니다.
- * 이를 위해 {@link LibraryRepository}를 통해 모든 도서관의 정보를 로드하며, 이 정보는 {@link LibraryDto}의 리스트 형태로 저장됩니다.
+ * 이를 위해 {@link LibraryRepository}를 통해 모든 도서관의 정보를 로드하며, 이 정보는 {@link LibraryInfoDto}의 리스트 형태로 저장됩니다.
  * 위치 비교는 {@link HaversineCalculater}를 사용하여 계산되며, 가장 가까운 도서관의 지역 코드를 사용자 요청 Dto에 업데이트한 후 반환합니다.</p>
  *
  * <p>{@link LocationResolver#resolve(Object)} 메소드를 오버라이드하여 사용자의 위치 정보를 지역 코드로 변환하는 기능을 제공합니다.</p>
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 public class UserLibraryGeocoder implements LocationResolver<Integer,ReqMapBookDto> {
 
     private final LibraryRepository libraryRepo;
-    private List<LibraryDto> libraries;
+    private List<LibraryInfoDto> libraries;
 
     /**
      * 주변 대출 가능 도서관 찾기 요청 Dto에 담긴 위치 정보를 지역 코드로 변환 한다.
@@ -36,7 +36,7 @@ public class UserLibraryGeocoder implements LocationResolver<Integer,ReqMapBookD
     public Integer resolve(@NonNull ReqMapBookDto reqMapBookDto){
 
         if(libraries ==null){
-            libraries = libraryRepo.findAll().stream().map(LibraryDto::new).toList();
+            libraries = libraryRepo.findAll().stream().map(LibraryInfoDto::new).toList();
         }
 
         Integer areaCd = findNearestLibrary(reqMapBookDto).getAreaCd();
@@ -53,7 +53,7 @@ public class UserLibraryGeocoder implements LocationResolver<Integer,ReqMapBookD
      * @return 사용자와 가장 가까운 도서관 정보를 담은 Dto
      * @throws LocationException 위/경도 데이터를 가지고 가장 가까운 도서관 찾는데 실패할 경우
      */
-    private LibraryDto findNearestLibrary(ReqMapBookDto reqMapBookDto)
+    private LibraryInfoDto findNearestLibrary(ReqMapBookDto reqMapBookDto)
         throws LocationException {
 
         return libraries.stream().min((l1, l2) -> {

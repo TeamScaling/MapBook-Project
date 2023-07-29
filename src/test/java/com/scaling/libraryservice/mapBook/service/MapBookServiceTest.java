@@ -1,19 +1,16 @@
 package com.scaling.libraryservice.mapBook.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
-import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
-import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.commons.api.service.provider.DataProvider;
-import com.scaling.libraryservice.mapBook.dto.ApiBookExistDto;
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.ApiLoanableLibDto;
+import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.mapBook.entity.Library;
+import com.scaling.libraryservice.mapBook.entity.LibraryInfo;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,16 +27,16 @@ class MapBookServiceTest {
     private MapBookService mapBookService;
 
     @Mock
-    private DataProvider<ApiBookExistDto> dataProvider;
+    private DataProvider<ApiLoanableLibDto> dataProvider;
 
     @Mock
-    private Library library;
+    private LibraryInfo libraryInfo;
 
     @Mock
     private ReqMapBookDto reqMapBookDto;
 
     @Mock
-    private List<BExistConn> bExistConns;
+    private List<LoanableLibConn> loanableLibConns;
 
     @BeforeEach
     public void setUP() {
@@ -51,48 +48,48 @@ class MapBookServiceTest {
     void matchMapBooks_when_bExistConns_isEmpty() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook(true).isHasBookSupport(true).libNo(1).build();
-        LibraryDto library2 = LibraryDto.builder().hasBook(true).isHasBookSupport(true).libNo(2).build();
+        LibraryInfoDto library1 = LibraryInfoDto.builder().hasBook(true).isHasBookSupport(true).libNo(1).build();
+        LibraryInfoDto library2 = LibraryInfoDto.builder().hasBook(true).isHasBookSupport(true).libNo(2).build();
 
-        List<LibraryDto> libraries = Arrays.asList(library1, library2);
+        List<LibraryInfoDto> libraries = Arrays.asList(library1, library2);
 
-        when(bExistConns.isEmpty()).thenReturn(true);
+        when(loanableLibConns.isEmpty()).thenReturn(true);
 
         /* when */
 
-        var result = mapBookService.matchLibraryBooks(bExistConns, libraries, reqMapBookDto);
+        var result = mapBookService.matchLibraryBooks(loanableLibConns, libraries, reqMapBookDto);
 
         /* then */
 
-        assertFalse(result.stream().allMatch(RespMapBookDto::getAvailable));
+        assertFalse(result.stream().allMatch(RespMapBookDto::isAvailable));
     }
 
     @Test
     void matchMapBooks_when_bExistConns_non_isEmpty() {
         /* given */
 
-        LibraryDto library1 = LibraryDto.builder().hasBook(true).isHasBookSupport(false).libNo(1).build();
-        LibraryDto library2 = LibraryDto.builder().hasBook(true).isHasBookSupport(false).libNo(2).build();
+        LibraryInfoDto library1 = LibraryInfoDto.builder().hasBook(true).isHasBookSupport(false).libNo(1).build();
+        LibraryInfoDto library2 = LibraryInfoDto.builder().hasBook(true).isHasBookSupport(false).libNo(2).build();
 
-        List<LibraryDto> libraries = List.of(library1, library2);
+        List<LibraryInfoDto> libraries = List.of(library1, library2);
 
-        ApiBookExistDto apiBookExistDto1 = ApiBookExistDto.builder().libCode("1").loanAvailable("Y")
+        ApiLoanableLibDto apiLoanableLibDto1 = ApiLoanableLibDto.builder().libCode("1").loanAvailable("Y")
             .build();
-        ApiBookExistDto apiBookExistDto2 = ApiBookExistDto.builder().libCode("2").loanAvailable("Y")
+        ApiLoanableLibDto apiLoanableLibDto2 = ApiLoanableLibDto.builder().libCode("2").loanAvailable("Y")
             .build();
 
-        List<ApiBookExistDto> bookExists = List.of(apiBookExistDto1, apiBookExistDto2);
+        List<ApiLoanableLibDto> bookExists = List.of(apiLoanableLibDto1, apiLoanableLibDto2);
 
-        when(bExistConns.isEmpty()).thenReturn(false);
-        when(dataProvider.provideDataList(bExistConns,bExistConns.size())).thenReturn(bookExists);
+        when(loanableLibConns.isEmpty()).thenReturn(false);
+        when(dataProvider.provideDataList(loanableLibConns, loanableLibConns.size())).thenReturn(bookExists);
 
         /* when */
 
-        var result = mapBookService.matchLibraryBooks(bExistConns, libraries, reqMapBookDto);
+        var result = mapBookService.matchLibraryBooks(loanableLibConns, libraries, reqMapBookDto);
 
         /* then */
 
-        assertTrue(result.stream().allMatch(RespMapBookDto::getAvailable));
+        assertTrue(result.stream().allMatch(RespMapBookDto::isAvailable));
     }
 
 }

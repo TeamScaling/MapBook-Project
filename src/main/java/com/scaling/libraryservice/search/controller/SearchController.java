@@ -26,7 +26,6 @@ public class SearchController {
     private final SearchLogger searchLogger;
 
 
-
     /**
      * 메인 홈페이지를 반환하는 메서드입니다.
      *

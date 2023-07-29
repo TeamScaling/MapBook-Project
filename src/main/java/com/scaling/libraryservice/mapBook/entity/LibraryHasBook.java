@@ -18,7 +18,7 @@ import lombok.ToString;
 @Entity
 @Getter
 @Table(name = "lib_hasbook")
-@ToString(exclude = "library")
+@ToString(exclude = "libraryInfo")
 public class LibraryHasBook {
 
     @Id
@@ -33,7 +33,7 @@ public class LibraryHasBook {
 
     @ManyToOne
     @JoinColumn(name = "LBRRY_NO")
-    private Library library;
+    private LibraryInfo libraryInfo;
 
     @Column(name = "REGIS_DATA")
     private LocalDate regisDate;

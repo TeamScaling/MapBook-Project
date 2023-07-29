@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.data;
 
-import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -41,7 +41,7 @@ public class LibraryDataCsvMerger {
 
     public void mergeLibraryData(String inputFolder, String outputFileName) {
 
-        List<LibraryDto> libraries = libraryFindService.getAllLibraries();
+        List<LibraryInfoDto> libraries = libraryFindService.getAllLibraries();
 
         File[] files = getCsvFiles(inputFolder);
 
@@ -59,14 +59,14 @@ public class LibraryDataCsvMerger {
     }
 
     private void processFilesMerging(File[] files, BufferedWriter writer,
-        List<LibraryDto> libraries) {
+        List<LibraryInfoDto> libraries) {
 
         AtomicBoolean headerSaved = new AtomicBoolean(false);
 
         Arrays.stream(files).forEach(
             file -> {
                 // 파일에서 추출된 이름이 DB내의 도서관 정보에 일치한 도서관 정보를 찾는다.
-                Optional<LibraryDto> libraryOpt =
+                Optional<LibraryInfoDto> libraryOpt =
                     libraries.stream()
                         .filter(libray -> isContainsLibNmInFile(file, libray))
                         .findAny();
@@ -83,12 +83,12 @@ public class LibraryDataCsvMerger {
             });
     }
 
-    private boolean isContainsLibNmInFile(File file, LibraryDto library) {
+    private boolean isContainsLibNmInFile(File file, LibraryInfoDto library) {
         return library.getLibNm().contains(extractLibraryName(file));
     }
 
     private void normalizeAndWrite(File file, boolean headerSaved, BufferedWriter writer,
-        LibraryDto library) throws IOException {
+        LibraryInfoDto library) throws IOException {
 
         try (Reader reader = Files.newBufferedReader(
             file.toPath(), Charset.forName("EUC-KR"))) {
@@ -111,7 +111,7 @@ public class LibraryDataCsvMerger {
         return file.getName().split(" ", 3)[0];
     }
 
-    private void normalizeData(BufferedWriter writer, CSVRecord record, LibraryDto library)
+    private void normalizeData(BufferedWriter writer, CSVRecord record, LibraryInfoDto library)
         throws IOException {
 
         String isbn = record.get(ISBN_IDX);
@@ -131,7 +131,7 @@ public class LibraryDataCsvMerger {
         return matcher.matches() && isbn.length() > ISBN_MIN_SIZE;
     }
 
-    private String buildCsvLine(String isbn, String loanCount, LibraryDto library,
+    private String buildCsvLine(String isbn, String loanCount, LibraryInfoDto library,
         String regisDate) {
 
         return String.join(",", isbn, loanCount, library.getLibNo().toString(), regisDate,

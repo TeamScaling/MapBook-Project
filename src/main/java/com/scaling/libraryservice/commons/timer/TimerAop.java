@@ -17,7 +17,7 @@ public class TimerAop {
 
     private static final String TIME_BOUND = "%.3f";
 
-    @Pointcut("@annotation(com.scaling.libraryservice.commons.timer.Timer)")
+    @Pointcut("@annotation(com.scaling.libraryservice.commons.timer.MeasureTaskTime)")
     private void enableTimer() {
     }
 

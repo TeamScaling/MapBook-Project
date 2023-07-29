@@ -3,7 +3,7 @@ package com.scaling.libraryservice.search.engine;
 import static com.scaling.libraryservice.search.engine.Token.ETC_TOKEN;
 import static com.scaling.libraryservice.search.engine.Token.NN_TOKEN;
 
-import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
 import com.scaling.libraryservice.search.engine.TitleQuery.TitleQueryBuilder;
 import com.scaling.libraryservice.search.engine.filter.FilterStream;
@@ -26,7 +26,7 @@ public class TitleAnalyzer {
     private static final int TOKEN_MIN_SIZE = 1;
     private static final int TOKEN_MAX_SIZE = 3;
 
-    @Timer
+    @MeasureTaskTime
     public TitleQuery analyze(String query, boolean filterOn) throws NotQualifiedQueryException {
 
         // filterOn에 따라 filter를 진행 할지 결정 된다.

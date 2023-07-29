@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.logging.logger;
 
-import static com.scaling.libraryservice.logging.logger.TaskType.MAPBOOK_TASK;
+import static com.scaling.libraryservice.logging.logger.TaskType.API_ERROR_TASK;
 
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.logging.util.LogFormatter;
@@ -26,7 +26,7 @@ public class OpenApiLogger extends AbstractLogger<ApiStatus> {
 
     @Override
     TaskType determineTaskType(ApiStatus status) {
-        return MAPBOOK_TASK;
+        return API_ERROR_TASK;
     }
 
 }

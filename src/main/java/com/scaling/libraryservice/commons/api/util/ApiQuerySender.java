@@ -1,7 +1,7 @@
 package com.scaling.libraryservice.commons.api.util;
 
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
-import com.scaling.libraryservice.commons.timer.Timer;
+import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +35,7 @@ public class ApiQuerySender {
      * @return Api 응답 데이터를 담는 ResponseEntity
      * @throws OpenApiException API와의 연결에 문제가 있을 경우.
      */
-    @Timer
+    @MeasureTaskTime
     public ResponseEntity<String> sendSingleQuery(
         ApiConnection apiConnection, HttpEntity<?> httpEntity) throws OpenApiException {
 
@@ -60,7 +60,7 @@ public class ApiQuerySender {
      * @return Api 응답 데이터 ResponseEntity들을 담은 List
      * @throws OpenApiException API와의 연결에 문제가 있을 경우.
      */
-    @Timer
+    @MeasureTaskTime
     public List<ResponseEntity<String>> sendMultiQuery(
         List<? extends ApiConnection> apiConnections, int nThreads, HttpEntity<?> httpEntity)
         throws OpenApiException {

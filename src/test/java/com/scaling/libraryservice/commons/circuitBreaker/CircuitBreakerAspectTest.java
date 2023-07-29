@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.scaling.libraryservice.commons.api.apiConnection.BExistConn;
+import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.lang.reflect.Method;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -42,7 +42,7 @@ class CircuitBreakerAspectTest {
         substituteMethod = this.getClass().getDeclaredMethod("fallBackMethod");
     }
 
-    @ApiMonitoring(api = BExistConn.class,substitute = "fallBackMethod")
+    @ApiMonitoring(api = LoanableLibConn.class,substitute = "fallBackMethod")
     @DisplayName("테스트를 위한 AOP PointCut method")
     public void targetApiMonitoring(){
         System.out.println("hello!!!!!!!!!!");
