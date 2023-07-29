@@ -6,12 +6,15 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,8 @@ public class LibraryDataCsvMerger {
     private static final int ISBN_MIN_SIZE = 10;
     private static final String ISBN_REGEX = "^\\d+$";
 
+    private static final String HEADER_NAME = "ISBN,LOAN_CNT,LBRRY_CD,REGIS_DATA,AREA_CD";
+
     public void mergeLibraryData(String inputFolder, String outputFileName) {
 
         List<LibraryDto> libraries = libraryFindService.getAllLibraries();
@@ -45,7 +50,7 @@ public class LibraryDataCsvMerger {
             processFilesMerging(files, writer, libraries);
 
         } catch (IOException e) {
-            log.info(e.getMessage());
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -54,35 +59,36 @@ public class LibraryDataCsvMerger {
     }
 
     private void processFilesMerging(File[] files, BufferedWriter writer,
-        List<LibraryDto> libraries)
-        throws IOException {
+        List<LibraryDto> libraries) {
 
-        boolean headerSaved = false;
+        AtomicBoolean headerSaved = new AtomicBoolean(false);
 
-        for (File file : files) {
+        Arrays.stream(files).forEach(
+            file -> {
+                // 파일에서 추출된 이름이 DB내의 도서관 정보에 일치한 도서관 정보를 찾는다.
+                Optional<LibraryDto> libraryOpt =
+                    libraries.stream()
+                        .filter(libray -> isContainsLibNmInFile(file, libray))
+                        .findAny();
 
-            // 파일명에서 도서관 이름만 추출 한다.
-            String libraryName = extractLibraryName(file);
+                libraryOpt.ifPresent(
+                    libraryDto -> {
+                        try {
+                            normalizeAndWrite(file, headerSaved.get(), writer, libraryDto);
+                            headerSaved.set(true);
+                        } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    });
+            });
+    }
 
-            // 파일에서 추출된 이름이 DB내의 도서관 정보에 일치한 도서관 정보를 찾는다.
-            Optional<LibraryDto> libraryOpt =
-                libraries.stream()
-                    .filter(libray
-                        -> libray.getLibNm().contains(libraryName))
-                    .findAny();
-
-            if (libraryOpt.isEmpty()) {
-                log.info("Library not found: " + libraryName);
-            } else {
-                String headerNm = "ISBN,LOAN_CNT,LBRRY_CD,REGIS_DATA,AREA_CD";
-                LibraryDto library = libraryOpt.get();
-                normalizeAndWrite(file, headerSaved, writer, library, headerNm);
-            }
-        }
+    private boolean isContainsLibNmInFile(File file, LibraryDto library) {
+        return library.getLibNm().contains(extractLibraryName(file));
     }
 
     private void normalizeAndWrite(File file, boolean headerSaved, BufferedWriter writer,
-        LibraryDto library, String headerName) throws IOException {
+        LibraryDto library) throws IOException {
 
         try (Reader reader = Files.newBufferedReader(
             file.toPath(), Charset.forName("EUC-KR"))) {
@@ -90,16 +96,14 @@ public class LibraryDataCsvMerger {
             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
 
             if (!headerSaved) {
-                writer.write(headerName);
+                writer.write(HEADER_NAME);
                 writer.newLine();
-                headerSaved = true;
             }
 
-            for (CSVRecord record : csvParser) {
+            for (CSVRecord record : csvParser){
                 normalizeData(writer, record, library);
             }
         }
-
     }
 
     // File Name : 구성도서관 장서 대출목록 (2023년 04월)에서  '구성도서관'만 추출
@@ -117,8 +121,6 @@ public class LibraryDataCsvMerger {
         if (isValidIsbn(isbn)) {
             writer.write(buildCsvLine(isbn, loanCount, library, regisDate));
             writer.newLine();
-        } else {
-            log.info("Problematic line: " + String.join(",", record));
         }
     }
 

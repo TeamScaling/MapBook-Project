@@ -13,7 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BookExporter extends ExporterService<BookVo,Book> {
+public class BookExporter extends ExporterService<BookVo, Book> {
+
     private final TitleAnalyzer titleAnalyzer;
     private final BookRepoQueryDsl bookRepository;
 
@@ -35,21 +36,17 @@ public class BookExporter extends ExporterService<BookVo,Book> {
         this.page = bookRepository.findAllAndSort(pageable);
         List<BookVo> books = new ArrayList<>();
 
-        for (Book book : page.getContent()) {
-            // 도세 제목에서 영어 단어와 한글 명사 단어를 추출 한다.
-            TitleQuery query = titleAnalyzer.analyze(book.getTitle(),false);
-            books.add(new BookVo(book, String.join(" ",query.getNnToken())));
-        }
+        page.stream().forEach(book -> {
+            TitleQuery query = titleAnalyzer.analyze(book.getTitle(), false);
+            books.add(new BookVo(book, String.join(" ", query.getNnToken())));
+        });
 
-        //마지막으로 객체를 변환하여 Csv file로 만들기 위해
-        //미리 정의한 메소드를 호출 한다
-
-        pageable = pageable.next();  // 다음 페이지를 가져오기 위한 설정
+        pageable.next();  // 다음 페이지를 가져오기 위한 설정
 
         return books;
     }
 
-    public Page<Book> renewPage(){
+    public Page<Book> renewPage() {
         return page;
     }
 

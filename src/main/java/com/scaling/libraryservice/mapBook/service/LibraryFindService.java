@@ -2,6 +2,8 @@ package com.scaling.libraryservice.mapBook.service;
 
 import com.scaling.libraryservice.commons.timer.Timer;
 import com.scaling.libraryservice.mapBook.dto.LibraryDto;
+import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
+import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
 import com.scaling.libraryservice.mapBook.exception.LocationException;
 import com.scaling.libraryservice.mapBook.repository.HasBookAreaRepository;
 import com.scaling.libraryservice.mapBook.repository.LibraryHasBookRepository;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class LibraryFindService {
+
     private final LibraryRepository libraryRepo;
     private final LibraryHasBookRepository libraryHasBookRepo;
     private final HasBookAreaRepository hasBookAreaRepo;
@@ -51,7 +54,7 @@ public class LibraryFindService {
         throws LocationException {
 
         return isSupportedArea(areaCd) ?
-            getNearByHasBookLibraries(isbn13,areaCd) :
+            getNearByHasBookLibraries(isbn13, areaCd) :
             getNearByLibraries(areaCd);
     }
 
@@ -69,17 +72,18 @@ public class LibraryFindService {
     }
 
 
-    List<LibraryDto> getNearByHasBookLibraries(String isbn13,Integer areaCd) {
+    List<LibraryDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
 
         log.info("This is support Area");
 
         return libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)
             .stream()
-            .map(l -> new LibraryDto(l, true,true))
+            .map(l -> new LibraryDto(l, true, true))
             .toList();
     }
 
-    /** 주어진 지역 코드가 소장 가능 도서관 서비스 지역이면 true를 반환 한다.
+    /**
+     * 주어진 지역 코드가 소장 가능 도서관 서비스 지역이면 true를 반환 한다.
      *
      * @param areaCd 특정 지역 단위에 대한 지역 코드
      * @return areaCd를 지원 중인 도서관 코드 목록에서 찾을 수 있다면 true, 그렇지 않다면 false
@@ -89,9 +93,16 @@ public class LibraryFindService {
         return hasBookAreaRepo.findById(areaCd).isPresent();
     }
 
-    public List<LibraryDto> getAllLibraries(){
+    public List<LibraryDto> getAllLibraries() {
 
         return libraryRepo.findAll().stream().map(LibraryDto::new).toList();
+    }
+
+    public List<RespMapBookDto> getHasBookLibraries(ReqMapBookDto reqMapBookDto, Integer areaCd) {
+
+        return getNearByLibraries(reqMapBookDto.getIsbn(), areaCd).stream()
+            .map(l -> new RespMapBookDto(reqMapBookDto, l, false))
+            .toList();
     }
 
 }
