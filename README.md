@@ -57,13 +57,19 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
                     |_ 📁 commons _ 
                     |              |_ 📁 api (Open API 관련) ⭐
                     |              |_ 📁 async (비동기 처리 support)
-                    |              |_ 📁 caching (통합 Caching 관리)
+                    |              |_ 📁 caching (통합 Caching 관리) ⭐
                     |              |_ 📁 circuitBreaker (Open Api 장애 대책) ⭐
-                    |              |_ 📁 data (csv exporter 및 csv merger) ⭐
                     |              |_ 📁 reporter (slack bot을 통한 slow query 보고)
                     |              |_ 📁 tester (search 성능 테스트)
                     |              |_ 📁 timer (내부 응답 속도 체크)
                     |              |_ 📁 updater (도서 최신화)
+                    |
+                    |_ 📁 data (csv exporter 및 csv merger) _ 📁 export⭐
+                    |                                      |_ 📁 vo (csv 직렬화 할 객체)
+                    |_ 📁 logging_ _
+                    |               |_ 📁 logger
+                    |               |_ 📁 util
+                    |
                     |_ 📁 mapBook_ _
                     |              |_ 📁 cacheKey
                     |              |_ 📁 controller
