@@ -19,6 +19,8 @@ public enum TaskType {
     // 지도 기반 서비스 관련해서 circuitBreaker가 체크하는 에러를 기록.
     MAPBOOK_TASK("0004", "ApiErrorTask", "#map_book"),
 
+    ERROR_TASK("0005","serverError","#error_log"),
+
     NO_LOGGING_TASK("","","");
 
 

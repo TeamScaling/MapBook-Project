@@ -25,11 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class MapBookController {
 
     private final MapBookService mapBookService;
-
     private final LibraryFindService libraryFindService;
-
     private final ConnectionGenerator<BExistConn,LibraryDto,ReqMapBookDto> connGenerator;
-
     private final LocationResolver<Integer,ReqMapBookDto> locationResolver;
 
 
@@ -45,14 +42,18 @@ public class MapBookController {
     @ApiMonitoring(api = BExistConn.class, substitute = "fallBackMethodHasBook")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
+        // 사용자의 위/경도 데이터로 해당 지역 코드를 산출
         Integer areaCd = locationResolver.resolve(reqMapBookDto);
 
+        // 사용자 주변의 도서관을 찾는다.
         List<LibraryDto> nearbyLibraries
             = libraryFindService.getNearByLibraries(reqMapBookDto.getIsbn(),areaCd);
 
+        // 해당 도서를 소장하는 도서관에 한정해서 Api 연결 객체를 만든다.
         List<BExistConn> necessaryConns
             = connGenerator.generateNecessaryConns(nearbyLibraries, reqMapBookDto);
 
+        // Api의 응답 결과와 도서관의 상세 정보를 연결하여, 지도에 표시할 마커를 생성한다.
         List<RespMapBookDto> mapBooks = mapBookService.
             matchLibraryBooks(necessaryConns, nearbyLibraries, reqMapBookDto);
 
@@ -77,12 +78,10 @@ public class MapBookController {
         @ModelAttribute ReqMapBookDto reqMapBookDto) {
 
         Integer areaCd = locationResolver.resolve(reqMapBookDto);
-
-        List<LibraryDto> nearbyLibraries = libraryFindService.getNearByLibraries(reqMapBookDto.getIsbn(),areaCd);
-
-        List<RespMapBookDto> hasBookLibs = nearbyLibraries.stream()
-            .map(l -> new RespMapBookDto(reqMapBookDto, l, false))
-            .toList();
+        
+        // 내부 DB의 도서관이 소장하는 도서 데이터를 바탕으로 사용자가 찾는 책을 소장하는 도서관 정보를 반환 한다.
+        List<RespMapBookDto> hasBookLibs
+            = libraryFindService.getHasBookLibraries(reqMapBookDto,areaCd);
 
         model.put("hasBookLibs", hasBookLibs);
 
