@@ -8,6 +8,7 @@ import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.mapBook.dto.ApiLoanableLibDto;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
     private final AuthKeyLoader authKeyLoader;
 
 
-//    @PostConstruct
+    @PostConstruct
     private void loadAuthKey(){
         String apiAuthKey = authKeyLoader.loadAuthKey(OpenApi.DATA4_Lib).getAuthKey();
         LoanableLibConn.setApiAuthKey(apiAuthKey);

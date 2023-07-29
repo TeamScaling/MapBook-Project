@@ -15,7 +15,7 @@ public class LoanableLibConn implements ApiConnection, ApiObserver {
 
     private String isbn13;
     private static final String API_URL = "http://data4library.kr/api/bookExist";
-    private static String API_AUTH_KEY = "41dff2848f961076d263639f9051792ef9bf91c46f0eef0c63abd1358adcb1b6";
+    private static String API_AUTH_KEY;
     private static final ApiStatus apiStatus = new ApiStatus(API_URL, 10);
 
     private LoanableLibConn() {
