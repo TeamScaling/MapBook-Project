@@ -1,9 +1,9 @@
 package com.scaling.libraryservice.search.repository;
 
 import static com.scaling.libraryservice.search.entity.QBook.book;
-import static com.scaling.libraryservice.search.util.SearchMode.BOOLEAN_MODE;
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_ALL_ETC;
-import static com.scaling.libraryservice.search.util.TitleType.TOKEN_COMPLEX;
+import static com.scaling.libraryservice.search.engine.SearchMode.BOOLEAN_MODE;
+import static com.scaling.libraryservice.search.engine.TitleType.TOKEN_ALL_ETC;
+import static com.scaling.libraryservice.search.engine.TitleType.TOKEN_COMPLEX;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -14,9 +14,9 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.entity.Book;
-import com.scaling.libraryservice.search.util.SearchMode;
-import com.scaling.libraryservice.search.util.TitleQuery;
-import com.scaling.libraryservice.search.util.TitleTrimmer;
+import com.scaling.libraryservice.search.engine.SearchMode;
+import com.scaling.libraryservice.search.engine.TitleQuery;
+import com.scaling.libraryservice.search.engine.util.TitleTrimmer;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

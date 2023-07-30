@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
@@ -20,13 +21,15 @@ import org.springframework.lang.NonNull;
 @Getter
 @Builder
 @AllArgsConstructor
+@ToString
 public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDto>> {
 
     private String isbn;
     private Double lat;
     private Double lon;
-
     private int areaCd;
+    private String title;
+
 
     public ReqMapBookDto() {
     }
@@ -40,10 +43,11 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
     }
 
 
-    public ReqMapBookDto(String isbn, Double lat, Double lon) {
+    public ReqMapBookDto(String isbn, Double lat, Double lon, String title) {
         this.isbn = isbn;
         this.lat = lat;
         this.lon = lon;
+        this.title = title;
     }
 
 
@@ -73,4 +77,5 @@ public class ReqMapBookDto implements CacheKey<ReqMapBookDto, List<RespMapBookDt
     public void setAreaCd(int areaCd) {
         this.areaCd = areaCd;
     }
+
 }

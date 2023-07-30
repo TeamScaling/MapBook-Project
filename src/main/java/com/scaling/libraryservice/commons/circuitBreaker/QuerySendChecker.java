@@ -38,7 +38,9 @@ public class QuerySendChecker implements RestorationChecker{
         log.info("check restoration of Api [{}] at [{}]", uri,LocalDateTime.now());
 
         try {
-            apiQuerySender.sendSingleQuery(() -> UriComponentsBuilder.fromHttpUrl(uri), HttpEntity.EMPTY);
+            apiQuerySender.sendSingleQuery(
+                () -> UriComponentsBuilder.fromHttpUrl(uri), HttpEntity.EMPTY);
+
         } catch (OpenApiException e) {
             return false;
         }

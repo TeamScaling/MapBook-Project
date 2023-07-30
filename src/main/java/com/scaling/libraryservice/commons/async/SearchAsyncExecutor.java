@@ -1,7 +1,6 @@
 package com.scaling.libraryservice.commons.async;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.commons.reporter.TaskReporter;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
@@ -13,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -25,7 +23,8 @@ import org.springframework.stereotype.Component;
  * @param <V> 실행에 필요한 값의 타입. 이 클래스에서는 ReqBookDto.
  */
 @RequiredArgsConstructor
-@Slf4j @Component
+
+@Component
 public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,ReqBookDto>{
 
     /**
@@ -33,10 +32,6 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
      */
     private final CustomCacheManager<ReqBookDto,RespBooksDto> cacheManager;
 
-    /**
-     * 비동기 작업의 상태를 보고하는 TaskReporter입니다.
-     */
-    private final TaskReporter taskReporter;
 
     /**
      * 비동기적으로 도서 검색을 수행하고, 결과를 반환합니다.
@@ -53,22 +48,21 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
         Page<BookDto> booksPage = Page.empty();
 
         try{
-
-            if(isAsync){
-                booksPage = CompletableFuture.supplyAsync(supplier)
-                    .get(timeout, TimeUnit.SECONDS);
-            }else{
-                booksPage = supplier.get();
-            }
-
+            booksPage = isAsync
+                ? executeAsync(supplier,reqBookDto,timeout)
+                : supplier.get();
         }catch (TimeoutException | InterruptedException | ExecutionException e) {
-            log.error("Query execution exceeded 3 seconds. Returning an empty result.");
-            taskReporter.report(reqBookDto.getQuery());
             asyncSearchBook(supplier,reqBookDto);
         }
-
         return booksPage;
     }
+
+    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto,int timeout)
+        throws ExecutionException, InterruptedException, TimeoutException {
+
+       return CompletableFuture.supplyAsync(supplier).get(timeout, TimeUnit.SECONDS);
+    }
+
     /**
      * 비동기적으로 도서를 검색하고, 결과를 캐시에 저장합니다.
      *
@@ -76,18 +70,16 @@ public class SearchAsyncExecutor<T,V> implements AsyncExecutor<Page<BookDto>,Req
      * @param reqBookDto 검색 요청 정보
      */
     void asyncSearchBook(Supplier<Page<BookDto>> supplier, @NonNull ReqBookDto reqBookDto) {
-
-        log.info("[{}] async Search Book start.....", reqBookDto.getQuery());
-
         CompletableFuture.runAsync(() -> {
             Page<BookDto> fetchedBooks = supplier.get();
-
-            RespBooksDto respBooksDto = new RespBooksDto(
-                new MetaDto(fetchedBooks, reqBookDto), fetchedBooks);
-
-            cacheManager.put(BookSearchService.class,reqBookDto,respBooksDto);
-
-            log.info("[{}] async Search task is Completed", reqBookDto.getQuery());
+            cachingAsyncResult(fetchedBooks,reqBookDto);
         });
+    }
+
+    private void cachingAsyncResult(Page<BookDto> fetchedBooks,ReqBookDto reqBookDto){
+        RespBooksDto respBooksDto = new RespBooksDto(
+            new MetaDto(fetchedBooks, reqBookDto), fetchedBooks);
+
+        cacheManager.put(BookSearchService.class,reqBookDto,respBooksDto);
     }
 }

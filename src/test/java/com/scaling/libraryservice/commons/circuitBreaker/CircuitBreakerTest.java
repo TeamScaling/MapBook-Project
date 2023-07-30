@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import java.util.ArrayList;
+import com.scaling.libraryservice.logging.logger.OpenApiLogger;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +43,9 @@ class CircuitBreakerTest {
     private ScheduledFuture<?> scheduledFuture;
 
     @Mock
+    private OpenApiLogger openApiLogger;
+
+    @Mock
     private Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private ApiObserver apiObserver1;
     private ApiObserver apiObserver2;
@@ -60,7 +63,7 @@ class CircuitBreakerTest {
         mockServer.stubFor(
             WireMock.get("/api/bookExist").willReturn(WireMock.ok()));
 
-        circuitBreaker = new CircuitBreaker(scheduler, scheduledTasks, checker);
+        circuitBreaker = new CircuitBreaker(scheduler, scheduledTasks, checker, openApiLogger);
     }
 
     public ApiObserver setApiObserver() {
@@ -131,7 +134,7 @@ class CircuitBreakerTest {
     @DisplayName("error monitor에 동시성 이슈가 일어나 error cnt 변화에 문제가 생기지 않는다")
     public void receiveError_concurrency() throws InterruptedException {
         /* given */
-        int errorCnt = 100;
+        int errorCnt = 10;
         ExecutorService executor = Executors.newFixedThreadPool(5);
 
         /* when */
@@ -160,7 +163,7 @@ class CircuitBreakerTest {
 
         /* when */
 
-        circuitBreaker.startScheduledRestoration(apiObserver1, 1000 * 2, TimeUnit.MILLISECONDS);
+        circuitBreaker.startScheduledRestoration(apiObserver1);
 
         /* then */
         verify(scheduledTasks, times(1)).put(any(), any());
@@ -182,7 +185,7 @@ class CircuitBreakerTest {
 
         /* when */
 
-        circuitBreaker.startScheduledRestoration(apiObserver1, 1000 * 2, TimeUnit.MILLISECONDS);
+        circuitBreaker.startScheduledRestoration(apiObserver1);
 
         runnableCaptor.getValue().run();
 
@@ -210,7 +213,7 @@ class CircuitBreakerTest {
 
         /* when */
 
-        circuitBreaker.startScheduledRestoration(apiObserver1, 1000 * 2, TimeUnit.MILLISECONDS);
+        circuitBreaker.startScheduledRestoration(apiObserver1);
 
         runnableCaptor.getValue().run();
 

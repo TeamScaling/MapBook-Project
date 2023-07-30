@@ -6,7 +6,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.entity.QBook;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
-import com.scaling.libraryservice.search.util.TitleAnalyzer;
+import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;

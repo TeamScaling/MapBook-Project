@@ -8,13 +8,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
-import com.scaling.libraryservice.commons.reporter.TaskReporter;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.service.BookSearchService;
-import com.scaling.libraryservice.search.util.TitleQuery;
+import com.scaling.libraryservice.search.engine.TitleQuery;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,8 +41,6 @@ class SearchAsyncExecutorTest {
     @Mock
     private ReqBookDto reqBookDto;
 
-    @Mock
-    private TaskReporter taskReporter;
 
 
     @Test

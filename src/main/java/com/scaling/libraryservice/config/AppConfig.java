@@ -6,10 +6,12 @@ import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.QuerySendChecker;
 import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
+import com.scaling.libraryservice.logging.logger.OpenApiLogger;
+import com.scaling.libraryservice.search.engine.filter.StopWordFilter;
 import com.scaling.libraryservice.search.service.KeywordService;
-import com.scaling.libraryservice.search.util.filter.ConvertFilter;
-import com.scaling.libraryservice.search.util.filter.FilterStream;
-import com.scaling.libraryservice.search.util.filter.SimpleFilter;
+import com.scaling.libraryservice.search.engine.filter.ConvertFilter;
+import com.scaling.libraryservice.search.engine.filter.FilterStream;
+import com.scaling.libraryservice.search.engine.filter.SimpleFilter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import javax.persistence.EntityManager;
@@ -24,12 +26,14 @@ import org.springframework.web.client.RestTemplate;
 public class AppConfig {
 
     @Bean
-    public CircuitBreaker circuitBreaker(RestorationChecker restorationChecker) {
+    public CircuitBreaker circuitBreaker(RestorationChecker restorationChecker,
+        OpenApiLogger openApiLogger) {
 
         return new CircuitBreaker(
             Executors.newScheduledThreadPool(1),
             new ConcurrentHashMap<>(),
-            restorationChecker);
+            restorationChecker,
+            openApiLogger);
     }
 
     @Bean
@@ -69,14 +73,18 @@ public class AppConfig {
     }
 
     @Bean
-    public JPAQueryFactory jpaQueryFactory(EntityManager em){
+    public JPAQueryFactory jpaQueryFactory(EntityManager em) {
 
         return new JPAQueryFactory(em);
     }
 
     @Bean
-    public FilterStream filterStream(KeywordService keywordService){
-       return new FilterStream(new SimpleFilter(new ConvertFilter(null,keywordService)));
+    public FilterStream filterStream(KeywordService keywordService) {
+        return new FilterStream(
+            new SimpleFilter(
+                new StopWordFilter(
+                    new ConvertFilter(null, keywordService))
+                ));
     }
 
 
