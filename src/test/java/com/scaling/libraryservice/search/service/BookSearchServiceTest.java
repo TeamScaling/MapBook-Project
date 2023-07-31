@@ -1,7 +1,9 @@
 package com.scaling.libraryservice.search.service;
 
 import static com.scaling.libraryservice.search.engine.TitleType.TOKEN_TWO_OR_MORE;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
@@ -51,6 +53,32 @@ class BookSearchServiceTest {
 
         /* then */
         assertNotNull(result);
+    }
+
+    @Test
+    public void isIsbn(){
+        /* given */
+
+        String query = "9788973374113";
+
+        /* when */
+        boolean result = bookSearchService.isIsbnQuery(query);
+        /* then */
+
+        assertTrue(result);
+    }
+
+    @Test
+    public void is_Not_Isbn(){
+        /* given */
+
+        String query = "자바의 정석";
+
+        /* when */
+        boolean result = bookSearchService.isIsbnQuery(query);
+        /* then */
+
+        assertFalse(result);
     }
 
 

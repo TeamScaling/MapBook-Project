@@ -12,12 +12,14 @@ import org.springframework.lang.NonNull;
 @Getter
 @NoArgsConstructor
 @ToString
-@Builder @AllArgsConstructor
+@Builder
+@AllArgsConstructor
 public class MetaDto {
-    private long totalPages;
+
+    private int totalPages;
     private long totalElements;
-    private long currentPage;
-    private long pageSize;
+    private int currentPage;
+    private int pageSize;
     private String searchTime;
 
     private String userQuery;
@@ -33,6 +35,16 @@ public class MetaDto {
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
         this.userQuery = reqBookDto.getQuery();
+    }
+
+    public static MetaDto isbnMetaDto(String userQuery) {
+        return MetaDto.builder()
+            .totalPages(1)
+            .totalElements(1)
+            .currentPage(1)
+            .pageSize(1)
+            .userQuery(userQuery)
+            .build();
     }
 
 

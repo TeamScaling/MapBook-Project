@@ -1,11 +1,9 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
-import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
-import org.springframework.beans.factory.annotation.Value;
+import com.scaling.libraryservice.dataPipe.updater.entity.UpdateBook;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class KakaoBookConn implements ApiConnection {

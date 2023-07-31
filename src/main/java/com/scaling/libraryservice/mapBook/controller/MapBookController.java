@@ -30,7 +30,6 @@ public class MapBookController {
     private final LibraryFindService libraryFindService;
     private final ConnectionGenerator<LoanableLibConn, LibraryInfoDto,ReqMapBookDto> connGenerator;
     private final LocationResolver<Integer,ReqMapBookDto> locationResolver;
-
     private final MapBookLogger mapBookLogger;
 
 

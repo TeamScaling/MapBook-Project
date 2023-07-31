@@ -9,7 +9,7 @@ import lombok.ToString;
 
 
 @Entity
-@Table(name = "book_final")
+@Table(name = "books")
 @ToString
 @Getter
 public class Book {
@@ -33,14 +33,14 @@ public class Book {
     @Column(name = "IMAGE_URL")
     private String bookImg;
 
-    @Column(name = "loan_cnt")
-    private Integer loanCnt;
-
     @Column(name = "title_token")
     private String titleToken;
 
-//    @Column(name = "TWO_PBLICTE_DE")
-//    private String publishDate;
+    @Column(name = "pblicte_de")
+    private String publishDate;
+
+    @Column(name = "loan_cnt")
+    private Integer loanCnt;
 
 
     public Integer getLoanCnt() {
