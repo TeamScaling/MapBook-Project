@@ -22,8 +22,8 @@ function addMetaHtml(meta) {
 
   return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
                 <div class="col-lg-7">
-                    <p>[${query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)</p>
-                    <p style="color: #636464">[대출 횟수는 5년간 서울 도서관 전체에서 합산된 대출 횟수]</p>  
+                    <div id="user-query" data-text = "${query}">[${query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)⏳⏳</div>
+                    <p style="color: #636464">[대출 횟수는 전국 도서관 전체에서 합산된 대출 횟수] - 1억 2천만건🤭🤭</p>  
                 </div>
        
             </div>`
@@ -36,7 +36,7 @@ function addHTML(book) {
                 </div>
                 <div class="col-lg-5">
                     <h2 class="font-weight-light">${book.title}</h2>
-                  <p>대출 횟수 : ${book.loanCnt}</p>
+                  <p>대출 횟수 : ${book.loanCnt} / ISBN : ${book.isbn}</p>
                   <p>저자 : ${book.author}</p>
                     <p>${book.content}</p>
                 </div>
@@ -210,7 +210,11 @@ $(window).scroll(function () {
 });
 
 function loadMoreData(page) {
-  const query =["#search_input"].val();
+  let query = $('#search-input').val();
+
+  if(query === ''){
+    query = $('#user-query').data('text');
+  }
 
   $.ajax({
     type: 'GET',

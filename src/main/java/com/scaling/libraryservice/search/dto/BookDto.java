@@ -44,20 +44,11 @@ public class BookDto {
 
     public static BookDto emptyDto(){
 
-        return new BookDto(0L,"","","","","",0);
+        return new BookDto(-1L,"","","","","",0);
     }
 
-
-    public BookDto(@NonNull JSONObject json) {
-        this.id = json.getLong("id");
-        this.title = json.getString("title");
-        this.content = json.getString("content");
-        this.author = json.getString("author");
-        this.isbn = json.getString("isbn");
-        this.bookImg = json.getString("bookImg");
-
+    public boolean isEmpty(){
+        return this.title.isEmpty() && this.id == -1;
     }
-
-
 
 }

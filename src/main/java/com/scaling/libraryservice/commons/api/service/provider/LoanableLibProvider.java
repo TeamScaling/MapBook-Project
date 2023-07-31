@@ -15,16 +15,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Component
+@Component // Data4Library와 api 통신해서 대출 가능 데이터를 받아온다.
 public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
 
     private final ApiQuerySender apiQuerySender;
     private final ApiQueryBinder<ApiLoanableLibDto> apiQueryBinder;
-
     private final AuthKeyLoader authKeyLoader;
 
 
-    @PostConstruct
+//    @PostConstruct
     private void loadAuthKey(){
         String apiAuthKey = authKeyLoader.loadAuthKey(OpenApi.DATA4_Lib).getAuthKey();
         LoanableLibConn.setApiAuthKey(apiAuthKey);

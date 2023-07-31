@@ -87,6 +87,8 @@ dependencies {
     // https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
     implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '8.0.0.Final'
 
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.16.1'
 
 }
 

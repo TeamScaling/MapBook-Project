@@ -21,6 +21,9 @@ public class LibraryInfo {
     @Id @Column(name = "LBRRY_NO")
     private Integer libNo;
 
+    @Column(name = "LBRRY_CD")
+    private Integer libCd;
+
     @Column(name = "LBRRY_NM")
     private String libNm;
 
