@@ -23,7 +23,7 @@ public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
     private final AuthKeyLoader authKeyLoader;
 
 
-//    @PostConstruct
+    @PostConstruct
     private void loadAuthKey(){
         String apiAuthKey = authKeyLoader.loadAuthKey(OpenApi.DATA4_Lib).getAuthKey();
         LoanableLibConn.setApiAuthKey(apiAuthKey);
