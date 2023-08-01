@@ -2,11 +2,11 @@ package com.scaling.libraryservice.search.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.scaling.libraryservice.search.engine.util.TitleTrimmer;
+import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class TitleTrimmerTest {
+class SubTitleRemoverTest {
 
 
 
@@ -23,7 +23,7 @@ class TitleTrimmerTest {
 
         /* when */
 
-        var result =TitleTrimmer.TrimTitleResult(query);
+        var result = SubTitleRemover.removeSubTitle(query);
 
         /* then */
         assertEquals(result,expect);
@@ -37,7 +37,7 @@ class TitleTrimmerTest {
 
         /* when */
 
-        var result = TitleTrimmer.TrimTitleResult(query);
+        var result = SubTitleRemover.removeSubTitle(query);
 
         /* then */
         assertEquals(result,expect);

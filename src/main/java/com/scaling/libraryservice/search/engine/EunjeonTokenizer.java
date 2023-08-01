@@ -5,8 +5,13 @@ import static com.scaling.libraryservice.search.engine.Token.NN_TOKEN;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 import org.bitbucket.eunjeon.seunjeon.Analyzer;
 import org.bitbucket.eunjeon.seunjeon.LNode;
 import org.springframework.stereotype.Component;
@@ -45,7 +50,7 @@ public class EunjeonTokenizer {
     private void filterAndStoreEtcTokens(String target, Map<Token, List<String>> resultMap) {
         resultMap.put(ETC_TOKEN,
             Arrays.stream(
-                target.split(" "))
+                    target.split(" "))
                 .filter(EunjeonTokenizer::isQualifiedToken)
                 .toList());
     }
@@ -71,14 +76,15 @@ public class EunjeonTokenizer {
         return isNNP(node) || isNNG(node) || isSL(node);
     }
 
-    private String getEtcTokens(List<String> nnWords, String target) {
+    String getEtcTokens(List<String> nnWords, String target) {
 
-        // 사용자 검색어에서 명사로 분석된 단어를 제거 한다.
-        for (String str : nnWords) {
-            target = StringUtils.delete(target, str);
-        }
+        Set<String> uniqueWords
+            = new LinkedHashSet<>(Arrays.asList(target.split(" ")));
 
-        return target;
+        nnWords.forEach(
+            nnWord -> uniqueWords.removeIf(splitWord -> splitWord.contains(nnWord)));
+
+        return String.join(" ", uniqueWords).trim();
     }
 
     private static boolean hasFeatureHead(LNode node, String feature) {

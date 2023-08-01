@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 //한글을 영어로 잘못 쳤을 때 변환 해주는 역할을 한다.
@@ -33,9 +34,17 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
                 }
             });
 
-        joiner.add(String.join(" ", keywordService.getExistKeywords(requiredCheckList)));
+        addExistKeywordsToJoiner(requiredCheckList,joiner);
 
         return progressFilter(joiner.toString(), this.nextFilter);
+    }
+
+    private void addExistKeywordsToJoiner(List<String> requiredCheckList, StringJoiner joiner){
+        List<String> existKeywords = keywordService.getExistKeywords(requiredCheckList);
+
+        if(!existKeywords.isEmpty()){
+            joiner.add(String.join(" ", existKeywords));
+        }
     }
 
     private void convertAddEngCheckList(String originalWord, List<String> requiredCheckList) {

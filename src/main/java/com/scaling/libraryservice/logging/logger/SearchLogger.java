@@ -39,6 +39,7 @@ public class SearchLogger extends AbstractLogger<RespBooksDto> {
         Map<String, String> logMessageMap = new LinkedHashMap<>();
         logMessageMap.put("userQuery", respBooksDto.getMeta().getUserQuery());
         logMessageMap.put("searchTime", respBooksDto.getMeta().getSearchTime());
+
         return logMessageMap;
     }
 

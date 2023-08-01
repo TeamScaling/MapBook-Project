@@ -1,13 +1,13 @@
 package com.scaling.libraryservice.search.dto;
 
+import com.scaling.libraryservice.commons.timer.TimeMeasurable;
+import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import com.scaling.libraryservice.search.entity.Book;
-import com.scaling.libraryservice.search.engine.util.TitleTrimmer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
 @Getter
@@ -32,7 +32,7 @@ public class BookDto {
 
     public BookDto(@NonNull Book book) {
         this.id = book.getId();
-        this.title = TitleTrimmer.TrimTitleResult(book.getTitle());
+        this.title = book.getTitle();
         this.content =  book.getContent().isEmpty() ? "[내용 없음]" : book.getContent();
         this.author = book.getAuthor();
         this.isbn = book.getIsbn();
@@ -43,12 +43,10 @@ public class BookDto {
     }
 
     public static BookDto emptyDto(){
-
         return new BookDto(-1L,"","","","","",0);
     }
 
     public boolean isEmpty(){
         return this.title.isEmpty() && this.id == -1;
     }
-
 }

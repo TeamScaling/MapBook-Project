@@ -24,7 +24,7 @@ public class TitleAnalyzer {
     private final EunjeonTokenizer tokenizer;
     private final FilterStream filterStream;
     private static final int TOKEN_MIN_SIZE = 1;
-    private static final int TOKEN_MAX_SIZE = 3;
+    private static final int TOKEN_MAX_SIZE = 2;
 
     @MeasureTaskTime
     public TitleQuery analyze(String query, boolean filterOn) throws NotQualifiedQueryException {
@@ -39,7 +39,7 @@ public class TitleAnalyzer {
 
         // title 분석에 대한 결과를 담을 TitleQuery의 builder를 만든다.
         TitleQueryBuilder titleQueryBuilder
-            = new TitleQueryBuilder().query(originalQuery);
+            = new TitleQueryBuilder().userQuery(originalQuery);
 
         // 형태소 분석을 마친 결과를 TitleQuery의 멤버 변수에 맞게 각각 담는다.
         putAnalyzedWord(titleMap, titleQueryBuilder);
@@ -62,7 +62,6 @@ public class TitleAnalyzer {
                 titleQueryBuilder.etcToken(String.join(" ", tokens));
             }
         });
-
     }
 
     // 자연어 분석으로 나뉘어진 단어(token)의 유형별 갯수에 따라 TitleType을 결정 한다.
@@ -90,7 +89,7 @@ public class TitleAnalyzer {
         return nnCnt < TOKEN_MIN_SIZE ?
             // 명사 토큰의 갯수가 최소값을 넘지 못하면 검색어를 가지고 전체 검색 모드
             titleQueryBuilder.titleType(TitleType.TOKEN_ALL_ETC)
-                .etcToken(titleQueryBuilder.getQuery()).build()
+                .etcToken(titleQueryBuilder.getUserQuery()).build()
             : titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX).build();
     }
 
@@ -99,9 +98,18 @@ public class TitleAnalyzer {
     private TitleQuery decideNnSearchMode(int nnCnt,
         TitleQueryBuilder titleQueryBuilder) {
 
+        if (isNotNnTokenEqualUserQuery(titleQueryBuilder)) {
+            return titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX)
+                .etcToken(titleQueryBuilder.getUserQuery()).build();
+        }
+
         return nnCnt == TOKEN_MIN_SIZE ?
             titleQueryBuilder.titleType(TitleType.TOKEN_ONE).build()
             : titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build();
+    }
+
+    private boolean isNotNnTokenEqualUserQuery(TitleQueryBuilder builder) {
+        return !builder.getUserQuery().equals(builder.getNnToken());
     }
 
 }
