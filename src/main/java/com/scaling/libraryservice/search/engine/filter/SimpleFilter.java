@@ -5,7 +5,7 @@ import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
 public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
 
     private final TitleFilter nextFilter;
-    private static final String ALLOWED_CHARS_REGEX = "\"[^a-zA-Z0-9가-힣\\\\s]\"";
+    private static final String ALLOWED_CHARS_REGEX = "[^a-zA-Z0-9가-힣\\s]";
 
     private static final int QUERY_MIN_SIZE = 2;
 
@@ -25,7 +25,7 @@ public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
     }
 
     // 특수문자를 제거 한다.
-    private String removeSpecialChar(String query) {
+   String removeSpecialChar(String query) {
 
         query = query.replaceAll(ALLOWED_CHARS_REGEX, "");
         checkValidation(query);

@@ -27,8 +27,10 @@ public class StopWordFilter extends AbstractTileFilter {
 
     @Override
     public String filtering(String query) {
+
         String removedQuery = Arrays.stream(query.split("\\s+"))
-            .filter(word -> !STOP_WORDS.contains(word)).collect(Collectors.joining(" "));
+            .filter(word -> !STOP_WORDS.contains(word))
+            .collect(Collectors.joining(" "));
 
         return progressFilter(removedQuery, this.nextFilter);
     }

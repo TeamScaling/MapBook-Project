@@ -12,7 +12,6 @@ import org.springframework.lang.NonNull;
 @Getter
 @NoArgsConstructor
 @ToString
-@Builder
 @AllArgsConstructor
 public class MetaDto {
 
@@ -36,39 +35,63 @@ public class MetaDto {
         this.userQuery = reqBookDto.getUserQuery();
     }
 
-    public static MetaDto isbnMetaDto(String isbn) {
-        return getOneMetaBuilder().userQuery(isbn).build();
-    }
-
-    public static MetaDto sessionMetaDto(String searchTime) {
-        return getOneMetaBuilder()
-            .searchTime(searchTime)
-            .build();
-    }
-
-    private static MetaDtoBuilder getOneMetaBuilder() {
-        return MetaDto.builder()
-            .totalPages(1)
-            .totalElements(1)
-            .currentPage(1)
-            .pageSize(1);
+    public MetaDto(String searchTime) {
+        this.searchTime = searchTime;
     }
 
 
-    public static MetaDto oneMetaDto(String userQuery) {
-        return getOneMetaBuilder().userQuery(userQuery).build();
+    public static class Builder {
+
+        private int totalPages;
+        private long totalElements;
+        private int currentPage;
+        private int pageSize;
+        private String searchTime;
+        private String userQuery;
+
+        public Builder withTotalPages(int totalPages) {
+            this.totalPages = totalPages;
+            return this;
+        }
+
+        public Builder withTotalElements(int totalElements) {
+            this.totalElements = totalElements;
+            return this;
+        }
+
+        public Builder withCurrentPage(int currentPage) {
+            this.currentPage = currentPage;
+            return this;
+        }
+
+        public Builder withPageSize(int pageSize) {
+            this.pageSize = pageSize;
+            return this;
+        }
+
+        public Builder withSearchTime(String searchTime) {
+            this.searchTime = searchTime;
+            return this;
+        }
+
+        public Builder withUserQuery(String userQuery) {
+            this.userQuery = userQuery;
+            return this;
+        }
+
+        public MetaDto build() {
+            MetaDto metaDto = new MetaDto();
+            metaDto.totalPages = this.totalPages;
+            metaDto.totalElements = this.totalElements;
+            metaDto.currentPage = this.currentPage;
+            metaDto.pageSize = this.pageSize;
+            metaDto.searchTime = this.searchTime;
+            metaDto.userQuery = this.userQuery;
+
+            return metaDto;
+        }
     }
 
 
-    public static MetaDto emptyDto(String userQuery) {
-        return MetaDto.builder()
-            .totalPages(0)
-            .totalElements(0)
-            .currentPage(0)
-            .pageSize(0)
-            .searchTime("")
-            .userQuery(userQuery)
-            .build();
-    }
 
 }
