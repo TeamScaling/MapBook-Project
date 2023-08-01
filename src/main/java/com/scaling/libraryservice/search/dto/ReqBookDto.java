@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -15,12 +14,12 @@ import lombok.ToString;
  */
 @ToString @Getter
 public class ReqBookDto implements CacheKey<ReqBookDto,RespBooksDto>{
-    private final String query;
+    private final String userQuery;
     private final int page;
     private final int size;
 
-    public ReqBookDto(String query, int page,int size) {
-        this.query = query;
+    public ReqBookDto(String userQuery, int page,int size) {
+        this.userQuery = userQuery;
         this.page = page;
         this.size = size;
     }
@@ -39,11 +38,11 @@ public class ReqBookDto implements CacheKey<ReqBookDto,RespBooksDto>{
             return false;
         }
         ReqBookDto that = (ReqBookDto) o;
-        return page == that.page && Objects.equals(query, that.query);
+        return page == that.page && Objects.equals(userQuery, that.userQuery);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(query, page);
+        return Objects.hash(userQuery, page);
     }
 }

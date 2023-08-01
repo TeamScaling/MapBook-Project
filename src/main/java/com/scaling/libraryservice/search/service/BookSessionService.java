@@ -1,6 +1,9 @@
 package com.scaling.libraryservice.search.service;
 
+import static com.scaling.libraryservice.search.dto.RespBooksDtoFactory.createSessionRespBookDto;
+
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import java.util.Map;
 import java.util.Optional;
@@ -24,8 +27,10 @@ public class BookSessionService {
             .collect(
                 Collectors.toMap(
                     bookDto -> SubTitleRemover.removeSubTitle(bookDto.getTitle()),
-                    bookDto -> RespBooksDto.sessionRespBookDto(respBooksDto.getMeta(), bookDto),
+                    bookDto -> createSessionRespBookDto(respBooksDto.getMeta(), bookDto),
                     (oldValue, newValue) -> oldValue));
+
+
 
         bookMap.forEach(httpSession::setAttribute);
     }

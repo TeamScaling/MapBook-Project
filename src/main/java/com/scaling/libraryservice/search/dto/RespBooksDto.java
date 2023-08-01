@@ -26,21 +26,29 @@ public class RespBooksDto implements TimeMeasurable<MetaDto> {
         this.meta = metaDto;
         this.documents = booksPage.stream().collect(Collectors.toList());
     }
-
-    public static RespBooksDto emptyRespBookDto(String userQeury){
-
-        return new RespBooksDto(MetaDto.emptyDto(userQeury), Collections.emptyList());
-    }
-
-    public static RespBooksDto isbnRespBookDto(String userQuery,BookDto bookDto){
-
-        return new RespBooksDto(MetaDto.isbnMetaDto(userQuery),List.of(bookDto));
-    }
-
-    public static RespBooksDto sessionRespBookDto(MetaDto meta,BookDto bookDto){
-
-        return new RespBooksDto(MetaDto.sessionMetaDto(meta.getSearchTime()),List.of(bookDto));
-    }
+//
+//    public static RespBooksDto defaultRespBooksDto(Page<BookDto> books,ReqBookDto reqBookDto){
+//        return new RespBooksDto(new MetaDto(books, reqBookDto), books);
+//    }
+//
+//    public static RespBooksDto emptyRespBookDto(){
+//
+//        return new RespBooksDto(MetaDto.emptyDto(), Collections.emptyList());
+//    }
+//
+//    public static RespBooksDto isbnRespBookDto(BookDto bookDto){
+//
+//        return new RespBooksDto(MetaDto.isbnMetaDto(),List.of(bookDto));
+//    }
+//
+//    public static RespBooksDto sessionRespBookDto(MetaDto metaDto,BookDto bookDto){
+//
+//        return new RespBooksDto(MetaDto.sessionMetaDto(metaDto.getSearchTime()),List.of(bookDto));
+//    }
+//
+//    public static RespBooksDto oneBookRespDto(MetaDto metaDto, BookDto bookDto){
+//        return new RespBooksDto(MetaDto.oneMetaDto(), List.of(bookDto));
+//    }
 
     public boolean isEmptyResult(){
         return this.meta.getTotalElements() == 0;

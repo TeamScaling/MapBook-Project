@@ -29,44 +29,45 @@ public class MetaDto {
     }
 
     public MetaDto(@NonNull Page<BookDto> books, @NonNull ReqBookDto reqBookDto) {
-
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
-        this.userQuery = reqBookDto.getQuery();
+        this.userQuery = reqBookDto.getUserQuery();
     }
 
-    public static MetaDto isbnMetaDto(String userQuery) {
-        return MetaDto.builder()
-            .totalPages(1)
-            .totalElements(1)
-            .currentPage(1)
-            .pageSize(1)
-            .userQuery(userQuery)
-            .build();
+    public static MetaDto isbnMetaDto(String isbn) {
+        return getOneMetaBuilder().userQuery(isbn).build();
     }
 
-    public static MetaDto sessionMetaDto(String searchTime){
-        return MetaDto.builder()
-            .totalPages(1)
-            .totalElements(1)
-            .currentPage(1)
-            .pageSize(1)
+    public static MetaDto sessionMetaDto(String searchTime) {
+        return getOneMetaBuilder()
             .searchTime(searchTime)
             .build();
     }
 
+    private static MetaDtoBuilder getOneMetaBuilder() {
+        return MetaDto.builder()
+            .totalPages(1)
+            .totalElements(1)
+            .currentPage(1)
+            .pageSize(1);
+    }
+
+
+    public static MetaDto oneMetaDto(String userQuery) {
+        return getOneMetaBuilder().userQuery(userQuery).build();
+    }
+
 
     public static MetaDto emptyDto(String userQuery) {
-
         return MetaDto.builder()
-            .userQuery(userQuery)
             .totalPages(0)
             .totalElements(0)
             .currentPage(0)
             .pageSize(0)
             .searchTime("")
+            .userQuery(userQuery)
             .build();
     }
 
