@@ -1,5 +1,7 @@
 package com.scaling.libraryservice.search.dto;
 
+import static com.scaling.libraryservice.search.dto.MetaDtoFactory.*;
+
 import java.util.Collections;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -11,18 +13,18 @@ public class RespBooksDtoFactory {
     }
 
     public static RespBooksDto createEmptyRespBookDto(String userQuery) {
-        return new RespBooksDto(MetaDto.emptyDto(userQuery), Collections.emptyList());
+        return new RespBooksDto(createEmptyDto(userQuery), Collections.emptyList());
     }
 
     public static RespBooksDto createIsbnRespBookDto(BookDto bookDto,String userQuery) {
-        return new RespBooksDto(MetaDto.isbnMetaDto(userQuery), List.of(bookDto));
+        return new RespBooksDto(createIsbnMetaDto(userQuery), List.of(bookDto));
     }
 
     public static RespBooksDto createSessionRespBookDto(MetaDto metaDto, BookDto bookDto) {
-        return new RespBooksDto(MetaDto.sessionMetaDto(metaDto.getSearchTime()), List.of(bookDto));
+        return new RespBooksDto(createSessionMetaDto(metaDto.getSearchTime()), List.of(bookDto));
     }
 
     public static RespBooksDto createOneBookRespDto(String userQuery, BookDto bookDto) {
-        return new RespBooksDto(MetaDto.oneMetaDto(userQuery), List.of(bookDto));
+        return new RespBooksDto(createOneMetaDto(userQuery), List.of(bookDto));
     }
 }
