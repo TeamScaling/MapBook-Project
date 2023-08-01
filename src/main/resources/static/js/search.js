@@ -22,20 +22,25 @@ function addMetaHtml(meta) {
 
   return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
                 <div class="col-lg-7">
-                    <div id="user-query" data-text = "${query}">[${query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)⏳⏳</div>
-                    <p style="color: #636464">[대출 횟수는 전국 도서관 전체에서 합산된 대출 횟수] - 1억 2천만건🤭🤭</p>  
+                    <div id="user-query" data-text = "${query}">[${query}] 에 대한 도서 검색결과  <br>(검색 속도: ${meta.searchTime}초)🕔</div>
+                    <p style="color: #636464">[대출 횟수는 1046개 전국 도서관 전체에서 합산된 대출 횟수] </p>  
                 </div>
        
             </div>`
 }
 
 function addHTML(book) {
+  const titleParts = book.title.split(/[:=-]/);
+  const mainTitle = titleParts[0];
+  const subTitle = titleParts.slice(1).join(":").trim();
+
   return `<div id="book-box" class="row gx-4 gx-lg-5 align-items-center my-5">
                 <div class="col-lg-2">
                   <img id="book-img" class="img-fluid rounded mb-4 mb-lg-0" src="${book.bookImg}" alt="Book image"</>
                 </div>
-                <div class="col-lg-5">
-                    <h2 class="font-weight-light">${book.title}</h2>
+                <div class="col-lg-6">
+                    <h3 class="font-weight-light">${mainTitle}</h3>
+                    <h5 style="color: #636464">${subTitle}</h5>
                   <p>대출 횟수 : ${book.loanCnt} / ISBN : ${book.isbn}</p>
                   <p>저자 : ${book.author}</p>
                     <p>${book.content}</p>
@@ -166,7 +171,8 @@ $('#search-input').autocomplete({
       type: "POST",
       dataType: "JSON",
       data: {query: request.term}, // 검색 키워드
-      success: function (books) {
+      success: function (data) {
+        const books = data.documents;
         books.unshift({title: ""});
         books.unshift({title: ""});
         response(

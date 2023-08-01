@@ -95,10 +95,11 @@ public class BookSearchService {
         return PageRequest.of(reqBookDto.getPage() - 1, reqBookDto.getSize());
     }
 
-    public List<BookDto> autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
+    @MeasureTaskTime
+    public RespBooksDto autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
         boolean isAsyncSupport) {
 
-        return searchBooks(reqBookDto, timeout, isAsyncSupport).getDocuments();
+        return searchBooks(reqBookDto, timeout, isAsyncSupport);
     }
 
 }

@@ -37,6 +37,11 @@ public class RespBooksDto implements TimeMeasurable<MetaDto> {
         return new RespBooksDto(MetaDto.isbnMetaDto(userQuery),List.of(bookDto));
     }
 
+    public static RespBooksDto sessionRespBookDto(MetaDto meta,BookDto bookDto){
+
+        return new RespBooksDto(meta,List.of(bookDto));
+    }
+
     public boolean isEmptyResult(){
         return this.meta.getTotalElements() == 0;
     }

@@ -13,11 +13,11 @@ import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.dto.BookDto;
+import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.engine.SearchMode;
 import com.scaling.libraryservice.search.engine.TitleQuery;
-import com.scaling.libraryservice.search.engine.util.TitleTrimmer;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
@@ -113,9 +114,8 @@ public class BookRepoQueryDsl {
 
         if (mode == BOOLEAN_MODE) {
             function = "function('BooleanMatch',{0},{1})";
-
             // boolean 모드에서 모두 반드시 포함된 결과를 위해 '+'를 붙여주는 정적 메소드 호출.
-            name = TitleTrimmer.splitAddPlus(name);
+            name = splitAddPlus(name);
         } else {
             function = "function('NaturalMatch',{0},{1})";
         }
@@ -156,6 +156,13 @@ public class BookRepoQueryDsl {
         return PageableExecutionUtils.getPage(
             books.fetch(),
             pageable, () -> countQueryAll(book.titleToken.count()).fetchOne());
+    }
+
+    public String splitAddPlus(@NonNull String target) {
+        target = target.trim();
+        return Arrays.stream(target.split(" "))
+            .map(name -> "+" + name)
+            .collect(Collectors.joining(" "));
     }
 
 }
