@@ -46,6 +46,23 @@ class StopWordFilterTest {
         assertEquals(expect,result);
     }
 
+    @Test
+    public void removeAuthrStopWord(){
+        /* given */
+
+        String title =
+            "트롤 지은이 김정화 옮긴이";
+
+        String expect = "트롤 김정화";
+
+        /* when */
+
+        String result = stopWordFilter.filtering(title);
+        /* then */
+
+        assertEquals(expect,result);
+    }
+
 
 
 

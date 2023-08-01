@@ -68,11 +68,19 @@ public class LibraryDataCsvMerger {
 
         AtomicBoolean headerSaved = new AtomicBoolean(false);
 
-        Arrays.stream(files).forEach(file -> {
+        Arrays.stream(files)
+            .forEach(file -> {
             // 필요한 칼럼에 해당하는 데이터만 저장 한다.
             findLibraryInfo(file, libraries).ifPresent(
-                libraryInfoDto
-                    -> writeToCsv(file, writer, headerSaved, libraryInfoDto,charsetName, csvFormat));
+                libraryInfoDto -> writeToCsv(
+                    file,
+                    writer,
+                    headerSaved,
+                    libraryInfoDto,
+                    charsetName,
+                    csvFormat)
+            );
+
             headerSaved.set(true);
         });
     }

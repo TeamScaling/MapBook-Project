@@ -43,4 +43,18 @@ class SimpleFilterTest {
         assertEquals(result,expect);
     }
 
+    @Test
+    public void removeSpecialChar2() {
+        /* given */
+
+        String title = "i@@t! @@hi";
+        String expect = "it hi";
+
+        /* when */
+        String result = simpleFilter.removeSpecialChar(title);
+        System.out.println(result);
+        /* then */
+        assertEquals(result,expect);
+    }
+
 }

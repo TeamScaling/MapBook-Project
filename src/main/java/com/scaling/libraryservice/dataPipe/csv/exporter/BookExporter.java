@@ -4,11 +4,15 @@ import com.scaling.libraryservice.dataPipe.csv.util.CsvWriter;
 import com.scaling.libraryservice.dataPipe.vo.BookVo;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import com.scaling.libraryservice.search.engine.TitleQuery;
+import com.scaling.libraryservice.search.engine.filter.SimpleFilter;
+import com.scaling.libraryservice.search.engine.filter.StopWordFilter;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +23,6 @@ public class BookExporter extends ExporterService<BookVo, Book> {
 
     private final TitleAnalyzer titleAnalyzer;
     private final BookRepoQueryDsl bookRepository;
-
     private Page<Book> page;
 
     public BookExporter(CsvWriter<BookVo> csvWriter,
@@ -43,7 +46,7 @@ public class BookExporter extends ExporterService<BookVo, Book> {
                 TitleQuery query = titleAnalyzer.analyze(book.getTitle(), false);
                 String distinctToken = distinctToken(query.getNnToken());
 
-                books.add(new BookVo(book,distinctToken));
+                books.add(new BookVo(book, distinctToken));
             } else {
                 books.add(new BookVo(book));
             }
@@ -54,9 +57,10 @@ public class BookExporter extends ExporterService<BookVo, Book> {
         return books;
     }
 
-    private String distinctToken(String query){
+    private String distinctToken(String query) {
 
-        return Arrays.stream(query.split(" ")).distinct()
+        return Arrays.stream(query.split(" "))
+            .distinct()
             .collect(Collectors.joining(" "));
     }
 

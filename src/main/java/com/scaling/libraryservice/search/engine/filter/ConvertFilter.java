@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 //한글을 영어로 잘못 쳤을 때 변환 해주는 역할을 한다.
 @RequiredArgsConstructor
 public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
+
     private final TitleFilter nextFilter;
     private final KeywordService keywordService;
     private static final String ENG_REGEX = "^[a-zA-Z]+$";
@@ -27,22 +28,23 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
 
         Arrays.stream(query.split(" "))
             .forEach(word -> {
-                if (isEnglishWord(word)) {
-                    convertAddEngCheckList(word, requiredCheckList);
-                } else {
-                    joiner.add(word);
+                    if (isEnglishWord(word)) {
+                        convertAddEngCheckList(word, requiredCheckList);
+                    } else {
+                        joiner.add(word);
+                    }
                 }
-            });
+            );
 
-        addExistKeywordsToJoiner(requiredCheckList,joiner);
+        addExistKeywordsToJoiner(requiredCheckList, joiner);
 
         return progressFilter(joiner.toString(), this.nextFilter);
     }
 
-    private void addExistKeywordsToJoiner(List<String> requiredCheckList, StringJoiner joiner){
+    private void addExistKeywordsToJoiner(List<String> requiredCheckList, StringJoiner joiner) {
         List<String> existKeywords = keywordService.getExistKeywords(requiredCheckList);
 
-        if(!existKeywords.isEmpty()){
+        if (!existKeywords.isEmpty()) {
             joiner.add(String.join(" ", existKeywords));
         }
     }

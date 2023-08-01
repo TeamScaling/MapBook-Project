@@ -31,7 +31,6 @@ public class ApiQueryBinder<T> {
     }
 
     public List<T> bindList(@NonNull List<ResponseEntity<String>> apiResponses, Class<?> provider) throws OpenApiException {
-
         return apiResponses.stream().map(r -> bind(r,provider)).toList();
     }
 

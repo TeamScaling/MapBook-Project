@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 // Slack 통해 전달된 로그 파일을 원하느 형태로 파싱
 public class SlackLogParser {
+
     private static final String USER_QUERY_REGEX = "\\[userQuery :(.*?)\\]";
     private static final String MAP_BOOK_TITLE = "\\[title :(.*?)\\]";
     private static final String DEFAULT_FILE_EXTENSION = ".json";
@@ -32,23 +33,23 @@ public class SlackLogParser {
         File[] files = filterFilesByExtension(inputFolder);
 
         return Arrays.stream(files)
-            .flatMap(
-                file ->
-                    filterLogsByTaskType(
-                        taskType.getName(), readLogDataFromFile(file), messageRegex).stream()
-            )
+            .flatMap(file -> {
+                    List<SlackLogVo> logData = readLogDataFromFile(file);
+                    return filterLogsByTaskType(taskType.getName(), logData, messageRegex).stream();
+                })
             .collect(Collectors.toList());
     }
 
     // 로그 메시지를 쉽게 찾기 위한 helper
-    public static String getUserQueryRegex(){
+    public static String getUserQueryRegex() {
         return USER_QUERY_REGEX;
     }
+
     // 로그 메시지를 쉽게 찾기 위한 helper
-    public static String getMapBookTitle(){
+    public static String getMapBookTitle() {
         return MAP_BOOK_TITLE;
     }
-    
+
     // log 파일에서 객체로 변환 된 log 데이터에서 원하는 Task을 찾는다 ex) slowTask - 3초 이상의 느린 검색
     private static List<String> filterLogsByTaskType(String targetTask, List<SlackLogVo> logList,
         String messageRegex) {
@@ -56,25 +57,29 @@ public class SlackLogParser {
         return logList.stream()
             .filter(slackLogVo -> slackLogVo.getText().contains(targetTask))
             .map(slackLogVo -> extractMessageFromLog(slackLogVo, messageRegex))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
+            .flatMap(Optional::stream)
+            .distinct()
             .collect(Collectors.toList());
     }
-    
+
     // 정규 표현식을 이용해서 원하는 상세 메시지를 추출
-    private static Optional<String> extractMessageFromLog(SlackLogVo slackLogVo, String messageRegex) {
+    private static Optional<String> extractMessageFromLog(SlackLogVo slackLogVo,
+        String messageRegex) {
         String text = slackLogVo.getText();
         Pattern pattern = Pattern.compile(messageRegex);
         Matcher matcher = pattern.matcher(text);
 
-        return matcher.find() ? Optional.of(matcher.group(1).trim()) : Optional.empty();
+        return matcher.find() ?
+            Optional.of(matcher.group(1).trim())
+            : Optional.empty();
     }
 
     // 파일의 로그 데이터를 객체로 변환 한다.
     private static List<SlackLogVo> readLogDataFromFile(File file) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            Type logTypeListType = new TypeToken<List<SlackLogVo>>() {}.getType();
+            Type logTypeListType = new TypeToken<List<SlackLogVo>>() {
+            }.getType();
             return new Gson().fromJson(reader, logTypeListType);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

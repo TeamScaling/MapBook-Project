@@ -32,8 +32,11 @@ public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
     @Override
     public List<ApiLoanableLibDto> provideDataList(List<? extends ApiConnection> connections,int nThreads) {
 
-        List<ResponseEntity<String>> responseEntities =
-            apiQuerySender.sendMultiQuery(connections, nThreads, HttpEntity.EMPTY);
+        List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
+            connections,
+            nThreads,
+            HttpEntity.EMPTY
+        );
 
         return apiQueryBinder.bindList(responseEntities,this.getClass());
     }

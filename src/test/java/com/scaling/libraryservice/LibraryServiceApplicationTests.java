@@ -7,6 +7,7 @@ import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -56,8 +57,9 @@ class LibraryServiceApplicationTests {
     }
 
     // bookVo object를 Csv 파일로 output 한다.
+    @Test
     public void exportToCsv(){
-        bookExporter.exportToCsv(0,500000,"books3.csv",true);
+        bookExporter.exportToCsv(0,500000,"bookAuthr.csv",false);
     }
 
 

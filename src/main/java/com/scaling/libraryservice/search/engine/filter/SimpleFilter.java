@@ -25,16 +25,15 @@ public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
     }
 
     // 특수문자를 제거 한다.
-   String removeSpecialChar(String query) {
-
-        query = query.replaceAll(ALLOWED_CHARS_REGEX, "");
+    String removeSpecialChar(String query) {
+        query = query.replaceAll(ALLOWED_CHARS_REGEX + "|\\s+", " ");
         checkValidation(query);
         return query;
     }
 
     private void checkValidation(String query) throws NotQualifiedQueryException {
         if (query.length() < QUERY_MIN_SIZE) {
-            throw new NotQualifiedQueryException("공백이나 1글자는 못 찾아요"+"😅😅");
+            throw new NotQualifiedQueryException("공백이나 1글자는 못 찾아요" + "😅😅");
         }
     }
 }
