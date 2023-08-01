@@ -57,7 +57,6 @@ class LibraryServiceApplicationTests {
     }
 
     // bookVo object를 Csv 파일로 output 한다.
-    @Test
     public void exportToCsv(){
         bookExporter.exportToCsv(0,500000,"bookAuthr.csv",false);
     }

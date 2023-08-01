@@ -89,7 +89,7 @@ public class BookRepoQueryDsl {
         SearchMode mode = titleQuery.getTitleType().getMode();
 
         if (titleQuery.getTitleType() == TOKEN_ALL_ETC) {
-            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.title);
+            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.titleToken);
         } else {
             addFullTextSearchQuery(builder, mode, titleQuery.getNnToken(), book.titleToken);
 
@@ -134,7 +134,6 @@ public class BookRepoQueryDsl {
         } else {
             function = "function('NaturalMatch',{0},{1})";
         }
-
         return Expressions.numberTemplate(Double.class, function, colum, name);
     }
 
