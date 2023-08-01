@@ -32,8 +32,7 @@ public class SlackReporter {
 
     public void report(String message, String channelAddress) {
 
-        ChatPostMessageRequest request
-            = buildChatRequest(message, channelAddress);
+        ChatPostMessageRequest request = buildChatRequest(message, channelAddress);
 
         try {
             Slack.getInstance().methods(authKey).chatPostMessage(request);

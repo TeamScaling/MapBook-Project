@@ -22,6 +22,7 @@ public class HaversineCalculater {
      */
     @MeasureTaskTime
     public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+
         final int earthRadiusKm = 6371;
         double latDiff = Math.toRadians(lat2 - lat1);
         double lonDiff = Math.toRadians(lon2 - lon1);

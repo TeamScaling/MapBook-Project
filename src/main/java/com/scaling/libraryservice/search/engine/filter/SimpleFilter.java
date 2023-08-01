@@ -18,23 +18,26 @@ public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
     public String filtering(String query) {
         return progressFilter(
             removeSpecialChar(
-                query.trim().toLowerCase()
+                query.toLowerCase()
             ),
             this.nextFilter
         );
     }
 
     // 특수문자를 제거 한다.
-   String removeSpecialChar(String query) {
+    String removeSpecialChar(String query) {
+        query = query.replaceAll(ALLOWED_CHARS_REGEX, " ")
+            .replaceAll("\\s+", " ")
+            .trim();
 
-        query = query.replaceAll(ALLOWED_CHARS_REGEX, "");
         checkValidation(query);
+
         return query;
     }
 
     private void checkValidation(String query) throws NotQualifiedQueryException {
         if (query.length() < QUERY_MIN_SIZE) {
-            throw new NotQualifiedQueryException("공백이나 1글자는 못 찾아요"+"😅😅");
+            throw new NotQualifiedQueryException("공백이나 1글자는 못 찾아요" + "😅😅");
         }
     }
 }

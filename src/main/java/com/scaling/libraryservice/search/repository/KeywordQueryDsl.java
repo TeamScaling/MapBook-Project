@@ -17,11 +17,11 @@ public class KeywordQueryDsl {
 
     public List<Keyword> getKeywords(String... words) {
 
-        return words.length == 0 ? Collections.emptyList() :
-            factory.
-                selectFrom(keyword1)
-                .where(
-                    keyword1.keyword.in(words))
+        return words.length == 0
+            ? Collections.emptyList()
+            : factory
+                .selectFrom(keyword1)
+                .where(keyword1.keyword.in(words))
                 .fetch();
     }
 

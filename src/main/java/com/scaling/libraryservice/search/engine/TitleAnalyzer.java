@@ -1,5 +1,6 @@
 package com.scaling.libraryservice.search.engine;
 
+import static com.scaling.libraryservice.search.engine.TitleType.*;
 import static com.scaling.libraryservice.search.engine.Token.ETC_TOKEN;
 import static com.scaling.libraryservice.search.engine.Token.NN_TOKEN;
 
@@ -38,8 +39,7 @@ public class TitleAnalyzer {
         Map<Token, List<String>> titleMap = tokenizer.tokenize(query);
 
         // title 분석에 대한 결과를 담을 TitleQuery의 builder를 만든다.
-        TitleQueryBuilder titleQueryBuilder
-            = new TitleQueryBuilder().userQuery(originalQuery);
+        TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder().userQuery(originalQuery);
 
         // 형태소 분석을 마친 결과를 TitleQuery의 멤버 변수에 맞게 각각 담는다.
         putAnalyzedWord(titleMap, titleQueryBuilder);
@@ -70,7 +70,7 @@ public class TitleAnalyzer {
 
         // 명사 토큰이 최대치 이상이면 명사만을 가지고 검색하는 전략을 택한다. 아닐 때는 다른 어절도 고려한다.
         return nnCnt >= TOKEN_MAX_SIZE ?
-            titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build() :
+            titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build() :
             considerEtcToken(nnCnt, etcCnt, titleQueryBuilder);
     }
 
@@ -86,11 +86,12 @@ public class TitleAnalyzer {
 
     private TitleQuery considerNnToken(int nnCnt, TitleQueryBuilder titleQueryBuilder) {
 
+        String userQuery = titleQueryBuilder.getUserQuery();
+
         return nnCnt < TOKEN_MIN_SIZE ?
             // 명사 토큰의 갯수가 최소값을 넘지 못하면 검색어를 가지고 전체 검색 모드
-            titleQueryBuilder.titleType(TitleType.TOKEN_ALL_ETC)
-                .etcToken(titleQueryBuilder.getUserQuery()).build()
-            : titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX).build();
+            titleQueryBuilder.titleType(TOKEN_ALL_ETC).etcToken(userQuery).build()
+            : titleQueryBuilder.titleType(TOKEN_COMPLEX).build();
     }
 
     // 명사 이외의 토큰이 최소값을 못 넘으면 명사만 가지고 검색하는 전략을 택한다
@@ -98,14 +99,15 @@ public class TitleAnalyzer {
     private TitleQuery decideNnSearchMode(int nnCnt,
         TitleQueryBuilder titleQueryBuilder) {
 
+        String userQuery = titleQueryBuilder.getUserQuery();
+
         if (isNotNnTokenEqualUserQuery(titleQueryBuilder)) {
-            return titleQueryBuilder.titleType(TitleType.TOKEN_COMPLEX)
-                .etcToken(titleQueryBuilder.getUserQuery()).build();
+            return titleQueryBuilder.titleType(TOKEN_COMPLEX).etcToken(userQuery).build();
         }
 
         return nnCnt == TOKEN_MIN_SIZE ?
-            titleQueryBuilder.titleType(TitleType.TOKEN_ONE).build()
-            : titleQueryBuilder.titleType(TitleType.TOKEN_TWO_OR_MORE).build();
+            titleQueryBuilder.titleType(TOKEN_ONE).build()
+            : titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
     }
 
     private boolean isNotNnTokenEqualUserQuery(TitleQueryBuilder builder) {

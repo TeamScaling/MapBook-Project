@@ -9,11 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class BookVo {
+
     // ISBN-13
     @CsvBindByName(column = "ISBN_THIRTEEN_NO")
     private String isbnThirteenNo;
@@ -46,7 +48,7 @@ public class BookVo {
     @CsvBindByName(column = "TITLE_TOKEN")
     private String titleToken;
 
-    public BookVo(Book book,String titleToken) {
+    public BookVo(Book book, String titleToken) {
         this.isbnThirteenNo = book.getIsbn();
         this.titleNm = book.getTitle();
         this.authrNm = book.getAuthor();
@@ -66,6 +68,17 @@ public class BookVo {
         this.loanCnt = book.getLoanCnt();
         this.publishDate = book.getPublishDate();
         this.titleToken = book.getTitleToken();
+    }
+
+    public BookVo(String authrTitleToken, Book book) {
+        this.isbnThirteenNo = book.getIsbn();
+        this.titleNm = book.getTitle();
+        this.authrNm = book.getAuthor();
+        this.imageUrl = book.getBookImg();
+        this.bookIntrcn = book.getContent();
+        this.loanCnt = book.getLoanCnt();
+        this.publishDate = book.getPublishDate();
+        this.titleToken = authrTitleToken;
     }
 
 

@@ -2,6 +2,7 @@ package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
@@ -71,10 +72,7 @@ public class CustomCacheManager<K, I> {
      * @param customer 제거할 캐시의 클래스 정보
      */
     public void removeCaching(Class<?> customer) {
-
-        if (commonsCache.containsKey(customer)) {
-            commonsCache.remove(customer);
-        } else {
+        if (commonsCache.remove(customer) == null) {
             log.error("해지 하고자 하는 캐싱 정보가 없습니다. [{}]", customer);
             throw new IllegalArgumentException();
         }
@@ -87,7 +85,6 @@ public class CustomCacheManager<K, I> {
      * @return 캐시를 사용 중이면 true, 그렇지 않으면 false
      */
     public boolean isUsingCaching(Class<?> customer) {
-
         return commonsCache.containsKey(customer);
     }
 
@@ -101,10 +98,8 @@ public class CustomCacheManager<K, I> {
     public boolean isContainItem(Class<?> customer, CacheKey<K,I> personalKey) {
 
         if (isUsingCaching(customer)) {
-
             return commonsCache.get(customer).getIfPresent(personalKey) != null;
         } else {
-
             throw new IllegalArgumentException(customer + "is not registered for caching");
         }
     }
@@ -119,14 +114,12 @@ public class CustomCacheManager<K, I> {
      */
      CacheKey<K,I> generateCacheKey(@NonNull Object[] arguments) throws UnsupportedOperationException {
 
-        for(Object obj : arguments){
-
-            if(obj instanceof CacheKey<?,?>){
-                return (CacheKey<K,I>) obj;
-            }
-        }
-
-        throw new UnsupportedOperationException(
-            "No suitable CacheKey implementation found for class: ");
+         return Arrays.stream(arguments)
+             .filter(object -> object instanceof CacheKey<?,?>)
+             .map(obj -> (CacheKey<K,I>) obj)
+             .findAny()
+             .orElseThrow(() ->
+                 new UnsupportedOperationException("No suitable CacheKey implementation found for class: ")
+             );
     }
 }

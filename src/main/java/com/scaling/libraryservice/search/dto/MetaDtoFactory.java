@@ -1,8 +1,13 @@
 package com.scaling.libraryservice.search.dto;
 
 import com.scaling.libraryservice.search.dto.MetaDto.Builder;
+import org.springframework.data.domain.Page;
 
 public class MetaDtoFactory {
+
+    public static MetaDto createDefaultMetaDto(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto){
+        return new MetaDto(fetchedBooks, reqBookDto);
+    }
 
     public static MetaDto createIsbnMetaDto(String isbn) {
         return getOneMetaBuilder().withUserQuery(isbn).build();

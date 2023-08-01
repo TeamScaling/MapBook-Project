@@ -86,25 +86,29 @@ public class BookSearchService {
         Page<BookDto> books =
             asyncExecutor.execute(
                 createFindBooksTask(titleQuery, createPageableFromRequest(reqBookDto))
-                , reqBookDto, timeout, isAsyncSupport);
+                , reqBookDto
+                , timeout
+                , isAsyncSupport
+            );
 
         Optional<BookDto> potentialMatchBook = matchingQueryAndTitle(books, reqBookDto);
 
-        return potentialMatchBook.map(
-                bookDto -> createOneBookRespDto(reqBookDto.getUserQuery(), bookDto))
-            .orElseGet(() -> createDefaultRespBooksDto(books, reqBookDto));
+        return potentialMatchBook
+            .map(bookDto -> createOneBookRespDto(reqBookDto.getUserQuery(), bookDto))
+            .orElseGet(() -> createDefaultRespBooksDto(books, reqBookDto)
+        );
     }
 
     private Optional<BookDto> matchingQueryAndTitle(Page<BookDto> booksPage,
         ReqBookDto reqBookDto) {
         return booksPage
             .stream()
-            .filter(
-                bookDto -> isUserQueryMatchingBook(
+            .filter(bookDto -> isUserQueryMatchingBook(
                     reqBookDto.getUserQuery(),
                     bookDto, reqBookDto.getPage()
                 )
-            ).findFirst();
+            )
+            .findFirst();
     }
 
     private boolean isUserQueryMatchingBook(String userQuery, BookDto bookDto, int page) {
@@ -114,7 +118,7 @@ public class BookSearchService {
     }
 
     private Supplier<Page<BookDto>> createFindBooksTask(TitleQuery titleQuery, Pageable pageable) {
-        return () -> bookRepository.findBooks(titleQuery, pageable);
+        return () -> bookRepository.findAllBooks(titleQuery, pageable);
     }
 
     private Pageable createPageableFromRequest(ReqBookDto reqBookDto) {

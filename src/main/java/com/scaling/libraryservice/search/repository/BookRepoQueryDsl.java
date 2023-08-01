@@ -13,7 +13,6 @@ import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.engine.SearchMode;
 import com.scaling.libraryservice.search.engine.TitleQuery;
@@ -38,7 +37,7 @@ public class BookRepoQueryDsl {
     private final static int LIMIT_CNT = 100;
     private final static double SCORE_OF_MATCH = 0.0;
 
-    public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
+    public Page<BookDto> findAllBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
@@ -47,20 +46,28 @@ public class BookRepoQueryDsl {
 
         // 최종적으로 페이징 처리된 도서 검색 결과를 반환.
         return PageableExecutionUtils.getPage(
-            books.fetch().stream().map(BookDto::new).collect(Collectors.toList()),
-            pageable, () -> LIMIT_CNT);
+            books.fetch()
+                .stream()
+                .map(BookDto::new)
+                .collect(Collectors.toList()),
+            pageable,
+            () -> LIMIT_CNT
+        );
     }
 
     public BookDto findBooksByIsbn(String isbn) {
         Optional<Book> optBook = getNullableBookByIsbn(isbn);
-        return optBook.map(BookDto::new).orElseGet(BookDto::emptyDto);
+        return optBook.map(BookDto::new)
+            .orElseGet(BookDto::emptyDto);
     }
 
-    private Optional<Book> getNullableBookByIsbn(String isbn){
+    private Optional<Book> getNullableBookByIsbn(String isbn) {
 
-       return Optional.ofNullable(factory
-           .selectFrom(book)
-           .where(book.isbn.eq(isbn)).fetchOne());
+        return Optional.ofNullable(
+            factory
+                .selectFrom(book)
+                .where(book.isbn.eq(isbn))
+                .fetchOne());
     }
 
 
@@ -82,14 +89,18 @@ public class BookRepoQueryDsl {
         SearchMode mode = titleQuery.getTitleType().getMode();
 
         if (titleQuery.getTitleType() == TOKEN_ALL_ETC) {
-            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.title);
+            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.titleToken);
         } else {
             addFullTextSearchQuery(builder, mode, titleQuery.getNnToken(), book.titleToken);
 
             // 명사와 나머지 단어들도 함께 찾아야 하면 title에 대한 Full Text 구문을 추가 한다.
             if (titleQuery.getTitleType() == TOKEN_COMPLEX) {
-                addFullTextSearchQuery(builder, titleQuery.getTitleType().getSecondMode(),
-                    titleQuery.getEtcToken(), book.title);
+                addFullTextSearchQuery(
+                    builder,
+                    titleQuery.getTitleType().getSecondMode(),
+                    titleQuery.getEtcToken(),
+                    book.title
+                );
             }
         }
 
@@ -102,8 +113,12 @@ public class BookRepoQueryDsl {
         builder.and(
             getTemplate(
                 mode,
-                token, colum).gt(
-                SCORE_OF_MATCH));
+                token,
+                colum
+            ).gt(
+                SCORE_OF_MATCH
+            )
+        );
     }
 
 
@@ -119,9 +134,7 @@ public class BookRepoQueryDsl {
         } else {
             function = "function('NaturalMatch',{0},{1})";
         }
-
-        return Expressions.numberTemplate(Double.class,
-            function, colum, name);
+        return Expressions.numberTemplate(Double.class, function, colum, name);
     }
 
     private JPAQuery<Long> countQueryAll(NumberExpression<Long> expression) {
@@ -134,15 +147,39 @@ public class BookRepoQueryDsl {
     // csv file로 변환 할 때 사용하기 위한 메소드.
     public Page<Book> findAllAndSort(Pageable pageable) {
 
-        JPAQuery<Book> books = factory
-            .selectFrom(book)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .orderBy(book.loanCnt.desc());
+        JPAQuery<Book> booksJpaQuery =
+            getJpaQueryFind(pageable)
+                .orderBy(
+                    book.loanCnt.desc()
+                );
 
+        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, book.count());
+    }
+
+    public Page<Book> findAllBooks(Pageable pageable) {
+
+        JPAQuery<Book> booksJpaQuery = getJpaQueryFind(pageable);
+
+        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, book.count());
+    }
+
+    private Page<?> getPagingFromJpaQuery(JPAQuery<?> books, Pageable pageable,
+        NumberExpression<Long> expression) {
         return PageableExecutionUtils.getPage(
             books.fetch(),
-            pageable, () -> countQueryAll(book.count()).fetchOne());
+            pageable,
+            () -> countQueryAll(expression).fetchOne()
+        );
+    }
+
+
+    private JPAQuery<Book> getJpaQueryFind(Pageable pageable) {
+
+        return factory
+            .select(book)
+            .from(book)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize());
     }
 
     public Page<String> findTitleToken(Pageable pageable) {
@@ -153,16 +190,16 @@ public class BookRepoQueryDsl {
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
 
-        return PageableExecutionUtils.getPage(
-            books.fetch(),
-            pageable, () -> countQueryAll(book.titleToken.count()).fetchOne());
+        return (Page<String>) getPagingFromJpaQuery(books, pageable, book.titleToken.count());
     }
 
-    public String splitAddPlus(@NonNull String target) {
+    // boolean mode를 위한 메소드
+    private String splitAddPlus(@NonNull String target) {
         target = target.trim();
         return Arrays.stream(target.split(" "))
             .map(name -> "+" + name)
-            .collect(Collectors.joining(" "));
+            .collect(Collectors.joining(" ")
+            );
     }
 
 }

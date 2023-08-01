@@ -4,12 +4,17 @@ import com.scaling.libraryservice.dataPipe.csv.util.CsvWriter;
 import com.scaling.libraryservice.dataPipe.vo.BookVo;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import com.scaling.libraryservice.search.engine.TitleQuery;
+import com.scaling.libraryservice.search.engine.filter.SimpleFilter;
+import com.scaling.libraryservice.search.engine.filter.StopWordFilter;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -19,7 +24,6 @@ public class BookExporter extends ExporterService<BookVo, Book> {
 
     private final TitleAnalyzer titleAnalyzer;
     private final BookRepoQueryDsl bookRepository;
-
     private Page<Book> page;
 
     public BookExporter(CsvWriter<BookVo> csvWriter,
@@ -35,7 +39,7 @@ public class BookExporter extends ExporterService<BookVo, Book> {
     List<BookVo> exportVoWithOption(Pageable pageable, String outputName, boolean option) {
         // 대출 횟수(loan_cnt) 기준으로 내림 차순으로 데이터를 입력하고,
         // 실제 작업을 수행하기 위해 DB에서 Java단으로 데이터를 가져온다
-        this.page = bookRepository.findAllAndSort(pageable);
+        this.page = bookRepository.findAllBooks(pageable);
         List<BookVo> books = new ArrayList<>();
 
         page.stream().forEach(book -> {
@@ -43,9 +47,10 @@ public class BookExporter extends ExporterService<BookVo, Book> {
                 TitleQuery query = titleAnalyzer.analyze(book.getTitle(), false);
                 String distinctToken = distinctToken(query.getNnToken());
 
-                books.add(new BookVo(book,distinctToken));
+                books.add(new BookVo(book, distinctToken));
             } else {
-                books.add(new BookVo(book));
+                String titleToken = authorAndTitleToken(book);
+                books.add(new BookVo(titleToken, book));
             }
         });
 
@@ -54,9 +59,24 @@ public class BookExporter extends ExporterService<BookVo, Book> {
         return books;
     }
 
-    private String distinctToken(String query){
+    // 기존 title_token에 저자를 합친다.
+    private String authorAndTitleToken(Book book) {
+        SimpleFilter simpleFilter = new SimpleFilter(new StopWordFilter(null));
 
-        return Arrays.stream(query.split(" ")).distinct()
+        String titleTokens = book.getTitleToken().isBlank() ? "" : book.getTitleToken();
+        String author = simpleFilter.filtering(book.getAuthor());
+
+        Set<String> distinctTokens = Stream.of(titleTokens, author)
+            .flatMap(token -> Arrays.stream(token.split(" ")))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        return String.join(" ", distinctTokens);
+    }
+
+    private String distinctToken(String query) {
+
+        return Arrays.stream(query.split(" "))
+            .distinct()
             .collect(Collectors.joining(" "));
     }
 

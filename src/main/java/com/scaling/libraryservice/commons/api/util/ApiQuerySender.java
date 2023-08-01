@@ -69,11 +69,11 @@ public class ApiQuerySender {
 
         ExecutorService service = Executors.newFixedThreadPool(nThreads);
 
-        List<CompletableFuture<ResponseEntity<String>>> futures =
-            apiConnections.stream()
-                .map(conn -> CompletableFuture.supplyAsync(() -> sendSingleQuery(conn, httpEntity),
-                    service)).toList();
-
+        List<CompletableFuture<ResponseEntity<String>>> futures = apiConnections.stream()
+            .map(conn -> CompletableFuture.supplyAsync(
+                () -> sendSingleQuery(conn, httpEntity),
+                service)
+            ).toList();
 
         try {
             return futures.stream()

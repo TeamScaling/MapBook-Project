@@ -52,11 +52,15 @@ public class CircuitBreakerSupporter {
     private ApiObserver constructAndPutObserver(ApiMonitoring apiMonitoring,
         Class<? extends ApiObserver> observerClazz) throws Exception {
 
-        Constructor<? extends ApiObserver> constructor = apiMonitoring.api()
-            .getDeclaredConstructor();
+        Constructor<? extends ApiObserver> constructor =
+            apiMonitoring
+                .api()
+                .getDeclaredConstructor();
 
         constructor.setAccessible(true);
+
         ApiObserver apiObserver = constructor.newInstance();
+
         observerMap.put(observerClazz, apiObserver);
 
         return apiObserver;
@@ -75,15 +79,10 @@ public class CircuitBreakerSupporter {
     Method extractSubstituteMethod(@NonNull ApiMonitoring apiMonitoring,
         @NonNull Method[] methods) {
 
-        Optional<Method> substituteMethod = Arrays.stream(methods)
+        return Arrays.stream(methods)
             .filter(method -> isSubstituteMethod(method, apiMonitoring.substitute()))
-            .findAny();
-
-        if (substituteMethod.isEmpty()) {
-            throw new IllegalArgumentException();
-        } else {
-            return substituteMethod.get();
-        }
+            .findAny()
+            .orElseThrow(IllegalArgumentException::new);
     }
 
     private boolean isSubstituteMethod(Method method, String substituteNm) {

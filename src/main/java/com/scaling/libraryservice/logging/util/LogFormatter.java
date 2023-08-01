@@ -13,8 +13,7 @@ public class LogFormatter {
     // logMessageMap엔 logger가 저장하는 [userQuery (key) : 정석(value)] 식의 로그 메시지이다.
     public static String formatting(TaskType taskType, Map<String,String> logMessageMap){
 
-        return createLogTemplate(taskType)
-            .append(formatLogMessages(logMessageMap)).toString();
+        return createLogTemplate(taskType).append(formatLogMessages(logMessageMap)).toString();
     }
 
     // 공통적인 로그 구조를 StringBuilder에 넣어서 반환 한다.
@@ -28,7 +27,8 @@ public class LogFormatter {
             "[%s] - %s [%s] --- ",
             formatDateTime(LocalDateTime.now()),
             taskType.getCode(),
-            taskType.getName());
+            taskType.getName()
+        );
     }
 
     // 공통적으로 로그 발생 날짜 시간을 위한 구조
@@ -41,7 +41,7 @@ public class LogFormatter {
     private static String formatLogMessages(Map<String, String> logMessages) {
 
         return logMessages.entrySet().stream()
-            .map(entry -> String.format("[%s : %s]", entry.getKey(), entry.getValue()))
+            .map(entry -> String.format("[%s : %s]", entry.getKey(),entry.getValue()))
             .collect(Collectors.joining(" "));
     }
 

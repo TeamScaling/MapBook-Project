@@ -71,7 +71,6 @@ public class CsvFileMerger {
 
         try (Reader reader = Files.newBufferedReader(
             file.toPath(), Charset.forName("EUC-KR"))) {
-
             return new CSVParser(reader, CSVFormat.DEFAULT);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
