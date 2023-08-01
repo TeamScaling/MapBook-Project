@@ -18,7 +18,7 @@ public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
     public String filtering(String query) {
         return progressFilter(
             removeSpecialChar(
-                query.trim().toLowerCase()
+                query.toLowerCase()
             ),
             this.nextFilter
         );
@@ -26,8 +26,12 @@ public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
 
     // 특수문자를 제거 한다.
     String removeSpecialChar(String query) {
-        query = query.replaceAll(ALLOWED_CHARS_REGEX + "|\\s+", " ");
+        query = query.replaceAll(ALLOWED_CHARS_REGEX, " ")
+            .replaceAll("\\s+", " ")
+            .trim();
+
         checkValidation(query);
+
         return query;
     }
 
