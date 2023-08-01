@@ -1,10 +1,3 @@
-document.querySelector('#search-input').addEventListener('keydown',
-    function (event) {
-      if (event.keyCode === 13) {
-        const query = $('#search-input').val().trim();
-        searchBook(query);
-      }
-    });
 
 document.querySelector('#search-input-btn').addEventListener('click',
     function (event) {
@@ -195,10 +188,16 @@ $('#search-input').autocomplete({
   autoFocus: false,
   delay: 300,
   select: function (evt, ui) {
-    // 선택한 값으로 검색창의 값을 갱신하고 검색 함수를 호출
+    // 선택한 값으로 검색창의 값을 갱신
     $('#search-input').val(ui.item.label);
-    searchBook(ui.item.label);
     return false;
+  },
+  close: function (evt) {
+    // 검색 함수를 호출
+    const query = $('#search-input').val().trim();
+    if (query !== '') {
+      searchBook(query);
+    }
   }
 });
 
@@ -262,3 +261,15 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+document.querySelector('#search-input').addEventListener('keydown',
+    function (event) {
+
+      if (event.defaultPrevented) {
+        return;
+      }
+
+      if (event.keyCode === 13) {
+        const query = $('#search-input').val().trim();
+        searchBook(query);
+      }
+    });

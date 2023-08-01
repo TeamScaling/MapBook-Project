@@ -39,7 +39,7 @@ public class RespBooksDto implements TimeMeasurable<MetaDto> {
 
     public static RespBooksDto sessionRespBookDto(MetaDto meta,BookDto bookDto){
 
-        return new RespBooksDto(meta,List.of(bookDto));
+        return new RespBooksDto(MetaDto.sessionMetaDto(meta.getSearchTime()),List.of(bookDto));
     }
 
     public boolean isEmptyResult(){

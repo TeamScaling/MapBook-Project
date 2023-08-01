@@ -47,14 +47,13 @@ public class MetaDto {
             .build();
     }
 
-    public static MetaDto sessionMetaDto(String userQuery,String searchTime){
+    public static MetaDto sessionMetaDto(String searchTime){
         return MetaDto.builder()
-            .userQuery(userQuery)
-            .totalPages(0)
-            .totalElements(0)
-            .currentPage(0)
-            .pageSize(0)
-            .searchTime("")
+            .totalPages(1)
+            .totalElements(1)
+            .currentPage(1)
+            .pageSize(1)
+            .searchTime(searchTime)
             .build();
     }
 

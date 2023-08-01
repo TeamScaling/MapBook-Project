@@ -27,7 +27,6 @@ public class SearchController {
     private static final int DEFAULT_TIMEOUT = 3;
     private static final int DEFAULT_PAGE = 1;
     private static final int SESSION_INTERVAL = 3;
-
     private final SearchLogger searchLogger;
 
     private final BookSessionService bookSessionService;
