@@ -13,29 +13,31 @@ import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.dto.BookDto;
+import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.engine.SearchMode;
 import com.scaling.libraryservice.search.engine.TitleQuery;
-import com.scaling.libraryservice.search.engine.util.TitleTrimmer;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
 @Repository
 @Slf4j
-public class BookRepoQueryDsl implements BookRepository {
+public class BookRepoQueryDsl {
 
     private final JPAQueryFactory factory;
 
     private final static int LIMIT_CNT = 100;
     private final static double SCORE_OF_MATCH = 0.0;
 
-    @Override
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
@@ -49,6 +51,19 @@ public class BookRepoQueryDsl implements BookRepository {
             pageable, () -> LIMIT_CNT);
     }
 
+    public BookDto findBooksByIsbn(String isbn) {
+        Optional<Book> optBook = getNullableBookByIsbn(isbn);
+        return optBook.map(BookDto::new).orElseGet(BookDto::emptyDto);
+    }
+
+    private Optional<Book> getNullableBookByIsbn(String isbn){
+
+       return Optional.ofNullable(factory
+           .selectFrom(book)
+           .where(book.isbn.eq(isbn)).fetchOne());
+    }
+
+
     private JPAQuery<Book> getFtSearchJPAQuery(TitleQuery titleQuery,
         Pageable pageable) {
 
@@ -61,7 +76,7 @@ public class BookRepoQueryDsl implements BookRepository {
             .limit(pageable.getPageSize());
     }
 
-    private BooleanBuilder configBuilder(TitleQuery titleQuery){
+    private BooleanBuilder configBuilder(TitleQuery titleQuery) {
 
         BooleanBuilder builder = new BooleanBuilder();
         SearchMode mode = titleQuery.getTitleType().getMode();
@@ -70,10 +85,11 @@ public class BookRepoQueryDsl implements BookRepository {
             addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.title);
         } else {
             addFullTextSearchQuery(builder, mode, titleQuery.getNnToken(), book.titleToken);
-            
+
             // 명사와 나머지 단어들도 함께 찾아야 하면 title에 대한 Full Text 구문을 추가 한다.
             if (titleQuery.getTitleType() == TOKEN_COMPLEX) {
-                addFullTextSearchQuery(builder, titleQuery.getTitleType().getSecondMode(), titleQuery.getEtcToken(), book.title);
+                addFullTextSearchQuery(builder, titleQuery.getTitleType().getSecondMode(),
+                    titleQuery.getEtcToken(), book.title);
             }
         }
 
@@ -98,9 +114,8 @@ public class BookRepoQueryDsl implements BookRepository {
 
         if (mode == BOOLEAN_MODE) {
             function = "function('BooleanMatch',{0},{1})";
-
             // boolean 모드에서 모두 반드시 포함된 결과를 위해 '+'를 붙여주는 정적 메소드 호출.
-            name = TitleTrimmer.splitAddPlus(name);
+            name = splitAddPlus(name);
         } else {
             function = "function('NaturalMatch',{0},{1})";
         }
@@ -130,7 +145,7 @@ public class BookRepoQueryDsl implements BookRepository {
             pageable, () -> countQueryAll(book.count()).fetchOne());
     }
 
-    public Page<String> findTitleToken(Pageable pageable){
+    public Page<String> findTitleToken(Pageable pageable) {
 
         JPAQuery<String> books = factory
             .select(book.titleToken)
@@ -141,6 +156,13 @@ public class BookRepoQueryDsl implements BookRepository {
         return PageableExecutionUtils.getPage(
             books.fetch(),
             pageable, () -> countQueryAll(book.titleToken.count()).fetchOne());
+    }
+
+    public String splitAddPlus(@NonNull String target) {
+        target = target.trim();
+        return Arrays.stream(target.split(" "))
+            .map(name -> "+" + name)
+            .collect(Collectors.joining(" "));
     }
 
 }

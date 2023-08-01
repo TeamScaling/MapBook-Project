@@ -91,9 +91,9 @@ class CustomCacheManagerTest {
             request, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Cache data for [{}] backed up successfully");
+            System.out.println("Cache dataPipe for [{}] backed up successfully");
         } else {
-            System.out.println("Failed to back up cache data for [{}]");
+            System.out.println("Failed to back up cache dataPipe for [{}]");
         }
     }
 

@@ -52,7 +52,7 @@ public class TitleQuery {
         private TitleType titleType;
         private String etcToken;
         private String nnToken;
-        private String query;
+        private String userQuery;
 
         public TitleQueryBuilder titleType(TitleType titleType) {
             this.titleType = titleType;
@@ -69,17 +69,29 @@ public class TitleQuery {
             return this;
         }
 
-        public TitleQueryBuilder query(String query) {
-            this.query = query;
+        public TitleQueryBuilder userQuery(String query) {
+            this.userQuery = query;
             return this;
         }
 
-        public String getQuery() {
-            return query;
+        public String getUserQuery() {
+            return userQuery;
+        }
+
+        public TitleType getTitleType() {
+            return titleType;
+        }
+
+        public String getEtcToken() {
+            return etcToken;
+        }
+
+        public String getNnToken() {
+            return nnToken;
         }
 
         public TitleQuery build() {
-            return new TitleQuery(titleType, etcToken, nnToken, query);
+            return new TitleQuery(titleType, etcToken, nnToken, userQuery);
         }
     }
 }

@@ -27,9 +27,19 @@ public class RespBooksDto implements TimeMeasurable<MetaDto> {
         this.documents = booksPage.stream().collect(Collectors.toList());
     }
 
-    public static RespBooksDto emptyDto(String userQeury){
+    public static RespBooksDto emptyRespBookDto(String userQeury){
 
         return new RespBooksDto(MetaDto.emptyDto(userQeury), Collections.emptyList());
+    }
+
+    public static RespBooksDto isbnRespBookDto(String userQuery,BookDto bookDto){
+
+        return new RespBooksDto(MetaDto.isbnMetaDto(userQuery),List.of(bookDto));
+    }
+
+    public static RespBooksDto sessionRespBookDto(MetaDto meta,BookDto bookDto){
+
+        return new RespBooksDto(MetaDto.sessionMetaDto(meta.getSearchTime()),List.of(bookDto));
     }
 
     public boolean isEmptyResult(){

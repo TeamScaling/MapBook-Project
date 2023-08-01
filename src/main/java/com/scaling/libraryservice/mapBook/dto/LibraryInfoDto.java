@@ -17,6 +17,7 @@ import org.springframework.lang.NonNull;
 @AllArgsConstructor
 public class LibraryInfoDto {
 
+    private final Integer libCd;
     private final String libNm;
 
     private final Integer libNo;
@@ -43,17 +44,12 @@ public class LibraryInfoDto {
         this.libArea = libraryInfo.getLibArea();
         this.libUrl = libraryInfo.getLibUrl();
         this.areaCd = libraryInfo.getAreaCd();
+        this.libCd = libraryInfo.getLibCd();
     }
 
 
     public LibraryInfoDto(LibraryInfo libraryInfo,boolean hasBook,boolean isHasBookSupport) {
-        this.libNm = libraryInfo.getLibNm();
-        this.libNo = libraryInfo.getLibNo();
-        this.libLon = libraryInfo.getLibLon();
-        this.libLat = libraryInfo.getLibLat();
-        this.libArea = libraryInfo.getLibArea();
-        this.libUrl = libraryInfo.getLibUrl();
-        this.areaCd = libraryInfo.getAreaCd();
+        this(libraryInfo);
         this.hasBook = hasBook;
         this.isHasBookSupport = isHasBookSupport;
     }

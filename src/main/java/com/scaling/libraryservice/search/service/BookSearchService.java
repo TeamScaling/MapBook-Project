@@ -1,5 +1,8 @@
 package com.scaling.libraryservice.search.service;
 
+import static com.scaling.libraryservice.search.dto.RespBooksDto.emptyRespBookDto;
+import static com.scaling.libraryservice.search.dto.RespBooksDto.isbnRespBookDto;
+
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.commons.caching.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
@@ -8,7 +11,7 @@ import com.scaling.libraryservice.search.dto.MetaDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
-import com.scaling.libraryservice.search.repository.BookRepository;
+import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import com.scaling.libraryservice.search.engine.TitleQuery;
 import java.util.List;
@@ -31,7 +34,7 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookRepository bookRepository;
+    private final BookRepoQueryDsl bookRepository;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     /**
@@ -49,11 +52,27 @@ public class BookSearchService {
 
         String userQuery = reqBookDto.getQuery();
 
+        if (isIsbnQuery(userQuery)) {
+            return searchBookByIsbn(userQuery);
+        }
+
         TitleQuery titleQuery = titleAnalyzer.analyze(userQuery, true);
 
         return titleQuery.isEmptyTitleQuery() ?
-            RespBooksDto.emptyDto(userQuery)
+            emptyRespBookDto(userQuery)
             : searchBookWithAsync(titleQuery, reqBookDto, timeout, isAsyncSupport);
+    }
+
+    private RespBooksDto searchBookByIsbn(String userQuery) {
+
+        BookDto bookDto = bookRepository.findBooksByIsbn(userQuery);
+
+        return bookDto.isEmpty() ? emptyRespBookDto(userQuery)
+            : isbnRespBookDto(userQuery, bookDto);
+    }
+
+    boolean isIsbnQuery(String isbn) {
+        return isbn.length() >= 10 && isbn.matches("\\d+");
     }
 
 
@@ -76,10 +95,11 @@ public class BookSearchService {
         return PageRequest.of(reqBookDto.getPage() - 1, reqBookDto.getSize());
     }
 
-    public List<BookDto> autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
+    @MeasureTaskTime
+    public RespBooksDto autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
         boolean isAsyncSupport) {
 
-        return searchBooks(reqBookDto, timeout, isAsyncSupport).getDocuments();
+        return searchBooks(reqBookDto, timeout, isAsyncSupport);
     }
 
 }

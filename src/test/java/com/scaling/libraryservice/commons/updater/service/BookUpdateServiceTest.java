@@ -6,9 +6,10 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
-import com.scaling.libraryservice.commons.updater.dto.BookApiDto;
-import com.scaling.libraryservice.commons.updater.entity.UpdateBook;
-import com.scaling.libraryservice.commons.updater.repository.BookUpdateRepository;
+import com.scaling.libraryservice.dataPipe.updater.dto.BookApiDto;
+import com.scaling.libraryservice.dataPipe.updater.entity.UpdateBook;
+import com.scaling.libraryservice.dataPipe.updater.repository.BookUpdateRepository;
+import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
