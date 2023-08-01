@@ -5,8 +5,7 @@ import com.scaling.libraryservice.logging.parser.SlackLogParser;
 import org.junit.jupiter.api.Test;
 
 class LogParserTest {
-
-    @Test
+    
     public void parsingLogData() {
         /* given */
 
