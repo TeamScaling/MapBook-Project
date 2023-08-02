@@ -69,6 +69,8 @@ public class SearchController {
             = bookSessionService.getBookDtoFromSession(query, session);
 
         if (sessionResult.isPresent()) {
+            searchLogger.sendLogToSlack(sessionResult.get());
+
             return ResponseEntity.ok(sessionResult.get());
         }
 
