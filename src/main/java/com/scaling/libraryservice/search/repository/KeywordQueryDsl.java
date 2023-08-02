@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class KeywordQueryDsl {
 
     private final JPAQueryFactory factory;
 
+    @Transactional(readOnly = true)
     public List<Keyword> getKeywords(String... words) {
 
         return words.length == 0

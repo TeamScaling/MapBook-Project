@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.commons.data;
 
-import com.scaling.libraryservice.dataPipe.csv.util.LibraryDataCsvMerger;
+import com.scaling.libraryservice.dataPipe.csv.util.LoanCntCsvNormalizer;
 import org.apache.commons.csv.CSVFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class LibraryDataCsvMergerTest {
     
     @Autowired
-    LibraryDataCsvMerger merger;
+    LoanCntCsvNormalizer merger;
 
     public void execute(){
         /* given */

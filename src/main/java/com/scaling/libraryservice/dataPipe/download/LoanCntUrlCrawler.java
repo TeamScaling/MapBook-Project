@@ -12,7 +12,7 @@ import org.springframework.lang.NonNull;
 public class LoanCntUrlCrawler {
 
     //강남구립논현도서관 장서/대출 목록
-    private static final String TARGET_URL = "https://data4library.kr/openDataV?libcode=4502";
+    private static final String TARGET_URL = "https://data4library.kr/openDataV?libcode=";
     private static final String COMMON_DOWNLOAD_URL = "https://www.data4library.kr";
 
     public static Optional<String> getDownloadUrl(int libCode, String date) throws IOException {
@@ -32,9 +32,8 @@ public class LoanCntUrlCrawler {
     }
 
     private static String getDetailUrl(@NonNull Element element) {
-        return Objects.requireNonNull(
-            element.selectFirst("a.download_link.text_type")
-        ).attr("dataPipe-url");
+        return Objects.requireNonNull(element.selectFirst("a.download_link.text_type"))
+            .attr("data-url");
     }
 
     private static boolean isContainsDateLine(Element link_td, String date) {

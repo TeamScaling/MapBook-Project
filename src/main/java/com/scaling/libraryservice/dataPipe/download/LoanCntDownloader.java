@@ -11,49 +11,63 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Service
+@Service @Slf4j
 public class LoanCntDownloader {
 
     private final LibraryFindService libraryFindService;
 
-    private static final String DEFAULT_EXTENSION = "csv";
-    private static final String DEFAULT_DIRECTORY = "download/";
+    private static final String DEFAULT_EXTENSION = ".csv";
+    private static final String DEFAULT_DIRECTORY = "pipe/download/";
 
-    public void collectLoanCnt(String date) {
+    public void collectLoanCntFile(String outPutDirectory, String targetDate) {
+
+        log.info("[{}] is start",this.getClass().getSimpleName());
 
         // csv file을 서버로부터 다운 받기 위해 SSL을 모두 신뢰 한다.
         setupTrustAllSSLContext();
 
-        libraryFindService.getAllLibraries().forEach(
+        libraryFindService.getLibrariesWithLimit(50).forEach(
             library -> {
                 try {
                     Optional<String> url =
-                        LoanCntUrlCrawler.getDownloadUrl(library.getLibCd(), date);
+                        LoanCntUrlCrawler.getDownloadUrl(library.getLibCd(), targetDate);
 
                     if (url.isPresent()) {
-                        downloadFile(url.get(), configureFileName(library.getLibNm(), date));
+                        downloadFile(url.get(), configureFileName(
+                            outPutDirectory,
+                            library.getLibNm(),
+                            targetDate)
+                        );
                     }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             }
         );
+
+        log.info("[{}] is completed",this.getClass().getSimpleName());
     }
 
-    private String configureFileName(String libNm, String date) {
-        return DEFAULT_DIRECTORY + "/"
+    public static String getDefaultDirectory(){
+        return DEFAULT_DIRECTORY;
+    }
+
+    private String configureFileName(String outPutDirectory, String libNm, String date) {
+        return outPutDirectory + "/"
             + String.join(" ", libNm, date)
             + String.join(".", DEFAULT_EXTENSION);
     }
 
-    public void downloadFile(String siteUrl, String fileName) throws IOException {
+    private void downloadFile(String siteUrl, String fileName) throws IOException {
         InputStream in = new BufferedInputStream(new URL(siteUrl).openStream());
         OutputStream out = new FileOutputStream(fileName);
 
@@ -65,6 +79,7 @@ public class LoanCntDownloader {
         }
         out.close();
         in.close();
+        log.info("[{}] download complete",fileName);
     }
 
     private void setupTrustAllSSLContext() {
@@ -72,7 +87,8 @@ public class LoanCntDownloader {
         try {
             HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{generateAllTrustManager()}, new SecureRandom());
+            context.init(null, new X509TrustManager[]{generateAllTrustManager()},
+                new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,8 +100,10 @@ public class LoanCntDownloader {
         return new X509TrustManager() {
             public void checkClientTrusted(X509Certificate[] chain, String authType) {
             }
+
             public void checkServerTrusted(X509Certificate[] chain, String authType) {
             }
+
             public X509Certificate[] getAcceptedIssuers() {
                 return new X509Certificate[0];
             }

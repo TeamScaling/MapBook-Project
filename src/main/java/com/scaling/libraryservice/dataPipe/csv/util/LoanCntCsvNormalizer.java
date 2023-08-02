@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component  //다운 로드한 Csv 파일을 하나로 합친다. 작업용
-public class LibraryDataCsvMerger {
+public class LoanCntCsvNormalizer {
 
     private final LibraryFindService libraryFindService;
 
@@ -41,19 +41,13 @@ public class LibraryDataCsvMerger {
 
     // DB의 library 정보와 Csv file의 데이터 중 필요한 부분을 서로 합친다.
     public void mergeLibraryData(String inputFolder, String outputFileName,String charsetName, CSVFormat csvFormat) {
-
+        log.info("[{}] is start",this.getClass().getSimpleName());
         // libarary 정보를 DB에서 모두 가져온다.
         List<LibraryInfoDto> libraries = libraryFindService.getAllLibraries();
 
-        try (BufferedWriter writer = Files.newBufferedWriter(
-            Paths.get(outputFileName), StandardCharsets.UTF_8)) {
-
-            //가져온 library 정보와 csv file의 내용을 정규화 과정을 거치며 합친다.
-            processFilesMerging(getCsvFiles(inputFolder), writer, libraries,charsetName,csvFormat);
-
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        //가져온 library 정보와 csv file의 내용을 정규화 과정을 거치며 합친다.
+        processFilesMerging(getCsvFiles(inputFolder), libraries,charsetName,csvFormat,outputFileName);
+        log.info("[{}] is completed",this.getClass().getSimpleName());
     }
 
     private static File[] fileLoad(String inputFolder, String fileExtension) {
@@ -63,26 +57,26 @@ public class LibraryDataCsvMerger {
     }
 
 
-    private void processFilesMerging(File[] files, BufferedWriter writer,
-        List<LibraryInfoDto> libraries,String charsetName, CSVFormat csvFormat) {
+    private void processFilesMerging(File[] files,
+        List<LibraryInfoDto> libraries,String charsetName, CSVFormat csvFormat,String outPut) {
 
         AtomicBoolean headerSaved = new AtomicBoolean(false);
 
         Arrays.stream(files)
             .forEach(file -> {
-            // 필요한 칼럼에 해당하는 데이터만 저장 한다.
-            findLibraryInfo(file, libraries).ifPresent(
-                libraryInfoDto -> writeToCsv(
-                    file,
-                    writer,
-                    headerSaved,
-                    libraryInfoDto,
-                    charsetName,
-                    csvFormat)
-            );
+                // 필요한 칼럼에 해당하는 데이터만 저장 한다.
+                findLibraryInfo(file, libraries).ifPresent(
+                    libraryInfoDto -> writeToCsv(
+                        file,
+                        headerSaved,
+                        libraryInfoDto,
+                        charsetName,
+                        csvFormat,
+                        outPut)
+                );
 
-            headerSaved.set(true);
-        });
+                headerSaved.set(true);
+            });
     }
 
     private File[] getCsvFiles(String folder) {
@@ -96,12 +90,17 @@ public class LibraryDataCsvMerger {
             .findAny();
     }
 
-    private void writeToCsv(File file, BufferedWriter writer, AtomicBoolean headerSaved,
-        LibraryInfoDto library,String charsetName, CSVFormat csvFormat) {
+    private void writeToCsv(File file, AtomicBoolean headerSaved,
+        LibraryInfoDto library,String charsetName, CSVFormat csvFormat,String outputFileName) {
 
-        CSVParser csvParser = getCsvParser(file, charsetName, csvFormat);
+        try(Reader reader = Files.newBufferedReader(
+            file.toPath(), Charset.forName(charsetName));
 
-        try {
+            BufferedWriter writer = Files.newBufferedWriter(
+                Paths.get(outputFileName), StandardCharsets.UTF_8)) {
+
+            CSVParser csvParser = new CSVParser(reader, csvFormat);
+
             if (headerSaved.get()) {
                 writer.write(HEADER_NAME);
                 writer.newLine();

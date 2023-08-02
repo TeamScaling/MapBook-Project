@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Repository
@@ -37,6 +38,7 @@ public class BookRepoQueryDsl {
     private final static int LIMIT_CNT = 100;
     private final static double SCORE_OF_MATCH = 0.0;
 
+    @Transactional(readOnly = true)
     public Page<BookDto> findAllBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
@@ -55,12 +57,14 @@ public class BookRepoQueryDsl {
         );
     }
 
+    @Transactional(readOnly = true)
     public BookDto findBooksByIsbn(String isbn) {
         Optional<Book> optBook = getNullableBookByIsbn(isbn);
         return optBook.map(BookDto::new)
             .orElseGet(BookDto::emptyDto);
     }
 
+    
     private Optional<Book> getNullableBookByIsbn(String isbn) {
 
         return Optional.ofNullable(
@@ -144,6 +148,7 @@ public class BookRepoQueryDsl {
             .from(book);
     }
 
+    @Transactional(readOnly = true)
     // csv file로 변환 할 때 사용하기 위한 메소드.
     public Page<Book> findAllAndSort(Pageable pageable) {
 
@@ -156,6 +161,7 @@ public class BookRepoQueryDsl {
         return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, book.count());
     }
 
+    @Transactional(readOnly = true)
     public Page<Book> findAllBooks(Pageable pageable) {
 
         JPAQuery<Book> booksJpaQuery = getJpaQueryFind(pageable);
@@ -182,6 +188,7 @@ public class BookRepoQueryDsl {
             .limit(pageable.getPageSize());
     }
 
+    @Transactional(readOnly = true)
     public Page<String> findTitleToken(Pageable pageable) {
 
         JPAQuery<String> books = factory
