@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 
 public class MetaDtoFactory {
 
-    public static MetaDto createDefaultMetaDto(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto){
+    public static MetaDto createDefaultMetaDto(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto) {
         return new MetaDto(fetchedBooks, reqBookDto);
     }
 
@@ -22,7 +22,7 @@ public class MetaDtoFactory {
     private static Builder getOneMetaBuilder() {
         return new MetaDto.Builder()
             .withTotalPages(1)
-            .withTotalPages(1)
+            .withTotalElements(1)
             .withCurrentPage(1)
             .withPageSize(1);
     }

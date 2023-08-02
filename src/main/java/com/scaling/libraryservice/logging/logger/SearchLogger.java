@@ -24,7 +24,7 @@ public class SearchLogger extends AbstractLogger<RespBooksDto> {
     @Override
     TaskType determineTaskType(RespBooksDto respBooksDto) {
 
-        // 페이징 처리에 의한 중복 로킹 처리를 방지
+        // 페이징 처리에 의한 중복 로깅 처리를 방지
         if (isNoLoggingTask(respBooksDto)) {
             return NO_LOGGING_TASK;
         }
