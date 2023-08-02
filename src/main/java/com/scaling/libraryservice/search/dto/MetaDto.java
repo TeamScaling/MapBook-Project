@@ -35,6 +35,10 @@ public class MetaDto {
         this.userQuery = reqBookDto.getUserQuery();
     }
 
+    public void changeQueryToUserQuery(String userQuery) {
+        this.userQuery = userQuery;
+    }
+
     public MetaDto(String searchTime) {
         this.searchTime = searchTime;
     }

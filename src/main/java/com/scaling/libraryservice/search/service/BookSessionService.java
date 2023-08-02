@@ -2,6 +2,7 @@ package com.scaling.libraryservice.search.service;
 
 import static com.scaling.libraryservice.search.dto.RespBooksDtoFactory.createSessionRespBookDto;
 
+import com.scaling.libraryservice.search.dto.MetaDtoFactory;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.engine.util.SubTitleRemover;
 import java.util.Map;
@@ -36,7 +37,9 @@ public class BookSessionService {
         query = SubTitleRemover.removeSubTitle(query);
         RespBooksDto respBook = (RespBooksDto) httpSession.getAttribute(query);
 
+
         if (respBook != null) {
+            respBook.getMeta().changeQueryToUserQuery(query);
             return Optional.of(respBook);
         } else {
             return Optional.empty();

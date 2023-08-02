@@ -24,7 +24,7 @@ public class SearchControllerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(Exception.class)
+//    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception e){
         errorLogger.sendLogToSlack(e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

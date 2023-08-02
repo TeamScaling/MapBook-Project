@@ -4,6 +4,7 @@ import com.scaling.libraryservice.logging.logger.SearchLogger;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.search.service.BookSessionService;
 import java.util.List;
@@ -70,7 +71,6 @@ public class SearchController {
 
         if (sessionResult.isPresent()) {
             searchLogger.sendLogToSlack(sessionResult.get());
-
             return ResponseEntity.ok(sessionResult.get());
         }
 
