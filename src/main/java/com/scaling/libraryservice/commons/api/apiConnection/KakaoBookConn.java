@@ -26,7 +26,6 @@ public class KakaoBookConn implements ApiConnection {
 
     @Override
     public UriComponentsBuilder configUriBuilder() {
-
         return UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("query", target);
     }

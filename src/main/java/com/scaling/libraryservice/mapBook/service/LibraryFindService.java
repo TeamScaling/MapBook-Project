@@ -76,8 +76,7 @@ public class LibraryFindService {
 
         log.info("This is support Area");
 
-        return libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd)
-            .stream()
+        return libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd).stream()
             .map(LibraryInfoDto::hasBookLibDto)
             .toList();
     }
@@ -96,7 +95,9 @@ public class LibraryFindService {
 
     public List<LibraryInfoDto> getAllLibraries() {
 
-        return libraryRepo.findAll().stream().map(LibraryInfoDto::new).toList();
+        return libraryRepo.findAll().stream()
+            .map(LibraryInfoDto::new)
+            .toList();
     }
 
     public List<RespMapBookDto> getHasBookLibraries(ReqMapBookDto reqMapBookDto, Integer areaCd) {

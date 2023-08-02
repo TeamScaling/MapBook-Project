@@ -25,8 +25,8 @@ public class SearchControllerAdvice {
     }
 
 //    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Object> handleAllException(Exception e){
-//        errorLogger.sendLogToSlack(e);
-//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//    }
+    public ResponseEntity<Object> handleAllException(Exception e){
+        errorLogger.sendLogToSlack(e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
 }

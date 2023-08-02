@@ -32,8 +32,7 @@ public class LoanableLibBinding implements BindingStrategy<ApiLoanableLibDto> {
     JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity)
         throws OpenApiException {
 
-        JSONObject respJsonObj =
-            new JSONObject(responseEntity.getBody()).getJSONObject("response");
+        JSONObject respJsonObj = new JSONObject(responseEntity.getBody()).getJSONObject("response");
 
         if (respJsonObj.has("error")) {
             String error = respJsonObj.getString("error");

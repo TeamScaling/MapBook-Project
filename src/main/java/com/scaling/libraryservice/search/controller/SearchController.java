@@ -4,6 +4,7 @@ import com.scaling.libraryservice.logging.logger.SearchLogger;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
+import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.search.service.BookSessionService;
 import java.util.List;
@@ -47,10 +48,13 @@ public class SearchController {
         HttpSession session) {
 
         RespBooksDto books = bookSearchService.autoCompleteSearch(
-            new ReqBookDto(query, DEFAULT_PAGE, AUTO_COMPLETE_SIZE), DEFAULT_TIMEOUT, false);
+            new ReqBookDto(query, DEFAULT_PAGE, AUTO_COMPLETE_SIZE),
+            DEFAULT_TIMEOUT,
+            false
+        );
 
         // 자동 완성을 통해 이미 DB에서 검색한 결과를 session에 잠시 저장하고, 재활용 한다.
-        bookSessionService.keepBooksInSession(session,books,SESSION_INTERVAL);
+        bookSessionService.keepBooksInSession(session, books, SESSION_INTERVAL);
 
         return ResponseEntity.ok(books);
     }
@@ -63,15 +67,18 @@ public class SearchController {
         HttpSession session) {
 
         Optional<RespBooksDto> sessionResult
-            = bookSessionService.getBookDtoFromSession(query,session);
+            = bookSessionService.getBookDtoFromSession(query, session);
 
-        if(sessionResult.isPresent()){
+        if (sessionResult.isPresent()) {
+            searchLogger.sendLogToSlack(sessionResult.get());
             return ResponseEntity.ok(sessionResult.get());
         }
 
-        RespBooksDto searchResult
-            = bookSearchService.searchBooks(
-            new ReqBookDto(query, page, size), DEFAULT_TIMEOUT, false);
+        RespBooksDto searchResult = bookSearchService.searchBooks(
+            new ReqBookDto(query, page, size),
+            DEFAULT_TIMEOUT,
+            false
+        );
 
         searchLogger.sendLogToSlack(searchResult);
 

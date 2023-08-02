@@ -20,8 +20,8 @@ public abstract class AbstractLogger<V> {
 
         // logging이 필요 없는 task면 로깅 메시지를 보내지 않는다.
         if(taskType != NO_LOGGING_TASK){
-            slackReporter.report(
-                LogFormatter.formatting(taskType, logMessages), taskType.getChannel());
+            String message = LogFormatter.formatting(taskType, logMessages);
+            slackReporter.report(message, taskType.getChannel());
         }
     }
 

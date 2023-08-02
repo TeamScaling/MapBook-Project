@@ -48,11 +48,12 @@ public class EunjeonTokenizer {
 
     // 명사를 제외한 나머지 어절을 조건에 맞게 담는다.
     private void filterAndStoreEtcTokens(String target, Map<Token, List<String>> resultMap) {
-        resultMap.put(ETC_TOKEN,
-            Arrays.stream(
-                    target.split(" "))
+        resultMap.put(
+            ETC_TOKEN,
+            Arrays.stream(target.split(" "))
                 .filter(EunjeonTokenizer::isQualifiedToken)
-                .toList());
+                .toList()
+        );
     }
 
     // 형태소 분석기로 분석 한 뒤 적합한 어절을 최소 사이즈 이상만 List에 담아 반환
@@ -78,11 +79,11 @@ public class EunjeonTokenizer {
 
     String getEtcTokens(List<String> nnWords, String target) {
 
-        Set<String> uniqueWords
-            = new LinkedHashSet<>(Arrays.asList(target.split(" ")));
+        Set<String> uniqueWords = new LinkedHashSet<>(Arrays.asList(target.split(" ")));
 
-        nnWords.forEach(
-            nnWord -> uniqueWords.removeIf(splitWord -> splitWord.contains(nnWord)));
+        nnWords.forEach(nnWord ->
+            uniqueWords.removeIf(splitWord -> splitWord.contains(nnWord))
+        );
 
         return String.join(" ", uniqueWords).trim();
     }

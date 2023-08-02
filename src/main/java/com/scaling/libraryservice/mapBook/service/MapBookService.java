@@ -34,12 +34,15 @@ public class MapBookService implements ApiRelatedService {
 
     @MeasureTaskTime // 시간을 측정하여 기록하기 위한 wrapper 메소드
     public RespMapBookWrapper getLoanableMarker(List<LoanableLibConn> loanableLibConns,
-        List<LibraryInfoDto> nearByLibraries, ReqMapBookDto reqMapBookDto){
+        List<LibraryInfoDto> nearByLibraries, ReqMapBookDto reqMapBookDto) {
 
-        List<RespMapBookDto> respMapBooks
-            = matchLibraryBooks(loanableLibConns,nearByLibraries,reqMapBookDto);
+        List<RespMapBookDto> respMapBooks = matchLibraryBooks(
+            loanableLibConns,
+            nearByLibraries,
+            reqMapBookDto
+        );
 
-        return new RespMapBookWrapper(respMapBooks,reqMapBookDto);
+        return new RespMapBookWrapper(respMapBooks, reqMapBookDto);
     }
 
     /**
@@ -54,8 +57,10 @@ public class MapBookService implements ApiRelatedService {
         List<LibraryInfoDto> nearByLibraries, ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
         // 대출 가능 데이터를 전달 받는다.
-        List<ApiLoanableLibDto> apiResults =
-            dataProvider.provideDataList(loanableLibConns, loanableLibConns.size());
+        List<ApiLoanableLibDto> apiResults = dataProvider.provideDataList(
+            loanableLibConns,
+            loanableLibConns.size()
+        );
 
         return loanableLibConns.isEmpty() ?
             notFoundLoanableLib(nearByLibraries, reqMapBookDto) :
@@ -66,8 +71,7 @@ public class MapBookService implements ApiRelatedService {
         ReqMapBookDto reqMapBookDto) {
 
         return nearByLibraries.stream()
-            .map(
-                libraryDto -> new RespMapBookDto(reqMapBookDto, libraryDto, false))
+            .map(libraryDto -> new RespMapBookDto(reqMapBookDto, libraryDto, false))
             .toList();
     }
 
@@ -83,11 +87,10 @@ public class MapBookService implements ApiRelatedService {
     private List<RespMapBookDto> mappingLoanableLib(List<LibraryInfoDto> nearByLibraries,
         List<ApiLoanableLibDto> apiResults) {
 
-        Map<Integer, ApiLoanableLibDto> loanableLibMap= collectLoanableListToMap(apiResults);
+        Map<Integer, ApiLoanableLibDto> loanableLibMap = collectLoanableListToMap(apiResults);
 
         return nearByLibraries.stream()
-            .map(
-                libraryDto -> createRespMapBook(loanableLibMap, libraryDto))
+            .map(libraryDto -> createRespMapBook(loanableLibMap, libraryDto))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());
@@ -98,8 +101,7 @@ public class MapBookService implements ApiRelatedService {
         LibraryInfoDto libraryInfoDto) {
 
         return Optional.ofNullable(loanableBookMap.get(libraryInfoDto.getLibNo()))
-            .map(apiLoanableLibDto
-                -> RespMapBookDto.responseWithLoanable(apiLoanableLibDto, libraryInfoDto));
+            .map(apiLoanableLibDto -> RespMapBookDto.responseWithLoanable(apiLoanableLibDto,libraryInfoDto));
     }
 
 
@@ -111,7 +113,8 @@ public class MapBookService implements ApiRelatedService {
      * @param apiResults API로부터 받은 도서 대출 가능 여부 데이터 리스트
      * @return 도서관 코드를 키로, 도서 대출 가능 여부 데이터를 값으로 가지는 Map
      */
-    private Map<Integer, ApiLoanableLibDto> collectLoanableListToMap(List<ApiLoanableLibDto> apiResults) {
+    private Map<Integer, ApiLoanableLibDto> collectLoanableListToMap(
+        List<ApiLoanableLibDto> apiResults) {
 
         return apiResults.stream()
             .filter(ApiLoanableLibDto::isLoanAble)

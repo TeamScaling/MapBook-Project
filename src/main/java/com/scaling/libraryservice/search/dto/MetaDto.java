@@ -12,7 +12,6 @@ import org.springframework.lang.NonNull;
 @Getter
 @NoArgsConstructor
 @ToString
-@Builder
 @AllArgsConstructor
 public class MetaDto {
 
@@ -29,45 +28,74 @@ public class MetaDto {
     }
 
     public MetaDto(@NonNull Page<BookDto> books, @NonNull ReqBookDto reqBookDto) {
-
         this.totalPages = books.getTotalPages();
         this.totalElements = books.getTotalElements();
         this.currentPage = reqBookDto.getPage();
         this.pageSize = reqBookDto.getSize();
-        this.userQuery = reqBookDto.getQuery();
+        this.userQuery = reqBookDto.getUserQuery();
     }
 
-    public static MetaDto isbnMetaDto(String userQuery) {
-        return MetaDto.builder()
-            .totalPages(1)
-            .totalElements(1)
-            .currentPage(1)
-            .pageSize(1)
-            .userQuery(userQuery)
-            .build();
+    public void changeQueryToUserQuery(String userQuery) {
+        this.userQuery = userQuery;
     }
 
-    public static MetaDto sessionMetaDto(String searchTime){
-        return MetaDto.builder()
-            .totalPages(1)
-            .totalElements(1)
-            .currentPage(1)
-            .pageSize(1)
-            .searchTime(searchTime)
-            .build();
+    public MetaDto(String searchTime) {
+        this.searchTime = searchTime;
     }
 
 
-    public static MetaDto emptyDto(String userQuery) {
+    public static class Builder {
 
-        return MetaDto.builder()
-            .userQuery(userQuery)
-            .totalPages(0)
-            .totalElements(0)
-            .currentPage(0)
-            .pageSize(0)
-            .searchTime("")
-            .build();
+        private int totalPages;
+        private long totalElements;
+        private int currentPage;
+        private int pageSize;
+        private String searchTime;
+        private String userQuery;
+
+        public Builder withTotalPages(int totalPages) {
+            this.totalPages = totalPages;
+            return this;
+        }
+
+        public Builder withTotalElements(int totalElements) {
+            this.totalElements = totalElements;
+            return this;
+        }
+
+        public Builder withCurrentPage(int currentPage) {
+            this.currentPage = currentPage;
+            return this;
+        }
+
+        public Builder withPageSize(int pageSize) {
+            this.pageSize = pageSize;
+            return this;
+        }
+
+        public Builder withSearchTime(String searchTime) {
+            this.searchTime = searchTime;
+            return this;
+        }
+
+        public Builder withUserQuery(String userQuery) {
+            this.userQuery = userQuery;
+            return this;
+        }
+
+        public MetaDto build() {
+            MetaDto metaDto = new MetaDto();
+            metaDto.totalPages = this.totalPages;
+            metaDto.totalElements = this.totalElements;
+            metaDto.currentPage = this.currentPage;
+            metaDto.pageSize = this.pageSize;
+            metaDto.searchTime = this.searchTime;
+            metaDto.userQuery = this.userQuery;
+
+            return metaDto;
+        }
     }
+
+
 
 }

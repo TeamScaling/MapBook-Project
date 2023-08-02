@@ -14,8 +14,7 @@ public class KeywordService {
 
     public List<String> getExistKeywords(List<String> requiredCheckWords) {
 
-        return keywordQueryDsl.getKeywords(
-            requiredCheckWords.toArray(String[]::new))
+        return keywordQueryDsl.getKeywords(requiredCheckWords.toArray(String[]::new))
             .stream()
             .map(Keyword::getKeyword)
             .toList();

@@ -80,7 +80,11 @@ public class CircuitBreaker {
 
     private ScheduledFuture<?> scheduleRestorationTask(ApiObserver observer) {
         return scheduler.scheduleAtFixedRate(
-            createRestorationRunnable(observer), INITIAL_DELAY, RECOVERY_INTERVAL, SECONDS);
+            createRestorationRunnable(observer),
+            INITIAL_DELAY,
+            RECOVERY_INTERVAL,
+            SECONDS
+        );
     }
 
     private Runnable createRestorationRunnable(ApiObserver observer) {
