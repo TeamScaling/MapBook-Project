@@ -2,7 +2,7 @@ package com.scaling.libraryservice.mapBook.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.scaling.libraryservice.commons.api.service.LoanableLibConnGenerator;
+import com.scaling.libraryservice.commons.api.apiConnection.generator.LoanableLibConnGenerator;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import java.util.Arrays;

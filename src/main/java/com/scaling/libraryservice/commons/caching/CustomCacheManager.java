@@ -112,7 +112,7 @@ public class CustomCacheManager<K, I> {
      * @return 생성된 CacheKey 객체
      * @throws UnsupportedOperationException 적절한 CacheKey 구현을 찾지 못한 경우 던져 진다.
      */
-     CacheKey<K,I> generateCacheKey(@NonNull Object[] arguments) throws UnsupportedOperationException {
+    public CacheKey<K,I> generateCacheKey(@NonNull Object[] arguments) throws UnsupportedOperationException {
 
          return Arrays.stream(arguments)
              .filter(object -> object instanceof CacheKey<?,?>)

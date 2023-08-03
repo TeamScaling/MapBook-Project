@@ -6,7 +6,7 @@ import com.scaling.libraryservice.logging.logger.MapBookLogger;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.commons.api.service.ConnectionGenerator;
+import com.scaling.libraryservice.commons.api.apiConnection.generator.ConnectionGenerator;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookWrapper;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
