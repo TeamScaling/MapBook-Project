@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.commons.api.service;
+package com.scaling.libraryservice.commons.api.apiConnection.generator;
 
 import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;

@@ -1,5 +1,6 @@
-package com.scaling.libraryservice.commons.caching;
+package com.scaling.libraryservice.commons.caching.aop;
 
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
