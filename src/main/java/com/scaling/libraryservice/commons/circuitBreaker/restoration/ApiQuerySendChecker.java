@@ -1,7 +1,8 @@
-package com.scaling.libraryservice.commons.circuitBreaker;
+package com.scaling.libraryservice.commons.circuitBreaker.restoration;
 
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
- * {@link QuerySendChecker} 클래스는 {@link RestorationChecker} 인터페이스를 구현하여
+ * {@link ApiQuerySendChecker} 클래스는 {@link RestorationChecker} 인터페이스를 구현하여
  * API 서버의 상태를 확인하고, 해당 API 서버가 접근 가능한 상태로 복원될 수 있는지 확인합니다.
  * 이 클래스는 {@link ApiQuerySender} 인스턴스를 사용하여 API 서버에 테스트 쿼리를 보냅니다.
  *
@@ -20,7 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class QuerySendChecker implements RestorationChecker{
+public class ApiQuerySendChecker implements RestorationChecker{
 
     private final ApiQuerySender apiQuerySender;
 

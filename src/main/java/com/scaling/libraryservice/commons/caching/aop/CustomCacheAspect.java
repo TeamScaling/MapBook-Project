@@ -1,6 +1,8 @@
-package com.scaling.libraryservice.commons.caching;
+package com.scaling.libraryservice.commons.caching.aop;
 
 import com.github.benmanes.caffeine.cache.Cache;
+import com.scaling.libraryservice.commons.caching.CacheKey;
+import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.mapBook.service.ApiRelatedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +12,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 /**
  * 사용자 정의 캐싱 어스펙트로, CustomCacheable 어노테이션이 적용된 메서드의 결과를 캐싱합니다. 캐싱된 데이터는 CustomCacheManager를 통해
@@ -31,7 +32,7 @@ public class CustomCacheAspect<K, I> {
     private final double CACHE_SEC_THRESHOLD = 2.0;
 
     @Pointcut("@annotation(co"
-        + "m.scaling.libraryservice.commons.caching.CustomCacheable)")
+        + "m.scaling.libraryservice.commons.caching.aop.CustomCacheable)")
     private void customCacheablePointcut() {
     }
 

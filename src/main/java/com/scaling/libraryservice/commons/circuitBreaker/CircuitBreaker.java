@@ -2,6 +2,7 @@ package com.scaling.libraryservice.commons.circuitBreaker;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import com.scaling.libraryservice.commons.circuitBreaker.restoration.RestorationChecker;
 import com.scaling.libraryservice.logging.logger.OpenApiLogger;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,7 +33,7 @@ public class CircuitBreaker {
      * @param apiObserver API 액세스 상태를 확인할 {@link ApiObserver} 인스턴스
      * @return {@link ApiObserver}가 가리키는 API가 접근 가능한 경우 true, 그렇지 않은 경우 false를 반환
      */
-    boolean isApiAccessible(@NonNull ApiObserver apiObserver) {
+    public boolean isApiAccessible(@NonNull ApiObserver apiObserver) {
         return apiObserver.getApiStatus().apiAccessible();
     }
 
@@ -42,7 +43,7 @@ public class CircuitBreaker {
      *
      * @param observer 발생한 오류를 처리할 {@link ApiObserver} 인스턴스
      */
-    synchronized void receiveError(@NonNull ApiObserver observer) {
+    public synchronized void receiveError(@NonNull ApiObserver observer) {
 
         ApiStatus status = observer.getApiStatus();
         status.upErrorCnt();

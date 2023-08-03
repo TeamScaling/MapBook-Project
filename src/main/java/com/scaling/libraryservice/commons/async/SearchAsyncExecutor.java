@@ -1,11 +1,7 @@
 package com.scaling.libraryservice.commons.async;
 
-import static com.scaling.libraryservice.search.dto.MetaDtoFactory.createDefaultMetaDto;
-
 import com.scaling.libraryservice.commons.caching.CustomCacheManager;
 import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.dto.MetaDto;
-import com.scaling.libraryservice.search.dto.MetaDtoFactory;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
 import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.circuitBreaker.restoration.ApiQuerySendChecker;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,10 +18,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
-class QuerySendCheckerTest {
+class ApiQuerySendCheckerTest {
 
     @InjectMocks
-    private QuerySendChecker checker;
+    private ApiQuerySendChecker checker;
 
     @Mock
     private ApiQuerySender apiQuerySender;
