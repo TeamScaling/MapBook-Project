@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class BatchLoggingAop {
+public class BatchLoggingAspect {
 
     private final BatchLogger batchLogger;
 

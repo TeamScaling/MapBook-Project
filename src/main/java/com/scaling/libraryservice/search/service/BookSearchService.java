@@ -6,7 +6,7 @@ import static com.scaling.libraryservice.search.dto.RespBooksDtoFactory.createIs
 import static com.scaling.libraryservice.search.dto.RespBooksDtoFactory.createOneBookRespDto;
 
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
-import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.commons.caching.aop.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;

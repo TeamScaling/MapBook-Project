@@ -4,8 +4,8 @@ package com.scaling.libraryservice.config;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
-import com.scaling.libraryservice.commons.circuitBreaker.QuerySendChecker;
-import com.scaling.libraryservice.commons.circuitBreaker.RestorationChecker;
+import com.scaling.libraryservice.commons.circuitBreaker.restoration.ApiQuerySendChecker;
+import com.scaling.libraryservice.commons.circuitBreaker.restoration.RestorationChecker;
 import com.scaling.libraryservice.logging.logger.OpenApiLogger;
 import com.scaling.libraryservice.search.engine.filter.StopWordFilter;
 import com.scaling.libraryservice.search.service.KeywordService;
@@ -69,7 +69,7 @@ public class AppConfig {
     @Bean
     public RestorationChecker restorationChecker() {
 
-        return new QuerySendChecker(apiQuerySenderTimeOut());
+        return new ApiQuerySendChecker(apiQuerySenderTimeOut());
     }
 
     @Bean

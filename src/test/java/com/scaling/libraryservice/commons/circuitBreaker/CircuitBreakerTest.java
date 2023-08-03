@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.scaling.libraryservice.commons.circuitBreaker.restoration.RestorationChecker;
 import com.scaling.libraryservice.logging.logger.OpenApiLogger;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;

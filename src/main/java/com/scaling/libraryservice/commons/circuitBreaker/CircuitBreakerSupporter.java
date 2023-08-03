@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -49,7 +48,7 @@ public class CircuitBreakerSupporter {
             constructAndPutObserver(apiMonitoring, observerClazz);
     }
 
-    private ApiObserver constructAndPutObserver(ApiMonitoring apiMonitoring,
+    ApiObserver constructAndPutObserver(ApiMonitoring apiMonitoring,
         Class<? extends ApiObserver> observerClazz) throws Exception {
 
         Constructor<? extends ApiObserver> constructor =

@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -48,17 +49,20 @@ public class CircuitBreakerAspect {
         Method joinPointMethod = ((MethodSignature) joinPoint.getSignature()).getMethod();
         ApiMonitoring apiMonitoring = joinPointMethod.getAnnotation(ApiMonitoring.class);
 
+
         Method[] methods = joinPoint.getTarget().getClass().getDeclaredMethods();
 
         ApiObserver apiObserver = support.extractObserver(apiMonitoring);
         Method fallBackMethod = support.extractSubstituteMethod(apiMonitoring, methods);
 
         if (!circuitBreaker.isApiAccessible(apiObserver)) {
+
             return fallBackMethod.invoke(joinPoint.getTarget(), joinPoint.getArgs());
         } else {
 
             try {
                 return joinPoint.proceed();
+
             } catch (OpenApiException e) {
                 circuitBreaker.receiveError(apiObserver);
                 fallBackMethod.setAccessible(true);

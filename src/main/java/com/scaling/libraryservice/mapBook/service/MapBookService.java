@@ -2,7 +2,7 @@ package com.scaling.libraryservice.mapBook.service;
 
 import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.commons.api.service.provider.DataProvider;
-import com.scaling.libraryservice.commons.caching.CustomCacheable;
+import com.scaling.libraryservice.commons.caching.aop.CustomCacheable;
 import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 import com.scaling.libraryservice.mapBook.dto.ApiLoanableLibDto;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;

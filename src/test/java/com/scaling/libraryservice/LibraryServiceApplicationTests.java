@@ -3,14 +3,13 @@ package com.scaling.libraryservice;
 import static com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader.getDefaultDirectory;
 
 import com.scaling.libraryservice.dataPipe.csv.exporter.BookExporter;
+import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogManager;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogNormalizer;
-import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

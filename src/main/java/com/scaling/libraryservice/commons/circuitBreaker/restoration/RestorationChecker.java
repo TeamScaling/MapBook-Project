@@ -1,4 +1,6 @@
-package com.scaling.libraryservice.commons.circuitBreaker;
+package com.scaling.libraryservice.commons.circuitBreaker.restoration;
+
+import com.scaling.libraryservice.commons.circuitBreaker.ApiObserver;
 
 /**
  * RestorationChecker는 특정 API 호출의 복구 가능성을 확인하는 역할을 합니다.
