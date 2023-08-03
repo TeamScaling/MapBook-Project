@@ -11,6 +11,7 @@ import com.scaling.libraryservice.mapBook.repository.LibraryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -73,7 +74,6 @@ public class LibraryFindService {
 
 
     List<LibraryInfoDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
-
         log.info("This is support Area");
 
         return libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd).stream()
@@ -96,6 +96,14 @@ public class LibraryFindService {
     public List<LibraryInfoDto> getAllLibraries() {
 
         return libraryRepo.findAll().stream()
+            .map(LibraryInfoDto::new)
+            .toList();
+    }
+
+    public List<LibraryInfoDto> getLibrariesWithLimit(int limit) {
+
+        return libraryRepo.findAll(Pageable.ofSize(limit))
+            .getContent().stream()
             .map(LibraryInfoDto::new)
             .toList();
     }

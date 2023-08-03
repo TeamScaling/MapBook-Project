@@ -1,11 +1,14 @@
 package com.scaling.libraryservice;
 
+import static com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader.getDefaultDirectory;
+
 import com.scaling.libraryservice.dataPipe.csv.exporter.BookExporter;
-import com.scaling.libraryservice.dataPipe.csv.util.LibraryDataCsvMerger;
-import com.scaling.libraryservice.dataPipe.download.LoanCntDownloader;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogManager;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogNormalizer;
+import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
-import org.apache.commons.csv.CSVFormat;
+import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +21,38 @@ class LibraryServiceApplicationTests {
     private BookUpdateService bookUpdateService;
 
     @Autowired
-    LoanCntDownloader loanCntDownloader;
+    LibraryCatalogDownloader libraryCatalogDownloader;
 
     @Autowired
-    LibraryDataCsvMerger merger;
+    LibraryCatalogNormalizer normalizer;
 
     @Autowired
     BookExporter bookExporter;
 
     @Autowired
     TitleAnalyzer analyzer;
+
+    @Autowired
+    LibraryCatalogManager libraryCatalogManager;
+
+    
+    public void execute_pipe(){
+        /* given */
+
+        try {
+            libraryCatalogManager.executeProcess("(2023년 06월)");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        /* when */
+
+        /* then */
+    }
+
+    public void libMerger(){
+
+    }
 
     @DisplayName("도서 업데이트 메소드 실행. 테스트 메소드가 아닌 실행을 위한 메소드")
     public void execute_update() {
@@ -40,7 +65,7 @@ class LibraryServiceApplicationTests {
     public void mergeLibraryData() {
         /* given */
 
-        merger.mergeLibraryData("download", "loanCnt.csv", "EUC-KR", CSVFormat.DEFAULT);
+        normalizer.normalize("download", "loanCnt.csv");
         /* when */
 
         /* then */
@@ -50,7 +75,7 @@ class LibraryServiceApplicationTests {
     public void collectLoanCnt(){
         /* given */
 
-        loanCntDownloader.collectLoanCnt("(2023년 06월)");
+        libraryCatalogDownloader.downLoad(getDefaultDirectory(),"(2023년 06월)");
         /* when */
 
         /* then */

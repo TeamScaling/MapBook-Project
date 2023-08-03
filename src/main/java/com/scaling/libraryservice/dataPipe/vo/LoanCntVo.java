@@ -24,4 +24,5 @@ public class LoanCntVo {
         this.loanCnt = loanCnt;
     }
 
+
 }
