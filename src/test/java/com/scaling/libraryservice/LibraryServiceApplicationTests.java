@@ -62,7 +62,6 @@ class LibraryServiceApplicationTests {
 
     //작업용
     //다운 로드한 Csv 파일을 하나로 합친다.
-    @Test
     public void mergeLibraryData() {
         /* given */
 
