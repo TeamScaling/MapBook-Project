@@ -1,5 +1,6 @@
-package com.scaling.libraryservice.dataPipe.download;
+package com.scaling.libraryservice.dataPipe.libraryCatalog;
 
+import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -9,12 +10,14 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.springframework.lang.NonNull;
 
-public class LoanCntUrlCrawler {
+public class LibraryCatalogUrlCrawler {
 
     //강남구립논현도서관 장서/대출 목록
-    private static final String TARGET_URL = "https://data4library.kr/openDataV?libcode=4502";
+    private static final String TARGET_URL = "https://data4library.kr/openDataV?libcode=";
     private static final String COMMON_DOWNLOAD_URL = "https://www.data4library.kr";
 
+    // 도서관 장서 목록을 다운로드 할 수 있는 Url를 조사하여 반환 합니다.
+    @BatchLogging
     public static Optional<String> getDownloadUrl(int libCode, String date) throws IOException {
         Connection conn = Jsoup.connect(TARGET_URL + libCode);
         AtomicReference<String> result = new AtomicReference<>();
@@ -32,9 +35,8 @@ public class LoanCntUrlCrawler {
     }
 
     private static String getDetailUrl(@NonNull Element element) {
-        return Objects.requireNonNull(
-            element.selectFirst("a.download_link.text_type")
-        ).attr("dataPipe-url");
+        return Objects.requireNonNull(element.selectFirst("a.download_link.text_type"))
+            .attr("data-url");
     }
 
     private static boolean isContainsDateLine(Element link_td, String date) {

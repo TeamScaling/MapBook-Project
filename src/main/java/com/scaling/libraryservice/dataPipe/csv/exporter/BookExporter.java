@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.dataPipe.csv.exporter;
 
-import com.scaling.libraryservice.dataPipe.csv.util.CsvWriter;
+import com.scaling.libraryservice.dataPipe.csv.util.CsvFileWriter;
 import com.scaling.libraryservice.dataPipe.vo.BookVo;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import com.scaling.libraryservice.search.engine.TitleQuery;
@@ -26,10 +26,10 @@ public class BookExporter extends ExporterService<BookVo, Book> {
     private final BookRepoQueryDsl bookRepository;
     private Page<Book> page;
 
-    public BookExporter(CsvWriter<BookVo> csvWriter,
+    public BookExporter(CsvFileWriter<BookVo> csvFileWriter,
         TitleAnalyzer titleAnalyzer, BookRepoQueryDsl bookRepository) {
 
-        super(csvWriter);
+        super(csvFileWriter);
         this.titleAnalyzer = titleAnalyzer;
         this.bookRepository = bookRepository;
         this.page = Page.empty();

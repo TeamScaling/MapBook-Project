@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.dataPipe.csv.exporter;
 
-import com.scaling.libraryservice.dataPipe.csv.util.CsvWriter;
+import com.scaling.libraryservice.dataPipe.csv.util.CsvFileWriter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 @RequiredArgsConstructor
 public abstract class ExporterService<V,T> {
 
-    private final CsvWriter<V> csvWriter;
+    private final CsvFileWriter<V> csvFileWriter;
 
     // vo object를 Csv 파일로 output 한다.
     public void exportToCsv(int pageNumber,int pageSize,String outputName,boolean option){
@@ -21,7 +21,7 @@ public abstract class ExporterService<V,T> {
 
         do {
             List<V> voList = exportVoWithOption(pageable,outputName,option);
-            csvWriter.writeToCsv(voList, outputName);
+            csvFileWriter.writeToCsv(voList, outputName);
             page = renewPage();
             pageable = pageable.next();
 

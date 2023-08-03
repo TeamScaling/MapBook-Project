@@ -10,7 +10,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CsvWriter<V> {
+public class CsvFileWriter<V> {
 
     public void writeToCsv(List<V> target, String outputPath) {
         try {

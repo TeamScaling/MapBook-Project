@@ -23,6 +23,8 @@ public enum TaskType {
 
     MAP_BOOK_TASK("0006","mapbookTask","#map_book"),
 
+    BATCH_TASK("0007","batchTask","#batch_log"),
+
     NO_LOGGING_TASK("","","");
 
 
