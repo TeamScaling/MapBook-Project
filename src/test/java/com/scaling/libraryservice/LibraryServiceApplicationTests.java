@@ -1,15 +1,14 @@
 package com.scaling.libraryservice;
 
-import static com.scaling.libraryservice.dataPipe.download.LoanCntDownloader.getDefaultDirectory;
+import static com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader.getDefaultDirectory;
 
 import com.scaling.libraryservice.dataPipe.csv.exporter.BookExporter;
-import com.scaling.libraryservice.dataPipe.csv.util.DataPipeManager;
-import com.scaling.libraryservice.dataPipe.csv.util.LoanCntCsvNormalizer;
-import com.scaling.libraryservice.dataPipe.download.LoanCntDownloader;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogManager;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogNormalizer;
+import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import java.io.IOException;
-import org.apache.commons.csv.CSVFormat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +21,10 @@ class LibraryServiceApplicationTests {
     private BookUpdateService bookUpdateService;
 
     @Autowired
-    LoanCntDownloader loanCntDownloader;
+    LibraryCatalogDownloader libraryCatalogDownloader;
 
     @Autowired
-    LoanCntCsvNormalizer merger;
+    LibraryCatalogNormalizer normalizer;
 
     @Autowired
     BookExporter bookExporter;
@@ -34,15 +33,14 @@ class LibraryServiceApplicationTests {
     TitleAnalyzer analyzer;
 
     @Autowired
-    DataPipeManager dataPipeManager;
+    LibraryCatalogManager libraryCatalogManager;
 
-
-    @Test
+    
     public void execute_pipe(){
         /* given */
 
         try {
-            dataPipeManager.updateNewData();
+            libraryCatalogManager.executeProcess("(2023년 06월)");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -68,7 +66,7 @@ class LibraryServiceApplicationTests {
     public void mergeLibraryData() {
         /* given */
 
-        merger.mergeLibraryData("download", "loanCnt.csv", "EUC-KR", CSVFormat.DEFAULT);
+        normalizer.normalize("download", "loanCnt.csv");
         /* when */
 
         /* then */
@@ -78,7 +76,7 @@ class LibraryServiceApplicationTests {
     public void collectLoanCnt(){
         /* given */
 
-        loanCntDownloader.collectLoanCntFile(getDefaultDirectory(),"(2023년 06월)");
+        libraryCatalogDownloader.downLoad(getDefaultDirectory(),"(2023년 06월)");
         /* when */
 
         /* then */

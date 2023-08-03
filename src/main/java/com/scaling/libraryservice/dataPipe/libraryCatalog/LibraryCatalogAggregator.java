@@ -1,5 +1,6 @@
-package com.scaling.libraryservice.dataPipe.csv.util;
+package com.scaling.libraryservice.dataPipe.libraryCatalog;
 
+import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,7 +21,7 @@ import org.apache.commons.csv.CSVRecord;
 
 // 1억 2천만 대출 횟수 관련 데이터를 분할/합산/병합 프로세스에서 합산을 위한 클래스
 @Slf4j
-public class LoanCntMerger {
+public class LibraryCatalogAggregator {
 
     private static final String HEADER_NAME = "ISBN,LOAN_CNT";
     private static final int ISBN_IDX = 0;
@@ -28,17 +30,15 @@ public class LoanCntMerger {
 
     public static void main(String[] args) {
 
-        LoanCntMerger.mergeLoanCntFiles("mergeLoanCnt",
+        LibraryCatalogAggregator.aggregateLoanCnt("mergeLoanCnt",
             "loanSumFile\\loanSum",
             DEFAULT_OUTPUT_FORMAT
         );
     }
 
     // 주어진 folder에서 file 마다 작업을 수행.
-    public static void mergeLoanCntFiles(String inPutFolder, String outPutNm, String format) {
-
-        log.info("[LoanCntMerger] is start");
-
+    @BatchLogging
+    public static Path aggregateLoanCnt(String inPutFolder, String outPutNm, String format) {
         AtomicInteger fileCount = new AtomicInteger();
 
         // file마다 ISBN 별로 loan_cnt를 sum 하는 작업을 수행 합니다.
@@ -47,7 +47,7 @@ public class LoanCntMerger {
                 mergeCnt(file, String.format(format, outPutNm, fileCount.getAndIncrement()))
             );
 
-        log.info("[LoanCntMerger] is completed");
+        return Path.of(outPutNm);
     }
 
 
@@ -63,7 +63,9 @@ public class LoanCntMerger {
                 StandardCharsets.UTF_8)
         ) {
             // csv file에서 데이터를 읽어 온다.
-            CSVParser csvParser = constructParser(reader);
+            CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .parse(reader);
 
             // 읽어온 csv 데이터를 isbn별로 loanCnt를 합산하여 map에 넣는다
             csvParser.forEach(record -> sumLoanCntPutMap(record, isbnLoanCntMap));
@@ -103,13 +105,6 @@ public class LoanCntMerger {
 
     private static File[] getCsvFiles(String folder) {
         return new File(folder).listFiles();
-    }
-
-    private static CSVParser constructParser(Reader reader) throws IOException {
-        return new CSVParser(
-            reader,
-            CSVFormat.DEFAULT.withFirstRecordAsHeader()
-        );
     }
 
     public static String getDefaultOutputFormat(){

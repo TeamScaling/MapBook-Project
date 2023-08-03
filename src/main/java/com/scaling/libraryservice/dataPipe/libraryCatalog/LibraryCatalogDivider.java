@@ -1,5 +1,6 @@
-package com.scaling.libraryservice.dataPipe.csv.util;
+package com.scaling.libraryservice.dataPipe.libraryCatalog;
 
+import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
 import com.scaling.libraryservice.dataPipe.vo.LoanCntVo;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -15,7 +17,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 @Slf4j
-public class CsvDivider {
+public class LibraryCatalogDivider {
 
     private static final int ISBN_IDX = 0;
     private static final int LOAN_CNT_IDX = 1;
@@ -23,22 +25,24 @@ public class CsvDivider {
 
     public static void main(String[] args) {
 
-        CsvDivider.divide("input\\loanCnt.csv",
+        LibraryCatalogDivider.divide("input\\loanCnt.csv",
             "mergeLoanCnt\\divide",
             10000000);
     }
 
 
     // 큰 용량의 CSV 파일을 분할 작업하기 위한 나누기 메소드
-    public static void divide(String path, String outPutNm, long maxRecordsPerFile) {
-
-        log.info("[csvDivider] is start");
+    @BatchLogging
+    public static Path divide(String path, String outPutNm, long maxRecordsPerFile) {
 
         long recordCount = 0; //몇개의 raws를 기록 했는지 저장.
         int fileCount = 0; // 나뉘어지는 file 이름에 해당 count를 붙여 file_3의 형식의 file 이름을 만듦
 
         try (Reader reader = Files.newBufferedReader(new File(path).toPath())) {
-            CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT);
+
+            CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .parse(reader);
 
             while (csvParser.iterator().hasNext()) {
                 try (BufferedWriter writer = constructBufferedWriter(outPutNm, fileCount)) {
@@ -54,7 +58,8 @@ public class CsvDivider {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        log.info("[csvDivider] is completed");
+
+        return Path.of(outPutNm);
     }
 
 

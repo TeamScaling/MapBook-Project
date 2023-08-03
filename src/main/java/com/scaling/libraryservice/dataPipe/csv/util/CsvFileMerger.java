@@ -46,11 +46,12 @@ public class CsvFileMerger {
             Paths.get(outPutNm+".csv"), StandardCharsets.UTF_8)) {
 
             Arrays.stream(files).forEach(file -> {
-                List<String> lines = CsvLineProvider.readDataLines(file,recordIdx);
+                List<String> lines = CsvFileReader.readDataLines(file,recordIdx);
                 writeToCsv(writer, file, headerSaved.get(),lines);
                 headerSaved.set(true);
             });
         }
+
 
         log.info("[CsvFileMerger] is completed");
     }

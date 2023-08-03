@@ -74,7 +74,6 @@ public class LibraryFindService {
 
 
     List<LibraryInfoDto> getNearByHasBookLibraries(String isbn13, Integer areaCd) {
-
         log.info("This is support Area");
 
         return libraryHasBookRepo.findHasBookLibraries(isbn13, areaCd).stream()
@@ -103,7 +102,8 @@ public class LibraryFindService {
 
     public List<LibraryInfoDto> getLibrariesWithLimit(int limit) {
 
-        return libraryRepo.findAll(Pageable.ofSize(limit)).getContent().stream()
+        return libraryRepo.findAll(Pageable.ofSize(limit))
+            .getContent().stream()
             .map(LibraryInfoDto::new)
             .toList();
     }
