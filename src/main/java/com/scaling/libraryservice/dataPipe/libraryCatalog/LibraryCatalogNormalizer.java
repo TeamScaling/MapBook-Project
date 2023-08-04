@@ -89,8 +89,9 @@ public class LibraryCatalogNormalizer {
 
     }
 
-    private void normalizeAndWrite(File file, AtomicBoolean headerSaved, BufferedWriter writer,
-        LibraryInfoDto library, String headerName) {
+    private void normalizeAndWrite(
+        File file, AtomicBoolean headerSaved, BufferedWriter writer, LibraryInfoDto library, String headerName)
+    {
 
         try (Reader reader = Files.newBufferedReader(
             file.toPath(), Charset.forName("EUC-KR"))) {
@@ -138,8 +139,8 @@ public class LibraryCatalogNormalizer {
         return matcher.matches() && isbn.length() > ISBN_MIN_SIZE;
     }
 
-    private String buildCsvLine(String isbn, String loanCount, LibraryInfoDto library,
-        String regisDate) {
+    private String buildCsvLine(
+        String isbn, String loanCount, LibraryInfoDto library, String regisDate) {
 
         return String.join(",", isbn, loanCount, library.getLibNo().toString(), regisDate,
             library.getAreaCd().toString());

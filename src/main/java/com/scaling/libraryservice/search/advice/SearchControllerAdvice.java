@@ -1,6 +1,10 @@
 package com.scaling.libraryservice.search.advice;
 
-import com.scaling.libraryservice.logging.logger.ErrorLogger;
+import static com.scaling.libraryservice.logging.logger.TaskType.ERROR_TASK;
+
+import com.scaling.libraryservice.logging.logger.ErrorSlackLogger;
+import com.scaling.libraryservice.logging.logger.TaskType;
+import com.scaling.libraryservice.logging.service.LogService;
 import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +18,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RequiredArgsConstructor
 public class SearchControllerAdvice {
 
-    private final ErrorLogger errorLogger;
+    private final ErrorSlackLogger errorLogger;
+
+    private final LogService<Exception> logService;
 
     @ExceptionHandler(NotQualifiedQueryException.class)
     public ResponseEntity<Object> handleDuplicateException(Exception e){
@@ -26,7 +32,7 @@ public class SearchControllerAdvice {
 
 //    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleAllException(Exception e){
-        errorLogger.sendLogToSlack(e);
+        logService.slackLogging(ERROR_TASK,e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

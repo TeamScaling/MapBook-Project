@@ -26,11 +26,13 @@ public class ApiQueryBinder<T> {
         bindingStrategyMap.put(LoanableLibProvider.class,new LoanableLibBinding());
     }
 
+    @SuppressWarnings("unchecked")
     public T bind(ResponseEntity<String> apiResponse,Class<?> provider) throws OpenApiException {
         return (T) bindingStrategyMap.get(provider).bind(apiResponse);
     }
 
     public List<T> bindList(@NonNull List<ResponseEntity<String>> apiResponses, Class<?> provider) throws OpenApiException {
+
         return apiResponses.stream().map(r -> bind(r,provider)).toList();
     }
 

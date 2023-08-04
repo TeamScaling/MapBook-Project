@@ -44,22 +44,26 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
      * @return 도서 검색 결과를 담은 Page<BookDto> 객체
      */
     @Override
-    public Page<BookDto> execute(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto,
-        int timeout, boolean isAsync) {
+    public Page<BookDto> execute(
+        Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto, int timeout, boolean isAsync
+    ) {
 
         Page<BookDto> booksPage = Page.empty();
 
         try {
-            booksPage = isAsync ? executeAsync(supplier, reqBookDto, timeout) : supplier.get();
+            booksPage = isAsync ?
+                executeAsync(supplier, timeout)
+                : supplier.get();
+
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             asyncSearchBook(supplier, reqBookDto);
         }
         return booksPage;
     }
 
-    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto,
-        int timeout)
-        throws ExecutionException, InterruptedException, TimeoutException {
+    private Page<BookDto> executeAsync(
+        Supplier<Page<BookDto>> supplier, int timeout
+    ) throws ExecutionException, InterruptedException, TimeoutException {
 
         return CompletableFuture.supplyAsync(supplier).get(timeout, TimeUnit.SECONDS);
     }
@@ -71,6 +75,7 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
      * @param reqBookDto 검색 요청 정보
      */
     void asyncSearchBook(Supplier<Page<BookDto>> supplier, @NonNull ReqBookDto reqBookDto) {
+
         CompletableFuture.runAsync(
             () -> {
                 Page<BookDto> fetchedBooks = supplier.get();
@@ -79,6 +84,7 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
     }
 
     private void cachingAsyncResult(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto) {
+
         RespBooksDto respBooksDto = RespBooksDtoFactory.createDefaultRespBooksDto(
             fetchedBooks,
             reqBookDto

@@ -1,12 +1,13 @@
 package com.scaling.libraryservice.mapBook.controller;
 
+import static com.scaling.libraryservice.logging.logger.TaskType.MAP_BOOK_TASK;
+
 import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiMonitoring;
-import com.scaling.libraryservice.logging.logger.MapBookLogger;
+import com.scaling.libraryservice.logging.service.LogService;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.dto.ReqMapBookDto;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookDto;
-import com.scaling.libraryservice.commons.api.apiConnection.generator.ConnectionGenerator;
 import com.scaling.libraryservice.mapBook.dto.RespMapBookWrapper;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import com.scaling.libraryservice.mapBook.service.MapBookService;
@@ -28,9 +29,8 @@ public class MapBookController {
 
     private final MapBookService mapBookService;
     private final LibraryFindService libraryFindService;
-    private final ConnectionGenerator<LoanableLibConn, LibraryInfoDto,ReqMapBookDto> connGenerator;
     private final LocationResolver<Integer,ReqMapBookDto> locationResolver;
-    private final MapBookLogger mapBookLogger;
+    private final LogService<RespMapBookWrapper> logService;
 
 
     /**
@@ -42,7 +42,7 @@ public class MapBookController {
      */
 
     @PostMapping("/books/mapBook/search")
-    @ApiMonitoring(api = LoanableLibConn.class, substitute = "fallBackMethodHasBook")
+    @ApiMonitoring(apiObserver = LoanableLibConn.class, substitute = "fallBackMethodHasBook")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
 
         // 사용자의 위/경도 데이터로 해당 지역 코드를 산출
@@ -54,20 +54,13 @@ public class MapBookController {
             areaCd
         );
 
-        // 해당 도서를 소장하는 도서관에 한정해서 Api 연결 객체를 만든다.
-        List<LoanableLibConn> necessaryConns = connGenerator.generateNecessaryConns(
-            nearbyLibraries,
-            reqMapBookDto
-        );
-
         // Api의 응답 결과와 도서관의 상세 정보를 연결하여, 지도에 표시할 마커를 생성한다.
         RespMapBookWrapper mapBooks = mapBookService.getLoanableMarker(
-            necessaryConns,
             nearbyLibraries,
             reqMapBookDto
         );
 
-        mapBookLogger.sendLogToSlack(mapBooks);
+        logService.slackLogging(MAP_BOOK_TASK,mapBooks);
 
         model.put("mapBooks", mapBooks.getRespMapBooks());
 

@@ -5,9 +5,9 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BatchLogger extends AbstractLogger<String>{
+public class BatchSlackLogger extends AbstractSlackLogger<String> {
 
-    public BatchLogger(SlackReporter slackReporter) {
+    public BatchSlackLogger(SlackReporter slackReporter) {
         super(slackReporter);
     }
 

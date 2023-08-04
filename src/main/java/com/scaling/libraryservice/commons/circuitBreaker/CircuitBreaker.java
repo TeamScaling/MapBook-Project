@@ -1,9 +1,12 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
+import static com.scaling.libraryservice.logging.logger.TaskType.API_ERROR_TASK;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import com.scaling.libraryservice.commons.circuitBreaker.restoration.RestorationChecker;
-import com.scaling.libraryservice.logging.logger.OpenApiLogger;
+import com.scaling.libraryservice.logging.logger.OpenApiSlackLogger;
+import com.scaling.libraryservice.logging.logger.TaskType;
+import com.scaling.libraryservice.logging.service.LogService;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,7 +27,8 @@ public class CircuitBreaker {
     private final RestorationChecker checker;
     private static final int INITIAL_DELAY = 1;
     private static final int RECOVERY_INTERVAL = 60 * 30;
-    private final OpenApiLogger openApiLogger;
+
+    private final LogService<ApiStatus> logService;
 
     /**
      * {@link ApiObserver} 인스턴스의 API 액세스 상태를 확인하는 메소드입니다. {@link ApiObserver}가 현재 접근 가능한 API를 가리키고
@@ -50,7 +54,7 @@ public class CircuitBreaker {
 
         if (status.apiAccessible() && status.isMaxError()) {
             closeApi(observer);
-            openApiLogger.sendLogToSlack(status);
+            logService.slackLogging(API_ERROR_TASK,status);
         }
     }
 
@@ -80,6 +84,7 @@ public class CircuitBreaker {
     }
 
     private ScheduledFuture<?> scheduleRestorationTask(ApiObserver observer) {
+
         return scheduler.scheduleAtFixedRate(
             createRestorationRunnable(observer),
             INITIAL_DELAY,
@@ -89,6 +94,7 @@ public class CircuitBreaker {
     }
 
     private Runnable createRestorationRunnable(ApiObserver observer) {
+
         return () -> {
             if (checker.isRestoration(observer)) {
                 stopScheduledRestoration(observer);

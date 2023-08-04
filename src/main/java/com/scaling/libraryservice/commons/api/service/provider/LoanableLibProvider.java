@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Component // Data4Library와 api 통신해서 대출 가능 데이터를 받아온다.
+@Component // Data4Library와 apiObserver 통신해서 대출 가능 데이터를 받아온다.
 public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
 
     private final ApiQuerySender apiQuerySender;
@@ -30,7 +30,7 @@ public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
     }
 
     @Override
-    public List<ApiLoanableLibDto> provideDataList(List<? extends ApiConnection> connections,int nThreads) {
+    public List<ApiLoanableLibDto> provideDataList(List<? extends ApiConnection> connections, int nThreads) {
 
         List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
             connections,

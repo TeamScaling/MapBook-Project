@@ -8,7 +8,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public abstract class AbstractLogger<V> {
+public abstract class AbstractSlackLogger<V> implements SlackLogger<V> {
 
     private final SlackReporter slackReporter;
 

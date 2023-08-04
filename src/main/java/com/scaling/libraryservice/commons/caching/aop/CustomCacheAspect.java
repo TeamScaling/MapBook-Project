@@ -79,13 +79,13 @@ public class CustomCacheAspect<K, I> {
      * @return 메서드 실행 결과
      * @throws Throwable 메서드 실행 도중 예외가 발생할 경우
      */
-    public I patchCacheManager(ProceedingJoinPoint joinPoint, Class<?> customer,
-        CacheKey<K, I> cacheKey)
-        throws Throwable {
+    public I patchCacheManager(
+        ProceedingJoinPoint joinPoint, Class<?> customer, CacheKey<K, I> cacheKey
+    ) throws Throwable {
 
         I result = (I) joinPoint.proceed();
 
-        // api 관련한 클래스면 caching 처리 한다.
+        // apiObserver 관련한 클래스면 caching 처리 한다.
         if (ApiRelatedService.class.isAssignableFrom(customer)) {
             log.info("This task is related ApiRelatedService then CacheManger put this item");
             cacheManager.put(customer, cacheKey, result);

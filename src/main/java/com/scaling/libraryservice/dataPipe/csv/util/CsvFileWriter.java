@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class CsvFileWriter<V> {
 
     public void writeToCsv(List<V> target, String outputPath) {
+
         try {
             Path path = Paths.get(outputPath);
             Writer writer;

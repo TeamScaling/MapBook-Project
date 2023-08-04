@@ -13,7 +13,8 @@ import static org.mockito.Mockito.when;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.scaling.libraryservice.commons.circuitBreaker.restoration.RestorationChecker;
-import com.scaling.libraryservice.logging.logger.OpenApiLogger;
+import com.scaling.libraryservice.logging.logger.OpenApiSlackLogger;
+import com.scaling.libraryservice.logging.service.LogService;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,12 +45,15 @@ class CircuitBreakerTest {
     private ScheduledFuture<?> scheduledFuture;
 
     @Mock
-    private OpenApiLogger openApiLogger;
+    private OpenApiSlackLogger openApiLogger;
 
     @Mock
     private Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
     private ApiObserver apiObserver1;
     private ApiObserver apiObserver2;
+
+    @Mock
+    private LogService<ApiStatus> logService;
     private final String mockUri1 = "http://mockServer.kr/api/bookExist";
 
     private final String mockUri2 = "http://mockServer.kr/api/loanItem";
@@ -64,7 +68,7 @@ class CircuitBreakerTest {
         mockServer.stubFor(
             WireMock.get("/api/bookExist").willReturn(WireMock.ok()));
 
-        circuitBreaker = new CircuitBreaker(scheduler, scheduledTasks, checker, openApiLogger);
+        circuitBreaker = new CircuitBreaker(scheduler, scheduledTasks, checker, logService);
     }
 
     public ApiObserver setApiObserver() {
