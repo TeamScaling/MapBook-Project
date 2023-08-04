@@ -11,13 +11,13 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SearchLogger extends AbstractLogger<RespBooksDto> {
+public class SearchSlackLogger extends AbstractSlackLogger<RespBooksDto> {
 
     private final static double LIMIT_TIME = 1.0;
 
     private final static int MAX_LOGGING_PAGE = 1;
 
-    public SearchLogger(SlackReporter slackReporter) {
+    public SearchSlackLogger(SlackReporter slackReporter) {
         super(slackReporter);
     }
 

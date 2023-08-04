@@ -1,13 +1,12 @@
 package com.scaling.libraryservice.search.controller;
 
-import com.scaling.libraryservice.logging.logger.SearchLogger;
-import com.scaling.libraryservice.search.dto.BookDto;
+import static com.scaling.libraryservice.logging.logger.TaskType.SEARCH_TASK;
+
+import com.scaling.libraryservice.logging.service.LogService;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.search.service.BookSessionService;
-import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +27,7 @@ public class SearchController {
     private static final int DEFAULT_TIMEOUT = 3;
     private static final int DEFAULT_PAGE = 1;
     private static final int SESSION_INTERVAL = 3;
-    private final SearchLogger searchLogger;
-
+    private final LogService<RespBooksDto> logService;
     private final BookSessionService bookSessionService;
 
 
@@ -70,7 +68,7 @@ public class SearchController {
             = bookSessionService.getBookDtoFromSession(query, session);
 
         if (sessionResult.isPresent()) {
-            searchLogger.sendLogToSlack(sessionResult.get());
+            logService.slackLogging(SEARCH_TASK,sessionResult.get());
             return ResponseEntity.ok(sessionResult.get());
         }
 
@@ -80,7 +78,7 @@ public class SearchController {
             false
         );
 
-        searchLogger.sendLogToSlack(searchResult);
+        logService.slackLogging(SEARCH_TASK,searchResult);
 
         return ResponseEntity.ok(searchResult);
     }

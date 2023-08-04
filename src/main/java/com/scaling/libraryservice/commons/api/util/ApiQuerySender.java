@@ -37,7 +37,8 @@ public class ApiQuerySender {
      */
     @MeasureTaskTime
     public ResponseEntity<String> sendSingleQuery(
-        ApiConnection apiConnection, HttpEntity<?> httpEntity) throws OpenApiException {
+        ApiConnection apiConnection, HttpEntity<?> httpEntity
+    ) throws OpenApiException {
 
         Objects.requireNonNull(apiConnection);
 
@@ -46,9 +47,10 @@ public class ApiQuerySender {
                 apiConnection.configUriBuilder().toUriString(),
                 HttpMethod.GET,
                 httpEntity,
-                String.class);
+                String.class
+            );
         } catch (Exception e) {
-            throw new OpenApiException("api 문제");
+            throw new OpenApiException("apiObserver 문제");
         }
     }
 
@@ -62,8 +64,8 @@ public class ApiQuerySender {
      */
     @MeasureTaskTime
     public List<ResponseEntity<String>> sendMultiQuery(
-        List<? extends ApiConnection> apiConnections, int nThreads, HttpEntity<?> httpEntity)
-        throws OpenApiException {
+        List<? extends ApiConnection> apiConnections, int nThreads, HttpEntity<?> httpEntity
+    ) throws OpenApiException {
 
         Objects.requireNonNull(apiConnections);
 
@@ -82,7 +84,7 @@ public class ApiQuerySender {
 
         } catch (CompletionException e) {
             log.error(e.toString());
-            throw new OpenApiException("api 문제 발생");
+            throw new OpenApiException("apiObserver 문제 발생");
         } finally {
             service.shutdown();
         }

@@ -18,6 +18,7 @@ public class LoanableLibBinding implements BindingStrategy<ApiLoanableLibDto> {
      */
     @Override
     public ApiLoanableLibDto bind(ResponseEntity<String> apiResponse) throws OpenApiException {
+
         if (apiResponse == null) {
             return null;
         }
@@ -29,8 +30,7 @@ public class LoanableLibBinding implements BindingStrategy<ApiLoanableLibDto> {
             respJsonObj.getJSONObject("result"));
     }
 
-    JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity)
-        throws OpenApiException {
+    JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity) throws OpenApiException {
 
         JSONObject respJsonObj = new JSONObject(responseEntity.getBody()).getJSONObject("response");
 

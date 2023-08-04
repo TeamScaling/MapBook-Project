@@ -54,8 +54,8 @@ public class BookSearchService {
      */
     @CustomCacheable
     @MeasureTaskTime
-    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout,
-        boolean isAsyncSupport) throws NotQualifiedQueryException {
+    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport)
+        throws NotQualifiedQueryException {
 
         String userQuery = reqBookDto.getUserQuery();
 
@@ -80,8 +80,7 @@ public class BookSearchService {
     }
 
 
-    private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto,
-        int timeout, boolean isAsyncSupport) {
+    private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport) {
 
         Page<BookDto> books =
             asyncExecutor.execute(
@@ -99,8 +98,8 @@ public class BookSearchService {
         );
     }
 
-    private Optional<BookDto> matchingQueryAndTitle(Page<BookDto> booksPage,
-        ReqBookDto reqBookDto) {
+    private Optional<BookDto> matchingQueryAndTitle(@NonNull Page<BookDto> booksPage, ReqBookDto reqBookDto) {
+
         return booksPage
             .stream()
             .filter(bookDto -> isUserQueryMatchingBook(
@@ -111,7 +110,7 @@ public class BookSearchService {
             .findFirst();
     }
 
-    private boolean isUserQueryMatchingBook(String userQuery, BookDto bookDto, int page) {
+    private boolean isUserQueryMatchingBook(String userQuery, @NonNull BookDto bookDto, int page) {
 
         String mainTitle = SubTitleRemover.removeSubTitle(bookDto.getTitle());
         return mainTitle.equals(userQuery) && page == MATCHING_LIMIT_PAGE;
@@ -130,8 +129,7 @@ public class BookSearchService {
     }
 
     @MeasureTaskTime
-    public RespBooksDto autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
-        boolean isAsyncSupport) {
+    public RespBooksDto autoCompleteSearch(ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport) {
 
         return searchBooks(reqBookDto, timeout, isAsyncSupport);
     }

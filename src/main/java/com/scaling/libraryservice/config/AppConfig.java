@@ -3,10 +3,12 @@ package com.scaling.libraryservice.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
+import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.commons.circuitBreaker.CircuitBreaker;
 import com.scaling.libraryservice.commons.circuitBreaker.restoration.ApiQuerySendChecker;
 import com.scaling.libraryservice.commons.circuitBreaker.restoration.RestorationChecker;
-import com.scaling.libraryservice.logging.logger.OpenApiLogger;
+import com.scaling.libraryservice.logging.logger.OpenApiSlackLogger;
+import com.scaling.libraryservice.logging.service.LogService;
 import com.scaling.libraryservice.search.engine.filter.StopWordFilter;
 import com.scaling.libraryservice.search.service.KeywordService;
 import com.scaling.libraryservice.search.engine.filter.ConvertFilter;
@@ -27,13 +29,13 @@ public class AppConfig {
 
     @Bean
     public CircuitBreaker circuitBreaker(RestorationChecker restorationChecker,
-        OpenApiLogger openApiLogger) {
+        LogService<ApiStatus> logService) {
 
         return new CircuitBreaker(
             Executors.newScheduledThreadPool(1),
             new ConcurrentHashMap<>(),
             restorationChecker,
-            openApiLogger);
+            logService);
     }
 
     @Bean

@@ -22,15 +22,15 @@ public class KakaoBookProvider implements DataProvider<BookApiDto> {
     private final ApiQueryBinder<BookApiDto> apiQueryBinder;
 
     private final AuthKeyLoader authKeyLoader;
+
     @PostConstruct
-    public void loadAuthKey(){
+    public void loadAuthKey() {
         String apiAuthKey = authKeyLoader.loadAuthKey(OpenApi.KAKAO_BOOK).getAuthKey();
         KakaoBookConn.setApiAuthKey(apiAuthKey);
     }
 
     @Override
-    public List<BookApiDto> provideDataList(List<? extends ApiConnection> connections,
-        int nThreads) {
+    public List<BookApiDto> provideDataList(List<? extends ApiConnection> connections, int nThreads) {
 
         List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
             connections,
@@ -38,7 +38,7 @@ public class KakaoBookProvider implements DataProvider<BookApiDto> {
             new KakaoBookConn("", 1L).getHttpEntity()
         );
 
-        return apiQueryBinder.bindList(responseEntities,this.getClass());
+        return apiQueryBinder.bindList(responseEntities, this.getClass());
     }
 
 }

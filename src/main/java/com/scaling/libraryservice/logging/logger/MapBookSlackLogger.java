@@ -10,9 +10,9 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MapBookLogger extends AbstractLogger<RespMapBookWrapper> {
+public class MapBookSlackLogger extends AbstractSlackLogger<RespMapBookWrapper> {
 
-    public MapBookLogger(SlackReporter slackReporter) {
+    public MapBookSlackLogger(SlackReporter slackReporter) {
         super(slackReporter);
     }
 

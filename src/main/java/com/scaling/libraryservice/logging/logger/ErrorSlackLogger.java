@@ -6,9 +6,9 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ErrorLogger extends AbstractLogger<Exception>{
+public class ErrorSlackLogger extends AbstractSlackLogger<Exception> {
 
-    public ErrorLogger(SlackReporter slackReporter) {
+    public ErrorSlackLogger(SlackReporter slackReporter) {
         super(slackReporter);
     }
 

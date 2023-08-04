@@ -1,6 +1,10 @@
 package com.scaling.libraryservice.dataPipe.aop;
 
-import com.scaling.libraryservice.logging.logger.BatchLogger;
+import static com.scaling.libraryservice.logging.logger.TaskType.BATCH_TASK;
+
+import com.scaling.libraryservice.logging.logger.BatchSlackLogger;
+import com.scaling.libraryservice.logging.logger.TaskType;
+import com.scaling.libraryservice.logging.service.LogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -15,7 +19,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BatchLoggingAspect {
 
-    private final BatchLogger batchLogger;
+    private final BatchSlackLogger batchLogger;
+
+    private final LogService<String> logService;
 
     @Pointcut("@annotation(com.scaling.libraryservice.dataPipe.aop.BatchLogging)")
     private void enableBatchLogging() {
@@ -26,11 +32,11 @@ public class BatchLoggingAspect {
 
         String targetNm = joinPoint.getTarget().getClass().getSimpleName();
 
-        batchLogger.sendLogToSlack(targetNm+" is start");
+        logService.slackLogging(BATCH_TASK,targetNm+" is start");
 
         Object result = joinPoint.proceed();
 
-        batchLogger.sendLogToSlack(targetNm+" is completed");
+        logService.slackLogging(BATCH_TASK,targetNm+" is completed");
 
         return result;
     }

@@ -23,6 +23,7 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
 
     @Override
     public String filtering(String query) {
+
         StringJoiner joiner = new StringJoiner(" ");
         List<String> requiredCheckList = new LinkedList<>();
 

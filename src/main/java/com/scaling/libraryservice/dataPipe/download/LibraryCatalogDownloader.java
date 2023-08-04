@@ -26,7 +26,7 @@ public class LibraryCatalogDownloader extends AbstractDownLoader {
         // csv file을 서버로부터 다운 받기 위해 SSL을 모두 신뢰 한다.
         setupTrustAllSSLContext();
 
-        libraryFindService.getLibrariesWithLimit(10).forEach(
+        libraryFindService.getAllLibraries().forEach(
             library -> {
                 try {
                     Optional<String> url =
