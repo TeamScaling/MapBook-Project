@@ -32,7 +32,7 @@ public class BatchLoggingAspect {
 
         String targetNm = joinPoint.getTarget().getClass().getSimpleName();
 
-        logService.slackLogging(BATCH_TASK,targetNm+" is start");
+        logService.slackLogging(BATCH_TASK,targetNm+" start");
 
         Object result = joinPoint.proceed();
 

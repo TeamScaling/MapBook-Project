@@ -1,0 +1,31 @@
+package com.scaling.libraryservice.dataPipe.libraryCatalog.step;
+
+import com.scaling.libraryservice.dataPipe.csv.util.CsvFileMerger;
+import java.io.IOException;
+import java.nio.file.Path;
+
+public class MergingStep implements ExecutionStep{
+
+    // pipe/mergingStep
+    private final String outPutFileNm;
+    private static final int ISBN_IDX = 0;
+    private static final int LOAN_CNT_IDX = 1;
+
+    public MergingStep(String outPutFileNm) {
+        this.outPutFileNm = outPutFileNm;
+    }
+
+    @Override
+    public Path execute(Path input) throws IOException {
+        return CsvFileMerger.mergeCsvFile(
+            input.subpath(0,2).toString(),
+            outPutFileNm,
+            ISBN_IDX, LOAN_CNT_IDX
+        );
+    }
+
+    @Override
+    public void clearDirectory(Path filePath) throws IOException {
+        // This Class does not clear File for Keeping result file
+    }
+}

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -35,9 +36,9 @@ public class CsvFileMerger {
     }
 
     // 분할 된 CSV 파일을 다시 병합
-    public static void mergeCsvFile(String inputFolder, String outPutNm,int... recordIdx)
+    public static Path mergeCsvFile(String inputFolder, String outPutNm,int... recordIdx)
         throws IOException {
-        log.info("[CsvFileMerger] is start");
+        log.info("[CsvFileMerger] start");
         File[] files = fileLoad(inputFolder);
 
         AtomicBoolean headerSaved = new AtomicBoolean(false);
@@ -54,6 +55,8 @@ public class CsvFileMerger {
 
 
         log.info("[CsvFileMerger] is completed");
+
+        return Path.of(outPutNm);
     }
 
     private static void writeToCsv(BufferedWriter writer, File file, boolean headerSaved,List<String> lines) {

@@ -23,14 +23,6 @@ public class LibraryCatalogDivider {
     private static final int LOAN_CNT_IDX = 1;
     private static final String DEFAULT_OUTPUT_FORMAT = "%s_%d.csv";
 
-    public static void main(String[] args) {
-
-        LibraryCatalogDivider.divide("input\\loanCnt.csv",
-            "mergeLoanCnt\\divide",
-            10000000);
-    }
-
-
     // 큰 용량의 CSV 파일을 분할 작업하기 위한 나누기 메소드
     @BatchLogging
     public static Path divide(String path, String outPutNm, long maxRecordsPerFile) {
@@ -78,7 +70,7 @@ public class LibraryCatalogDivider {
     private static BufferedWriter constructBufferedWriter(String outPutNm, int fileCount)
         throws IOException {
 
-        String formattingFileNm = String.format(DEFAULT_OUTPUT_FORMAT, outPutNm, fileCount);
+        String formattingFileNm = String.format(DEFAULT_OUTPUT_FORMAT, outPutNm+"/divide", fileCount);
 
         return Files.newBufferedWriter(
             Paths.get(formattingFileNm),

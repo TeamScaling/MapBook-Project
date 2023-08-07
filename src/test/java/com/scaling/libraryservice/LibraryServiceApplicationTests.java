@@ -4,12 +4,22 @@ import static com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloa
 
 import com.scaling.libraryservice.dataPipe.csv.exporter.BookExporter;
 import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogManager;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogExecutor;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogNormalizer;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.AggregatingStep;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DivideStep;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DownLoadStep;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.ExecutionStep;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.MergingStep;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.NormalizeStep;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.step.StepBuilder;
 import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,8 +32,6 @@ class LibraryServiceApplicationTests {
     @Autowired
     LibraryCatalogDownloader libraryCatalogDownloader;
 
-    @Autowired
-    LibraryCatalogNormalizer normalizer;
 
     @Autowired
     BookExporter bookExporter;
@@ -32,24 +40,39 @@ class LibraryServiceApplicationTests {
     TitleAnalyzer analyzer;
 
     @Autowired
-    LibraryCatalogManager libraryCatalogManager;
+    LibraryCatalogExecutor libraryCatalogExecutor;
 
-    
-    public void execute_pipe(){
+
+    @Test
+    public void execute_pipe() {
         /* given */
 
-        try {
-            libraryCatalogManager.executeProcess("(2023년 06월)");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        DownLoadStep downLoadStep = new DownLoadStep(
+            libraryCatalogDownloader,
+            "(2023년 06월)",
+            true,
+            30
+        );
 
-        /* when */
+        StepBuilder stepBuilder = new StepBuilder();
+        List<ExecutionStep> executionSteps = stepBuilder
+            .start(downLoadStep)
+            .next(new NormalizeStep("pipe/normalizeStep/normalFile.csv"))
+            .next(new DivideStep("pipe/divideStep", 10000000))
+            .next(new AggregatingStep("pipe/aggregatingStep/aggregating"))
+            .next(new MergingStep("pipe/mergingStep/mergeFile.csv"))
+            .next(new AggregatingStep("pipe/endStep/end"))
+            .end();
 
-        /* then */
+        libraryCatalogExecutor.executeProcess(
+            Path.of("pipe/download/"),
+            executionSteps,
+            downLoadStep
+        );
     }
 
-    public void libMerger(){
+
+    public void libMerger() {
 
     }
 
@@ -64,25 +87,24 @@ class LibraryServiceApplicationTests {
     public void mergeLibraryData() {
         /* given */
 
-        normalizer.normalize("download", "loanCnt.csv");
         /* when */
 
         /* then */
     }
 
     // 크롤러를 통해 원하는 날짜의 대출 횟수를 자동 다운로드 한다.
-    public void collectLoanCnt(){
+    public void collectLoanCnt() {
         /* given */
 
-        libraryCatalogDownloader.downLoad(getDefaultDirectory(),"(2023년 06월)");
+        libraryCatalogDownloader.downLoad(getDefaultDirectory(), "(2023년 06월)", false, 0);
         /* when */
 
         /* then */
     }
 
     // bookVo object를 Csv 파일로 output 한다.
-    public void exportToCsv(){
-        bookExporter.exportToCsv(0,500000,"bookAuthr.csv",false);
+    public void exportToCsv() {
+        bookExporter.exportToCsv(0, 500000, "bookAuthr.csv", false);
     }
 
 
