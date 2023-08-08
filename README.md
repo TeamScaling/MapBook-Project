@@ -64,11 +64,16 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
                     |              |_ 📁 timer (내부 응답 속도 체크)
                     |              |_ 📁 updater (도서 최신화)
                     |
-                    |_ 📁 data (csv exporter 및 csv merger) _ 📁 export⭐
-                    |                                      |_ 📁 vo (csv 직렬화 할 객체)
+                    |_ 📁 dataPipe (Batch Server 구축이후 사용 X) _ 📁 aop
+                    |                                            |_ 📁 csv
+                    |                                            |_ 📁 libaryCatalog
+                    |                                            |_ 📁 updater
+                    |                                            |_ 📁 vo
                     |_ 📁 logging_ _
                     |               |_ 📁 logger
                     |               |_ 📁 util
+                    |               |_ 📁 parser
+                    |               |_ 📁 service
                     |
                     |_ 📁 mapBook_ _
                     |              |_ 📁 cacheKey
@@ -82,6 +87,7 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
                     |              |_ 📁 advice (exception handler)
                     |              |_ 📁 controller
                     |              |_ 📁 dto
+                    |              |_ 📁 engine (검색 엔진) ⭐
                     |              |_ 📁 entity
                     |              |_ 📁 exception
                     |              |_ 📁 repository ⭐
