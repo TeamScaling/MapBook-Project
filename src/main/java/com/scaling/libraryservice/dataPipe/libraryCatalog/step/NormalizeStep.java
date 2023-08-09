@@ -9,17 +9,18 @@ import java.nio.file.Path;
 public class NormalizeStep implements ExecutionStep {
 
     //"pipe/normalizeStep/normalFile.csv"
-    private final String outPutFileName;
+    private final String outPutFolderNm;
 
 
-    public NormalizeStep(String outPutFileName) {
-        this.outPutFileName = outPutFileName;
+    public NormalizeStep(String outPutFolderNm) {
+        this.outPutFolderNm = outPutFolderNm;
     }
 
     @Override
     public Path execute(Path input) throws IOException {
         return LibraryCatalogNormalizer.normalize(
-            input.toString(),outPutFileName
+            input.toString(),
+            outPutFolderNm
         );
     }
 

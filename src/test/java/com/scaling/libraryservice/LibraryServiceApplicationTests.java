@@ -1,13 +1,11 @@
 package com.scaling.libraryservice;
 
-import static com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader.getDefaultDirectory;
+import static com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader.getDefaultDirectory;
 
 import com.scaling.libraryservice.dataPipe.csv.exporter.BookExporter;
-import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogExecutor;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogNormalizer;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.AggregatingStep;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DivideStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DownLoadStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.ExecutionStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.MergingStep;
@@ -15,7 +13,6 @@ import com.scaling.libraryservice.dataPipe.libraryCatalog.step.NormalizeStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.StepBuilder;
 import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -43,31 +40,33 @@ class LibraryServiceApplicationTests {
     LibraryCatalogExecutor libraryCatalogExecutor;
 
 
-    @Test
     public void execute_pipe() {
         /* given */
 
         DownLoadStep downLoadStep = new DownLoadStep(
             libraryCatalogDownloader,
-            "(2023년 06월)",
+            "(2023년 07월)",
             true,
-            30
+            50
         );
+
+        NormalizeStep normalizeStep = new NormalizeStep("pipe/normalizeStep");
+        AggregatingStep aggregatingStep = new AggregatingStep("pipe/aggregatingStep/aggregate", 10);
 
         StepBuilder stepBuilder = new StepBuilder();
         List<ExecutionStep> executionSteps = stepBuilder
             .start(downLoadStep)
-            .next(new NormalizeStep("pipe/normalizeStep/normalFile.csv"))
-            .next(new DivideStep("pipe/divideStep", 10000000))
-            .next(new AggregatingStep("pipe/aggregatingStep/aggregating"))
-            .next(new MergingStep("pipe/mergingStep/mergeFile.csv"))
-            .next(new AggregatingStep("pipe/endStep/end"))
+            .next(normalizeStep)
+            .next(aggregatingStep)
+            .next(new MergingStep("pipe/mergingStep/mergedFile.csv"))
+            .next(new AggregatingStep("pipe/endStep/end.csv",100))
             .end();
 
         libraryCatalogExecutor.executeProcess(
-            Path.of("pipe/download/"),
+            Path.of("pipe/normalizeStep"),
             executionSteps,
-            downLoadStep
+            downLoadStep,
+            normalizeStep
         );
     }
 

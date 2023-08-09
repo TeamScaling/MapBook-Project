@@ -1,9 +1,8 @@
 package com.scaling.libraryservice.dataPipe.libraryCatalog;
 
 import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
-import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.AggregatingStep;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DivideStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DownLoadStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.ExecutionStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.MergingStep;
@@ -20,7 +19,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 @RequiredArgsConstructor
 @Service
@@ -28,28 +26,24 @@ public class LibraryCatalogExecutor {
 
     private final LibraryCatalogDownloader libraryCatalogDownloader;
 
-//    private final NormalizeStep normalizeStep;
 
     // targetDate "(2023년 06월)"
     @BatchLogging
     public void executeProcess(Path input, List<ExecutionStep> executionSteps,
-        ExecutionStep... skipStep) {
+        ExecutionStep... skipSteps) {
 
         AtomicReference<Path> currentPath = new AtomicReference<>(input);
-        List<ExecutionStep> skipStepList = Arrays.stream(skipStep).toList();
-
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
+        List<ExecutionStep> skipList = Arrays.stream(skipSteps).toList();
 
         List<Path> completePath = new ArrayList<>();
 
         executionSteps.stream()
-            .filter(step -> !skipStepList.contains(step))
+            .filter(step -> !skipList.contains(step))
             .forEach(executionStep -> {
                 try {
                     Path outPutPath = executionStep.execute(currentPath.get());
 
-                    if(!(executionStep instanceof MergingStep)){
+                    if (!currentPath.get().subpath(0, 2).toString().equals("pipe/endStep")) {
                         completePath.add(currentPath.get());
                     }
 
@@ -59,19 +53,12 @@ public class LibraryCatalogExecutor {
                 }
             });
 
-        stopWatch.stop();
-        String totalTime = String.format("%.3f", stopWatch.getTotalTimeSeconds());
-
-        System.out.println("totalTime : "+totalTime);
-
         completePath.forEach(this::clearDirectory);
     }
 
-    private void clearDirectory(Path filePath){
+    private void clearDirectory(Path filePath) {
 
         Path directory = filePath.subpath(0, 2);
-
-        System.out.println(directory);
 
         if (Files.exists(directory)) {
 
@@ -84,25 +71,24 @@ public class LibraryCatalogExecutor {
                             throw new UncheckedIOException(e);
                         }
                     });
-            }catch (IOException e){
+            } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         }
     }
 
-//    // targetDate =  "(2023년 06월)"
-//    public void defaultProcess(String targetDate) throws IOException {
-//
-//        StepBuilder stepBuilder = new StepBuilder();
-//        List<ExecutionStep> executionSteps = stepBuilder
-//            .start(new DownLoadStep(libraryCatalogDownloader, targetDate, false, -1))
-//            .next(normalizeStep)
-//            .next(new DivideStep("pipe/divideStep", 10000000))
-//            .next(new AggregatingStep("pipe/aggregatingStep/aggregating"))
-//            .next(new MergingStep("pipe/mergingStep/mergeFile.csv"))
-//            .next(new AggregatingStep("pipe/endStep/end"))
-//            .end();
-//
-//        executeProcess(Path.of("pipe/download/"), executionSteps);
-//    }
+    // targetDate =  "(2023년 06월)"
+    public void defaultProcess(String targetDate) throws IOException {
+
+        StepBuilder stepBuilder = new StepBuilder();
+        List<ExecutionStep> executionSteps = stepBuilder
+            .start(new DownLoadStep(libraryCatalogDownloader, targetDate, false, -1))
+            .next(new NormalizeStep("pipe/normalizedStep/"))
+            .next(new AggregatingStep("pipe/aggregatingStep/aggregating", 100))
+            .next(new MergingStep("pipe/mergingStep/mergeFile.csv"))
+            .next(new AggregatingStep("pipe/endStep/end", 10))
+            .end();
+
+        executeProcess(Path.of("pipe/download/"), executionSteps);
+    }
 }

@@ -1,11 +1,8 @@
 package com.scaling.libraryservice.dataPipe.libraryCatalog.step;
 
-import com.scaling.libraryservice.dataPipe.download.LibraryCatalogDownloader;
-import java.io.IOException;
-import java.nio.file.Files;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 public class DownLoadStep implements ExecutionStep {

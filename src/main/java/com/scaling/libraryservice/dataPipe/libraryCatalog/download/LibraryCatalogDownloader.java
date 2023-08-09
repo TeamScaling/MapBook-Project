@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.dataPipe.download;
+package com.scaling.libraryservice.dataPipe.libraryCatalog.download;
 
 import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogUrlCrawler;

@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.dataPipe.libraryCatalog;
+package com.scaling.libraryservice.dataPipe.csv.util;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,18 +12,8 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
 public class CsvUtils {
-
-    private static final int BUFFER_SIZE = 8192;
-
     public static CSVParser getCsvParser(Path filePath) throws IOException {
         Reader reader = Files.newBufferedReader(filePath);
-
-        return CSVFormat.DEFAULT
-            .withFirstRecordAsHeader()
-            .parse(reader);
-    }
-
-    public static CSVParser getCsvParser(Path filePath,Reader reader) throws IOException {
 
         return CSVFormat.DEFAULT
             .withFirstRecordAsHeader()
@@ -38,7 +28,4 @@ public class CsvUtils {
         );
     }
 
-    public static String buildCsvLine(String... args) {
-        return String.join(",", args);
-    }
 }
