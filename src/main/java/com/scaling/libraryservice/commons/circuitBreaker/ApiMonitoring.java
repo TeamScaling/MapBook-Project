@@ -18,7 +18,7 @@ public @interface ApiMonitoring {
      *
      * @return 원본 메소드가 속한 클래스
      */
-    Class<? extends ApiObserver> api();
+    Class<? extends ApiObserver> apiObserver();
 
     /**
      * 대체 메소드의 이름을 지정합니다.

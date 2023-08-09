@@ -5,13 +5,14 @@ import static com.scaling.libraryservice.logging.logger.TaskType.API_ERROR_TASK;
 import com.scaling.libraryservice.commons.circuitBreaker.ApiStatus;
 import com.scaling.libraryservice.logging.util.LogFormatter;
 import com.scaling.libraryservice.logging.util.SlackReporter;
+import java.time.LocalDateTime;
 import java.util.Map;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OpenApiLogger extends AbstractLogger<ApiStatus> {
+public class OpenApiSlackLogger extends AbstractSlackLogger<ApiStatus> {
 
-    public OpenApiLogger(SlackReporter slackReporter) {
+    public OpenApiSlackLogger(SlackReporter slackReporter) {
         super(slackReporter);
     }
 
@@ -19,7 +20,7 @@ public class OpenApiLogger extends AbstractLogger<ApiStatus> {
     Map<String, String> collectLogInMap(ApiStatus status) {
         return Map.of(
             "apiUrl", status.getApiUri(),
-            "closedTime", LogFormatter.formatDateTime(status.getClosedTime())
+            "closedTime", LogFormatter.formatDateTime(LocalDateTime.now())
         );
     }
 

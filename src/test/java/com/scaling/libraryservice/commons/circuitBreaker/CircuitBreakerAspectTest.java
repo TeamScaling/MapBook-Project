@@ -8,7 +8,6 @@ import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import java.lang.reflect.Method;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,21 +27,16 @@ class CircuitBreakerAspectTest {
     @Mock
     private ProceedingJoinPoint joinPoint;
     @Mock
-    private MethodSignature signature;
-    @Mock
     private ApiObserver apiObserver;
-    private Method originMethod;
     private Method substituteMethod;
 
     @BeforeEach
     public void setUP() throws NoSuchMethodException {
         circuitBreakerAspect = new CircuitBreakerAspect(circuitBreaker,support);
-
-        originMethod = this.getClass().getDeclaredMethod("targetApiMonitoring");
         substituteMethod = this.getClass().getDeclaredMethod("fallBackMethod");
     }
 
-    @ApiMonitoring(api = LoanableLibConn.class,substitute = "fallBackMethod")
+    @ApiMonitoring(apiObserver = LoanableLibConn.class,substitute = "fallBackMethod")
     @DisplayName("테스트를 위한 AOP PointCut method")
     public void targetApiMonitoring(){
         System.out.println("hello!!!!!!!!!!");
@@ -64,10 +58,8 @@ class CircuitBreakerAspectTest {
     public void apiMonitoringAround2() throws Throwable {
         /* given */
 
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(signature.getMethod()).thenReturn(originMethod);
         when(support.extractObserver(any())).thenReturn(apiObserver);
-        when(support.extractSubstituteMethod(any(),any())).thenReturn(substituteMethod);
+        when(support.extractSubstituteMethod(joinPoint)).thenReturn(substituteMethod);
         when(circuitBreaker.isApiAccessible(apiObserver)).thenReturn(false);
 
         when(joinPoint.getTarget()).thenReturn(this);
@@ -84,10 +76,8 @@ class CircuitBreakerAspectTest {
     public void apiMonitoringAround_apiAccessAble() throws Throwable {
         /* given */
 
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(signature.getMethod()).thenReturn(originMethod);
         when(support.extractObserver(any())).thenReturn(apiObserver);
-        when(support.extractSubstituteMethod(any(),any())).thenReturn(substituteMethod);
+        when(support.extractSubstituteMethod(joinPoint)).thenReturn(substituteMethod);
         when(circuitBreaker.isApiAccessible(apiObserver)).thenReturn(true);
 
         when(joinPoint.getTarget()).thenReturn(this);
@@ -106,11 +96,8 @@ class CircuitBreakerAspectTest {
     public void apiMonitoringAround_apiAccessAble_throw() throws Throwable {
         /* given */
 
-        when(joinPoint.getSignature()).thenReturn(signature);
-        when(joinPoint.getTarget()).thenReturn(this);
-        when(signature.getMethod()).thenReturn(originMethod);
         when(support.extractObserver(any())).thenReturn(apiObserver);
-        when(support.extractSubstituteMethod(any(),any())).thenReturn(substituteMethod);
+        when(support.extractSubstituteMethod(joinPoint)).thenReturn(substituteMethod);
         when(circuitBreaker.isApiAccessible(apiObserver)).thenReturn(true);
 
         when(joinPoint.proceed()).thenReturn(new Object());

@@ -62,7 +62,6 @@ public class CustomCacheManager<K, I> {
     @MeasureTaskTime
     public I get(Class<?> customer, CacheKey<K,I> personalKey) {
         log.info("CacheManger find item for [{}]", customer);
-
         return commonsCache.get(customer).getIfPresent(personalKey);
     }
 

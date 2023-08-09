@@ -16,9 +16,8 @@ public class CsvFileReader {
 
     public static List<String> readDataLines(File file, int... recordIdx) {
 
-        try (
-            BufferedReader reader = Files.newBufferedReader(file.toPath());
-        ) {
+        try (BufferedReader reader = Files.newBufferedReader(file.toPath())) {
+
             CSVParser csvParser = getCsvParser(reader);
 
             return StreamSupport.stream(csvParser.spliterator(), false)
@@ -30,14 +29,6 @@ public class CsvFileReader {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-    }
-
-    private static String buildCsvLine(String... args) {
-        return String.join(",", args);
-    }
-
-    private static File[] fileLoad(String inputFolder) {
-        return new File(inputFolder).listFiles();
     }
 
     private static CSVParser getCsvParser(BufferedReader reader) throws IOException {

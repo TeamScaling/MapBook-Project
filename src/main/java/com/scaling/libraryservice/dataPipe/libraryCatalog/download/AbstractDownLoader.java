@@ -1,10 +1,10 @@
-package com.scaling.libraryservice.dataPipe.download;
+package com.scaling.libraryservice.dataPipe.libraryCatalog.download;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.security.SecureRandom;
@@ -18,19 +18,19 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractDownLoader implements DownLoader{
 
     @Override
-    public abstract Path downLoad(String outPutDirectory, String targetDate);
+    public abstract Path downLoad(String outPutDirectory, String targetDate,boolean option,int limit);
 
     void downloadFile(String siteUrl, String fileName) throws IOException {
         InputStream in = new BufferedInputStream(new URL(siteUrl).openStream());
-        OutputStream out = new FileOutputStream(fileName);
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
 
         byte[] data = new byte[1024];
         int count;
 
         while ((count = in.read(data, 0, 1024)) != -1) {
-            out.write(data, 0, count);
+            bos.write(data, 0, count);
         }
-        out.close();
+        bos.close();
         in.close();
 
         log.info("[{}] download complete",fileName);

@@ -14,6 +14,7 @@ public class AuthKeyLoader {
     private final AuthKeyRepository authKeyRepo;
 
     public AuthKey loadAuthKey(@NonNull OpenApi openApi){
+
         return authKeyRepo.findById(openApi.getId())
             .orElseThrow(IllegalArgumentException::new);
     }

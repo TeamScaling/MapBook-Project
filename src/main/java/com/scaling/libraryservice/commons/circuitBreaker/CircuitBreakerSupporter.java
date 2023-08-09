@@ -1,12 +1,13 @@
 package com.scaling.libraryservice.commons.circuitBreaker;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -31,35 +32,30 @@ public class CircuitBreakerSupporter {
      * 주어진 {@link ApiMonitoring} 인스턴스에 연결된 {@link ApiObserver} 인스턴스를 추출하는 메소드입니다. 이미 이전에 추출된
      * ApiObserver 인스턴스가 있으면, 그것을 반환합니다. 그렇지 않으면, 새로운 ApiObserver 인스턴스를 생성하고 이를 반환합니다.
      *
-     * @param apiMonitoring ApiObserver를 추출할 {@link ApiMonitoring} 인스턴스
      * @return {@link ApiObserver} 인스턴스
-     * @throws NoSuchMethodException     ApiObserver 클래스에 디폴트 생성자가 없는 경우
-     * @throws InvocationTargetException ApiObserver 클래스의 생성자를 호출하는 도중 예외가 발생한 경우
-     * @throws InstantiationException    ApiObserver 클래스의 인스턴스를 생성하는 도중 예외가 발생한 경우
-     * @throws IllegalAccessException    ApiObserver 클래스의 생성자에 액세스할 수 없는 경우
      */
-    ApiObserver extractObserver(@NonNull ApiMonitoring apiMonitoring)
-        throws Exception {
+    ApiObserver extractObserver(@NonNull ProceedingJoinPoint joinPoint) throws Exception {
 
-        Class<? extends ApiObserver> observerClazz = apiMonitoring.api();
+        ApiMonitoring apiMonitoring = getApiMonitoring(joinPoint);
+        Class<? extends ApiObserver> observerClazz = apiMonitoring.apiObserver();
 
         return observerMap.containsKey(observerClazz) ?
             observerMap.get(observerClazz) :
             constructAndPutObserver(apiMonitoring, observerClazz);
     }
 
-    ApiObserver constructAndPutObserver(ApiMonitoring apiMonitoring,
-        Class<? extends ApiObserver> observerClazz) throws Exception {
+    ApiObserver constructAndPutObserver(
+        ApiMonitoring apiMonitoring, Class<? extends ApiObserver> observerClazz
+    ) throws Exception {
 
         Constructor<? extends ApiObserver> constructor =
             apiMonitoring
-                .api()
+                .apiObserver()
                 .getDeclaredConstructor();
 
         constructor.setAccessible(true);
 
         ApiObserver apiObserver = constructor.newInstance();
-
         observerMap.put(observerClazz, apiObserver);
 
         return apiObserver;
@@ -70,13 +66,17 @@ public class CircuitBreakerSupporter {
      * 주어진 {@link ApiMonitoring} 인스턴스와 메소드 배열에서 대체 메소드를 추출하는 메소드입니다. 이 메소드는 ApiMonitoring 인스턴스에서 지정된
      * 대체 메소드 이름을 사용하여 대체 메소드를 찾습니다. 찾을 수 없는 경우 IllegalArgumentException을 발생시킵니다.
      *
-     * @param apiMonitoring 대체 메소드 이름을 가져올 {@link ApiMonitoring} 인스턴스
-     * @param methods       대체 메소드를 찾을 메소드 배열
      * @return 찾은 대체 메소드
-     * @throws IllegalArgumentException 대체 메소드를 찾을 수 없는 경우
      */
-    Method extractSubstituteMethod(@NonNull ApiMonitoring apiMonitoring,
-        @NonNull Method[] methods) {
+    Method extractSubstituteMethod(ProceedingJoinPoint joinPoint) throws IllegalArgumentException {
+
+        Method[] methods = getMethods(joinPoint);
+        ApiMonitoring apiMonitoring = getApiMonitoring(joinPoint);
+
+        return getSubstituteMethod(apiMonitoring, methods);
+    }
+
+    Method getSubstituteMethod(ApiMonitoring apiMonitoring, Method[] methods) {
 
         return Arrays.stream(methods)
             .filter(method -> isSubstituteMethod(method, apiMonitoring.substitute()))
@@ -86,6 +86,16 @@ public class CircuitBreakerSupporter {
 
     private boolean isSubstituteMethod(Method method, String substituteNm) {
         return method.getName().equals(substituteNm);
+    }
+
+    private Method[] getMethods(ProceedingJoinPoint joinPoint) {
+        return joinPoint.getTarget().getClass().getDeclaredMethods();
+    }
+
+    private ApiMonitoring getApiMonitoring(ProceedingJoinPoint joinPoint) {
+
+        Method joinPointMethod = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        return joinPointMethod.getAnnotation(ApiMonitoring.class);
     }
 
 }

@@ -15,9 +15,7 @@ public class LoanableLibConnGenerator implements
     ConnectionGenerator<LoanableLibConn, LibraryInfoDto, ReqMapBookDto> {
 
     @Override
-    public List<LoanableLibConn> generateNecessaryConns(
-        @NonNull List<LibraryInfoDto> nearByLibraries,
-        ReqMapBookDto reqMapBookDto) {
+    public List<LoanableLibConn> generateNecessaryConns(@NonNull List<LibraryInfoDto> nearByLibraries, ReqMapBookDto reqMapBookDto) {
 
         boolean isHasBookServiceSupport = nearByLibraries.stream()
             .anyMatch(LibraryInfoDto::isHasBookSupport);
