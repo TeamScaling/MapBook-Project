@@ -1,114 +1,105 @@
 package com.scaling.libraryservice.dataPipe.libraryCatalog;
 
 import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
+import com.scaling.libraryservice.dataPipe.csv.util.CsvUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 
 // 1억 2천만 대출 횟수 관련 데이터를 분할/합산/병합 프로세스에서 합산을 위한 클래스
 @Slf4j
 public class LibraryCatalogAggregator {
-
-    private static final String HEADER_NAME = "ISBN,LOAN_CNT";
     private static final int ISBN_IDX = 0;
     private static final int LOAN_CNT_IDX = 1;
-    private static final String DEFAULT_OUTPUT_FORMAT = "%s_%d.csv";
-
-    public static void main(String[] args) {
-
-        LibraryCatalogAggregator.aggregateLoanCnt("mergeLoanCnt",
-            "loanSumFile\\loanSum",
-            DEFAULT_OUTPUT_FORMAT
-        );
-    }
+    private static final int NORMAL_LINE_SIZE = 2;
 
     // 주어진 folder에서 file 마다 작업을 수행.
     @BatchLogging
-    public static Path aggregateLoanCnt(String inPutFolder, String outPutNm, String format) {
+    public static Path aggregateLoanCnt(String inPutFolder, String outPutNm,int group) {
         AtomicInteger fileCount = new AtomicInteger();
+        List<File> fileList = Arrays.asList(getCsvFiles(inPutFolder));
 
-        // file마다 ISBN 별로 loan_cnt를 sum 하는 작업을 수행 합니다.
-        Arrays.stream(getCsvFiles(inPutFolder))
-            .forEach(file ->
-                mergeCnt(file, String.format(format, outPutNm, fileCount.getAndIncrement()))
+        // 리스트를 그룹화
+        IntStream.iterate(0, i -> i + group)
+            .limit((fileList.size() + group - 1) / group)  // 그룹의 수 계산
+            .mapToObj(i -> fileList.subList(i, Math.min(i + group, fileList.size())))
+            .forEach(subList ->
+                mergeFiles(subList, String.format("%s_%d.csv", outPutNm, fileCount.getAndIncrement()))
             );
 
         return Path.of(outPutNm);
     }
 
+    private static void mergeFiles(List<File> files, String outPutNm) {
 
-    private static void mergeCnt(File file, String outPutNm) {
+        Map<String, Integer> isbnLoanCntMap = collectIsbnLoanCounts(files);
 
-        Map<String, Integer> isbnLoanCntMap = new HashMap<>();
-
-        try (
-            Reader reader = Files.newBufferedReader(file.toPath());
-
-            BufferedWriter writer = Files.newBufferedWriter(
-                Paths.get(outPutNm),
-                StandardCharsets.UTF_8)
-        ) {
-            // csv file에서 데이터를 읽어 온다.
-            CSVParser csvParser = CSVFormat.DEFAULT
-                .withFirstRecordAsHeader()
-                .parse(reader);
-
-            // 읽어온 csv 데이터를 isbn별로 loanCnt를 합산하여 map에 넣는다
-            csvParser.forEach(record -> sumLoanCntPutMap(record, isbnLoanCntMap));
-
-            // 다시 map에 담겨진 데이터를 Csv file로 write하여 outPut 한다.
-            for (Map.Entry<String, Integer> isbnLoanCntEntry : isbnLoanCntMap.entrySet()) {
-                writeToCsv(writer, isbnLoanCntEntry);
-            }
-
+        try (BufferedWriter writer = CsvUtils.getBufferedWriter(outPutNm)) {
+            isbnLoanCntMap.entrySet()
+                .forEach(entry -> {
+                    try {
+                        writeToCsv(writer,entry);
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
+    private static Map<String, Integer> collectIsbnLoanCounts(List<File> files){
+        Map<String, Integer> isbnLoanCntMap = new HashMap<>();
+
+        for (File file : files) {
+            try {
+                Files.readAllLines(file.toPath(), Charset.forName("EUC-KR")).stream()
+                    .filter(line -> line.split(",").length == NORMAL_LINE_SIZE)
+                    .forEach(line -> sumLoanCntPutMap(line,isbnLoanCntMap));
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+        return isbnLoanCntMap;
+    }
+
+
     private static void writeToCsv(BufferedWriter writer,
         Map.Entry<String, Integer> entry) throws IOException {
 
-        String dataLine = buildCsvLine(entry.getKey(), String.valueOf(entry.getValue()));
+        String dataLine = String.join(",",entry.getKey(), String.valueOf(entry.getValue()));
 
         writer.write(dataLine);
         writer.newLine();
     }
 
-    private static void sumLoanCntPutMap(CSVRecord csvRecord, Map<String, Integer> map) {
+    private static void sumLoanCntPutMap(String line, Map<String, Integer> map) {
 
-        String newIsbn = csvRecord.get(ISBN_IDX);
-        String newLoanCnt = csvRecord.get(LOAN_CNT_IDX);
+        String[] split = line.split(",");
 
-        map.compute(newIsbn, (oldIsbn, oldLoanCnt) ->
-            (oldLoanCnt == null ? 0 : oldLoanCnt) + Integer.parseInt(newLoanCnt)
+        String isbn = split[ISBN_IDX];
+        String loanCnt = split[LOAN_CNT_IDX];
+
+        map.compute(isbn, (oldIsbn, oldLoanCnt) ->
+            (oldLoanCnt == null ? 0 : oldLoanCnt) + Integer.parseInt(loanCnt)
         );
     }
 
-    private static String buildCsvLine(String... args) {
-        return String.join(",", args);
-    }
 
     private static File[] getCsvFiles(String folder) {
         return new File(folder).listFiles();
     }
 
-    public static String getDefaultOutputFormat(){
-        return DEFAULT_OUTPUT_FORMAT;
-    }
 
 }

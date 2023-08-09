@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -21,47 +22,36 @@ import org.apache.commons.csv.CSVParser;
 public class CsvFileMerger {
 
     private static final String HEADER_NAME = "ISBN,LOAN_CNT";
-    private static final String DEFAULT_INPUT_FOLDER = "download\\";
-
-    private static final String DEFAULT_OUTPUT_NAME = "input\\step1.csv";
-
-    public static void main(String[] args) {
-
-        try {
-            mergeCsvFile("loanSumFile\\", "mergeFile\\result2.csv",0,1);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     // 분할 된 CSV 파일을 다시 병합
-    public static void mergeCsvFile(String inputFolder, String outPutNm,int... recordIdx)
+    public static Path mergeCsvFile(String inputFolder, String outPutNm,String header,int... recordIdx)
         throws IOException {
-        log.info("[CsvFileMerger] is start");
+        log.info("[CsvFileMerger] start");
         File[] files = fileLoad(inputFolder);
 
         AtomicBoolean headerSaved = new AtomicBoolean(false);
 
         try (BufferedWriter writer = Files.newBufferedWriter(
-            Paths.get(outPutNm+".csv"), StandardCharsets.UTF_8)) {
 
+            Paths.get(outPutNm+".csv"), StandardCharsets.UTF_8)) {
             Arrays.stream(files).forEach(file -> {
                 List<String> lines = CsvFileReader.readDataLines(file,recordIdx);
-                writeToCsv(writer, file, headerSaved.get(),lines);
+                writeToCsv(writer, header, headerSaved.get(),lines);
                 headerSaved.set(true);
             });
         }
 
-
         log.info("[CsvFileMerger] is completed");
+
+        return Path.of(outPutNm);
     }
 
-    private static void writeToCsv(BufferedWriter writer, File file, boolean headerSaved,List<String> lines) {
+    private static void writeToCsv(BufferedWriter writer, String header, boolean headerSaved,List<String> lines) {
 
         try {
 
-            if (!headerSaved) {
-                writer.write(HEADER_NAME);
+            if (header !=null && !headerSaved) {
+                writer.write(header);
                 writer.newLine();
             }
 
@@ -75,13 +65,6 @@ public class CsvFileMerger {
         }
     }
 
-    public static String getDefaultInputFolder(){
-        return DEFAULT_INPUT_FOLDER;
-    }
-
-    public static String getDefaultOutputName(){
-        return DEFAULT_OUTPUT_NAME;
-    }
 
     private static String buildCsvLine(String... args) {
         return String.join(",", args);

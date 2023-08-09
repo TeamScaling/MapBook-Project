@@ -3,22 +3,27 @@ package com.scaling.libraryservice.dataPipe.libraryCatalog;
 import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -28,123 +33,86 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component
 public class LibraryCatalogNormalizer {
-
-    private final LibraryFindService libraryFindService;
 
     private static final int ISBN_IDX = 5;
     private static final int LOAN_CNT_IDX = 11;
-    private static final int REGISTER_DATE_IDX = 12;
     private static final int ISBN_MIN_SIZE = 10;
     private static final String ISBN_REGEX = "^\\d+$";
 
-    @BatchLogging
-    public Path normalize(String inputFolder, String outputFileName) {
+    private static final String LOAN_CNT_REGEX = "^-?\\d+$";
 
-        List<LibraryInfoDto> libraries = libraryFindService.getAllLibraries();
-
+    public static Path normalize(String inputFolder,String outPutFolder) {
         File[] files = getCsvFiles(inputFolder);
+        processNormalize(files,outPutFolder);
+        return Path.of(inputFolder);
+    }
 
-        Path outPutPath = Path.of(outputFileName);
+    private static void processNormalize(File[] files,String outPutFolder) {
+        Arrays.stream(files)
+            .parallel()
+            .forEach(file -> {
+                Path outputPath = Path.of(outPutFolder+"/"+file.getName().split(" ")[0]+ "normalized.csv");
+                try {
+                    normalizeAndWrite(file, outputPath);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+    }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(
-            outPutPath, StandardCharsets.UTF_8)) {
-            processNormalize(files, writer, libraries);
+    private static void normalizeAndWrite(File file, Path outputPath) throws IOException {
 
-            return outPutPath;
+        List<String> allLines = Files.readAllLines(file.toPath(), Charset.forName("EUC-KR"));
 
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
+
+            allLines.parallelStream()
+                .map(LibraryCatalogNormalizer::extractTarget)
+                .filter(line -> !line.isBlank())
+                .forEach(line -> {
+                    try {
+                        writer.write(line);
+                        writer.newLine();
+                    } catch (IOException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                });
         }
     }
 
-    private File[] getCsvFiles(String folder) {
+    private static String extractTarget(String line) {
+
+        StringJoiner joiner = new StringJoiner(",");
+        String[] split = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+
+        if (split.length > LOAN_CNT_IDX) {
+            String isbnValue = split[ISBN_IDX].replace("\"", "");
+            String loanCntValue = split[LOAN_CNT_IDX].replace("\"", "");
+
+            if (isValidIsbn(isbnValue) && isValidLoanCnt(loanCntValue)) {
+                joiner.add(isbnValue);
+                joiner.add(loanCntValue);
+            }
+        }
+        return joiner.toString();
+    }
+
+    private static File[] getCsvFiles(String folder) {
         return new File(folder).listFiles((dir, name) -> name.endsWith(".csv"));
     }
 
-    private void processNormalize(File[] files, BufferedWriter writer,
-        List<LibraryInfoDto> libraries)
-        throws IOException {
-
-        AtomicBoolean headerSaved = new AtomicBoolean(false);
-
-        Arrays.stream(files)
-            .forEach(file -> {
-                // 파일명에서 도서관 이름만 추출 한다.
-                String libraryName = extractLibraryName(file);
-
-                // 파일에서 추출된 이름이 DB내의 도서관 정보에 일치한 도서관 정보를 찾는다.
-                Optional<LibraryInfoDto> libraryOpt =
-                    libraries.stream()
-                        .filter(libray -> libray.getLibNm().contains(libraryName))
-                        .findAny();
-
-                if (libraryOpt.isPresent()) {
-                    String headerNm = "ISBN,LOAN_CNT,LBRRY_CD,REGIS_DATA,AREA_CD";
-                    LibraryInfoDto library = libraryOpt.get();
-                    normalizeAndWrite(file, headerSaved, writer, library, headerNm);
-                }
-            });
-
-    }
-
-    private void normalizeAndWrite(
-        File file, AtomicBoolean headerSaved, BufferedWriter writer, LibraryInfoDto library, String headerName)
-    {
-
-        try (Reader reader = Files.newBufferedReader(
-            file.toPath(), Charset.forName("EUC-KR"))) {
-
-            CSVParser csvParser = CSVFormat.DEFAULT
-                .parse(reader);
-
-            if (!headerSaved.get()) {
-                writer.write(headerName);
-                writer.newLine();
-                headerSaved.set(true);
-            }
-
-            for (CSVRecord record : csvParser) {
-                normalizeData(writer, record, library);
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-
-    }
-
-    // File Name : 구성도서관 장서 대출목록 (2023년 04월)에서  '구성도서관'만 추출
-    private String extractLibraryName(File file) {
-        return file.getName().split(" ", 3)[0];
-    }
-
-    private void normalizeData(BufferedWriter writer, CSVRecord record, LibraryInfoDto library)
-        throws IOException {
-
-        String isbn = record.get(ISBN_IDX);
-        String loanCount = record.get(LOAN_CNT_IDX);
-        String regisDate = record.get(REGISTER_DATE_IDX);
-
-        if (isValidIsbn(isbn)) {
-            writer.write(buildCsvLine(isbn, loanCount, library, regisDate));
-            writer.newLine();
-        }
-    }
-
-    private boolean isValidIsbn(String isbn) {
+    private static boolean isValidIsbn(String isbn) {
         Pattern pattern = Pattern.compile(ISBN_REGEX);
         Matcher matcher = pattern.matcher(isbn);
-
         return matcher.matches() && isbn.length() > ISBN_MIN_SIZE;
     }
 
-    private String buildCsvLine(
-        String isbn, String loanCount, LibraryInfoDto library, String regisDate) {
+    private static boolean isValidLoanCnt(String loanCnt) {
+        Pattern pattern = Pattern.compile(LOAN_CNT_REGEX);
+        Matcher matcher = pattern.matcher(loanCnt);
 
-        return String.join(",", isbn, loanCount, library.getLibNo().toString(), regisDate,
-            library.getAreaCd().toString());
+        return matcher.matches();
     }
-
 
 }
