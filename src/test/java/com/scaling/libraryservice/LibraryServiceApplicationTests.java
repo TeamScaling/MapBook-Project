@@ -2,7 +2,10 @@ package com.scaling.libraryservice;
 
 import static com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader.getDefaultDirectory;
 
+import com.scaling.libraryservice.dataPipe.FileService;
 import com.scaling.libraryservice.dataPipe.csv.exporter.BookExporter;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogAggregator;
+import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogNormalizer;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.LibraryCatalogExecutor;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.AggregatingStep;
@@ -13,6 +16,7 @@ import com.scaling.libraryservice.dataPipe.libraryCatalog.step.NormalizeStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.StepBuilder;
 import com.scaling.libraryservice.dataPipe.updater.service.BookUpdateService;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +43,16 @@ class LibraryServiceApplicationTests {
     @Autowired
     LibraryCatalogExecutor libraryCatalogExecutor;
 
+    @Autowired
+    LibraryCatalogAggregator libraryCatalogAggregator;
+
+    @Autowired
+    LibraryCatalogNormalizer libraryCatalogNormalizer;
+
+
+    @Autowired
+    FileService fileService;
+
 
     public void execute_pipe() {
         /* given */
@@ -50,8 +64,15 @@ class LibraryServiceApplicationTests {
             50
         );
 
-        NormalizeStep normalizeStep = new NormalizeStep("pipe/normalizeStep");
-        AggregatingStep aggregatingStep = new AggregatingStep("pipe/aggregatingStep/aggregate", 10);
+        NormalizeStep normalizeStep = new NormalizeStep("pipe/normalizeStep",
+            libraryCatalogNormalizer,
+            fileService);
+        AggregatingStep aggregatingStep = new AggregatingStep(
+            "pipe/normalizeStep",
+            "pipe/aggregatingStep/aggregate",
+            10,
+            libraryCatalogAggregator,
+            fileService);
 
         StepBuilder stepBuilder = new StepBuilder();
         List<ExecutionStep> executionSteps = stepBuilder
@@ -59,14 +80,12 @@ class LibraryServiceApplicationTests {
             .next(normalizeStep)
             .next(aggregatingStep)
             .next(new MergingStep("pipe/mergingStep/mergedFile.csv"))
-            .next(new AggregatingStep("pipe/endStep/end.csv",100))
+            .next(aggregatingStep)
             .end();
 
         libraryCatalogExecutor.executeProcess(
             Path.of("pipe/normalizeStep"),
-            executionSteps,
-            downLoadStep,
-            normalizeStep
+            executionSteps
         );
     }
 
@@ -92,10 +111,20 @@ class LibraryServiceApplicationTests {
     }
 
     // 크롤러를 통해 원하는 날짜의 대출 횟수를 자동 다운로드 한다.
-    public void collectLoanCnt() {
+    @Test
+    public void collectLoanCnt() throws IOException {
         /* given */
 
-        libraryCatalogDownloader.downLoad(getDefaultDirectory(), "(2023년 06월)", false, 0);
+        AggregatingStep aggregatingStep = new AggregatingStep(
+            "pipe/normalizeStep",
+            "pipe/aggregatingStep/aggregate",
+            3,
+            libraryCatalogAggregator,
+            fileService
+        );
+
+        aggregatingStep.execute(Path.of("pipe"));
+
         /* when */
 
         /* then */
@@ -104,6 +133,12 @@ class LibraryServiceApplicationTests {
     // bookVo object를 Csv 파일로 output 한다.
     public void exportToCsv() {
         bookExporter.exportToCsv(0, 500000, "bookAuthr.csv", false);
+    }
+
+    @Test
+    public void normalize() throws IOException {
+        NormalizeStep step = new NormalizeStep("pipe/normalizeStep/",libraryCatalogNormalizer,fileService);
+        step.execute(Path.of("pipe/download"));
     }
 
 

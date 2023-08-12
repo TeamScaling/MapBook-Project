@@ -2,12 +2,7 @@ package com.scaling.libraryservice.dataPipe.libraryCatalog;
 
 import com.scaling.libraryservice.dataPipe.aop.BatchLogging;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.download.LibraryCatalogDownloader;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.AggregatingStep;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.DownLoadStep;
 import com.scaling.libraryservice.dataPipe.libraryCatalog.step.ExecutionStep;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.MergingStep;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.NormalizeStep;
-import com.scaling.libraryservice.dataPipe.libraryCatalog.step.StepBuilder;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -77,18 +72,4 @@ public class LibraryCatalogExecutor {
         }
     }
 
-    // targetDate =  "(2023년 06월)"
-    public void defaultProcess(String targetDate) throws IOException {
-
-        StepBuilder stepBuilder = new StepBuilder();
-        List<ExecutionStep> executionSteps = stepBuilder
-            .start(new DownLoadStep(libraryCatalogDownloader, targetDate, false, -1))
-            .next(new NormalizeStep("pipe/normalizedStep/"))
-            .next(new AggregatingStep("pipe/aggregatingStep/aggregating", 100))
-            .next(new MergingStep("pipe/mergingStep/mergeFile.csv"))
-            .next(new AggregatingStep("pipe/endStep/end", 10))
-            .end();
-
-        executeProcess(Path.of("pipe/download/"), executionSteps);
-    }
 }

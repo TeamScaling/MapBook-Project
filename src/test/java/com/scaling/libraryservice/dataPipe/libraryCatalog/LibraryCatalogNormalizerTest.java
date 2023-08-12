@@ -4,22 +4,39 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.scaling.libraryservice.dataPipe.csv.util.CsvFileMerger;
 import java.io.IOException;
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
+@ExtendWith(MockitoExtension.class)
 class LibraryCatalogNormalizerTest {
 
-    public static void main(String[] args) throws IOException {
+    @InjectMocks
+    LibraryCatalogNormalizer libraryCatalogNormalizer;
 
-//        LibraryCatalogNormalizer.normalize("pipe/download","pipe/normalizeStep");
-//
-//        CsvFileMerger merger = new CsvFileMerger();
-//        CsvFileMerger.mergeCsvFile("pipe/normalizeStep","pipe/mergingStep/mergedFile.csv",0,1);
-////
-        LibraryCatalogAggregator.aggregateLoanCnt("pipe/normalizeStep","pipe/aggregatingStep/aggregate.csv",10);
-//
-//        CsvFileMerger.mergeCsvFile("pipe/aggregatingStep","pipe/mergingStep/merge.csv",0,1);
 
-//        LibraryCatalogAggregator.aggregateLoanCnt("pipe/mergingStep","pipe/endStep/end.csv",10);
+    @Test
+    public void test1() {
+        /* given */
+
+        String element1 = "6,전쟁 같은 맛,그레이스 M. 조 (지은이), 주해연 (옮긴이),2023,9791169091183,,,,,,1,0,2023-06-30";
+        String element2 = "7,두길 천자문 - 중국의 역사, 선비의 일생,김세중 (지은이),2023,9788928518685,,,,,,8,0,2023-06-30";
+
+        String target1 = "9791169091183,1";
+        String target2 = "9788928518685,8";
+
+        List<String> list = List.of(element1,element2);
+
+        /* when */
+        List<String> normalize = libraryCatalogNormalizer.normalize(list);
+
+        /* then */
+        assertTrue(normalize.stream().anyMatch(s -> s.equals(target1)));
+        assertTrue(normalize.stream().anyMatch(s -> s.equals(target2)));
 
     }
-
 }

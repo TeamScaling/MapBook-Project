@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriComponentsBuilder;
 
+// Kakao 도서 API에 연결하는 클래스
 public class KakaoBookConn implements ApiConnection {
 
     private final Long id;
@@ -23,6 +24,7 @@ public class KakaoBookConn implements ApiConnection {
         this.id = updateBook.getId();
         this.target = updateBook.getIsbn();
     }
+
 
     @Override
     public UriComponentsBuilder configUriBuilder() {

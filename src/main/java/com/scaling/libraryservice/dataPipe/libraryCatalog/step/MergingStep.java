@@ -28,8 +28,4 @@ public class MergingStep implements ExecutionStep{
         );
     }
 
-    @Override
-    public void clearDirectory(Path filePath) throws IOException {
-        // This Class does not clear File for Keeping result file
-    }
 }

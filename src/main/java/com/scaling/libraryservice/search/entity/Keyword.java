@@ -23,4 +23,11 @@ public class Keyword {
     @Column(name = "keyword")
     private String keyword;
 
+    public Keyword() {
+    }
+
+    public Keyword(Long id, String keyword) {
+        this.id = id;
+        this.keyword = keyword;
+    }
 }

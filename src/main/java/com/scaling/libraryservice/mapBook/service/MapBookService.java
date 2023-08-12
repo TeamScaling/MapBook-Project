@@ -36,10 +36,9 @@ public class MapBookService implements ApiRelatedService {
     private final ConnectionGenerator<LoanableLibConn, LibraryInfoDto, ReqMapBookDto> connGenerator;
 
     @MeasureTaskTime // 시간을 측정하여 기록하기 위한 wrapper 메소드
-    public RespMapBookWrapper getLoanableMarker(
-        List<LibraryInfoDto> nearByLibraries,
-        ReqMapBookDto reqMapBookDto
-    ) {
+    public RespMapBookWrapper getLoanableMarker(List<LibraryInfoDto> nearByLibraries,
+        ReqMapBookDto reqMapBookDto)
+    {
         List<RespMapBookDto> respMapBooks = matchLibraryBooks(
             nearByLibraries,
             reqMapBookDto
