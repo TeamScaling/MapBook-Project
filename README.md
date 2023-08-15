@@ -64,11 +64,12 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
                     |              |_ 📁 timer (내부 응답 속도 체크)
                     |              |_ 📁 updater (도서 최신화)
                     |
-                    |_ 📁 dataPipe (Batch Server 구축이후 사용 X) _ 📁 aop
-                    |                                            |_ 📁 csv
-                    |                                            |_ 📁 libaryCatalog
-                    |                                            |_ 📁 updater
-                    |                                            |_ 📁 vo
+                    |_ 📁 batch     _    📁 aop
+                    |                  |_ 📁 bookUpdate (Book 상세정보 최신화) 
+                    |                  |_ 📁 jobController
+                    |                  |_ 📁 keyword (명사 사전)
+                    |                  |_ 📁 loanCnt (장서 목록 File 기반 대출 횟수 최신화)
+                    |                  |_ 📁 preSortBook
                     |_ 📁 logging_ _
                     |               |_ 📁 logger
                     |               |_ 📁 util
@@ -108,6 +109,7 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 - Spring JPA
 - Thymeleaf
 - QueryDsl
+- Spring Batch
 - eunjeon (자연어 분석)
 - Junit5
 - WireMock
