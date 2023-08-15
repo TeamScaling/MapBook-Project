@@ -12,7 +12,7 @@ class FilterStreamTest {
     @BeforeEach
     void setUp() {
 
-        filterStream = new FilterStream(new SimpleFilter(new StopWordFilter(null)));
+        filterStream = new FilterStream(new SimpleFilter(new StopWordFilter(null),true));
     }
 
     @Test

@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
-    private final BookRepoQueryDsl bookRepository;
+    private final BookRepoQueryDsl bookRepoQueryDsl;
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     private final static String ISBN_REGEX = "\\d+";
@@ -72,7 +72,7 @@ public class BookSearchService {
 
     private RespBooksDto searchBookByIsbn(String userQuery) {
 
-        BookDto bookDto = bookRepository.findBooksByIsbn(userQuery);
+        BookDto bookDto = bookRepoQueryDsl.findBooksByIsbn(userQuery);
 
         return bookDto.isEmpty() ?
             createEmptyRespBookDto(userQuery)
@@ -117,7 +117,7 @@ public class BookSearchService {
     }
 
     private Supplier<Page<BookDto>> createFindBooksTask(TitleQuery titleQuery, Pageable pageable) {
-        return () -> bookRepository.findAllBooks(titleQuery, pageable);
+        return () -> bookRepoQueryDsl.findAllBooksWithoutCondition(titleQuery, pageable);
     }
 
     private Pageable createPageableFromRequest(ReqBookDto reqBookDto) {

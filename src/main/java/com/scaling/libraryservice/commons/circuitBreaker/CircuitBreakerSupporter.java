@@ -76,7 +76,8 @@ public class CircuitBreakerSupporter {
         return getSubstituteMethod(apiMonitoring, methods);
     }
 
-    Method getSubstituteMethod(ApiMonitoring apiMonitoring, Method[] methods) {
+    Method getSubstituteMethod(ApiMonitoring apiMonitoring, Method[] methods)
+        throws IllegalArgumentException {
 
         return Arrays.stream(methods)
             .filter(method -> isSubstituteMethod(method, apiMonitoring.substitute()))

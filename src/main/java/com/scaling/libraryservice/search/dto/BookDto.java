@@ -10,8 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
 
-@Getter
-@Setter @ToString
+@Getter @ToString
 @Builder @AllArgsConstructor
 public class BookDto {
 
@@ -24,11 +23,12 @@ public class BookDto {
     private final String author;
 
     private final String isbn;
+    private final String bookImg;
+    private final Integer loanCnt;
 
-    private String bookImg;
+    private final String publishDate;
 
-    private Integer loanCnt;
-
+    private String titleToken;
 
     public BookDto(@NonNull Book book) {
         this.id = book.getId();
@@ -40,10 +40,16 @@ public class BookDto {
             "https://someone-be-bucket.s3.ap-northeast-2.amazonaws.com/mapbook+logo.png"
             : book.getBookImg();
         this.loanCnt = book.getLoanCnt();
+        this.publishDate = book.getPublishDate();
+        this.titleToken = book.getTitleToken();
     }
 
     public static BookDto emptyDto(){
-        return new BookDto(-1L,"","","","","",0);
+        return new BookDto(-1L,"","","","","",0,"","");
+    }
+
+    public void setTitleToken(String titleToken) {
+        this.titleToken = titleToken;
     }
 
     public boolean isEmpty(){

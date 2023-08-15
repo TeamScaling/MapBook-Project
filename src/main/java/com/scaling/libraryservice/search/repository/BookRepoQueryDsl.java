@@ -1,9 +1,9 @@
 package com.scaling.libraryservice.search.repository;
 
-import static com.scaling.libraryservice.search.entity.QBook.book;
 import static com.scaling.libraryservice.search.engine.SearchMode.BOOLEAN_MODE;
 import static com.scaling.libraryservice.search.engine.TitleType.TOKEN_ALL_ETC;
 import static com.scaling.libraryservice.search.engine.TitleType.TOKEN_COMPLEX;
+import static com.scaling.libraryservice.search.entity.QBook.book;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -13,9 +13,9 @@ import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.engine.SearchMode;
 import com.scaling.libraryservice.search.engine.TitleQuery;
+import com.scaling.libraryservice.search.entity.Book;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ public class BookRepoQueryDsl {
     private final static double SCORE_OF_MATCH = 0.0;
 
     @Transactional(readOnly = true)
-    public Page<BookDto> findAllBooks(TitleQuery titleQuery, Pageable pageable) {
+    public Page<BookDto> findAllBooksWithoutCondition(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
@@ -141,16 +141,17 @@ public class BookRepoQueryDsl {
         return Expressions.numberTemplate(Double.class, function, colum, name);
     }
 
-    private JPAQuery<Long> countQueryAll(NumberExpression<Long> expression) {
 
+    public Long totalCount() {
         return factory
-            .select(expression)
-            .from(book);
+            .select(book.count())
+            .from(book)
+            .fetchOne();
     }
 
     @Transactional(readOnly = true)
     // csv file로 변환 할 때 사용하기 위한 메소드.
-    public Page<Book> findAllAndSort(Pageable pageable) {
+    public Page<Book> findAllAndSort(Pageable pageable,Long count) {
 
         JPAQuery<Book> booksJpaQuery =
             getJpaQueryFind(pageable)
@@ -158,23 +159,22 @@ public class BookRepoQueryDsl {
                     book.loanCnt.desc()
                 );
 
-        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, book.count());
+        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable,count);
     }
 
     @Transactional(readOnly = true)
-    public Page<Book> findAllBooks(Pageable pageable) {
+    public Page<Book> findAllBooksWithoutCondition(Pageable pageable,Long count) {
 
         JPAQuery<Book> booksJpaQuery = getJpaQueryFind(pageable);
 
-        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, book.count());
+        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, count);
     }
 
-    private Page<?> getPagingFromJpaQuery(JPAQuery<?> books, Pageable pageable,
-        NumberExpression<Long> expression) {
+    private Page<?> getPagingFromJpaQuery(JPAQuery<?> books, Pageable pageable, Long count) {
         return PageableExecutionUtils.getPage(
             books.fetch(),
             pageable,
-            () -> countQueryAll(expression).fetchOne()
+            () -> count
         );
     }
 
@@ -189,7 +189,7 @@ public class BookRepoQueryDsl {
     }
 
     @Transactional(readOnly = true)
-    public Page<String> findTitleToken(Pageable pageable) {
+    public Page<String> findTitleToken(Pageable pageable,Long count) {
 
         JPAQuery<String> books = factory
             .select(book.titleToken)
@@ -197,7 +197,7 @@ public class BookRepoQueryDsl {
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
 
-        return (Page<String>) getPagingFromJpaQuery(books, pageable, book.titleToken.count());
+        return (Page<String>) getPagingFromJpaQuery(books, pageable,count);
     }
 
     // boolean mode를 위한 메소드

@@ -11,7 +11,7 @@ class SimpleFilterTest {
 
     @BeforeEach
     void setUp() {
-        simpleFilter = new SimpleFilter(null);
+        simpleFilter = new SimpleFilter(null,true);
     }
 
     @Test

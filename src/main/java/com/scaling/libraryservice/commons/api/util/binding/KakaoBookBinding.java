@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.commons.api.util.binding;
 
-import com.scaling.libraryservice.dataPipe.updater.dto.BookApiDto;
+import com.scaling.libraryservice.batch.bookUpdate.dto.BookApiDto;
 import com.scaling.libraryservice.mapBook.exception.OpenApiException;
 import org.json.JSONArray;
 import org.json.JSONObject;

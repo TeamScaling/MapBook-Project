@@ -61,9 +61,8 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
         return booksPage;
     }
 
-    private Page<BookDto> executeAsync(
-        Supplier<Page<BookDto>> supplier, int timeout
-    ) throws ExecutionException, InterruptedException, TimeoutException {
+    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier, int timeout)
+        throws ExecutionException, InterruptedException, TimeoutException {
 
         return CompletableFuture.supplyAsync(supplier).get(timeout, TimeUnit.SECONDS);
     }
@@ -83,6 +82,7 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
             });
     }
 
+    // cache Manager를 호출해 비동기 결과를 캐싱 처리
     private void cachingAsyncResult(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto) {
 
         RespBooksDto respBooksDto = RespBooksDtoFactory.createDefaultRespBooksDto(
