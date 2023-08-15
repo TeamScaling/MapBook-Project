@@ -46,6 +46,7 @@ class LibraryInfoFindServiceTest {
     }
 
     @DisplayName("소장 서비스 지역일 때 소장하고 있는 도서관 목록을 반환 할 수 있다")
+    @Test
     public void getNearByLibraries_SupportedArea(){
         /* given */
 
@@ -70,6 +71,7 @@ class LibraryInfoFindServiceTest {
     }
 
     @DisplayName("소장 서비스 지역이 아닐 때 주변 도서관 목록을 반환 할 수 있다")
+    @Test
     public void getNearByLibraries_Not_SupportedArea(){
         /* given */
 

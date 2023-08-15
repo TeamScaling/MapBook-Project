@@ -1,11 +1,14 @@
 package com.scaling.libraryservice.search.engine;
 
+import static com.scaling.libraryservice.search.engine.Token.ETC_TOKEN;
 import static com.scaling.libraryservice.search.engine.Token.NN_TOKEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,13 +24,13 @@ class EunjeonTokenizerTest {
 
     @Test
     @DisplayName("한글 제목에서 명사를 추출 할 수 있다.")
-    void tokenize() {
+    void tokenize_nnToken() {
         /* given */
 
         String target = "자바의 정석";
 
         /* when */
-        var result = tokenizer.tokenize(target);
+        Map<Token,List<String>> result = tokenizer.tokenize(target);
 
         /* then */
 
@@ -36,66 +39,36 @@ class EunjeonTokenizerTest {
     }
 
     @Test
-    @DisplayName("영어+한글 제목에서 한글 명사만 추출 할 수 있다.")
-    void tokenize2() {
+    @DisplayName("영어+한글 제목에서 명사를 추출 할 수 있다.")
+    void tokenize_korEng_nnToken() {
         /* given */
 
         String target = "java의 정석";
 
         /* when */
-        var result = tokenizer.tokenize(target);
+        Map<Token,List<String>> result = tokenizer.tokenize(target);
 
         /* then */
 
         assertTrue(result.get(NN_TOKEN).stream().anyMatch(s -> s.equals("정석")));
+        assertTrue(result.get(NN_TOKEN).stream().anyMatch(s -> s.equals("java")));
     }
 
     @Test
-    @DisplayName("영어+한글 제목에서 한글 명사만 추출 할 수 있다.")
-    void tokenize3() {
+    void tokenize_etcToken() {
         /* given */
 
-        String target = "확장 가능하고 유지보수가 쉬운";
+        String target = "아프니까 청춘이다";
 
         /* when */
-        var result = tokenizer.tokenize(target);
+        Map<Token,List<String>> result = tokenizer.tokenize(target);
 
         /* then */
 
-        System.out.println(result);
+        assertTrue(result.get(ETC_TOKEN).stream().anyMatch(s -> s.equals("아프니까")));
+        assertFalse(result.get(ETC_TOKEN).stream().anyMatch(s -> s.equals("청춘")));
     }
 
-    @Test
-    @DisplayName("영어+한글 제목에서 한글 명사만 추출 할 수 있다.")
-    void tokenize4() {
-        /* given */
-
-        String target = "인간적인";
-        String nnToken = "인간";
-
-        /* when */
-        String result = tokenizer.getEtcTokens(List.of(nnToken),target);
-
-        /* then */
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    @DisplayName("영어+한글 제목에서 한글 명사만 추출 할 수 있다.")
-    void tokenize5() {
-        /* given */
-
-        String target = "왜 칸트인가";
-        String nnToken = "칸트";
-        String expect = "왜";
-
-        /* when */
-        String result = tokenizer.getEtcTokens(List.of(nnToken),target);
-
-        /* then */
-        System.out.println(result);
-        assertEquals(expect,result);
-    }
 
 
 

@@ -1,11 +1,12 @@
 package com.scaling.libraryservice.commons.api.apiConnection;
 
-import com.scaling.libraryservice.dataPipe.updater.entity.UpdateBook;
+import com.scaling.libraryservice.batch.bookUpdate.entity.RequiredUpdateBook;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.lang.NonNull;
 import org.springframework.web.util.UriComponentsBuilder;
 
+// Kakao 도서 API에 연결하는 클래스
 public class KakaoBookConn implements ApiConnection {
 
     private final Long id;
@@ -19,10 +20,11 @@ public class KakaoBookConn implements ApiConnection {
         this.target = target;
     }
 
-    public KakaoBookConn(@NonNull UpdateBook updateBook) {
-        this.id = updateBook.getId();
-        this.target = updateBook.getIsbn();
+    public KakaoBookConn(@NonNull RequiredUpdateBook requiredUpdateBook) {
+        this.id = requiredUpdateBook.getId();
+        this.target = requiredUpdateBook.getIsbn();
     }
+
 
     @Override
     public UriComponentsBuilder configUriBuilder() {

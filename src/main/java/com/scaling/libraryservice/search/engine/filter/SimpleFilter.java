@@ -1,18 +1,17 @@
 package com.scaling.libraryservice.search.engine.filter;
 
 import com.scaling.libraryservice.search.exception.NotQualifiedQueryException;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
 
     private final TitleFilter nextFilter;
+    private final boolean checkValidation;
     private static final String ALLOWED_CHARS_REGEX = "[^a-zA-Z0-9가-힣\\s]";
 
     private static final int QUERY_MIN_SIZE = 2;
 
-
-    public SimpleFilter(TitleFilter nextFilter) {
-        this.nextFilter = nextFilter;
-    }
 
     @Override
     public String filtering(String query) {
@@ -30,13 +29,17 @@ public class SimpleFilter extends AbstractTileFilter implements TitleFilter {
             .replaceAll("\\s+", " ")
             .trim();
 
+        if(query.length() == 1){
+            query = "";
+        }
+
         checkValidation(query);
 
         return query;
     }
 
     private void checkValidation(String query) throws NotQualifiedQueryException {
-        if (query.length() < QUERY_MIN_SIZE) {
+        if (query.length() < QUERY_MIN_SIZE && checkValidation) {
             throw new NotQualifiedQueryException("공백이나 1글자는 못 찾아요" + "😅😅");
         }
     }

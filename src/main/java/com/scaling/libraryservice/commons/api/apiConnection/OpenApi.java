@@ -2,7 +2,7 @@ package com.scaling.libraryservice.commons.api.apiConnection;
 
 public enum OpenApi {
 
-    DATA4_Lib(1),KAKAO_BOOK(2),SLACK_BOT(3);
+    DATA4_Lib(1),KAKAO_BOOK(2),SLACK_BOT(3),BATCH_KEY(4);
 
     private int id;
 

@@ -59,7 +59,7 @@ public class CustomCacheManager<K, I> {
      * @param personalKey 아이템에 대한 개인 키
      * @return 캐시에서 가져온 아이템
      */
-    @MeasureTaskTime
+
     public I get(Class<?> customer, CacheKey<K,I> personalKey) {
         log.info("CacheManger find item for [{}]", customer);
         return commonsCache.get(customer).getIfPresent(personalKey);
