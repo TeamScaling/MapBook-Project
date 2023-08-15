@@ -88,9 +88,9 @@ public class LibraryFindService {
      * @return areaCd를 지원 중인 도서관 코드 목록에서 찾을 수 있다면 true, 그렇지 않다면 false
      */
     private boolean isPreCheckingSupportedArea(Integer areaCd) {
-        // 전처리 기능 삭제 예정
-//        return hasBookAreaRepo.findById(areaCd).isPresent();
-        return false;
+//         전처리 기능 삭제 예정
+        return hasBookAreaRepo.findById(areaCd).isPresent();
+//        return false;
     }
 
     public List<LibraryInfoDto> getAllLibraries() {

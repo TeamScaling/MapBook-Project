@@ -6,7 +6,7 @@ import com.scaling.libraryservice.commons.api.apiConnection.OpenApi;
 import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
 import com.scaling.libraryservice.commons.api.util.ApiQueryBinder;
 import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
-import com.scaling.libraryservice.dataPipe.updater.dto.BookApiDto;
+import com.scaling.libraryservice.batch.bookUpdate.dto.BookApiDto;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

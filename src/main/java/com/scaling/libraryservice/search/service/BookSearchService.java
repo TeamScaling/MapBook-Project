@@ -117,7 +117,7 @@ public class BookSearchService {
     }
 
     private Supplier<Page<BookDto>> createFindBooksTask(TitleQuery titleQuery, Pageable pageable) {
-        return () -> bookRepoQueryDsl.findAllBooks(titleQuery, pageable);
+        return () -> bookRepoQueryDsl.findAllBooksWithoutCondition(titleQuery, pageable);
     }
 
     private Pageable createPageableFromRequest(ReqBookDto reqBookDto) {

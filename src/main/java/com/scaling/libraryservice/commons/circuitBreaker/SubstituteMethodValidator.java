@@ -31,10 +31,9 @@ public class SubstituteMethodValidator implements BeanPostProcessor {
     private boolean isRelatedApiMonitoring(Method method) {
         return method.getAnnotation(ApiMonitoring.class) != null;
     }
+    private void validateSubstituteMethod(ApiMonitoring apiMonitoring, String beanName,
+        Method[] methods) {
 
-    private void validateSubstituteMethod(
-        ApiMonitoring apiMonitoring, String beanName, Method[] methods
-    ) {
         try {
             Method substituteMethod
                 = circuitBreakerSupporter.getSubstituteMethod(apiMonitoring, methods);

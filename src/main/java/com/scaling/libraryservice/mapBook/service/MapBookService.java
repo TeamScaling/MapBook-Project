@@ -37,8 +37,8 @@ public class MapBookService implements ApiRelatedService {
 
     @MeasureTaskTime // 시간을 측정하여 기록하기 위한 wrapper 메소드
     public RespMapBookWrapper getLoanableMarker(List<LibraryInfoDto> nearByLibraries,
-        ReqMapBookDto reqMapBookDto)
-    {
+        ReqMapBookDto reqMapBookDto) {
+
         List<RespMapBookDto> respMapBooks = matchLibraryBooks(
             nearByLibraries,
             reqMapBookDto

@@ -20,4 +20,11 @@ public class AuthKeyLoader {
             .orElseThrow(IllegalArgumentException::new);
     }
 
+    public boolean checkAuthKey(OpenApi openApi,String authKey){
+
+        return authKeyRepo.findById(openApi.getId())
+            .map(storedKey -> storedKey.getAuthKey().equals(authKey))
+            .orElseThrow(IllegalAccessError::new);
+    }
+
 }
