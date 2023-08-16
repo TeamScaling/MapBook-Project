@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
  * @param <V> 실행에 필요한 값의 타입. 이 클래스에서는 ReqBookDto.
  */
 @RequiredArgsConstructor
-
 @Component
 public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, ReqBookDto> {
 

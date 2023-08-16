@@ -36,13 +36,13 @@ public class StopWordFilter extends AbstractTileFilter {
         return progressFilter(removedQuery, this.nextFilter);
     }
 
-    public String removeEngStopWord(String query){
+    private String removeEngStopWord(String query){
         return Arrays.stream(query.split("\\s+"))
             .filter(word -> !ENG_STOP_WORDS.contains(word))
             .collect(Collectors.joining(" "));
     }
 
-    public String removeKorStopWord(String query){
+    private String removeKorStopWord(String query){
         return Arrays.stream(query.split("\\s+"))
             .map(splitWord ->
                 KOR_STOP_WORDS.stream()
@@ -53,7 +53,7 @@ public class StopWordFilter extends AbstractTileFilter {
             .collect(Collectors.joining(" "));
     }
 
-    public String removeKAuthrStopWord(String query){
+    private String removeKAuthrStopWord(String query){
         return Arrays.stream(query.split("\\s+"))
             .filter(word -> !AUTHR_STOP_WORDS.contains(word))
             .collect(Collectors.joining(" "));

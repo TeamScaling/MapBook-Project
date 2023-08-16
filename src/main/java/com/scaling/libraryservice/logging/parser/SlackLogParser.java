@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 // Slack 통해 전달된 로그 파일을 원하느 형태로 파싱
 public class SlackLogParser {
 
+    private static final String SEARCH_TIME_REGEX = "\\[searchTime :(.*?)\\]";
     private static final String USER_QUERY_REGEX = "\\[userQuery :(.*?)\\]";
     private static final String MAP_BOOK_TITLE = "\\[title :(.*?)\\]";
     private static final String DEFAULT_FILE_EXTENSION = ".json";
@@ -45,6 +46,10 @@ public class SlackLogParser {
         return USER_QUERY_REGEX;
     }
 
+    public static String getSearchTimeRegex(){
+        return SEARCH_TIME_REGEX;
+    }
+
     // 로그 메시지를 쉽게 찾기 위한 helper
     public static String getMapBookTitle() {
         return MAP_BOOK_TITLE;
@@ -58,7 +63,7 @@ public class SlackLogParser {
             .filter(slackLogVo -> slackLogVo.getText().contains(targetTask))
             .map(slackLogVo -> extractMessageFromLog(slackLogVo, messageRegex))
             .flatMap(Optional::stream)
-            .distinct()
+//            .distinct()
             .collect(Collectors.toList());
     }
 
@@ -78,8 +83,7 @@ public class SlackLogParser {
     private static List<SlackLogVo> readLogDataFromFile(File file) {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            Type logTypeListType = new TypeToken<List<SlackLogVo>>() {
-            }.getType();
+            Type logTypeListType = new TypeToken<List<SlackLogVo>>() {}.getType();
             return new Gson().fromJson(reader, logTypeListType);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

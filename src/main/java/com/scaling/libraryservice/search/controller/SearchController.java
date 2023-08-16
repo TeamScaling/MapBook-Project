@@ -75,7 +75,7 @@ public class SearchController {
         RespBooksDto searchResult = bookSearchService.searchBooks(
             new ReqBookDto(query, page, size),
             DEFAULT_TIMEOUT,
-            false
+            true
         );
 
         logService.slackLogging(SEARCH_TASK,searchResult);

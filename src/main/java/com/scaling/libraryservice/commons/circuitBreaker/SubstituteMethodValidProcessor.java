@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component @Slf4j
-public class SubstituteMethodValidator implements BeanPostProcessor {
+public class SubstituteMethodValidProcessor implements BeanPostProcessor {
 
     private final CircuitBreakerSupporter circuitBreakerSupporter;
 

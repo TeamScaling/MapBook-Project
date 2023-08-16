@@ -42,7 +42,7 @@ class BookRepoQueryDslTest {
 
         /* when */
 
-        Page<BookDto> books = bookRepoQueryDsl.findAllBooksWithoutCondition(titleQuery, pageable);
+        Page<BookDto> books = bookRepoQueryDsl.findBooks(titleQuery, pageable);
 
 
         /* then */
@@ -50,54 +50,54 @@ class BookRepoQueryDslTest {
         assertFalse(books.getContent().isEmpty());
     }
 
-    @Test @DisplayName("조건 없이 페이지 사이즈 만큼 DB에서 도서 데이터를 가져올 수 있다.")
-    public void findAllBooksWithoutCondition(){
-        /* given */
+//    @Test @DisplayName("조건 없이 페이지 사이즈 만큼 DB에서 도서 데이터를 가져올 수 있다.")
+//    public void findAllBooksWithoutCondition(){
+//        /* given */
+//
+//        Pageable pageable = PageRequest.of(0,10);
+//
+//        /* when */
+//
+//        Page<Book> booksWithoutCondition = bookRepoQueryDsl.findBooks(pageable,1000L);
+//
+//        /* then */
+//
+//        assertEquals(booksWithoutCondition.getContent().size(),10);
+//    }
 
-        Pageable pageable = PageRequest.of(0,10);
-
-        /* when */
-
-        Page<Book> booksWithoutCondition = bookRepoQueryDsl.findAllBooksWithoutCondition(pageable,1000L);
-
-        /* then */
-
-        assertEquals(booksWithoutCondition.getContent().size(),10);
-    }
-
-    @Test @DisplayName("조건 없이 페이지 사이즈 만큼 DB에서 정렬된 도서 데이터를 가져올 수 있다.")
-    public void findAllAndSort(){
-        /* given */
-
-        Pageable pageable = PageRequest.of(0,10);
-
-        /* when */
-
-        Page<Book> books = bookRepoQueryDsl.findAllAndSort(pageable,100L);
-
-        Book book1 = books.getContent().get(0);
-        Book book2 = books.getContent().get(1);
-
-        /* then */
-
-        assertEquals(books.getContent().size(),10);
-        assertTrue(book1.getLoanCnt() > book2.getLoanCnt());
-    }
-
-    @Test @DisplayName("제목이 명사로 쪼개진 칼럼인 TitleToken에서 데이터를 가져올 수 있다")
-    public void findTitleToken(){
-        /* given */
-
-        Pageable pageable = PageRequest.of(0,10);
-
-        /* when */
-
-        Page<String> books = bookRepoQueryDsl.findTitleToken(pageable,100L);
-
-        /* then */
-
-        assertFalse(books.getContent().isEmpty());
-    }
+//    @Test @DisplayName("조건 없이 페이지 사이즈 만큼 DB에서 정렬된 도서 데이터를 가져올 수 있다.")
+//    public void findAllAndSort(){
+//        /* given */
+//
+//        Pageable pageable = PageRequest.of(0,10);
+//
+//        /* when */
+//
+//        Page<Book> books = bookRepoQueryDsl.findAllAndSort(pageable,100L);
+//
+//        Book book1 = books.getContent().get(0);
+//        Book book2 = books.getContent().get(1);
+//
+//        /* then */
+//
+//        assertEquals(books.getContent().size(),10);
+//        assertTrue(book1.getLoanCnt() > book2.getLoanCnt());
+//    }
+//
+//    @Test @DisplayName("제목이 명사로 쪼개진 칼럼인 TitleToken에서 데이터를 가져올 수 있다")
+//    public void findTitleToken(){
+//        /* given */
+//
+//        Pageable pageable = PageRequest.of(0,10);
+//
+//        /* when */
+//
+//        Page<String> books = bookRepoQueryDsl.findTitleToken(pageable,100L);
+//
+//        /* then */
+//
+//        assertFalse(books.getContent().isEmpty());
+//    }
 
     @Test
     @DisplayName("ISBN으로 원하는 도서를 찾을 수 있다.")

@@ -42,17 +42,14 @@ public class TitleQuery {
     }
 
     public boolean isEmptyTitleQuery(){
-        assert nnToken != null;
-        assert etcToken != null;
-
         return nnToken.isBlank() && etcToken.isBlank();
     }
 
     public static class TitleQueryBuilder {
         private TitleType titleType;
-        private String etcToken;
-        private String nnToken;
-        private String userQuery;
+        private String etcToken = "";
+        private String nnToken = "";
+        private String userQuery = "";
 
         public TitleQueryBuilder titleType(TitleType titleType) {
             this.titleType = titleType;
