@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.batch.loanCnt.config;
 
-import com.scaling.libraryservice.batch.aop.BatchLogging;
 import com.scaling.libraryservice.batch.loanCnt.chunk.DownLoadFileClearTask;
 import com.scaling.libraryservice.batch.loanCnt.chunk.LibraryCatalogTokenizer;
 import com.scaling.libraryservice.batch.loanCnt.chunk.LibraryCatalogWriter;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
@@ -62,8 +60,8 @@ public class LoanCntBatchConfig {
     public Job aggregatingJob() {
         return jobBuilderFactory.get("aggregatingJob")
             .start(downloadStep(null))
-            .next(processingStep())
-            .next(updateLoanCntToBookStep())
+            .next(summarizeLoanCountsByIsbnStep())
+            .next(transferAggregatedDataToDbStep())
             .next(fileClearStep())
             .incrementer(new RunIdIncrementer())
             .build();
@@ -86,8 +84,8 @@ public class LoanCntBatchConfig {
     }
 
     @Bean
-    public Step processingStep() {
-        return stepBuilderFactory.get("processingStep")
+    public Step summarizeLoanCountsByIsbnStep() {
+        return stepBuilderFactory.get("summarizeLoanCountsByIsbnStep")
             .<LibraryCatalog, LibraryCatalog>chunk(100000)
             .reader(multiResourceItemReader())
             .writer(items -> items.forEach(item -> aggregator.aggregateLoanCnt(item)))
@@ -128,8 +126,8 @@ public class LoanCntBatchConfig {
     }
 
     @Bean
-    public Step updateLoanCntToBookStep() {
-        return stepBuilderFactory.get("updateLoanCnt2BookStep")
+    public Step transferAggregatedDataToDbStep() {
+        return stepBuilderFactory.get("transferAggregatedDataToDbStep")
             .<LibraryCatalog, LibraryCatalog>chunk(100000)
             .reader(aggregatedFileReader(RESULT_PATH))
             .writer(libraryCatalogWriter)

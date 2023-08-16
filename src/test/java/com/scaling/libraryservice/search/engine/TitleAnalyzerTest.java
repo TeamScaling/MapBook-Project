@@ -47,6 +47,7 @@ class TitleAnalyzerTest {
         TitleQuery sut = analyzer.analyze(title, true);
 
         /* then */
+        System.out.println(sut);
         assertEquals(sut.getTitleType(), TitleType.TOKEN_ONE);
     }
 

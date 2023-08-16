@@ -44,9 +44,8 @@ public class CircuitBreakerSupporter {
             constructAndPutObserver(apiMonitoring, observerClazz);
     }
 
-    ApiObserver constructAndPutObserver(
-        ApiMonitoring apiMonitoring, Class<? extends ApiObserver> observerClazz
-    ) throws Exception {
+    ApiObserver constructAndPutObserver(ApiMonitoring apiMonitoring,
+        Class<? extends ApiObserver> observerClazz) throws Exception {
 
         Constructor<? extends ApiObserver> constructor =
             apiMonitoring

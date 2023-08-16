@@ -5,20 +5,16 @@ import static com.scaling.libraryservice.search.engine.Token.NN_TOKEN;
 
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
 import org.bitbucket.eunjeon.seunjeon.Analyzer;
 import org.bitbucket.eunjeon.seunjeon.LNode;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
-public class EunjeonTokenizer {
+public class EunjeonTokenizer implements TitleTokenizer {
 
     private final static int TOKEN_MIN_SIZE = 2;
 
@@ -28,6 +24,7 @@ public class EunjeonTokenizer {
 
     private final static String KOR_NNG_FEATURE = "NNG";
 
+    @Override
     public Map<Token, List<String>> tokenize(String target) {
 
         // 검색어에서 명사만 추출 한다.
