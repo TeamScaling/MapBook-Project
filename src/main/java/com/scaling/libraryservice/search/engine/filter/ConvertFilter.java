@@ -36,9 +36,7 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
                     }
                 }
             );
-
         addExistKeywordsToJoiner(requiredCheckList, joiner);
-
         return progressFilter(joiner.toString(), this.nextFilter);
     }
 

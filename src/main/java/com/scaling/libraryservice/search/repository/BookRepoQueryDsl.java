@@ -7,7 +7,6 @@ import static com.scaling.libraryservice.search.entity.QBook.book;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -39,7 +38,7 @@ public class BookRepoQueryDsl {
     private final static double SCORE_OF_MATCH = 0.0;
 
     @Transactional(readOnly = true)
-    public Page<BookDto> findAllBooksWithoutCondition(TitleQuery titleQuery, Pageable pageable) {
+    public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
 
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
@@ -142,33 +141,33 @@ public class BookRepoQueryDsl {
     }
 
 
-    public Long totalCount() {
-        return factory
-            .select(book.count())
-            .from(book)
-            .fetchOne();
-    }
+//    public Long totalCount() {
+//        return factory
+//            .select(book.count())
+//            .from(book)
+//            .fetchOne();
+//    }
 
-    @Transactional(readOnly = true)
-    // csv file로 변환 할 때 사용하기 위한 메소드.
-    public Page<Book> findAllAndSort(Pageable pageable,Long count) {
+//    @Transactional(readOnly = true)
+//    // csv file로 변환 할 때 사용하기 위한 메소드.
+//    public Page<Book> findAllAndSort(Pageable pageable,Long count) {
+//
+//        JPAQuery<Book> booksJpaQuery =
+//            getJpaQueryFind(pageable)
+//                .orderBy(
+//                    book.loanCnt.desc()
+//                );
+//
+//        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable,count);
+//    }
 
-        JPAQuery<Book> booksJpaQuery =
-            getJpaQueryFind(pageable)
-                .orderBy(
-                    book.loanCnt.desc()
-                );
-
-        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable,count);
-    }
-
-    @Transactional(readOnly = true)
-    public Page<Book> findAllBooksWithoutCondition(Pageable pageable,Long count) {
-
-        JPAQuery<Book> booksJpaQuery = getJpaQueryFind(pageable);
-
-        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, count);
-    }
+//    @Transactional(readOnly = true)
+//    public Page<Book> findBooks(Pageable pageable,Long count) {
+//
+//        JPAQuery<Book> booksJpaQuery = getJpaQueryFind(pageable);
+//
+//        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, count);
+//    }
 
     private Page<?> getPagingFromJpaQuery(JPAQuery<?> books, Pageable pageable, Long count) {
         return PageableExecutionUtils.getPage(
@@ -188,17 +187,17 @@ public class BookRepoQueryDsl {
             .limit(pageable.getPageSize());
     }
 
-    @Transactional(readOnly = true)
-    public Page<String> findTitleToken(Pageable pageable,Long count) {
-
-        JPAQuery<String> books = factory
-            .select(book.titleToken)
-            .from(book)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize());
-
-        return (Page<String>) getPagingFromJpaQuery(books, pageable,count);
-    }
+//    @Transactional(readOnly = true)
+//    public Page<String> findTitleToken(Pageable pageable,Long count) {
+//
+//        JPAQuery<String> books = factory
+//            .select(book.titleToken)
+//            .from(book)
+//            .offset(pageable.getOffset())
+//            .limit(pageable.getPageSize());
+//
+//        return (Page<String>) getPagingFromJpaQuery(books, pageable,count);
+//    }
 
     // boolean mode를 위한 메소드
     private String splitAddPlus(@NonNull String target) {

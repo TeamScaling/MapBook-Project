@@ -1,4 +1,4 @@
-package com.scaling.libraryservice.logging.vo;
+package com.scaling.libraryservice.batch.logTransfer.vo;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -9,7 +9,6 @@ public class SlackLogVo {
     private String bot_id;
     private String type;
     private String text;
-
     public SlackLogVo() {
     }
 

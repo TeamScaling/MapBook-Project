@@ -54,7 +54,8 @@ public class BookSearchService {
      */
     @CustomCacheable
     @MeasureTaskTime
-    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport)
+    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout,
+        boolean isAsyncSupport)
         throws NotQualifiedQueryException {
 
         String userQuery = reqBookDto.getUserQuery();
@@ -80,7 +81,8 @@ public class BookSearchService {
     }
 
 
-    private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport) {
+    private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto,
+        int timeout, boolean isAsyncSupport) {
 
         Page<BookDto> books =
             asyncExecutor.execute(
@@ -90,21 +92,24 @@ public class BookSearchService {
                 , isAsyncSupport
             );
 
+        // 검색 결과와 사용자 검색어가 일치하면 일치하는 도서만 반환 한다.
         Optional<BookDto> potentialMatchBook = matchingQueryAndTitle(books, reqBookDto);
 
         return potentialMatchBook
             .map(bookDto -> createOneBookRespDto(reqBookDto.getUserQuery(), bookDto))
             .orElseGet(() -> createDefaultRespBooksDto(books, reqBookDto)
-        );
+            );
     }
 
-    private Optional<BookDto> matchingQueryAndTitle(@NonNull Page<BookDto> booksPage, ReqBookDto reqBookDto) {
+    private Optional<BookDto> matchingQueryAndTitle(@NonNull Page<BookDto> booksPage,
+        ReqBookDto reqBookDto) {
 
-        return booksPage
-            .stream()
-            .filter(bookDto -> isUserQueryMatchingBook(
+        return booksPage.stream()
+            .filter(bookDto ->
+                isUserQueryMatchingBook(
                     reqBookDto.getUserQuery(),
-                    bookDto, reqBookDto.getPage()
+                    bookDto,
+                    reqBookDto.getPage()
                 )
             )
             .findFirst();
@@ -112,12 +117,12 @@ public class BookSearchService {
 
     private boolean isUserQueryMatchingBook(String userQuery, @NonNull BookDto bookDto, int page) {
 
-        String mainTitle = SubTitleRemover.removeSubTitle(bookDto.getTitle());
-        return mainTitle.equals(userQuery) && page == MATCHING_LIMIT_PAGE;
+        String mainTitle = SubTitleRemover.removeSubTitle(bookDto.getTitle()).trim();
+        return mainTitle.equals(userQuery.trim()) && page == MATCHING_LIMIT_PAGE;
     }
 
     private Supplier<Page<BookDto>> createFindBooksTask(TitleQuery titleQuery, Pageable pageable) {
-        return () -> bookRepoQueryDsl.findAllBooksWithoutCondition(titleQuery, pageable);
+        return () -> bookRepoQueryDsl.findBooks(titleQuery, pageable);
     }
 
     private Pageable createPageableFromRequest(ReqBookDto reqBookDto) {
@@ -129,7 +134,8 @@ public class BookSearchService {
     }
 
     @MeasureTaskTime
-    public RespBooksDto autoCompleteSearch(ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport) {
+    public RespBooksDto autoCompleteSearch(ReqBookDto reqBookDto, int timeout,
+        boolean isAsyncSupport) {
 
         return searchBooks(reqBookDto, timeout, isAsyncSupport);
     }

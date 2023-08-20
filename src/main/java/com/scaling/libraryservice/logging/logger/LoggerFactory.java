@@ -29,5 +29,4 @@ public class LoggerFactory<V> {
 
         return taskType.getSlackLogger().getConstructor(SlackReporter.class);
     }
-
 }

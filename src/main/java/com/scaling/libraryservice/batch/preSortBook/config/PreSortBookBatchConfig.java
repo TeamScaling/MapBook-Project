@@ -78,5 +78,4 @@ public class PreSortBookBatchConfig {
             .queryString("select b from Book b order by b.loanCnt desc")
             .build();
     }
-
 }

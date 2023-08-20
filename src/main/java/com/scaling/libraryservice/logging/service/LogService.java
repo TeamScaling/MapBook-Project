@@ -24,6 +24,7 @@ public class LogService<V> {
         logger.sendLogToSlack(value);
     }
 
+
     private boolean isIncorrectValue(TaskType taskType, V value) {
         return value.getClass() != taskType.getTargetClass();
     }

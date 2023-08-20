@@ -18,12 +18,10 @@ public enum TitleType {
     // 명사는 존재하나 다른 어절도 필요한 상황 
     TOKEN_COMPLEX(BOOLEAN_MODE,NATURAL_MODE),
     
-    // 명사가 존재하지 않을 때, 검색어로 전체 검색
+    // 명사가 존재하지 않을 때, 사용자 검색어로 전체 검색
     TOKEN_ALL_ETC(NATURAL_MODE,null);
 
-
     private final SearchMode mode;
-
     private final SearchMode secondMode;
 
     TitleType(SearchMode mode,SearchMode secondMode) {

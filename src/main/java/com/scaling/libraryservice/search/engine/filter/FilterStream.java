@@ -2,7 +2,7 @@ package com.scaling.libraryservice.search.engine.filter;
 
 public class FilterStream {
 
-    TitleFilter titleFilter;
+    private final TitleFilter titleFilter;
 
     public FilterStream(TitleFilter titleFilter) {
         this.titleFilter = titleFilter;
