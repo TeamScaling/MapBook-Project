@@ -51,9 +51,8 @@ public class CircuitBreakerAspect {
             fallBackMethod.invoke(joinPoint.getTarget(), joinPoint.getArgs());
     }
 
-    private Object processApiRequest(
-        @NonNull ProceedingJoinPoint joinPoint, ApiObserver apiObserver, Method fallBackMethod
-    ) throws Throwable{
+    private Object processApiRequest(@NonNull ProceedingJoinPoint joinPoint,
+        ApiObserver apiObserver, Method fallBackMethod) throws Throwable{
 
         try {
             return joinPoint.proceed();

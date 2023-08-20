@@ -8,5 +8,4 @@ import org.springframework.web.util.UriComponentsBuilder;
 public interface ApiConnection {
 
     UriComponentsBuilder configUriBuilder();
-
 }

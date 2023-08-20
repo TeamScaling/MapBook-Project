@@ -81,7 +81,6 @@ public class ApiQuerySender {
             return futures.stream()
                 .map(CompletableFuture::join)
                 .toList();
-
         } catch (CompletionException e) {
             log.error(e.toString());
             throw new OpenApiException("apiObserver 문제 발생");

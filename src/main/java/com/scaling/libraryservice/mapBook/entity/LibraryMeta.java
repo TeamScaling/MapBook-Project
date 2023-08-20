@@ -16,18 +16,11 @@ import lombok.Getter;
 public class LibraryMeta {
 
     @Id
-    @Column(name = "id")
-    private Integer id;
     @Column(name = "AREA_CD")
     private Integer areaCd;
-
-    @Column(name = "count")
-    private Long count;
 
     @Column(name = "ONE_AREA_NM")
     private String oneArea;
 
-    @Column(name = "TWO_AREA_NM")
-    private String twoArea;
 
 }
