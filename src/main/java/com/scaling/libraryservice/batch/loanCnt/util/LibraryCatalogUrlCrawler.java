@@ -18,7 +18,8 @@ public class LibraryCatalogUrlCrawler {
 
     // 도서관 장서 목록을 다운로드 할 수 있는 Url를 조사하여 반환 합니다.
     @BatchLogging
-    public static Optional<String> getDownloadUrl(int libCode, String date) throws IOException {
+    public static Optional<String> getDownloadUrl(int libCode, String date)
+        throws IOException {
         Connection conn = Jsoup.connect(TARGET_URL + libCode);
         AtomicReference<String> result = new AtomicReference<>();
 
@@ -26,7 +27,8 @@ public class LibraryCatalogUrlCrawler {
         conn.get().select("table tr")
             .forEach(element -> {
                 Element link_td = element.selectFirst("td.link_td");
-                if (isContainsDateLine(link_td, date) && isExistTextTypeInElement(element)) {
+                if (isContainsDateLine(link_td, date)
+                    && isExistTextTypeInElement(element)) {
                     result.set(COMMON_DOWNLOAD_URL + getDetailUrl(element));
                 }
             });

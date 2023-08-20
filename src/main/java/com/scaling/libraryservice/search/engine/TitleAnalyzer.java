@@ -60,8 +60,10 @@ public class TitleAnalyzer {
     private TitleQuery determineSearchStrategy(AnalyzedResult result, String originalQuery) {
 
         // title 분석에 대한 결과를 담을 TitleQuery의 builder를 만든다.
-        TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder().userQuery(originalQuery);
-        titleQueryBuilder.nnToken(result.nnToken).etcToken(result.etcToken);
+        TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder()
+            .userQuery(originalQuery)
+            .nnToken(result.nnToken)
+            .etcToken(result.etcToken);
 
         if (result.getNnTokenCount() >= TOKEN_MAX_SIZE) {
             return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
@@ -76,7 +78,8 @@ public class TitleAnalyzer {
         TitleQueryBuilder titleQueryBuilder) {
 
         return result.getNnTokenCount() < TOKEN_MIN_SIZE ?
-            titleQueryBuilder.titleType(TOKEN_ALL_ETC).etcToken(titleQueryBuilder.getUserQuery()).build()
+            titleQueryBuilder.titleType(TOKEN_ALL_ETC).etcToken(titleQueryBuilder.getUserQuery())
+                .build()
             : titleQueryBuilder.titleType(TOKEN_COMPLEX).build();
     }
 

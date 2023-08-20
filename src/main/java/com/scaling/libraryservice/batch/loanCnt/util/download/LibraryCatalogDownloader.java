@@ -1,16 +1,14 @@
 package com.scaling.libraryservice.batch.loanCnt.util.download;
 
-import com.scaling.libraryservice.batch.loanCnt.util.LibraryCatalogUrlCrawler;
 import com.scaling.libraryservice.batch.aop.BatchLogging;
+import com.scaling.libraryservice.batch.loanCnt.util.LibraryCatalogUrlCrawler;
 import com.scaling.libraryservice.mapBook.dto.LibraryInfoDto;
 import com.scaling.libraryservice.mapBook.service.LibraryFindService;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
