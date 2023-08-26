@@ -43,9 +43,8 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
      * @return 도서 검색 결과를 담은 Page<BookDto> 객체
      */
     @Override
-    public Page<BookDto> execute(
-        Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto, int timeout, boolean isAsync
-    ) {
+    public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,
+        ReqBookDto reqBookDto, int timeout, boolean isAsync) {
 
         Page<BookDto> booksPage = Page.empty();
 
