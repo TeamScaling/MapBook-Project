@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -36,7 +35,6 @@ public class LogItemProcessor implements ItemProcessor<SlackLogVo, SlackLog> {
         this.libraryMetaMap = setUpLibraryMetaMap();
     }
 
-    @Nullable
     @Override
     public SlackLog process(SlackLogVo item) throws Exception {
 

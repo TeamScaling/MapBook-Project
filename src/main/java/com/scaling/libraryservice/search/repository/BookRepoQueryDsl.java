@@ -70,7 +70,8 @@ public class BookRepoQueryDsl {
             factory
                 .selectFrom(book)
                 .where(book.isbn.eq(isbn))
-                .fetchOne());
+                .fetchOne()
+        );
     }
 
 
@@ -92,7 +93,7 @@ public class BookRepoQueryDsl {
         SearchMode mode = titleQuery.getTitleType().getMode();
 
         if (titleQuery.getTitleType() == TOKEN_ALL_ETC) {
-            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.titleToken);
+            addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.title);
         } else {
             addFullTextSearchQuery(builder, mode, titleQuery.getNnToken(), book.titleToken);
 

@@ -52,9 +52,9 @@ public class LoanCntBatchConfig {
     private final LibraryCatalogWriter libraryCatalogWriter;
     private final DownLoadFileClearTask downLoadFileClearTask;
 
-    private final String DOWNLOAD_FOLDER = "src/main/resources/pipe/download";
+    private final String DOWNLOAD_FOLDER = "pipe/download";
 
-    private final String RESULT_PATH = "src/main/resources/pipe/endStep/end.csv";
+    private final String RESULT_PATH = "pipe/endStep/end.csv";
 
     @Bean
     public Job aggregatingJob() {

@@ -97,8 +97,7 @@ public class BookSearchService {
 
         return potentialMatchBook
             .map(bookDto -> createOneBookRespDto(reqBookDto.getUserQuery(), bookDto))
-            .orElseGet(() -> createDefaultRespBooksDto(books, reqBookDto)
-            );
+            .orElseGet(() -> createDefaultRespBooksDto(books, reqBookDto));
     }
 
     private Optional<BookDto> matchingQueryAndTitle(@NonNull Page<BookDto> booksPage,
@@ -112,7 +111,7 @@ public class BookSearchService {
                     reqBookDto.getPage()
                 )
             )
-            .findFirst();
+            .findAny();
     }
 
     private boolean isUserQueryMatchingBook(String userQuery, @NonNull BookDto bookDto, int page) {
