@@ -23,7 +23,7 @@ public class PreSortBookItemProcessor implements ItemProcessor<Book, SortBook> {
 
     public PreSortBookItemProcessor(TitleAnalyzer titleAnalyzer) {
         this.titleAnalyzer = titleAnalyzer;
-        this.simpleFilter = new SimpleFilter(new StopWordFilter(null),false);
+        this.simpleFilter = new SimpleFilter(new StopWordFilter(null), false);
     }
 
     @Override
@@ -37,26 +37,14 @@ public class PreSortBookItemProcessor implements ItemProcessor<Book, SortBook> {
             String titleToken = titleQuery.getNnToken().trim();
             String author = simpleFilter.filtering(bookDto.getAuthor());
 
-            Set<String> tokens = new HashSet<>();
-            tokens.addAll(Arrays.asList(titleToken.split(" ")));
-            tokens.addAll(Arrays.asList(author.split(" ")));
+            String joinedTokens = Arrays.stream(String.join(" ", titleToken, author).split(" "))
+                .distinct()
+                .collect(Collectors.joining(" "));
 
-            bookDto.setTitleToken(String.join(" ", tokens));
+            bookDto.setTitleToken(String.join(" ", joinedTokens));
         }
 
         return new SortBook(bookDto);
     }
 
-    private String authorAndTitleToken(BookDto bookDto) {
-        SimpleFilter simpleFilter = new SimpleFilter(new StopWordFilter(null),false);
-
-        String titleTokens = bookDto.getTitleToken().isBlank() ? "" : bookDto.getTitleToken();
-        String author = simpleFilter.filtering(bookDto.getAuthor());
-
-        Set<String> distinctTokens = Stream.of(titleTokens, author)
-            .flatMap(token -> Arrays.stream(token.split(" ")))
-            .collect(Collectors.toCollection(LinkedHashSet::new));
-
-        return String.join(" ", distinctTokens);
-    }
 }
