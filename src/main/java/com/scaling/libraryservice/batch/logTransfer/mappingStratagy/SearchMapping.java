@@ -30,6 +30,4 @@ public class SearchMapping extends AbstractMapping implements MappingStrategy {
             ""
         );
     }
-
-
 }

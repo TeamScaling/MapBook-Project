@@ -107,8 +107,11 @@ public class MapBookService implements ApiRelatedService {
         LibraryInfoDto libraryInfoDto) {
 
         return Optional.ofNullable(loanableBookMap.get(libraryInfoDto.getLibNo()))
-            .map(apiLoanableLibDto -> RespMapBookDto.responseWithLoanable(apiLoanableLibDto,
-                libraryInfoDto));
+            .map(apiLoanableLibDto ->
+                RespMapBookDto.responseWithLoanable(
+                    apiLoanableLibDto,
+                    libraryInfoDto)
+            );
     }
 
 

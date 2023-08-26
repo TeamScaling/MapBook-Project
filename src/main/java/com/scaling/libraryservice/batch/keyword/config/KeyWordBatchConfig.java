@@ -67,7 +67,7 @@ public class KeyWordBatchConfig {
 
 
 
-    public StepExecutionListener stepExecutionListener() {
+    private StepExecutionListener stepExecutionListener() {
         return new StepExecutionListener() {
             @Override
             public void beforeStep(StepExecution stepExecution) {
@@ -83,7 +83,7 @@ public class KeyWordBatchConfig {
         };
     }
 
-    public ItemProcessor<SortBook, Set<Keyword>> itemProcessor() {
+    private ItemProcessor<SortBook, Set<Keyword>> itemProcessor() {
         return item -> Arrays.stream(item.getTitleToken().split(" "))
             .map(simpleFilter::filtering)
             .filter(token -> !token.isBlank())
@@ -92,7 +92,7 @@ public class KeyWordBatchConfig {
     }
 
 
-    public JpaPagingItemReader<SortBook> bookJpaPagingItemReader() {
+    private JpaPagingItemReader<SortBook> bookJpaPagingItemReader() {
         return new JpaPagingItemReaderBuilder<SortBook>()
             .name("bookJpaPagingItemReader")
             .pageSize(1000)
