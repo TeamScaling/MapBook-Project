@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -36,11 +37,8 @@ public class ApiQuerySender {
      * @throws OpenApiException API와의 연결에 문제가 있을 경우.
      */
     @MeasureTaskTime
-    public ResponseEntity<String> sendSingleQuery(
-        ApiConnection apiConnection, HttpEntity<?> httpEntity
-    ) throws OpenApiException {
-
-        Objects.requireNonNull(apiConnection);
+    public ResponseEntity<String> sendSingleQuery(ApiConnection apiConnection,
+        HttpEntity<?> httpEntity) throws OpenApiException {
 
         try {
             return restTemplate.exchange(
@@ -63,9 +61,8 @@ public class ApiQuerySender {
      * @throws OpenApiException API와의 연결에 문제가 있을 경우.
      */
     @MeasureTaskTime
-    public List<ResponseEntity<String>> sendMultiQuery(
-        List<? extends ApiConnection> apiConnections, int nThreads, HttpEntity<?> httpEntity
-    ) throws OpenApiException {
+    public List<ResponseEntity<String>> sendMultiQuery(List<? extends ApiConnection> apiConnections,
+        int nThreads, HttpEntity<?> httpEntity) throws OpenApiException {
 
         Objects.requireNonNull(apiConnections);
 

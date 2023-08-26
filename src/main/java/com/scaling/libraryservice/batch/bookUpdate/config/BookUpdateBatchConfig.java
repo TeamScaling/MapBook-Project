@@ -36,7 +36,7 @@ public class BookUpdateBatchConfig {
     private final RequiredUpdateBookRepo requiredUpdateBookRepo;
 
     private final int CHUNK_SIZE = 100;
-    private final int MAX_ITEM_SIZE = 1000;
+    private final int MAX_ITEM_SIZE = 30000;
 
     private final Job preSortByBooksJob;
 

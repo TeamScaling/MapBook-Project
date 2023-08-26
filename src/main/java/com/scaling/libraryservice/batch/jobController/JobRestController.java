@@ -59,19 +59,21 @@ public class JobRestController {
     }
 
     private ResponseEntity<String> template(ReqJobDto reqJobDto, String request,
-        ThrowingSupplier<?> supplier,String authKey) {
+        ThrowingSupplier<?> supplier, String authKey) {
 
-        if(!authKeyLoader.checkAuthKey(BATCH_KEY,authKey)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission to access this.");
+        if (!authKeyLoader.checkAuthKey(BATCH_KEY, authKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body("You do not have permission to access this.");
         }
 
         try {
             supplier.get();
-            return ResponseEntity.ok(getSuccessMessage(request, reqJobDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
                 .body(getFailMessage(request, reqJobDto));
         }
+
+        return ResponseEntity.ok(getSuccessMessage(request, reqJobDto));
     }
 
     private String getSuccessMessage(String request, ReqJobDto reqJobDto) {

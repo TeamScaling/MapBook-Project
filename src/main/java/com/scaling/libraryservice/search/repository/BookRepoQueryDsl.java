@@ -141,65 +141,6 @@ public class BookRepoQueryDsl {
         return Expressions.numberTemplate(Double.class, function, colum, name);
     }
 
-
-//    public Long totalCount() {
-//        return factory
-//            .select(book.count())
-//            .from(book)
-//            .fetchOne();
-//    }
-
-//    @Transactional(readOnly = true)
-//    // csv file로 변환 할 때 사용하기 위한 메소드.
-//    public Page<Book> findAllAndSort(Pageable pageable,Long count) {
-//
-//        JPAQuery<Book> booksJpaQuery =
-//            getJpaQueryFind(pageable)
-//                .orderBy(
-//                    book.loanCnt.desc()
-//                );
-//
-//        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable,count);
-//    }
-
-//    @Transactional(readOnly = true)
-//    public Page<Book> findBooks(Pageable pageable,Long count) {
-//
-//        JPAQuery<Book> booksJpaQuery = getJpaQueryFind(pageable);
-//
-//        return (Page<Book>) getPagingFromJpaQuery(booksJpaQuery, pageable, count);
-//    }
-
-    private Page<?> getPagingFromJpaQuery(JPAQuery<?> books, Pageable pageable, Long count) {
-        return PageableExecutionUtils.getPage(
-            books.fetch(),
-            pageable,
-            () -> count
-        );
-    }
-
-
-    private JPAQuery<Book> getJpaQueryFind(Pageable pageable) {
-
-        return factory
-            .select(book)
-            .from(book)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize());
-    }
-
-//    @Transactional(readOnly = true)
-//    public Page<String> findTitleToken(Pageable pageable,Long count) {
-//
-//        JPAQuery<String> books = factory
-//            .select(book.titleToken)
-//            .from(book)
-//            .offset(pageable.getOffset())
-//            .limit(pageable.getPageSize());
-//
-//        return (Page<String>) getPagingFromJpaQuery(books, pageable,count);
-//    }
-
     // boolean mode를 위한 메소드
     private String splitAddPlus(@NonNull String target) {
         target = target.trim();
