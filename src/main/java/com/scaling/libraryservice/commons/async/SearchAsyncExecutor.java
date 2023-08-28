@@ -19,12 +19,10 @@ import org.springframework.stereotype.Component;
  * SearchAsyncExecutor 클래스는 AsyncExecutor 인터페이스를 구현하며, 도서 검색을 비동기적으로 수행합니다. 이 클래스는 검색
  * 요청(ReqBookDto)을 받아 도서 검색 결과인 Page<BookDto>를 반환합니다.
  *
- * @param <T> 실행 결과의 타입. 이 클래스에서는 Page<BookDto>.
- * @param <V> 실행에 필요한 값의 타입. 이 클래스에서는 ReqBookDto.
  */
 @RequiredArgsConstructor
 @Component
-public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, ReqBookDto> {
+public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>, ReqBookDto> {
 
     /**
      * 사용자의 검색 요청과 그에 따른 검색 결과를 캐싱하는 CustomCacheManager입니다.
