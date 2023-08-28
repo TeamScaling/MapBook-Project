@@ -28,12 +28,15 @@ public class TitleQuery {
      */
     private final String nnToken;
 
+    /**
+     * 사용자가 입력한 검색어를 저장하는 변수
+     */
     private final String userQuery;
 
 
 
-    private TitleQuery(@NonNull TitleType titleType, @Nullable String etcToken,
-        @Nullable String nnToken, String userQuery) {
+    private TitleQuery(@NonNull TitleType titleType, @NonNull String etcToken,
+        @NonNull String nnToken, String userQuery) {
 
         this.titleType = titleType;
         this.etcToken = etcToken;
@@ -45,6 +48,7 @@ public class TitleQuery {
         return nnToken.isBlank() && etcToken.isBlank();
     }
 
+    @Getter
     public static class TitleQueryBuilder {
         private TitleType titleType;
         private String etcToken = "";
@@ -69,22 +73,6 @@ public class TitleQuery {
         public TitleQueryBuilder userQuery(String query) {
             this.userQuery = query;
             return this;
-        }
-
-        public String getUserQuery() {
-            return userQuery;
-        }
-
-        public TitleType getTitleType() {
-            return titleType;
-        }
-
-        public String getEtcToken() {
-            return etcToken;
-        }
-
-        public String getNnToken() {
-            return nnToken;
         }
 
         public TitleQuery build() {

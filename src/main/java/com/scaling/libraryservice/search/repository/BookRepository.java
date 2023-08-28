@@ -11,8 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 public interface BookRepository extends JpaRepository<Book,Long> {
-//    Page<Book> findBooks(TitleQuery titleQuery, Pageable pageable);
-
     List<Book> findBookByIsbnIn(Collection<String> isbn);
 }
 

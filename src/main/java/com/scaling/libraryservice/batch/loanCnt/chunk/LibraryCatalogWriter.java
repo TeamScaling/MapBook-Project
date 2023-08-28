@@ -33,12 +33,10 @@ public class LibraryCatalogWriter implements ItemWriter<LibraryCatalog> {
             );
 
         Set<String> isbnSet = libraryCatalogMap.keySet();
-        List<Book> books = bookRepository.findBookByIsbnIn(isbnSet);
 
-        books.forEach(book -> {
-            Integer loanCnt = libraryCatalogMap.get(book.getIsbn());
+        bookRepository.findBookByIsbnIn(isbnSet).forEach(book -> {
+            Integer loanCnt = libraryCatalogMap.remove(book.getIsbn());
             book.setLoanCnt(loanCnt);
-            libraryCatalogMap.remove(book.getIsbn());
         });
 
         saveRequiredUpdateBook(libraryCatalogMap);

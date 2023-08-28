@@ -84,13 +84,13 @@ public class BookSearchService {
     private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto,
         int timeout, boolean isAsyncSupport) {
 
-        Page<BookDto> books =
-            asyncExecutor.execute(
-                createFindBooksTask(titleQuery, createPageableFromRequest(reqBookDto))
-                , reqBookDto
-                , timeout
-                , isAsyncSupport
-            );
+        Page<BookDto> books = bookRepoQueryDsl.findBooks(titleQuery,createPageableFromRequest(reqBookDto));
+//            asyncExecutor.execute(
+//                createFindBooksTask(titleQuery, createPageableFromRequest(reqBookDto))
+//                , reqBookDto
+//                , timeout
+//                , isAsyncSupport
+//            );
 
         // 검색 결과와 사용자 검색어가 일치하면 일치하는 도서만 반환 한다.
         Optional<BookDto> potentialMatchBook = matchingQueryAndTitle(books, reqBookDto);

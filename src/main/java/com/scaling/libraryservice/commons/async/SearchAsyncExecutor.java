@@ -8,8 +8,12 @@ import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,17 +50,17 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
     public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,
         ReqBookDto reqBookDto, int timeout, boolean isAsync) {
 
-        Page<BookDto> booksPage = Page.empty();
+        CompletableFuture<Page<BookDto>> future = CompletableFuture.supplyAsync(supplier);
 
         try {
-            booksPage = isAsync ?
-                executeAsync(supplier, timeout)
+            return isAsync ?
+                future.get(timeout,TimeUnit.SECONDS)
                 : supplier.get();
 
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            asyncSearchBook(supplier, reqBookDto);
+            future.thenAccept(result -> cachingAsyncResult(result,reqBookDto));
+            return Page.empty();
         }
-        return booksPage;
     }
 
     private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier, int timeout)

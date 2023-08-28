@@ -11,15 +11,12 @@ import static org.mockito.Mockito.when;
 
 import com.scaling.libraryservice.commons.async.AsyncExecutor;
 import com.scaling.libraryservice.search.dto.BookDto;
-import com.scaling.libraryservice.search.dto.BookDto.BookDtoBuilder;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.engine.TitleAnalyzer;
 import com.scaling.libraryservice.search.engine.TitleQuery;
 import com.scaling.libraryservice.search.engine.TitleQuery.TitleQueryBuilder;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
-import com.scaling.libraryservice.search.repository.BookRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class BookSearchServiceTest {
