@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,6 +19,7 @@ import org.springframework.lang.Nullable;
 @Table(name = "book_final")
 @ToString
 @Getter @Setter
+@Builder @AllArgsConstructor
 public class Book {
 
     @Id

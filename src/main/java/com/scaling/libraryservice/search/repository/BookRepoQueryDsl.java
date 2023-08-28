@@ -35,7 +35,7 @@ public class BookRepoQueryDsl {
     private final JPAQueryFactory factory;
 
     private final static int LIMIT_CNT = 100;
-    private final static double SCORE_OF_MATCH = 0.0;
+    private final static double DEFAULT_SCORE_OF_MATCH = 0.0;
 
     @Transactional(readOnly = true)
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
@@ -120,34 +120,33 @@ public class BookRepoQueryDsl {
                 token,
                 colum
             ).gt(
-                SCORE_OF_MATCH
+                DEFAULT_SCORE_OF_MATCH
             )
         );
     }
 
 
     // 사용자가 입력한 제목 쿼리를 분석한 결과를 바탕으로 boolean or natural 모드를 동적으로 선택
-    NumberTemplate<Double> getTemplate(SearchMode mode, String name, StringPath colum) {
+    NumberTemplate<Double> getTemplate(SearchMode mode, String token, StringPath colum) {
 
         String function;
 
         if (mode == BOOLEAN_MODE) {
             function = "function('BooleanMatch',{0},{1})";
             // boolean 모드에서 모두 반드시 포함된 결과를 위해 '+'를 붙여주는 정적 메소드 호출.
-            name = splitAddPlus(name);
+            token = splitAddPlusSign(token);
         } else {
             function = "function('NaturalMatch',{0},{1})";
         }
-        return Expressions.numberTemplate(Double.class, function, colum, name);
+        return Expressions.numberTemplate(Double.class, function, colum, token);
     }
 
     // boolean mode를 위한 메소드
-    private String splitAddPlus(@NonNull String target) {
+    private String splitAddPlusSign(@NonNull String target) {
         target = target.trim();
         return Arrays.stream(target.split(" "))
-            .map(name -> "+" + name)
-            .collect(Collectors.joining(" ")
-            );
+            .map(token -> "+" + token)
+            .collect(Collectors.joining(" "));
     }
 
 }

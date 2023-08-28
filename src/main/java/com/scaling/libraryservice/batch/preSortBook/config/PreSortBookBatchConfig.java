@@ -60,6 +60,7 @@ public class PreSortBookBatchConfig {
             .build();
     }
 
+    @Bean
     public ItemProcessor<Book, SortBook> preSortBookItemProcessor() {
         return new PreSortBookItemProcessor(titleAnalyzer);
     }

@@ -1,6 +1,5 @@
 package com.scaling.libraryservice.commons.api.util.binding;
 
-import com.scaling.libraryservice.batch.logTransfer.mappingStratagy.MappingStrategy;
 import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
 import com.scaling.libraryservice.commons.api.service.provider.LoanableLibProvider;
 import java.util.HashMap;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class BindingStrategyFactoryBean implements FactoryBean<Map<Class<?>, BindingStrategy<?>>> {
@@ -17,9 +17,8 @@ public class BindingStrategyFactoryBean implements FactoryBean<Map<Class<?>, Bin
     private String[] strategyMappings;
 
     @Nullable
-    @Override
+    @Override  @Transactional
     public Map<Class<?>, BindingStrategy<?>> getObject() {
-
         Map<Class<?>, BindingStrategy<?>> bindingStrategyMap = new HashMap<>();
 
         for (String clazz : strategyMappings){

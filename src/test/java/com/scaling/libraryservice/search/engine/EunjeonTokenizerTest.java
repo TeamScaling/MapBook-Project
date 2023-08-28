@@ -69,8 +69,4 @@ class EunjeonTokenizerTest {
         assertFalse(result.get(ETC_TOKEN).stream().anyMatch(s -> s.equals("청춘")));
     }
 
-
-
-
-
 }

@@ -5,10 +5,9 @@ import static com.scaling.libraryservice.search.engine.Token.NN_TOKEN;
 
 import java.util.Arrays;
 import java.util.EnumMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 import org.bitbucket.eunjeon.seunjeon.Analyzer;
 import org.bitbucket.eunjeon.seunjeon.LNode;
 import org.springframework.stereotype.Component;
@@ -48,25 +47,24 @@ public class EunjeonTokenizer implements TitleTokenizer {
         resultMap.put(
             ETC_TOKEN,
             Arrays.stream(target.split(" "))
-                .filter(EunjeonTokenizer::isQualifiedToken)
+                .filter(EunjeonTokenizer::isQualifiedTokenSize)
                 .toList()
         );
     }
 
     // 형태소 분석기로 분석 한 뒤 적합한 어절을 최소 사이즈 이상만 List에 담아 반환
     public static List<String> getQualifiedNnTokens(String target) {
-
         return Analyzer.parseJava(target)
             .stream()
             .filter(EunjeonTokenizer::isQualifiedNode)
             .map(node -> node.copy$default$1().surface())
-            .filter(EunjeonTokenizer::isQualifiedToken)
+            .filter(EunjeonTokenizer::isQualifiedTokenSize)
             .toList();
     }
 
 
     // 최소 사이즈를 넘는 토큰과 영어,한글,숫자만 유효한 토큰으로 결정
-    static boolean isQualifiedToken(String token) {
+    static boolean isQualifiedTokenSize(String token) {
         return token.length() >= TOKEN_MIN_SIZE;
     }
 
@@ -75,18 +73,12 @@ public class EunjeonTokenizer implements TitleTokenizer {
     }
 
     String getEtcTokens(List<String> nnWords, String target) {
-
-        Set<String> uniqueWords = new LinkedHashSet<>(Arrays.asList(target.split(" ")));
-
-        nnWords.forEach(nnWord ->
-            uniqueWords.removeIf(splitWord -> splitWord.contains(nnWord))
-        );
-
-        return String.join(" ", uniqueWords).trim();
+        return Arrays.stream(target.split(" "))
+            .filter(splitWord -> !nnWords.contains(splitWord))
+            .collect(Collectors.joining(" "));
     }
 
     private static boolean hasFeatureHead(LNode node, String feature) {
-
         return node.copy$default$1().feature().head().equals(feature);
     }
 

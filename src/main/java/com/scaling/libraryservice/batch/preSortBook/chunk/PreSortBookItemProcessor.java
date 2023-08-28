@@ -27,24 +27,26 @@ public class PreSortBookItemProcessor implements ItemProcessor<Book, SortBook> {
     }
 
     @Override
-    public SortBook process(Book item) throws Exception {
+    public SortBook process(Book item) {
 
         BookDto bookDto = new BookDto(item);
 
         if (bookDto.getTitleToken().isBlank()) {
             TitleQuery titleQuery = titleAnalyzer.analyze(bookDto.getTitle(), false);
 
-            String titleToken = titleQuery.getNnToken().trim();
+            String titleToken = simpleFilter.filtering(titleQuery.getNnToken().trim());
             String author = simpleFilter.filtering(bookDto.getAuthor());
 
-            String joinedTokens = Arrays.stream(String.join(" ", titleToken, author).split(" "))
-                .distinct()
-                .collect(Collectors.joining(" "));
-
-            bookDto.setTitleToken(String.join(" ", joinedTokens));
+            bookDto.setTitleToken(joinTitleTokenAuthor(titleToken, author));
         }
 
         return new SortBook(bookDto);
+    }
+
+    private String joinTitleTokenAuthor(String titleToken, String author) {
+        return Arrays.stream(String.join(" ", titleToken, author).split(" "))
+            .distinct()
+            .collect(Collectors.joining(" "));
     }
 
 }
