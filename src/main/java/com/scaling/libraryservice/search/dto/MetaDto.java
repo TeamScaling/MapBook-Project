@@ -1,7 +1,6 @@
 package com.scaling.libraryservice.search.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -19,8 +18,7 @@ public class MetaDto {
     private long totalElements;
     private int currentPage;
     private int pageSize;
-    private String searchTime;
-
+    private String searchTime = "0.0";
     private String userQuery;
 
     public void addSearchTime(String searchTime) {
