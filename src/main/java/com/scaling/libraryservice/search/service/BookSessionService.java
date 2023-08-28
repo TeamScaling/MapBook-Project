@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpSession;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BookSessionService {
-
 
     public void keepBooksInSession(HttpSession httpSession, RespBooksDto respBooksDto,
         int interval) {

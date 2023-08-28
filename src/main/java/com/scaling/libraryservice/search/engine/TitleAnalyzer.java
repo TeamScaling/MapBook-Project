@@ -25,8 +25,8 @@ public class TitleAnalyzer {
 
     private final TitleTokenizer tokenizer;
     private final FilterStream filterStream;
-    private static final int TOKEN_MIN_SIZE = 1;
-    private static final int TOKEN_MAX_SIZE = 2;
+    private static final int ETC_TOKEN_THRESHOLD_SIZE = 1;
+    private static final int NN_TOKEN_THRESHOLD_SIZE = 2;
 
     @MeasureTaskTime
     public TitleQuery analyze(String query, boolean filterOn) throws NotQualifiedQueryException {
@@ -39,8 +39,11 @@ public class TitleAnalyzer {
 
         AnalyzedResult analyzedResult = analyzeQuery(query);
 
+        // title 분석에 대한 결과를 담을 TitleQuery의 builder를 만든다.
+        TitleQueryBuilder titleQueryBuilder = setUpBuilder(analyzedResult, originalQuery);
+
         // 어떤 검색 전략를 실시 할지 결정 한다.
-        return determineSearchStrategy(analyzedResult, originalQuery);
+        return determineTitleType(analyzedResult, titleQueryBuilder);
     }
 
     private AnalyzedResult analyzeQuery(String query) {
@@ -57,42 +60,33 @@ public class TitleAnalyzer {
         return new AnalyzedResult(nnToken, etcToken);
     }
 
-    private TitleQuery determineSearchStrategy(AnalyzedResult result, String originalQuery) {
+    private TitleQuery determineTitleType(AnalyzedResult result,
+        TitleQueryBuilder titleQueryBuilder) {
 
-        // title 분석에 대한 결과를 담을 TitleQuery의 builder를 만든다.
-        TitleQueryBuilder titleQueryBuilder = new TitleQueryBuilder()
+        if (result.getNnTokenCount() >= NN_TOKEN_THRESHOLD_SIZE) {
+            return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
+        } else if (result.getEtcTokenCount() >= ETC_TOKEN_THRESHOLD_SIZE) {
+            return considerEtcToken(result, titleQueryBuilder);
+        } else {
+            return titleQueryBuilder.titleType(TOKEN_ONE).build();
+        }
+    }
+
+    private TitleQueryBuilder setUpBuilder(AnalyzedResult result, String originalQuery) {
+        return new TitleQueryBuilder()
             .userQuery(originalQuery)
             .nnToken(result.nnToken)
             .etcToken(result.etcToken);
-
-        if (result.getNnTokenCount() >= TOKEN_MAX_SIZE) {
-            return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
-        } else if (result.getEtcTokenCount() >= TOKEN_MIN_SIZE) {
-            return determineComplexStrategy(result, titleQueryBuilder);
-        } else {
-            return determineNnSearchStrategy(result, titleQueryBuilder);
-        }
     }
 
-    private TitleQuery determineComplexStrategy(AnalyzedResult result,
+    private TitleQuery considerEtcToken(AnalyzedResult result,
         TitleQueryBuilder titleQueryBuilder) {
 
-        return result.getNnTokenCount() < TOKEN_MIN_SIZE ?
-            titleQueryBuilder.titleType(TOKEN_ALL_ETC).etcToken(titleQueryBuilder.getUserQuery())
+        return result.getNnTokenCount() == 0 ?
+            titleQueryBuilder.titleType(TOKEN_ALL_ETC)
+                .etcToken(titleQueryBuilder.getUserQuery())
                 .build()
             : titleQueryBuilder.titleType(TOKEN_COMPLEX).build();
-    }
-
-    private TitleQuery determineNnSearchStrategy(AnalyzedResult result,
-        TitleQueryBuilder titleQueryBuilder) {
-
-        if (!result.nnToken().equals(titleQueryBuilder.getUserQuery())) {
-            return titleQueryBuilder.titleType(TOKEN_COMPLEX)
-                .etcToken(titleQueryBuilder.getUserQuery()).build();
-        }
-        return result.getNnTokenCount() == TOKEN_MIN_SIZE ?
-            titleQueryBuilder.titleType(TOKEN_ONE).build()
-            : titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
     }
 
 
