@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookSessionService {
 
-    @Async
     public void keepBooksInSession(HttpSession httpSession, RespBooksDto respBooksDto,
         int interval) {
 

@@ -8,16 +8,11 @@ import com.scaling.libraryservice.search.dto.RespBooksDtoFactory;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
@@ -50,12 +45,21 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
     public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,
         ReqBookDto reqBookDto, int timeout, boolean isAsync) {
 
+        return isAsync? executeAsync(supplier,reqBookDto,timeout)
+            :supplier.get();
+    }
+
+    /**
+     * 비동기적으로 도서를 검색하고, 타임 아웃이 되면 일단 빈 결과를 반환한 뒤 비동기 검색 쓰레드의 완료 시점에 결과를 캐시에 저장합니다.
+     *
+     * @param supplier   도서 검색 작업을 제공하는 Supplier
+     * @param reqBookDto 검색 요청 정보
+     */
+    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto, int timeout) {
         CompletableFuture<Page<BookDto>> future = CompletableFuture.supplyAsync(supplier);
 
         try {
-            return isAsync ?
-                future.get(timeout,TimeUnit.SECONDS)
-                : supplier.get();
+            return future.get(timeout,TimeUnit.SECONDS);
 
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             future.thenAccept(result -> cachingAsyncResult(result,reqBookDto));
@@ -63,26 +67,6 @@ public class SearchAsyncExecutor<T, V> implements AsyncExecutor<Page<BookDto>, R
         }
     }
 
-    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier, int timeout)
-        throws ExecutionException, InterruptedException, TimeoutException {
-
-        return CompletableFuture.supplyAsync(supplier).get(timeout, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 비동기적으로 도서를 검색하고, 결과를 캐시에 저장합니다.
-     *
-     * @param supplier   도서 검색 작업을 제공하는 Supplier
-     * @param reqBookDto 검색 요청 정보
-     */
-    void asyncSearchBook(Supplier<Page<BookDto>> supplier, @NonNull ReqBookDto reqBookDto) {
-
-        CompletableFuture.runAsync(
-            () -> {
-                Page<BookDto> fetchedBooks = supplier.get();
-                cachingAsyncResult(fetchedBooks, reqBookDto);
-            });
-    }
 
     // cache Manager를 호출해 비동기 결과를 캐싱 처리
     private void cachingAsyncResult(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto) {

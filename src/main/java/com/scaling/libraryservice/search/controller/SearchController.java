@@ -45,7 +45,7 @@ public class SearchController {
     public ResponseEntity<RespBooksDto> autocomplete(@RequestParam(value = "query") String query,
         HttpSession session) {
 
-        RespBooksDto books = bookSearchService.autoCompleteSearch(
+        RespBooksDto books = bookSearchService.searchBooks(
             new ReqBookDto(query, DEFAULT_PAGE, AUTO_COMPLETE_SIZE),
             DEFAULT_TIMEOUT,
             false
@@ -75,7 +75,7 @@ public class SearchController {
         RespBooksDto searchResult = bookSearchService.searchBooks(
             new ReqBookDto(query, page, size),
             DEFAULT_TIMEOUT,
-            false
+            true
         );
 
         logService.slackLogging(SEARCH_TASK,searchResult);
