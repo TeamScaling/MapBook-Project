@@ -35,6 +35,7 @@ public class MapBookService implements ApiRelatedService {
     private final ConnectionGenerator<LoanableLibConn, LibraryInfoDto, ReqMapBookDto> connGenerator;
 
     @MeasureTaskTime // 시간을 측정하여 기록하기 위한 wrapper 메소드
+    @CustomCacheable
     public RespMapBookWrapper getLoanableMarker(List<LibraryInfoDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) {
 
@@ -52,7 +53,7 @@ public class MapBookService implements ApiRelatedService {
      * @param reqMapBookDto   사용자가 요청한 도서 정보와 위치 정보를 담는 Dto
      * @return 대출 가능한 도서관 정보를 담은 응답 Dto를 List 형태로 반환 한다.
      */
-    @CustomCacheable
+
     List<RespMapBookDto> matchLibraryBooks(List<LibraryInfoDto> nearByLibraries,
         ReqMapBookDto reqMapBookDto) throws OpenApiException {
 
