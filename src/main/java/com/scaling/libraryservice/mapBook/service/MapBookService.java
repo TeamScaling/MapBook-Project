@@ -63,15 +63,17 @@ public class MapBookService implements ApiRelatedService {
             reqMapBookDto
         );
 
+        if(loanableLibConns.isEmpty()){
+            return notFoundLoanableLib(nearByLibraries, reqMapBookDto);
+        }
+
         // 대출 가능 데이터를 전달 받는다.
         List<ApiLoanableLibDto> apiResults = dataProvider.provideDataList(
             loanableLibConns,
             loanableLibConns.size()
         );
 
-        return loanableLibConns.isEmpty() ?
-            notFoundLoanableLib(nearByLibraries, reqMapBookDto) :
-            mappingLoanableLib(nearByLibraries, apiResults);
+        return mappingLoanableLib(nearByLibraries, apiResults);
     }
 
     private List<RespMapBookDto> notFoundLoanableLib(List<LibraryInfoDto> nearByLibraries,
