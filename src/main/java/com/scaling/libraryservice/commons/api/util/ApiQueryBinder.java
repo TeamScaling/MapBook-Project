@@ -22,7 +22,6 @@ public class ApiQueryBinder<T> {
 
     private final BindingStrategyFactory bindingStrategyFactory;
 
-
     /**
      * Api 응답 결과를 객체로 바인딩 하기 위해 해당 Binding Startegy 객체를 Map에서 찾아 Binding 한 후 반환
      *

@@ -7,7 +7,6 @@ import org.springframework.lang.NonNull;
 
 public class SubTitleRemover {
 
-
     public static String removeSubTitle(@NonNull String title) {
 
        return isRequiredRemove(title)? getRemovedSubTitle(title) : title;
@@ -21,6 +20,5 @@ public class SubTitleRemover {
     private static boolean isRequiredRemove(String title){
         return title.contains(":") || title.contains("=");
     }
-
 
 }

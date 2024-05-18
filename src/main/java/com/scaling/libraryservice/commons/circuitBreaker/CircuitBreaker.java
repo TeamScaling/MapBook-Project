@@ -23,9 +23,13 @@ import org.springframework.lang.NonNull;
 public class CircuitBreaker {
 
     private final ScheduledExecutorService scheduler;
+
     private final Map<ApiObserver, ScheduledFuture<?>> scheduledTasks;
+
     private final RestorationChecker checker;
+
     private static final int INITIAL_DELAY = 1;
+
     private static final int RECOVERY_INTERVAL = 60 * 30;
 
     private final LogService<ApiStatus> logService;
@@ -48,10 +52,8 @@ public class CircuitBreaker {
      * @param observer 발생한 오류를 처리할 {@link ApiObserver} 인스턴스
      */
     public synchronized void receiveError(@NonNull ApiObserver observer) {
-
         ApiStatus status = observer.getApiStatus();
         status.upErrorCnt();
-
         if (status.apiAccessible() && status.isMaxError()) {
             closeApi(observer);
             logService.slackLogging(API_ERROR_TASK,status);
@@ -65,10 +67,8 @@ public class CircuitBreaker {
      * @param observer 일시 중단할 {@link ApiObserver} 인스턴스
      */
     private synchronized void closeApi(ApiObserver observer) {
-
         ApiStatus status = observer.getApiStatus();
         status.closeAccess();
-
         startScheduledRestoration(observer);
     }
 
@@ -79,12 +79,10 @@ public class CircuitBreaker {
      * @param observer 복구 작업을 스케줄링할 {@link ApiObserver} 인스턴스
      */
     void startScheduledRestoration(ApiObserver observer) {
-
         scheduledTasks.put(observer, scheduleRestorationTask(observer));
     }
 
     private ScheduledFuture<?> scheduleRestorationTask(ApiObserver observer) {
-
         return scheduler.scheduleAtFixedRate(
             createRestorationRunnable(observer),
             INITIAL_DELAY,
@@ -94,7 +92,6 @@ public class CircuitBreaker {
     }
 
     private Runnable createRestorationRunnable(ApiObserver observer) {
-
         return () -> {
             if (checker.isRestoration(observer)) {
                 stopScheduledRestoration(observer);
@@ -109,10 +106,8 @@ public class CircuitBreaker {
      * @param observer 복구 작업을 중지할 {@link ApiObserver} 인스턴스
      */
     void stopScheduledRestoration(ApiObserver observer) {
-
         scheduledTasks.get(observer).cancel(false);
         scheduledTasks.remove(observer);
-
         observer.getApiStatus().openAccess();
     }
 

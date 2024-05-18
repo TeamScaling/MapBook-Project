@@ -62,8 +62,7 @@ public class BookUpdateBatchConfig {
                         new ExitStatus("NOT_REQUIRED_UPDATE")
                     );
                 }
-                return RepeatStatus.FINISHED;
-            })
+                return RepeatStatus.FINISHED;})
             .allowStartIfComplete(true)
             .build();
     }

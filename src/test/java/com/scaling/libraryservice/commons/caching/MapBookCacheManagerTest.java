@@ -34,9 +34,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
-class CustomCacheManagerTest {
+class MapBookCacheManagerTest {
 
-    private CustomCacheManager<ReqBookDto, RespBooksDto> cacheManager;
+    private MapBookCacheManager<ReqBookDto, RespBooksDto> cacheManager;
 
     @Mock
     private BookSearchService bookSearchService;
@@ -49,7 +49,7 @@ class CustomCacheManagerTest {
 
     @BeforeEach
     public void setUp() {
-        cacheManager = new CustomCacheManager<>();
+        cacheManager = new MapBookCacheManager<>();
         bookCacheKey = new ReqBookDto("자바", 1,10);
         respBooksDto = new RespBooksDto(new MetaDto(),new ArrayList<>());
         cache = Caffeine.newBuilder().build();

@@ -28,8 +28,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class MapBookController {
 
     private final MapBookService mapBookService;
+
     private final LibraryFindService libraryFindService;
+
     private final LocationResolver<Integer,ReqMapBookDto> locationResolver;
+
     private final LogService<RespMapBookWrapper> logService;
 
 
@@ -40,7 +43,6 @@ public class MapBookController {
      * @param reqMapBookDto 요청 받은 도서와 사용자의 위치 정보가 담겨 있는 Dto
      * @return Model을 전달 받고 View를 구성 할 html 파일 이름
      */
-
     @PostMapping("/books/mapBook/search")
     @ApiMonitoring(apiObserver = LoanableLibConn.class, substitute = "fallBackMethodHasBook")
     public String getMapBooks(ModelMap model, @RequestBody ReqMapBookDto reqMapBookDto) {
@@ -63,7 +65,6 @@ public class MapBookController {
         logService.slackLogging(MAP_BOOK_TASK,mapBooks);
 
         model.put("mapBooks", mapBooks.getRespMapBooks());
-
         return "mapBook/mapBookMarker";
     }
 
@@ -79,8 +80,7 @@ public class MapBookController {
      * @param reqMapBookDto getMapBooks moethod에게 전달 받은 사용자 요청 데이터가 담긴 Dto
      * @return Model을 전달 받고 View를 구성 할 html 파일 이름
      */
-    public String fallBackMethodHasBook(ModelMap model,
-        @ModelAttribute ReqMapBookDto reqMapBookDto) {
+    public String fallBackMethodHasBook(ModelMap model, @ModelAttribute ReqMapBookDto reqMapBookDto) {
 
         Integer areaCd = locationResolver.resolve(reqMapBookDto);
         
@@ -91,7 +91,6 @@ public class MapBookController {
         );
 
         model.put("hasBookLibs", hasBookLibs);
-
         return "mapBook/hasLibMarker";
     }
 }

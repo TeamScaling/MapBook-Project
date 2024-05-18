@@ -10,11 +10,17 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiStatus {
 
     private final String apiUri;
+
     private boolean apiAccessible = true;
+
     private int errorCnt;
+
     private LocalDateTime closedTime;
+
     private LocalDateTime openedTime;
+
     private LocalDateTime recentClosedTime;
+
     public final int DEFAULT_MAX_ERROR_CNT;
 
     public ApiStatus(String apiUri, int DEFAULT_MAX_ERROR_CNT) {

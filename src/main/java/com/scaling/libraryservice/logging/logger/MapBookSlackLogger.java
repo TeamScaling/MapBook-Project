@@ -18,11 +18,9 @@ public class MapBookSlackLogger extends AbstractSlackLogger<RespMapBookWrapper> 
 
     @Override
     TaskType determineTaskType(RespMapBookWrapper value) {
-
         if (value.getBookTitle() == null){
             return NO_LOGGING_TASK;
         }
-
         return MAP_BOOK_TASK;
     }
 
@@ -34,8 +32,7 @@ public class MapBookSlackLogger extends AbstractSlackLogger<RespMapBookWrapper> 
             return Collections.emptyMap();
         }
 
-        return Map.of(
-            "title", wrapper.getBookTitle(),
+        return Map.of("title", wrapper.getBookTitle(),
             "areaCd", String.valueOf(wrapper.getAreaCd()),
             "taskTime", wrapper.getTaskTime()
         );

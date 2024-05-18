@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class StopWordFilter extends AbstractTileFilter {
 
     private final TitleFilter nextFilter;
+
     private final Set<String> ENG_STOP_WORDS = new HashSet<>(
         Set.of("a", "about", "an", "are", "as", "at", "be",
             "by", "com", "de", "en", "for", "from", "how",
@@ -20,14 +21,12 @@ public class StopWordFilter extends AbstractTileFilter {
         Set.of("글", "그림", "옮김", "지은이", "저자", "지음", "역자", "[공]", "[지음]", "옮긴이", "저")
     );
 
-
     public StopWordFilter(TitleFilter nextFilter) {
         this.nextFilter = nextFilter;
     }
 
     @Override
     public String filtering(String query) {
-
         String removedQuery = removeEngStopWord(query);
         removedQuery = removeAuthrStopWord(removedQuery);
 

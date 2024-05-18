@@ -12,7 +12,6 @@ import org.springframework.lang.Nullable;
 @Getter
 public class TitleQuery {
 
-
     /**
      * 검색어 유형 정보를 저장하는 변수
      */
@@ -32,8 +31,6 @@ public class TitleQuery {
      * 사용자가 입력한 검색어를 저장하는 변수
      */
     private final String userQuery;
-
-
 
     private TitleQuery(@NonNull TitleType titleType, @NonNull String etcToken,
         @NonNull String nnToken, String userQuery) {

@@ -33,19 +33,16 @@ public class ApiQuerySendChecker implements RestorationChecker{
      * @return API 서버가 다시 접근 가능한 상태라면 true, 그렇지 않은 경우 false를 반환합니다.
      */
     public boolean isRestoration(@NonNull ApiObserver observer) {
-
         String uri = observer.getApiStatus().getApiUri();
 
         log.info("check restoration of Api [{}] at [{}]", uri,LocalDateTime.now());
 
         try {
-            apiQuerySender.sendSingleQuery(() ->
-                UriComponentsBuilder.fromHttpUrl(uri), HttpEntity.EMPTY);
-
+            apiQuerySender.sendSingleQuery(() -> UriComponentsBuilder.fromHttpUrl(uri).encode(),
+                HttpEntity.EMPTY);
         } catch (OpenApiException e) {
             return false;
         }
-
         return true;
     }
 }

@@ -19,11 +19,9 @@ public class BindingStrategyFactory {
     }
 
     public BindingStrategy<?> getBindingStrategy(Class<?> clazz){
-
         if(!bindingStrategyMap.containsKey(clazz)){
             throw new IllegalArgumentException("It is fail to Find BidingStrategy in Map");
         }
-
         return bindingStrategyMap.get(clazz);
     }
 

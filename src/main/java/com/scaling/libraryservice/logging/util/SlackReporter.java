@@ -19,7 +19,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class SlackReporter {
+
     private final AuthKeyLoader authKeyLoader;
+
     private String authKey;
 
     /**
@@ -31,9 +33,7 @@ public class SlackReporter {
     }
 
     public void report(String message, String channelAddress) {
-
         ChatPostMessageRequest request = buildChatRequest(message, channelAddress);
-
         try {
             Slack.getInstance().methods(authKey).chatPostMessage(request);
         } catch (IOException | SlackApiException e) {
@@ -41,12 +41,10 @@ public class SlackReporter {
         }
     }
 
-
     private ChatPostMessageRequest buildChatRequest(String message, String channelAddress) {
         return ChatPostMessageRequest.builder()
             .channel(channelAddress)
             .text(message)
             .build();
     }
-
 }

@@ -89,8 +89,8 @@ public class LibraryFindService {
      */
     private boolean isPreCheckingSupportedArea(Integer areaCd) {
 //         전처리 기능 삭제 예정
-        return hasBookAreaRepo.findById(areaCd).isPresent();
-//        return false;
+        //return hasBookAreaRepo.findById(areaCd).isPresent();
+        return true;
     }
 
     public List<LibraryInfoDto> getAllLibraries() {

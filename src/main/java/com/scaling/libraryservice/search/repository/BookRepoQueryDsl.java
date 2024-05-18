@@ -35,12 +35,12 @@ public class BookRepoQueryDsl {
     private final JPAQueryFactory factory;
 
     private final static int LIMIT_CNT = 100;
+
     private final static double DEFAULT_SCORE_OF_MATCH = 0.0;
 
     @Transactional(readOnly = true)
     public Page<BookDto> findBooks(TitleQuery titleQuery, Pageable pageable) {
         // match..against 문을 활용하여 Full text search를 수행
-
         JPAQuery<Book> books = getFtSearchJPAQuery(titleQuery, pageable);
 
         log.info(titleQuery.toString());
@@ -63,9 +63,7 @@ public class BookRepoQueryDsl {
             .orElseGet(BookDto::emptyDto);
     }
 
-    
     private Optional<Book> getNullableBookByIsbn(String isbn) {
-
         return Optional.ofNullable(
             factory
                 .selectFrom(book)
@@ -74,21 +72,15 @@ public class BookRepoQueryDsl {
         );
     }
 
-
-    private JPAQuery<Book> getFtSearchJPAQuery(TitleQuery titleQuery,
-        Pageable pageable) {
-
+    private JPAQuery<Book> getFtSearchJPAQuery(TitleQuery titleQuery, Pageable pageable) {
         BooleanBuilder builder = configBuilder(titleQuery);
-
-        return factory
-            .selectFrom(book)
+        return factory.selectFrom(book)
             .where(builder)
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize());
     }
 
     private BooleanBuilder configBuilder(TitleQuery titleQuery) {
-
         BooleanBuilder builder = new BooleanBuilder();
         SearchMode mode = titleQuery.getTitleType().getMode();
 
@@ -96,18 +88,12 @@ public class BookRepoQueryDsl {
             addFullTextSearchQuery(builder, mode, titleQuery.getEtcToken(), book.title);
         } else {
             addFullTextSearchQuery(builder, mode, titleQuery.getNnToken(), book.titleToken);
-
             // 명사와 나머지 단어들도 함께 찾아야 하면 title에 대한 Full Text 구문을 추가 한다.
             if (titleQuery.getTitleType() == TOKEN_COMPLEX) {
-                addFullTextSearchQuery(
-                    builder,
-                    titleQuery.getTitleType().getSecondMode(),
-                    titleQuery.getEtcToken(),
-                    book.title
-                );
+                addFullTextSearchQuery(builder, titleQuery.getTitleType().getSecondMode(),
+                    titleQuery.getEtcToken(), book.title);
             }
         }
-
         return builder;
     }
 
@@ -125,12 +111,9 @@ public class BookRepoQueryDsl {
         );
     }
 
-
     // 사용자가 입력한 제목 쿼리를 분석한 결과를 바탕으로 boolean or natural 모드를 동적으로 선택
     NumberTemplate<Double> getTemplate(SearchMode mode, String token, StringPath colum) {
-
         String function;
-
         if (mode == BOOLEAN_MODE) {
             function = "function('BooleanMatch',{0},{1})";
             // boolean 모드에서 모두 반드시 포함된 결과를 위해 '+'를 붙여주는 정적 메소드 호출.

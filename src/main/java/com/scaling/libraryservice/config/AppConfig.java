@@ -97,13 +97,11 @@ public class AppConfig {
         return new FilterStream(
             new SimpleFilter(
                 new StopWordFilter(
-                    new ConvertFilter(null, keywordService))
-                ,true));
+                    new ConvertFilter(null, keywordService)), true));
     }
 
     @Bean
-    public BeanPostProcessor jobRegistryBeanPostProcessor(){
-
+    public BeanPostProcessor jobRegistryBeanPostProcessor() {
         JobRegistryBeanPostProcessor beanPostProcessor = new JobRegistryBeanPostProcessor();
         beanPostProcessor.setJobRegistry(jobRegistry);
 
@@ -111,9 +109,8 @@ public class AppConfig {
     }
 
     @Bean
-    public SimpleJobLauncher simpleJobLauncher(){
-
-        SimpleJobLauncher simpleJobLauncher = (SimpleJobLauncher)basicBatchConfigurer.getJobLauncher();
+    public SimpleJobLauncher simpleJobLauncher() {
+        SimpleJobLauncher simpleJobLauncher = (SimpleJobLauncher) basicBatchConfigurer.getJobLauncher();
         simpleJobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
 
         return simpleJobLauncher;

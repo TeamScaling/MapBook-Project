@@ -4,18 +4,18 @@ import org.apache.commons.lang3.StringUtils;
 
 public class KorToEngConverter {
 
-          
+
     /**
      * 토큰을 한글 키보드 기준으로 변환한다.
-     * 
+     *
      * @param token
      * @return
      */
     public static String convert(String token) {
         StringBuilder sb = new StringBuilder();
-        
+
         // 문자열을 한글자씩 잘라서 처리한다.
-        String word = token.trim();        
+        String word = token.trim();
         for (int index = 0; index < word.length(); index++) {
 
             // 처리 불가능한 글자는 그냥 넘긴다.
@@ -24,7 +24,7 @@ public class KorToEngConverter {
                 index++;
             }
             if (index >= word.length()) {
-            	break;
+                break;
             }
 
             try {
@@ -34,20 +34,19 @@ public class KorToEngConverter {
                 if (initUnicode > 0) {
                     /**
                      * 1글자로 조합형 한글이 들어올 경우 처리
-                     */              
-                    int cho  = initUnicode / 21 / 28;   // 0 ~ 18
+                     */
+                    int cho = initUnicode / 21 / 28;   // 0 ~ 18
                     String strCho = getSameEngChar(CodeType.CHOSUNG, cho);
                     if (StringUtils.isNotEmpty(strCho)) {
                         sb.append(strCho);
                     }
-                    
 
                     int jung = initUnicode / 28 % 21;   // 0 ~ 20
                     String strJung = getSameEngChar(CodeType.JUNGSUNG, jung);
                     if (StringUtils.isNotEmpty(strJung)) {
                         sb.append(strJung);
                     }
-                    
+
                     int jong = initUnicode % 28;        // 0 ~ 27
                     String strJong = getSameEngChar(CodeType.JONGSUNG, jong);
                     if (StringUtils.isNotEmpty(strJong)) {
@@ -61,14 +60,13 @@ public class KorToEngConverter {
                     String subStr = String.valueOf((char) init);
                     sb.append(getSameEngCharForJamo(subStr, 0));
                 }
-            } catch(Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
         return sb.toString();
     }
-    
-    
-    
+
 
     private static String getSameEngChar(CodeType type, int pos) {
         switch (type) {
@@ -87,20 +85,19 @@ public class KorToEngConverter {
 
         return "";
     }
-    
+
 
     private static String getSameEngCharForJamo(String key, int pos) {
-        for (int i=0; i<KeyboardUtil.KEYBOARD_KEY_KOR.length; i++) {
+        for (int i = 0; i < KeyboardUtil.KEYBOARD_KEY_KOR.length; i++) {
             if (KeyboardUtil.KEYBOARD_KEY_KOR[i].equals(key)) {
                 return KeyboardUtil.KEYBOARD_KEY_ENG[i];
             }
         }
-        
+
         return "";
     }
-    
-    
-    
+
+
 }
 
 

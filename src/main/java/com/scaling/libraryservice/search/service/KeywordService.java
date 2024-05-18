@@ -13,7 +13,6 @@ public class KeywordService {
     private final KeywordQueryDsl keywordQueryDsl;
 
     public List<String> getExistKeywords(List<String> requiredCheckWords) {
-
         return keywordQueryDsl.getKeywords(requiredCheckWords.toArray(String[]::new))
             .stream()
             .map(Keyword::getKeyword)

@@ -9,7 +9,6 @@ public class FilterStream {
     }
 
     public String doFiltering(String query,boolean filterOn) {
-
         return  filterOn? titleFilter.filtering(query) : query;
     }
 }

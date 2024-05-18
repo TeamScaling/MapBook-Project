@@ -10,7 +10,9 @@ public class FavoriteBookConn implements ApiObserver, ApiConnection {
     private static final String API_URL = "http://data4library.kr/api/loanItemSrch";
 
     private static String DEFAULT_AUTH_KEY;
+
     private static final ApiStatus apiStatus = new ApiStatus(API_URL,5);
+
     private int pageSize;
 
     public FavoriteBookConn() {
@@ -27,8 +29,7 @@ public class FavoriteBookConn implements ApiObserver, ApiConnection {
      */
     @Override
     public UriComponentsBuilder configUriBuilder() {
-        UriComponentsBuilder uriBuilder
-            = UriComponentsBuilder.fromHttpUrl(API_URL)
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("authKey", DEFAULT_AUTH_KEY)
             .queryParam("pageSize", pageSize)
             .queryParam("format", "json");
@@ -45,7 +46,5 @@ public class FavoriteBookConn implements ApiObserver, ApiConnection {
     public ApiStatus getApiStatus() {
         return apiStatus;
     }
-
-
 
 }

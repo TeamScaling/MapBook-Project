@@ -14,8 +14,11 @@ public class LoanableLibConn implements ApiConnection, ApiObserver {
     private Integer libNo;
 
     private String isbn13;
+
     private static final String API_URL = "http://data4library.kr/api/bookExist";
+
     private static String API_AUTH_KEY;
+
     private static final ApiStatus apiStatus = new ApiStatus(API_URL, 10);
 
     private LoanableLibConn() {
@@ -37,7 +40,6 @@ public class LoanableLibConn implements ApiConnection, ApiObserver {
      */
     @Override
     public UriComponentsBuilder configUriBuilder() {
-
         return UriComponentsBuilder.fromHttpUrl(API_URL)
             .queryParam("authKey", API_AUTH_KEY)
             .queryParam("isbn13", isbn13)
