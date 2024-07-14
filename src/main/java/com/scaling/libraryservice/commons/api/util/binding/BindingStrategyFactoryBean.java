@@ -17,18 +17,18 @@ public class BindingStrategyFactoryBean implements FactoryBean<Map<Class<?>, Bin
     private String[] strategyMappings;
 
     @Nullable
-    @Override  @Transactional
+    @Override
+    @Transactional
     public Map<Class<?>, BindingStrategy<?>> getObject() {
         Map<Class<?>, BindingStrategy<?>> bindingStrategyMap = new HashMap<>();
 
-        for (String clazz : strategyMappings){
-            switch (clazz){
+        for (String clazz : strategyMappings) {
+            switch (clazz) {
                 case "KakaoBookProvider" ->
-                    bindingStrategyMap.put(KakaoBookProvider.class,new KakaoBookBinding());
+                    bindingStrategyMap.put(KakaoBookProvider.class, new KakaoBookBinding());
                 case "LoanableLibProvider" ->
-                    bindingStrategyMap.put(LoanableLibProvider.class,new LoanableLibBinding());
-                default ->
-                    throw new IllegalArgumentException("Invalid binding strategy: "+clazz);
+                    bindingStrategyMap.put(LoanableLibProvider.class, new LoanableLibBinding());
+                default -> throw new IllegalArgumentException("Invalid binding strategy: " + clazz);
             }
         }
         return bindingStrategyMap;

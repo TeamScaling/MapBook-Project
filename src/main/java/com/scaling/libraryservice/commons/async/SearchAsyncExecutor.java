@@ -1,6 +1,6 @@
 package com.scaling.libraryservice.commons.async;
 
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.caching.MapBookCacheManager;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 /**
  * SearchAsyncExecutor 클래스는 AsyncExecutor 인터페이스를 구현하며, 도서 검색을 비동기적으로 수행합니다. 이 클래스는 검색
  * 요청(ReqBookDto)을 받아 도서 검색 결과인 Page<BookDto>를 반환합니다.
- *
  */
 @RequiredArgsConstructor
 @Component
@@ -27,8 +26,7 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>, ReqBook
     /**
      * 사용자의 검색 요청과 그에 따른 검색 결과를 캐싱하는 CustomCacheManager입니다.
      */
-    private final CustomCacheManager<ReqBookDto, RespBooksDto> cacheManager;
-
+    private final MapBookCacheManager<ReqBookDto, RespBooksDto> cacheManager;
 
     /**
      * 비동기적으로 도서 검색을 수행하고, 결과를 반환합니다. 검색 작업이 지정된 시간을 초과하면 TimeoutException을 발생시키며, 이 경우 빈 결과를 반환하고
@@ -40,11 +38,10 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>, ReqBook
      * @return 도서 검색 결과를 담은 Page<BookDto> 객체
      */
     @Override
-    public Page<BookDto> execute(Supplier<Page<BookDto>> supplier,
-        ReqBookDto reqBookDto, int timeout, boolean isAsync) {
-
-        return isAsync? executeAsync(supplier,reqBookDto,timeout)
-            :supplier.get();
+    public Page<BookDto> execute(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto,
+        int timeout, boolean isAsync) {
+        return isAsync ? executeAsync(supplier, reqBookDto, timeout)
+            : supplier.get();
     }
 
     /**
@@ -53,27 +50,21 @@ public class SearchAsyncExecutor implements AsyncExecutor<Page<BookDto>, ReqBook
      * @param supplier   도서 검색 작업을 제공하는 Supplier
      * @param reqBookDto 검색 요청 정보
      */
-    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier,ReqBookDto reqBookDto, int timeout) {
+    private Page<BookDto> executeAsync(Supplier<Page<BookDto>> supplier, ReqBookDto reqBookDto,
+        int timeout) {
         CompletableFuture<Page<BookDto>> future = CompletableFuture.supplyAsync(supplier);
-
         try {
-            return future.get(timeout,TimeUnit.SECONDS);
-
+            return future.get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            future.thenAccept(result -> cachingAsyncResult(result,reqBookDto));
+            future.thenAccept(result -> cachingAsyncResult(result, reqBookDto));
             return Page.empty();
         }
     }
 
-
     // cache Manager를 호출해 비동기 결과를 캐싱 처리
     private void cachingAsyncResult(Page<BookDto> fetchedBooks, ReqBookDto reqBookDto) {
-
-        RespBooksDto respBooksDto = RespBooksDtoFactory.createDefaultRespBooksDto(
-            fetchedBooks,
-            reqBookDto
-        );
-
+        RespBooksDto respBooksDto = RespBooksDtoFactory.createDefaultRespBooksDto(fetchedBooks,
+            reqBookDto);
         cacheManager.put(BookSearchService.class, reqBookDto, respBooksDto);
     }
 }

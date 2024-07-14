@@ -2,7 +2,7 @@ package com.scaling.libraryservice.commons.caching.aop;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.scaling.libraryservice.commons.caching.CacheKey;
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.caching.MapBookCacheManager;
 import com.scaling.libraryservice.mapBook.service.ApiRelatedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomCacheAspect<K, I> {
 
-    private final CustomCacheManager<K, I> cacheManager;
+    private final MapBookCacheManager<K, I> cacheManager;
 
     private final double CACHE_SEC_THRESHOLD = 2.0;
 

@@ -54,9 +54,7 @@ public class LibraryFindService {
     public List<LibraryInfoDto> getNearByLibInfoByAreaCd(@NonNull String isbn13, Integer areaCd)
         throws LocationException {
 
-        return isPreCheckingSupportedArea(areaCd) ?
-            getNearByHasBookLibraries(isbn13, areaCd) :
-            getNearByLibInfoByAreaCd(areaCd);
+        return getNearByLibInfoByAreaCd(areaCd);
     }
 
     /**
@@ -89,8 +87,8 @@ public class LibraryFindService {
      */
     private boolean isPreCheckingSupportedArea(Integer areaCd) {
 //         전처리 기능 삭제 예정
-        return hasBookAreaRepo.findById(areaCd).isPresent();
-//        return false;
+        //return hasBookAreaRepo.findById(areaCd).isPresent();
+        return true;
     }
 
     public List<LibraryInfoDto> getAllLibraries() {

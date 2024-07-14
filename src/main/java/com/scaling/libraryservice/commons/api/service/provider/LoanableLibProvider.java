@@ -19,9 +19,10 @@ import org.springframework.stereotype.Component;
 public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
 
     private final ApiQuerySender apiQuerySender;
-    private final ApiQueryBinder<ApiLoanableLibDto> apiQueryBinder;
-    private final AuthKeyLoader authKeyLoader;
 
+    private final ApiQueryBinder<ApiLoanableLibDto> apiQueryBinder;
+
+    private final AuthKeyLoader authKeyLoader;
 
     @PostConstruct
     private void loadAuthKey(){
@@ -31,13 +32,11 @@ public class LoanableLibProvider implements DataProvider<ApiLoanableLibDto>{
 
     @Override
     public List<ApiLoanableLibDto> provideDataList(List<? extends ApiConnection> connections, int nThreads) {
-
         List<ResponseEntity<String>> responseEntities = apiQuerySender.sendMultiQuery(
             connections,
             nThreads,
             HttpEntity.EMPTY
         );
-
         return apiQueryBinder.bindList(responseEntities,this.getClass());
     }
 }

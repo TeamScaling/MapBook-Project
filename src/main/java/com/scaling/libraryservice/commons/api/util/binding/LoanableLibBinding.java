@@ -18,11 +18,9 @@ public class LoanableLibBinding implements BindingStrategy<ApiLoanableLibDto> {
      */
     @Override
     public ApiLoanableLibDto bind(ResponseEntity<String> apiResponse) throws OpenApiException {
-
         if (apiResponse == null) {
             return null;
         }
-
         JSONObject respJsonObj = getJsonObjFromResponse(apiResponse);
 
         return new ApiLoanableLibDto(
@@ -30,8 +28,8 @@ public class LoanableLibBinding implements BindingStrategy<ApiLoanableLibDto> {
             respJsonObj.getJSONObject("result"));
     }
 
-    JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity) throws OpenApiException {
-
+    JSONObject getJsonObjFromResponse(ResponseEntity<String> responseEntity)
+        throws OpenApiException {
         JSONObject respJsonObj = new JSONObject(responseEntity.getBody()).getJSONObject("response");
 
         if (respJsonObj.has("error")) {
@@ -39,7 +37,6 @@ public class LoanableLibBinding implements BindingStrategy<ApiLoanableLibDto> {
             log.error("[API error] message :" + error);
             throw new OpenApiException(error);
         }
-
         return respJsonObj;
     }
 

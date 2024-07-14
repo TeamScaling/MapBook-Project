@@ -1,7 +1,6 @@
 package com.scaling.libraryservice.commons.caching;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.scaling.libraryservice.commons.timer.MeasureTaskTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link CustomCacheManager}는 여러 개의 캐시 인스턴스를 관리하고 캐시의 라이프사이클을 조절합니다. 이 클래스는 캐시 객체를 저장하고, 캐시에 데이터를
+ * {@link MapBookCacheManager}는 여러 개의 캐시 인스턴스를 관리하고 캐시의 라이프사이클을 조절합니다. 이 클래스는 캐시 객체를 저장하고, 캐시에 데이터를
  * 추가하거나 가져오는 기능을 제공합니다.
  *
  * @param <K> 캐시에서 저장할 데이터 유형
@@ -19,10 +18,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CustomCacheManager<K, I> {
+public class MapBookCacheManager<K, I> {
 
     private final Map<Class<?>, Cache<CacheKey<K,I>, I>> commonsCache = new ConcurrentHashMap<>();
-
 
     /**
      * 캐시를 등록하여 캐시 관리 시스템에 추가합니다.
@@ -36,7 +34,6 @@ public class CustomCacheManager<K, I> {
 
     }
 
-
     /**
      * 주어진 클래스와 개인 키에 해당하는 아이템을 캐시에 추가합니다.
      *
@@ -45,7 +42,6 @@ public class CustomCacheManager<K, I> {
      * @param item        캐시에 추가할 아이템
      */
     public void put(Class<?> customer, CacheKey<K,I> personalKey, I item) {
-
         if (commonsCache.containsKey(customer)) {
             log.info("CacheManger put item for [{}]", customer);
             commonsCache.get(customer).put(personalKey, (I) item);
@@ -95,7 +91,6 @@ public class CustomCacheManager<K, I> {
      * @return 아이템이 캐시에 포함되어 있으면 true, 그렇지 않으면 false
      */
     public boolean isContainItem(Class<?> customer, CacheKey<K,I> personalKey) {
-
         if (isUsingCaching(customer)) {
             return commonsCache.get(customer).getIfPresent(personalKey) != null;
         } else {
@@ -112,7 +107,6 @@ public class CustomCacheManager<K, I> {
      * @throws UnsupportedOperationException 적절한 CacheKey 구현을 찾지 못한 경우 던져 진다.
      */
     public CacheKey<K,I> generateCacheKey(@NonNull Object[] arguments) throws UnsupportedOperationException {
-
          return Arrays.stream(arguments)
              .filter(object -> object instanceof CacheKey<?,?>)
              .map(obj -> (CacheKey<K,I>) obj)

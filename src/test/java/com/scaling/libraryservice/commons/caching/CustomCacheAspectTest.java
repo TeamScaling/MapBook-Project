@@ -34,10 +34,10 @@ class CustomCacheAspectTest {
     private CustomCacheAspect<ReqMapBookDto, RespMapBookDto> cacheAspect2;
 
     @Mock
-    private CustomCacheManager<ReqBookDto, RespBooksDto> cacheManager;
+    private MapBookCacheManager<ReqBookDto, RespBooksDto> cacheManager;
 
     @Mock
-    private CustomCacheManager<ReqMapBookDto, RespMapBookDto> cacheManager2;
+    private MapBookCacheManager<ReqMapBookDto, RespMapBookDto> cacheManager2;
 
     @Mock
     private ProceedingJoinPoint joinPoint;

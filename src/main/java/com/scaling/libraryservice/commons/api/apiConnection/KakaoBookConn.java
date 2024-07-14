@@ -10,6 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class KakaoBookConn implements ApiConnection {
 
     private final Long id;
+
     private static final String API_URL = "https://dapi.kakao.com/v3/search/book";
 
     private static String API_AUTH_KEY;
@@ -33,7 +34,7 @@ public class KakaoBookConn implements ApiConnection {
     }
     public HttpEntity<String> getHttpEntity(){
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", API_AUTH_KEY);
+        headers.add("Authorization","KakaoAK "+API_AUTH_KEY);
 
         return new HttpEntity<>("",headers);
     }

@@ -8,16 +8,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.caching.MapBookCacheManager;
 import com.scaling.libraryservice.search.dto.BookDto;
 import com.scaling.libraryservice.search.dto.ReqBookDto;
 import com.scaling.libraryservice.search.dto.RespBooksDto;
-import com.scaling.libraryservice.search.entity.Book;
 import com.scaling.libraryservice.search.repository.BookRepoQueryDsl;
-import com.scaling.libraryservice.search.repository.BookRepository;
 import com.scaling.libraryservice.search.service.BookSearchService;
 import com.scaling.libraryservice.search.engine.TitleQuery;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class SearchAsyncExecutorTest {
@@ -49,7 +45,7 @@ class SearchAsyncExecutorTest {
     private Page<BookDto> page;
 
     @Mock
-    CustomCacheManager<ReqBookDto, RespBooksDto> mockCacheManager;
+    MapBookCacheManager<ReqBookDto, RespBooksDto> mockCacheManager;
 
 
     @Test

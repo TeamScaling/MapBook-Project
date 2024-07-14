@@ -3,7 +3,7 @@ package com.scaling.libraryservice.mapBook.dto;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.scaling.libraryservice.commons.caching.CacheKey;
-import com.scaling.libraryservice.commons.caching.CustomCacheManager;
+import com.scaling.libraryservice.commons.caching.MapBookCacheManager;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.springframework.lang.NonNull;
 
 /**
- * 사용자 주변 도서관 중 대출 가능 도서관을 찾기 위한 Http 요청 DTO이다. {@link CacheKey}를 구현하여, {@link CustomCacheManager}
+ * 사용자 주변 도서관 중 대출 가능 도서관을 찾기 위한 Http 요청 DTO이다. {@link CacheKey}를 구현하여, {@link MapBookCacheManager}
  * 에서 캐싱 된 데이터를 찾기 위한 Key로 사용 될 수 있다.
  */
 @Getter

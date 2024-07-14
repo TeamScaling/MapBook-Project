@@ -35,7 +35,6 @@ public class CircuitBreakerSupporter {
      * @return {@link ApiObserver} 인스턴스
      */
     ApiObserver extractObserver(@NonNull ProceedingJoinPoint joinPoint) throws Exception {
-
         ApiMonitoring apiMonitoring = getApiMonitoring(joinPoint);
         Class<? extends ApiObserver> observerClazz = apiMonitoring.apiObserver();
 
@@ -47,10 +46,8 @@ public class CircuitBreakerSupporter {
     ApiObserver constructAndPutObserver(ApiMonitoring apiMonitoring,
         Class<? extends ApiObserver> observerClazz) throws Exception {
 
-        Constructor<? extends ApiObserver> constructor =
-            apiMonitoring
-                .apiObserver()
-                .getDeclaredConstructor();
+        Constructor<? extends ApiObserver> constructor = apiMonitoring.apiObserver()
+            .getDeclaredConstructor();
 
         constructor.setAccessible(true);
 
@@ -68,7 +65,6 @@ public class CircuitBreakerSupporter {
      * @return 찾은 대체 메소드
      */
     Method extractSubstituteMethod(ProceedingJoinPoint joinPoint) throws IllegalArgumentException {
-
         Method[] methods = getMethods(joinPoint);
         ApiMonitoring apiMonitoring = getApiMonitoring(joinPoint);
 
@@ -93,7 +89,6 @@ public class CircuitBreakerSupporter {
     }
 
     private ApiMonitoring getApiMonitoring(ProceedingJoinPoint joinPoint) {
-
         Method joinPointMethod = ((MethodSignature) joinPoint.getSignature()).getMethod();
         return joinPointMethod.getAnnotation(ApiMonitoring.class);
     }

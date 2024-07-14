@@ -9,5 +9,4 @@ public interface LibraryRepository extends JpaRepository<LibraryInfo, Integer> {
 
     @Transactional(readOnly = true)
     List<LibraryInfo> findAllByAreaCd(Integer areaCd);
-
 }

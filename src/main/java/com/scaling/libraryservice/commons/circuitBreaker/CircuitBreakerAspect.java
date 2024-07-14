@@ -42,21 +42,18 @@ public class CircuitBreakerAspect {
      */
     @Around("apiMonitoringPointcut()")
     public Object apiMonitoringAround(@NonNull ProceedingJoinPoint joinPoint) throws Throwable {
-
         ApiObserver apiObserver = support.extractObserver(joinPoint);
         Method fallBackMethod = support.extractSubstituteMethod(joinPoint);
 
-        return circuitBreaker.isApiAccessible(apiObserver)?
-            processApiRequest(joinPoint,apiObserver,fallBackMethod):
+        return circuitBreaker.isApiAccessible(apiObserver) ?
+            processApiRequest(joinPoint, apiObserver, fallBackMethod) :
             fallBackMethod.invoke(joinPoint.getTarget(), joinPoint.getArgs());
     }
 
     private Object processApiRequest(@NonNull ProceedingJoinPoint joinPoint,
-        ApiObserver apiObserver, Method fallBackMethod) throws Throwable{
-
+        ApiObserver apiObserver, Method fallBackMethod) throws Throwable {
         try {
             return joinPoint.proceed();
-
         } catch (OpenApiException e) {
             circuitBreaker.receiveError(apiObserver);
             fallBackMethod.setAccessible(true);

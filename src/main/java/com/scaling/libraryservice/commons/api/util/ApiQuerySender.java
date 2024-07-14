@@ -41,8 +41,7 @@ public class ApiQuerySender {
         HttpEntity<?> httpEntity) throws OpenApiException {
 
         try {
-            return restTemplate.exchange(
-                apiConnection.configUriBuilder().toUriString(),
+            return restTemplate.exchange(apiConnection.configUriBuilder().toUriString(),
                 HttpMethod.GET,
                 httpEntity,
                 String.class
@@ -63,11 +62,9 @@ public class ApiQuerySender {
     @MeasureTaskTime
     public List<ResponseEntity<String>> sendMultiQuery(List<? extends ApiConnection> apiConnections,
         int nThreads, HttpEntity<?> httpEntity) throws OpenApiException {
-
         Objects.requireNonNull(apiConnections);
 
         ExecutorService service = Executors.newFixedThreadPool(nThreads);
-
         List<CompletableFuture<ResponseEntity<String>>> futures = apiConnections.stream()
             .map(conn ->
                 CompletableFuture.supplyAsync(() -> sendSingleQuery(conn, httpEntity), service))

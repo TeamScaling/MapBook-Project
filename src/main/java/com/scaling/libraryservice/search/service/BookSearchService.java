@@ -36,10 +36,13 @@ import org.springframework.stereotype.Service;
 public class BookSearchService {
 
     private final TitleAnalyzer titleAnalyzer;
+
     private final BookRepoQueryDsl bookRepoQueryDsl;
+
     private final AsyncExecutor<Page<BookDto>, ReqBookDto> asyncExecutor;
 
     private final static String ISBN_REGEX = "\\d+";
+
     private final static int ISBN_MIN_SIZE = 10;
 
     private final static int MATCHING_LIMIT_PAGE = 1;
@@ -54,31 +57,26 @@ public class BookSearchService {
      */
     @CustomCacheable
     @MeasureTaskTime
-    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout,
-        boolean isAsyncSupport) throws NotQualifiedQueryException {
+    public RespBooksDto searchBooks(@NonNull ReqBookDto reqBookDto, int timeout, boolean isAsyncSupport)
+        throws NotQualifiedQueryException {
 
         String userQuery = reqBookDto.getUserQuery();
-
         if (isIsbnQuery(userQuery)) {
             return searchBookByIsbn(userQuery);
         }
 
         TitleQuery titleQuery = titleAnalyzer.analyze(userQuery, true);
-
         return titleQuery.isEmptyTitleQuery() ?
             createEmptyRespBookDto(reqBookDto.getUserQuery())
             : searchBookWithAsync(titleQuery, reqBookDto, timeout, isAsyncSupport);
     }
 
     private RespBooksDto searchBookByIsbn(String userQuery) {
-
         BookDto bookDto = bookRepoQueryDsl.findBooksByIsbn(userQuery);
-
         return bookDto.isEmpty() ?
             createEmptyRespBookDto(userQuery)
             : createIsbnRespBookDto(bookDto, userQuery);
     }
-
 
     private RespBooksDto searchBookWithAsync(TitleQuery titleQuery, ReqBookDto reqBookDto,
         int timeout, boolean isAsyncSupport) {
@@ -89,10 +87,8 @@ public class BookSearchService {
             , timeout
             , isAsyncSupport
         );
-
         // 검색 결과와 사용자 검색어가 일치하면 일치하는 도서만 반환 한다.
         Optional<BookDto> potentialMatchBook = matchingQueryAndTitle(books, reqBookDto);
-
         return potentialMatchBook
             .map(bookDto -> createOneBookRespDto(reqBookDto.getUserQuery(), bookDto))
             .orElseGet(() -> createDefaultRespBooksDto(books, reqBookDto));
@@ -102,18 +98,15 @@ public class BookSearchService {
         ReqBookDto reqBookDto) {
 
         return booksPage.stream()
-            .filter(bookDto ->
-                isUserQueryMatchingBook(
+            .filter(bookDto -> isUserQueryMatchingBook(
                     reqBookDto.getUserQuery(),
                     bookDto,
                     reqBookDto.getPage()
-                )
-            )
+                ))
             .findAny();
     }
 
     private boolean isUserQueryMatchingBook(String userQuery, @NonNull BookDto bookDto, int page) {
-
         String mainTitle = SubTitleRemover.removeSubTitle(bookDto.getTitle()).trim();
         return mainTitle.equals(userQuery.trim()) && page == MATCHING_LIMIT_PAGE;
     }

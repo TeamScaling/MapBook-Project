@@ -11,8 +11,7 @@ public class LogFormatter {
 
     // Logger 클래스가 최종적으로 사용하는 메소드. TaskType은 해당 로그가 어떤 작업인지를 나타낸다
     // logMessageMap엔 logger가 저장하는 [userQuery (key) : 정석(value)] 식의 로그 메시지이다.
-    public static String formatting(TaskType taskType, Map<String,String> logMessageMap){
-
+    public static String formatting(TaskType taskType, Map<String, String> logMessageMap) {
         return createLogTemplate(taskType)
             .append(formatLogMessages(logMessageMap))
             .toString();
@@ -25,26 +24,23 @@ public class LogFormatter {
 
     // 공통적인 로그 구조를 나타 낸다.
     private static String formatBasicLog(TaskType taskType) {
-        return String.format(
-            "[%s] - %s [%s] --- ",
+        return String.format("[%s] - %s [%s] --- ",
             formatDateTime(LocalDateTime.now()),
             taskType.getCode(),
-            taskType.getName()
-        );
+            taskType.getName());
     }
 
     // 공통적으로 로그 발생 날짜 시간을 위한 구조
     public static String formatDateTime(LocalDateTime dateTime) {
-        DateTimeFormatter formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
     }
 
     // 상세 로그 메시지에 대한 구조를 처리 한다.
     private static String formatLogMessages(Map<String, String> logMessages) {
-
-        return logMessages.entrySet().stream()
-            .map(entry -> String.format("[%s : %s]", entry.getKey(),entry.getValue()))
+        return logMessages.entrySet()
+            .stream()
+            .map(entry -> String.format("[%s : %s]", entry.getKey(), entry.getValue()))
             .collect(Collectors.joining(" "));
     }
 

@@ -51,7 +51,6 @@ public class Book {
     @Column(name = "loan_cnt")
     private Integer loanCnt;
 
-
     public Integer getLoanCnt() {
         return loanCnt == null ? 0 : this.loanCnt;
     }

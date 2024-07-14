@@ -18,12 +18,13 @@ import lombok.RequiredArgsConstructor;
 public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
 
     private final TitleFilter nextFilter;
+
     private final KeywordService keywordService;
+
     private static final String ENG_REGEX = "^[a-zA-Z]+$";
 
     @Override
     public String filtering(String query) {
-
         StringJoiner joiner = new StringJoiner(" ");
         List<String> requiredCheckList = new LinkedList<>();
 
@@ -42,14 +43,12 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
 
     private void addExistKeywordsToJoiner(List<String> requiredCheckList, StringJoiner joiner) {
         List<String> existKeywords = keywordService.getExistKeywords(requiredCheckList);
-
         if (!existKeywords.isEmpty()) {
             joiner.add(String.join(" ", existKeywords));
         }
     }
 
     private void convertAddEngCheckList(String originalWord, List<String> requiredCheckList) {
-
         String convertedWord = EngToKorConverter.convert(originalWord);
 
         requiredCheckList.add(originalWord);
@@ -58,7 +57,6 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
 
     // 'ㅓㅁㅍㅁ' -> 'java'로 변환 해주는 메소드 (버그로 인해 일단 사용 X)
     void convertAddKorCheckList(String originalWord, List<String> requiredCheckList) {
-
         String convertedWord = KorToEngConverter.convert(originalWord);
 
         requiredCheckList.add(originalWord);
@@ -70,6 +68,4 @@ public class ConvertFilter extends AbstractTileFilter implements TitleFilter {
         Matcher matcher = pattern.matcher(input);
         return matcher.matches();
     }
-
-
 }

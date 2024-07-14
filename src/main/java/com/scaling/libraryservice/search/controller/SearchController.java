@@ -23,13 +23,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SearchController {
 
     private final BookSearchService bookSearchService;
-    private static final int AUTO_COMPLETE_SIZE = 6;
-    private static final int DEFAULT_TIMEOUT = 2;
-    private static final int DEFAULT_PAGE = 1;
-    private static final int SESSION_INTERVAL = 3;
-    private final LogService<RespBooksDto> logService;
-    private final BookSessionService bookSessionService;
 
+    private static final int AUTO_COMPLETE_SIZE = 6;
+
+    private static final int DEFAULT_TIMEOUT = 2;
+
+    private static final int DEFAULT_PAGE = 1;
+
+    private static final int SESSION_INTERVAL = 3;
+
+    private final LogService<RespBooksDto> logService;
+
+    private final BookSessionService bookSessionService;
 
     /**
      * 메인 홈페이지를 반환하는 메서드입니다.

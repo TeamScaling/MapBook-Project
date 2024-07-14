@@ -17,14 +17,12 @@ public class KakaoBookBinding implements BindingStrategy<BookApiDto> {
      */
     @Override
     public BookApiDto bind(ResponseEntity<String> apiResponse) {
-
         if (apiResponse == null) {
             return null;
         }
-
         JSONArray jsonArray = new JSONObject(apiResponse.getBody()).getJSONArray("documents");
 
-        return jsonArray.length() != 0
-            ? new BookApiDto(jsonArray.getJSONObject(0)) : new BookApiDto();
+        return !jsonArray.isEmpty() ? new BookApiDto(jsonArray.getJSONObject(0))
+            : new BookApiDto();
     }
 }

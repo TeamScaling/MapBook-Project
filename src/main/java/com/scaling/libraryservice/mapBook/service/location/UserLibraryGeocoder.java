@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 public class UserLibraryGeocoder implements LocationResolver<Integer, ReqMapBookDto> {
 
     private final LibraryRepository libraryRepo;
+
     private List<LibraryInfoDto> libraries;
 
     /**
@@ -35,13 +36,11 @@ public class UserLibraryGeocoder implements LocationResolver<Integer, ReqMapBook
      */
     @Override
     public Integer resolve(@NonNull ReqMapBookDto reqMapBookDto) {
-
         if (libraries == null) {
             libraries = libraryRepo.findAll().stream().map(LibraryInfoDto::new).toList();
         }
 
         Integer areaCd = findNearestLibrary(reqMapBookDto).getAreaCd();
-
         upDateAreaCd(reqMapBookDto, areaCd);
 
         return areaCd;
@@ -69,11 +68,9 @@ public class UserLibraryGeocoder implements LocationResolver<Integer, ReqMapBook
                 double distance2 = HaversineCalculater.calculateDistance(
                     userLat, userLon, lib2.getLibLat(), lib2.getLibLon()
                 );
-                return Double.compare(distance1, distance2);
-            })
+                return Double.compare(distance1, distance2);})
             .orElseThrow(() -> new LocationException("최단 거리 도서관 찾기 실패"));
     }
-
 
     private void upDateAreaCd(ReqMapBookDto reqMapBookDto, Integer areaCd) {
         reqMapBookDto.setAreaCd(areaCd);

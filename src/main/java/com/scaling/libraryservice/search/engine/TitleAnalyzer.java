@@ -62,7 +62,6 @@ public class TitleAnalyzer {
 
     private TitleQuery determineTitleType(AnalyzedResult result,
         TitleQueryBuilder titleQueryBuilder) {
-
         if (result.getNnTokenCount() >= NN_TOKEN_THRESHOLD_SIZE) {
             return titleQueryBuilder.titleType(TOKEN_TWO_OR_MORE).build();
         } else if (result.getEtcTokenCount() >= ETC_TOKEN_THRESHOLD_SIZE) {
@@ -81,27 +80,19 @@ public class TitleAnalyzer {
 
     private TitleQuery considerEtcToken(AnalyzedResult result,
         TitleQueryBuilder titleQueryBuilder) {
-
-        return result.getNnTokenCount() == 0 ?
-            titleQueryBuilder.titleType(TOKEN_ALL_ETC)
-                .etcToken(titleQueryBuilder.getUserQuery())
-                .build()
+        return result.getNnTokenCount() == 0 ? titleQueryBuilder.titleType(TOKEN_ALL_ETC)
+            .etcToken(titleQueryBuilder.getUserQuery())
+            .build()
             : titleQueryBuilder.titleType(TOKEN_COMPLEX).build();
     }
 
-
     private record AnalyzedResult(String nnToken, String etcToken) {
-
         public int getNnTokenCount() {
-
-            return nnToken.isBlank() ? 0 :
-                nnToken.split(" ").length;
+            return nnToken.isBlank() ? 0 : nnToken.split(" ").length;
         }
 
         public int getEtcTokenCount() {
-
-            return etcToken.isBlank() ? 0 :
-                etcToken.split(" ").length;
+            return etcToken.isBlank() ? 0 : etcToken.split(" ").length;
         }
     }
 

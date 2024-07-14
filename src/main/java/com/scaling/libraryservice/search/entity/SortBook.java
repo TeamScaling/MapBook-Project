@@ -35,8 +35,6 @@ public class SortBook {
     @Column(name = "AUTHR_NM")
     private String author;
 
-
-
     @Column(name = "IMAGE_URL")
     private String bookImg;
 
@@ -48,7 +46,6 @@ public class SortBook {
 
     @Column(name = "loan_cnt")
     private Integer loanCnt;
-
 
     public Integer getLoanCnt() {
         return loanCnt == null ? 0 : this.loanCnt;

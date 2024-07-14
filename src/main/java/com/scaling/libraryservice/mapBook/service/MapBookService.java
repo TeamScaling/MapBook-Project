@@ -105,8 +105,7 @@ public class MapBookService implements ApiRelatedService {
             .collect(Collectors.toList());
     }
 
-    private Optional<RespMapBookDto> createRespMapBook(
-        Map<Integer, ApiLoanableLibDto> loanableBookMap,
+    private Optional<RespMapBookDto> createRespMapBook(Map<Integer, ApiLoanableLibDto> loanableBookMap,
         LibraryInfoDto libraryInfoDto) {
 
         return Optional.ofNullable(loanableBookMap.get(libraryInfoDto.getLibNo()))
@@ -126,16 +125,14 @@ public class MapBookService implements ApiRelatedService {
      * @param apiResults API로부터 받은 도서 대출 가능 여부 데이터 리스트
      * @return 도서관 코드를 키로, 도서 대출 가능 여부 데이터를 값으로 가지는 Map
      */
-    private Map<Integer, ApiLoanableLibDto> collectLoanableListToMap(
-        List<ApiLoanableLibDto> apiResults) {
+    private Map<Integer, ApiLoanableLibDto> collectLoanableListToMap(List<ApiLoanableLibDto> apiResults) {
 
         return apiResults.stream()
             .filter(ApiLoanableLibDto::isLoanAble)
             .collect(Collectors.toMap(
                 apiLoanableLib -> Integer.valueOf(apiLoanableLib.getLibCode()),
                 Function.identity(),
-                (existingKey, newKey) -> existingKey
-            ));
+                (existingKey, newKey) -> existingKey));
     }
 
 }
