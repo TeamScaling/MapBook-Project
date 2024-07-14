@@ -54,9 +54,7 @@ public class LibraryFindService {
     public List<LibraryInfoDto> getNearByLibInfoByAreaCd(@NonNull String isbn13, Integer areaCd)
         throws LocationException {
 
-        return isPreCheckingSupportedArea(areaCd) ?
-            getNearByHasBookLibraries(isbn13, areaCd) :
-            getNearByLibInfoByAreaCd(areaCd);
+        return getNearByLibInfoByAreaCd(areaCd);
     }
 
     /**

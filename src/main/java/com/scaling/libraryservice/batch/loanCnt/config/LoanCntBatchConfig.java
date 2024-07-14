@@ -44,16 +44,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @RequiredArgsConstructor
 @Configuration
 public class LoanCntBatchConfig {
-
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final LibraryCatalogDownloader libraryCatalogDownloader;
     private Aggregator aggregator;
     private final LibraryCatalogWriter libraryCatalogWriter;
     private final DownLoadFileClearTask downLoadFileClearTask;
-
     private final String DOWNLOAD_FOLDER = "pipe/download";
-
     private final String RESULT_PATH = "pipe/endStep/end.csv";
 
     @Bean

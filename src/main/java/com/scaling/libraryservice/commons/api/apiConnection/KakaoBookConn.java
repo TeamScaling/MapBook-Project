@@ -34,7 +34,7 @@ public class KakaoBookConn implements ApiConnection {
     }
     public HttpEntity<String> getHttpEntity(){
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", API_AUTH_KEY);
+        headers.add("Authorization","KakaoAK "+API_AUTH_KEY);
 
         return new HttpEntity<>("",headers);
     }

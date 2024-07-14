@@ -51,6 +51,10 @@ dependencies {
 
     implementation 'org.apache.commons:commons-csv:1.8'
 
+    // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '3.1.4'
+
+
     // https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock
     testImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.2'
 

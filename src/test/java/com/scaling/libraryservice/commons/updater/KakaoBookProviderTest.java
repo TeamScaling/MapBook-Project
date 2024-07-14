@@ -6,18 +6,23 @@ import com.scaling.libraryservice.commons.api.service.AuthKeyLoader;
 import com.scaling.libraryservice.commons.api.service.provider.KakaoBookProvider;
 import com.scaling.libraryservice.commons.api.apiConnection.KakaoBookConn;
 import com.scaling.libraryservice.commons.api.apiConnection.ApiConnection;
+import com.scaling.libraryservice.commons.api.util.ApiQuerySender;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 @SpringBootTest
 class KakaoBookProviderTest {
 
     @Autowired
     private KakaoBookProvider kakaoBookProvider;
+
+    @Autowired
+    private ApiQuerySender apiQuerySender;
 
     private AuthKeyLoader authKeyLoader;
 
@@ -26,6 +31,16 @@ class KakaoBookProviderTest {
 //        this.kakaoBookProvider = new KakaoBookProvider(new ApiQuerySender(new RestTemplate()),
 //            new ApiQueryBinder<>(new KakaoBookBinding()),authKeyLoader);
 //    }
+
+    @Test
+    public void test(){
+        ResponseEntity<String> stringResponseEntity = apiQuerySender.sendSingleQuery(
+            new KakaoBookConn("9791170522553", 1L),
+            new KakaoBookConn("", 1L).getHttpEntity());
+
+        System.out.println(stringResponseEntity.toString());
+
+    }
 
     @Test
     @DisplayName("getBookMulti 메소드를 통해 BookApiDto list를 반환 받는 데 성공")

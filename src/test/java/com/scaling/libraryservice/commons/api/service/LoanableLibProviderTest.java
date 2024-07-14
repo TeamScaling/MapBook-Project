@@ -5,6 +5,7 @@ import com.scaling.libraryservice.commons.api.apiConnection.LoanableLibConn;
 import com.scaling.libraryservice.commons.api.service.provider.LoanableLibProvider;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,6 +21,7 @@ class LoanableLibProviderTest {
     public void setUp() {
     }
 
+    @Test
     public void provideDataList() {
         /* given */
 

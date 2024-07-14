@@ -2,14 +2,15 @@ package com.scaling.libraryservice.batch.loanCnt.util.download;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.CompletableFuture;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
@@ -23,16 +24,19 @@ public abstract class AbstractDownLoader implements DownLoader{
 
     void downloadFile(String siteUrl, String fileName) throws IOException {
         InputStream in = new BufferedInputStream(new URL(siteUrl).openStream());
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
+        InputStreamReader inputStreamReader = new InputStreamReader(in, "euc-kr");
 
-        byte[] data = new byte[1024];
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(bos));
+
+        char[] chars = new char[1024];
         int count;
 
-        while ((count = in.read(data, 0, 1024)) != -1) {
-            bos.write(data, 0, count);
+        while ((count = inputStreamReader.read(chars, 0, 1024)) != -1) {
+            writer.write(chars, 0, count);
         }
-        bos.close();
-        in.close();
+        writer.close();
+        inputStreamReader.close();
 
         log.info("[{}] download complete",fileName);
     }
