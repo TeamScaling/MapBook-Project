@@ -14,7 +14,7 @@ ElasticSearch 없이 RDBMS로만 가지고 검색 엔진 만들기
 
 ### Explore the Project
 
-- [Try MapBook](https://mapbook.pro/)
+- [Try MapBook](https://mapbook.site)
 - 서비스 피드백 및 건의 적극적으로 기다리는 중
 
 <p align = "center">
